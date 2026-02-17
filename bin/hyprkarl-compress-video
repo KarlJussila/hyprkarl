@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+# compress-simple-fps-first.sh
+# Minimal deps: ffmpeg, ffprobe, fzf, numfmt
+# No bc, no python. Uses integer-safe bash arithmetic.
+set -euo pipefail
+
+# --- Config ---
+MIN_VIDEO_BITRATE=300         # kbps minimum acceptable video bitrate before we decide to downscale
+TARGET_FPS=30                 # fps to reduce to as first-line defense
+DOWNSCALE_WIDTH=640           # width to downscale to if bitrate floor requires it
+INITIAL_SAFETY_MARGIN=98      # initial bitrate scaled by this to avoid overshoot
+CORRECTION_SAFETY_MARGIN=90   # aggressive margin (e.g., 90 = aim for 90% of target) to guarantee undershoot
+MAX_ENCODE_ATTEMPTS=2         # max number of re-encodes to hit target size
+DEBUG=${DEBUG:-1}
+
+input=""
+target_size=""
+audio_bitrate_to_reserve=""
+non_interactive=0
+
+while [[ "$#" -gt 0 ]]; do
+  case "$1" in
+    --audio-bitrate|-a) # Added short alias
+      if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
+        audio_bitrate_to_reserve="${2}"
+        shift 2
+      else
+        error "--audio-bitrate requires a value (e.g., 128)."
+      fi
+      ;;
+    --non-interactive|-n) # Added short alias
+      non_interactive=1
+      shift
+      ;;
+    *) 
+      if [[ -z "$input" ]]; then
+        input="$1"
+      elif [[ -z "$target_size" ]]; then
+        target_size="$1"
+      else
+        error "Unknown argument: $1"
+      fi
+      shift ;;
+  esac
+done
+
+# --- Apply defaults if in non-interactive mode ---
+if (( non_interactive )); then
+  if [[ -z "$target_size" ]]; then
+    target_size="10M"
+    printf "INFO: Non-interactive mode. Using default target size: %s\n" "$target_size"
+  fi
+  if [[ -z "$audio_bitrate_to_reserve" ]]; then
+    audio_bitrate_to_reserve="64"
+    printf "INFO: Non-interactive mode. Using default audio bitrate: %sk\n" "$audio_bitrate_to_reserve"
+  fi
+else
+  # Interactive mode: prompt for audio if not set
+  if [[ -z "$audio_bitrate_to_reserve" ]]; then
+    command -v fzf >/dev/null 2>&1 || error "fzf not found for audio selection. Please provide --audio-bitrate flag."
+    prompt_for_audio_bitrate() {
+      local choice
+      choice=$(printf "Off (0)\nLow (64k)\nMedium (96k)\nHigh (128k)\nAudiophile (192k)" | fzf --prompt="Select audio quality: ")
+      if [[ -z "$choice" ]]; then
+        error "No audio option selected."
+      fi
+      audio_bitrate_to_reserve=$(echo "$choice" | awk '{print $2}' | tr -d 'k()')
+    }
+    prompt_for_audio_bitrate
+  fi
+fi
+
+# Validate the final audio bitrate value
+if ! [[ "$audio_bitrate_to_reserve" =~ ^[0-9]+$ ]]; then
+  error "Invalid audio bitrate: '$audio_bitrate_to_reserve'. Must be a number."
+fi
+
+
+# --- Helpers ---
+dbg()  { [[ "$DEBUG" -ne 0 ]] && printf "DBG: %s\n" "$*" >&2; }
+error(){ printf "Error: %s\n" "$*" >&2; exit 1; }
+
+encode_video() {
+  local input_file="$1"
+  local output_file="$2"
+  local video_bitrate_kbps="$3"
+  local scale_filter="$4"
+  local audio_opts="$5"
+
+  dbg "  -> Encoding: -b:v ${video_bitrate_kbps}k ${scale_filter} ${audio_opts}"
+  ffmpeg -y -i "$input_file" $scale_filter -r "$TARGET_FPS" -c:v libx264 -b:v "${video_bitrate_kbps}k" -pass 1 -an -f null /dev/null
+  ffmpeg -y -i "$input_file" $scale_filter -r "$TARGET_FPS" -c:v libx264 -b:v "${video_bitrate_kbps}k" -pass 2 $audio_opts "$output_file"
+}
+
+# --- Inputs ---
+if [[ -z "$input" ]]; then
+  command -v fzf >/dev/null 2>&1 || error "fzf not found; supply input file."
+  input=$(find ~/Videos -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.mov" \) | fzf --prompt="Select video: ")
+fi
+[[ -f "$input" ]] || error "Invalid file: $input"
+
+if [[ -z "$target_size" ]]; then
+  read -r -p "Enter target size (e.g. 50M or 100MB): " target_size
+fi
+
+# Normalize and parse target size
+target_size="${target_size^^}"
+target_size="${target_size%B}"
+size_bytes_target=$(numfmt --from=iec "$target_size") || error "Invalid size format: $target_size"
+
+# --- Probe source ---
+duration_raw=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$input")
+duration=${duration_raw%.*}
+[[ "$duration" =~ ^[0-9]+$ ]] || error "Could not determine duration."
+
+fps_raw=$(ffprobe -v 0 -select_streams v:0 -show_entries stream=r_frame_rate -of csv=p=0 "$input")
+fps=$(echo "$fps_raw" | awk -F/ '{ if ($2==0) print int($1); else print int($1/$2) }')
+if ! [[ "$fps" =~ ^[0-9]+$ ]]; then fps=$TARGET_FPS; fi
+
+src_w=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$input" 2>/dev/null || echo "")
+
+# Check for audio stream
+has_audio=0
+if ffprobe -v error -select_streams a -show_entries stream=codec_name -of csv=p=0 "$input" | grep -q .; then
+  has_audio=1
+fi
+dbg "target_size=${size_bytes_target} duration=${duration}s fps=${fps} src_w=${src_w} has_audio=${has_audio} audio_bitrate_to_reserve=${audio_bitrate_to_reserve}k"
+
+# --- Determine encoding parameters ---
+scale_filter=""
+target_video_kbps=0
+
+# Calculate target total bitrate
+target_total_kbps=$(( (size_bytes_target * 8) / duration / 1000 ))
+
+# --- Adjust bitrate calculation based on the chosen audio bitrate ---
+if (( audio_bitrate_to_reserve > 0 )); then
+  target_video_kbps=$(( target_total_kbps - audio_bitrate_to_reserve ))
+else
+  # Audio is off, allocate full budget to video
+  target_video_kbps=$target_total_kbps
+fi
+
+# Check if we need to downscale
+if (( target_video_kbps < MIN_VIDEO_BITRATE )); then
+  printf "Required video bitrate %dk is below MIN %dk. Will downscale to %dpx.\n" "$target_video_kbps" "$MIN_VIDEO_BITRATE" "$DOWNSCALE_WIDTH"
+  scale_filter="-vf scale=${DOWNSCALE_WIDTH}:-2"
+fi
+
+# --- Adjust audio options based on the chosen audio bitrate ---
+audio_opts=""
+if (( audio_bitrate_to_reserve > 0 )); then
+  if (( has_audio )); then
+    audio_opts="-c:a aac -b:a ${audio_bitrate_to_reserve}k -ac 1"
+  else
+    printf "WARN: Audio bitrate requested but source has no audio. Ignoring.\n"
+  fi
+else
+  # Audio is off
+  audio_opts="-an"
+fi
+
+# --- THE TWO-PASS LOOP ---
+ext="${input##*.}"
+base="${input%.*}"
+output="${base}_compressed.${ext}"
+
+# Attempt 1: Use a safety margin
+current_video_kbps=$(( target_video_kbps * INITIAL_SAFETY_MARGIN / 100 ))
+if (( current_video_kbps < 1 )); then current_video_kbps=1; fi
+
+printf "\n--- Encode Attempt 1/2 ---\n"
+encode_video "$input" "$output" "$current_video_kbps" "$scale_filter" "$audio_opts"
+actual_size=$(stat -c%s "$output")
+printf "Result: %s (%d bytes)\n" "$(numfmt --to=iec "$actual_size")" "$actual_size"
+
+# --- New logic to only re-encode if over the target ---
+if (( actual_size <= size_bytes_target )); then
+  printf "Success! Final size is at or below the target of %s.\n" "$(numfmt --to=iec "$size_bytes_target")"
+  exit 0
+fi
+
+# If we're here, we are over the target. Run the second attempt.
+printf "File is over the target. Calculating aggressive correction for second attempt.\n"
+# --- Simplified and more aggressive correction calculation ---
+# new_bitrate = old_bitrate * (target_size / actual_size) * safety_margin
+corrected_video_kbps=$(( current_video_kbps * size_bytes_target * CORRECTION_SAFETY_MARGIN / actual_size / 100 ))
+if (( corrected_video_kbps < 1 )); then corrected_video_kbps=1; fi
+
+printf "\n--- Encode Attempt 2/2 ---\n"
+printf "Adjusting bitrate from %dk to %dk for final encode.\n" "$current_video_kbps" "$corrected_video_kbps"
+encode_video "$input" "$output" "$corrected_video_kbps" "$scale_filter" "$audio_opts"
+
+actual_size=$(stat -c%s "$output")
+printf "Final Result: %s (%d bytes)\n" "$(numfmt --to=iec "$actual_size")" "$actual_size"
+exit 0

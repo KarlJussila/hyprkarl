@@ -1,0 +1,175 @@
+#!/bin/bash
+
+# Create a temporary file to store the current source
+SOURCE_FILE=$(mktemp)
+echo "wn" > "$SOURCE_FILE"
+
+# Color codes for formatting
+readonly BOLD="\033[1m"
+readonly CYAN="\033[36m"
+readonly GREEN="\033[32m"
+readonly YELLOW="\033[33m"
+readonly DIM="\033[2m"
+readonly RESET="\033[0m"
+readonly RED="\033[31m"
+
+# Export color variables to make them available in subshells created by pipelines
+export BOLD CYAN GREEN YELLOW DIM RESET RED
+
+# Function to toggle between dictionary and thesaurus
+toggle_source() {
+  local current_source
+  current_source=$(cat "$SOURCE_FILE")
+  
+  if [[ "$current_source" == "wn" ]]; then
+    echo "moby-thesaurus" > "$SOURCE_FILE"
+  else
+    echo "wn" > "$SOURCE_FILE"
+  fi
+}
+
+# Function to fetch data from dict server
+fetch_from_dict() {
+  local url="$1"
+  curl -s "$url" 2>/dev/null | tr -d '\r'
+}
+
+# Function to clean dict output by removing status lines and dots
+clean_dict_output() {
+  sed -e '/^220 /d' -e '/^250 /d' -e '/^[0-9][0-9][0-9] /d' -e '/^\.$/d'
+}
+
+# Function to extract words from match output
+extract_match_words() {
+  awk '{gsub(/^"|"$/, "", $2); print $2}' | grep -v "^$" | sort -f | uniq -i
+}
+
+# Function to get matching words
+get_matches() {
+  local query="$1"
+  
+  # Return early if query is empty
+  [[ -n "$query" ]] || return
+  
+  # Include the query text as an option
+  echo "$query"
+  
+  # Get matches from the dictionary server
+  local dict_url="dict://dict.org/m:$query:*"
+  local matches
+  matches=$(fetch_from_dict "$dict_url" | clean_dict_output | extract_match_words)
+  
+  # Remove the query if it appears in the matches to avoid duplicates
+  echo "$matches" | grep -v "^$query$"
+}
+
+# Function to format moby-thesaurus output
+format_moby_thesaurus() {
+  awk -v bold="$BOLD" -v green="$GREEN" -v yellow="$YELLOW" -v dim="$DIM" -v reset="$RESET" '
+  # Skip empty lines
+  /^$/ { next }
+  
+  # Remove leading whitespace
+  { gsub(/^[[:space:]]+/, "") }
+  
+  # Color the header, and add divider
+  /^[[:space:]]*[0-9]+ Moby Thesaurus words for/ {
+    print bold green $0 reset
+    print dim "─────────────────────────────────" reset
+    next
+  }
+  
+  # Highlight commas
+  { gsub(/,/, bold yellow "," reset); print }
+  '
+}
+
+# Function to format WordNet output
+format_wordnet() {
+  awk -v bold="$BOLD" -v cyan="$CYAN" -v green="$GREEN" -v yellow="$YELLOW" -v dim="$DIM" -v reset="$RESET" '
+  # Skip empty lines
+  /^$/ { next }
+  
+  # Highlight the word being defined, and add a divider
+  /^[^ ]+$/ {
+    print bold cyan $0 reset
+    print dim "─────────────────────────────────" reset
+    next
+  }
+  
+  # Unindent body
+  { gsub(/^    /, "") }
+  
+  # Highlight [syn:] (and all other brackets)
+  { gsub(/(\[syn:|\[|\])/, bold yellow "&" reset) }
+  
+  # Highlight definition number
+  { gsub(/^[[:space:]]*[a-z]+ [0-9]+:|^[[:space:]]*[0-9]+:/, bold green "&" reset); print }
+  '
+}
+
+# Function to format dictionary output based on source
+format_dict_output() {
+  local word="$1"
+  local source="$2"
+  
+  # Remove the "X definitions found" and "From..." lines
+  sed -e '/^[0-9]\+ definition found$/d' -e '/^From /d' | \
+  # Remove lines that only contain a "." character
+  sed -e '/^\.$/d' | \
+  # Format based on source
+  if [[ "$source" == "moby-thesaurus" ]]; then
+    format_moby_thesaurus
+  else
+    format_wordnet
+  fi
+}
+
+# Function to preview word definition from current source with formatting
+dict_preview() {
+  local word="$1"
+  local source
+  source=$(cat "$SOURCE_FILE")
+  
+  # Return early if the word is empty
+  [[ -n "$word" ]] || return
+  
+  # Try to get definition from the current source using curl
+  local dict_url="dict://dict.org/d:$word:$source"
+  local dict_output
+  dict_output=$(fetch_from_dict "$dict_url" | clean_dict_output)
+  
+  # If the current source fails, print the raw fallback output, then return
+  if [[ -z "$dict_output" ]]; then
+    echo -e "${BOLD}${RED}Word not found in current source. Showing results from all sources:${RESET}"
+    dict_url="dict://dict.org/d:$word:"
+    fetch_from_dict "$dict_url" | clean_dict_output
+    return
+  fi
+  
+  # Format the output from the primary source
+  echo "$dict_output" | format_dict_output "$word" "$source"
+}
+
+# Export all functions needed by fzf
+export -f dict_preview toggle_source get_matches fetch_from_dict clean_dict_output extract_match_words format_moby_thesaurus format_wordnet format_dict_output
+export SOURCE_FILE
+
+fzf_args=(
+  --prompt="Search: "
+  --preview-window=down:65%:wrap
+  --preview-label='alt-t: toggle dictionary/thesaurus, alt-j/k: scroll, F11: maximize'
+  --preview-label-pos='bottom'
+  --bind 'alt-k:preview-up,alt-j:preview-down'
+  --bind "alt-t:execute-silent(bash -c 'toggle_source')+preview(bash -c 'dict_preview {}')"
+  --bind 'change:reload(bash -c "get_matches {q}")'
+  --phony
+  --disabled
+  --bind 'start:reload(echo)'  # start with empty list
+  --color 'pointer:cyan,marker:cyan'
+)
+
+fzf "${fzf_args[@]}" --preview 'bash -c '\''dict_preview "$1"'\'' _ {}'
+
+# Clean up
+rm "$SOURCE_FILE"

@@ -1,0 +1,11 @@
+# Changes require a restart to take effect.
+
+# Ensure Omarchy bins are in the path
+export HYPRKARL_PATH=$HOME/.local/share/hyprkarl
+export PATH=$HYPRKARL_PATH/bin:$PATH
+
+# Set default terminal and editor
+source ~/.config/uwsm/default
+
+# Activate mise if present on the system
+# omarchy-cmd-present mise && eval "$(mise activate bash)"

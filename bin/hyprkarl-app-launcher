@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Launch the Walker application launcher
+rofi -show drun || pkill rofi

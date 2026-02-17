@@ -1,0 +1,3 @@
+#!/bin/bash
+
+hyprkarl-restart-app waybar

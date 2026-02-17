@@ -1,0 +1,23 @@
+#!/bin/bash
+# Omarchy-style caffeine toggle (kill/restart hypridle)
+# This was created despite the existence of omarchy-toggle-idle
+# for the purpose of using a state file for snappier UI in Waybar
+
+STATE_FILE="$HOME/.cache/hyprkarl-caffeine"
+ICON_ON="☕"
+ICON_OFF="💤"
+
+if [ -f "$STATE_FILE" ]; then
+  # Disable caffeine (restart hypridle)
+  rm -f "$STATE_FILE"
+  uwsm app -- hypridle >/dev/null 2>&1 &
+  notify-send "$ICON_OFF Sleep & lock restored"
+else
+  # Enable caffeine (kill hypridle)
+  touch "$STATE_FILE"
+  if pgrep -x hypridle >/dev/null; then
+    pkill -x hypridle
+  fi
+  notify-send "$ICON_ON Sleep & lock disabled"
+fi
+

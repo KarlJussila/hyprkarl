@@ -1,0 +1,51 @@
+#!/bin/bash
+
+fzf_args=(
+  --multi
+  --with-nth=1
+  --preview-window 'down:65%:wrap'
+  --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
+  --preview-label-pos='bottom'
+  --bind 'alt-p:toggle-preview'
+  --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+  --bind 'alt-k:preview-up,alt-j:preview-down'
+  --color 'pointer:green,marker:green'
+)
+
+# Preview function for fzf
+preview_flatpak() {
+  app="$1"
+
+  # Fetch summary from Flathub API v1
+  summary=$(curl -s "https://flathub.org/api/v1/apps/$app" | jq -r '.summary // empty')
+
+  # Get flatpak remote info
+  info=$(flatpak remote-info flathub "$app" --system 2>/dev/null)
+
+  # Determine maximum field name length for alignment
+  max_len=$(awk -F: '{print length($1)}' <<<"$info" | sort -nr | head -n1)
+  sum_label="Summary"
+  pad=$((max_len - ${#sum_label}))
+  [[ $pad -lt 0 ]] && pad=0
+
+  # Print summary first, aligned
+  [[ -n "$summary" ]] && printf "%*s: %s\n\n" $((pad + ${#sum_label})) "$sum_label" "$summary"
+
+  # Print the rest of the info
+  echo "$info"
+}
+
+export -f preview_flatpak
+
+# List only app IDs from flathub that are not installed
+pkg_names=$(comm -23 \
+  <(flatpak remote-ls flathub --system --columns=application | sort) \
+  <(flatpak list --system --app --columns=application | sort) \
+  | fzf "${fzf_args[@]}" --preview 'bash -c "preview_flatpak {}"')
+
+if [[ -n "$pkg_names" ]]; then
+  # Install selected apps directly to the terminal, preserving progress bars
+  flatpak install flathub --system -y $(echo "$pkg_names" | tr '\n' ' ')
+	omarchy-show-done
+fi
+

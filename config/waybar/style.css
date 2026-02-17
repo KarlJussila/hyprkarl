@@ -1,0 +1,109 @@
+@import "../hyprkarl/current/theme/waybar.css";
+
+/* General styling */
+* {
+  background-color: @background;
+  color: @foreground;
+
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font';
+  font-size: 12px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+tooltip {
+  padding: 2px;
+}
+
+/* Module spacing */
+.modules-left {
+  margin-left: 8px;
+}
+.modules-right {
+  margin-right: 8px;
+}
+
+/* Workspaces */
+#workspaces button {
+  all: initial;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+/* General icon formatting */
+#cpu,
+#battery,
+#pulseaudio,
+#custom-hyprkarl,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+/* Specific icon formatting */
+#tray {
+  margin-right: 20px;
+}
+
+#bluetooth {
+  margin-right: 17px;
+}
+
+#network {
+  margin-right: 13px;
+}
+
+#custom-expand-icon {
+  margin-right: 18px;
+  margin-left: 14px;
+}
+
+#clock {
+  margin-left: 5px;
+}
+
+/* Screen recording indicator */
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 5px;
+  font-size: 10px;
+  padding-bottom: 1px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}
+
+/* Audio slider */
+#pulseaudio-slider {
+  padding: 0;
+  margin: 0;
+}
+#pulseaudio-slider slider {
+  min-height: 0;
+  min-width: 0;
+	margin: 0;
+	padding: 0;
+}
+#pulseaudio-slider trough {
+  min-height: 3px;
+  min-width: 80px;
+  border-radius: 2px;
+	border: 1px solid @foreground;
+  background-color: @background;
+}
+#pulseaudio-slider highlight {
+  min-width: 0px;
+  border-radius: 2px;
+  background-color: @foreground;
+}

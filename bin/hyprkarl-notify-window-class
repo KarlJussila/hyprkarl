@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Get the class of the active window
+WINDOW_CLASS=$(hyprctl activewindow -j | jq -r '.class')
+
+# Send notification if a window is active
+if [ -n "$WINDOW_CLASS" ] && [ "$WINDOW_CLASS" != "null" ]; then
+    notify-send "Active Window" "$WINDOW_CLASS"
+else
+    notify-send "Active Window" "No active window"
+fi

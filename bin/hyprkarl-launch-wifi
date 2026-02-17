@@ -4,4 +4,4 @@
 # Attempts to unblock the wifi service first in case it is blocked.
 
 rfkill unblock wifi
-hyprkarl-launch-or-focus-tui impala
+hyprkarl-launch-or-focus-tui wifitui

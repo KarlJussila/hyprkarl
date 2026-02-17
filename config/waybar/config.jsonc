@@ -15,7 +15,7 @@
 
   // Custom icon / app launcher
   "custom/hyprkarl": {
-    "format": "<span>\uef9d </span>", //orbit, rice, mushroom, liquid, developer board, atom_variant, (ham)burger, pomodoro, egg, drag variant, land plots, rhombus, array
+    "format": "<span>\uef9d </span>",
     "on-click": "hyprkarl-app-launcher",
     "on-click-right": "xdg-terminal-exec"
   }, 

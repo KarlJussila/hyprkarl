@@ -16,7 +16,7 @@ sudo pacman -S --needed --noconfirm \
 	satty \
 	stow \
 	neovim \
-	impala \
+	vscodium \
 	bluetui \
 	wiremix \
 	yazi \
@@ -24,8 +24,8 @@ sudo pacman -S --needed --noconfirm \
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \
-	vscodium \
-	hyprshutdown
+	hyprshutdown \
+	wifitui-bin
 
 # Remove packages
 sudo pacman -Rns --noconfirm \
@@ -40,8 +40,3 @@ mkdir -p $HOME/.config/bindings
 
 # Move/edit system files
 sudo cp system/iwd-main.conf /etc/iwd/main.conf
-
-# Enable/disable services
-sudo systemctl enable --now iwd
-sudo systemctl disable --now NetworkManager
-sudo systemctl disable --now wpa_supplicant

@@ -37,6 +37,3 @@ mkdir -p $HOME/.local/share/hyprkarl/bin
 mkdir -p $HOME/.config/waybar
 mkdir -p $HOME/.config/uwsm
 mkdir -p $HOME/.config/bindings
-
-# Move/edit system files
-sudo cp system/iwd-main.conf /etc/iwd/main.conf

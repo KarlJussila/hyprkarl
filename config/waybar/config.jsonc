@@ -15,8 +15,9 @@
 
   // Custom icon / app launcher
   "custom/hyprkarl": {
-    "format": "<span>\uef9d </span>",
+    "format": "<span> </span>",
     "on-click": "hyprkarl-app-launcher",
+    "tooltip-format": "App launcher",
     "on-click-right": "xdg-terminal-exec"
   }, 
 

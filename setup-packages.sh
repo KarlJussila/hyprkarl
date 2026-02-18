@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# This script installs packages for the hyprkarl setup.
+# NOTE: It also removes some packages that are replaced with alternatives
+
 # Install packages
 sudo pacman -S --needed --noconfirm \
 	waybar \
@@ -31,9 +36,3 @@ paru -S --needed --noconfirm \
 sudo pacman -Rns --noconfirm \
 	wofi \
 	dolphin
- 
-# Create directories
-mkdir -p $HOME/.local/share/hyprkarl/bin
-mkdir -p $HOME/.config/waybar
-mkdir -p $HOME/.config/uwsm
-mkdir -p $HOME/.config/bindings

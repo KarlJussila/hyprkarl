@@ -31,7 +31,7 @@ tooltip {
 /* Workspaces */
 #workspaces button {
   all: initial;
-  padding: 0 6px;
+  padding: 0 4px;
   margin: 0 1.5px;
   min-width: 9px;
 }
@@ -51,21 +51,22 @@ tooltip {
 }
 
 /* Specific icon formatting */
+#tray-expander {
+  margin-left: 8px;
+}
+#ram-expander {
+  margin-left: 8px;
+}
 #tray {
-  margin-right: 20px;
+  margin-left: 8px;
 }
 
 #bluetooth {
-  margin-right: 17px;
+  margin-right: 13px;
 }
 
 #network {
   margin-right: 13px;
-}
-
-#custom-expand-icon {
-  margin-right: 18px;
-  margin-left: 14px;
 }
 
 #clock {

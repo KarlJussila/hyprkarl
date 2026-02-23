@@ -1,41 +1,59 @@
 # hyprkarl
-Work in progress configuration files for CachyOS + hyprland
+Work in progress configuration files for CachyOS + Hyprland.
 
-## WARNINGS
-- This is largely untested. Use at your own risk.
-- Read warnings for other sections.
+> **Warning:** This is largely untested. Use at your own risk.
 
 ## Requirements
-- Base CachyOS (hyprland) install
+- Base CachyOS (Hyprland) install
 
 ## Setup
-### WARNINGS
-- This removes some default packages in favor of others. Please review the setup script before running it if you are worried about that.
 
-### Process
-- Clone into `~/.local/share/`
-    ```
-    git clone --depth=1 https://github.com/KarlJussila/hyprkarl.git
-    ```
-- cd into the `~/.local/share/hyprkarl` directory
-- Set up packages with `setup-packages.sh`
-    ```
-    chmod +x setup-packages.sh
-    ./setup-packages.sh
-    ```
+Clone into `~/.local/share/` and cd into the directory:
+```bash
+git clone --depth=1 https://github.com/KarlJussila/hyprkarl.git
+cd ~/.local/share/hyprkarl
+```
 
-## Dotfile Installation (manual)
-- Use uwsm configs to enable the hyprkarl commands (essential for operation of most configs)
-- For now, move configs manually into their places in `~/.config`
-- The config/hyprkarl directory just has theming files at the moment; I think only really the waybar config is 100% necessary for defining colors referenced in the primary configs.
+Then choose one of the following:
 
-## Dotfile Installation (automated)
-### WARNINGS
-- This will replace existing dotfiles. Back them up if you want to keep them.
+---
 
-### Process
-- Set up dotfiles with `setup-dotfiles.sh`
-    ```
-    chmod +x setup-dotfiles.sh
-    ./setup-dotfiles.sh
-    ```
+### Fully Automated Setup
+
+> **Warning:** All warnings in this README--including those in the manual setup--apply. Read them before proceeding.
+```bash
+chmod +x setup-*.sh
+./setup-all.sh
+```
+
+---
+
+### (More) Manual Setup
+
+#### 1. Packages
+
+> **Warning:** This removes some default packages in favor of others. Review `setup-packages.sh` before running it.
+```bash
+chmod +x setup-packages.sh
+./setup-packages.sh
+```
+
+#### 2. Dotfiles
+
+> **Warning:** This will replace existing dotfiles. Back them up if you want to keep them.
+
+The directory structure under `config/` mirrors `~/.config`. You can either copy files manually, or run:
+```bash
+chmod +x setup-dotfiles.sh
+./setup-dotfiles.sh
+```
+
+#### 3. System Tweaks
+
+Configures dark mode, SDDM autologin, and increased password retries.
+
+> **Warning:** This will bypass the SDDM login screen.
+```bash
+chmod +x setup-system.sh
+./setup-system.sh
+```

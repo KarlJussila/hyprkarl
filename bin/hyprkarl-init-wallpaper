@@ -1,0 +1,18 @@
+#!/bin/bash
+
+CURRENT_WALLPAPER_LINK="$HOME/.local/share/hyprkarl/config/hyprkarl/current/wallpaper"
+
+if [[ ! -L "$CURRENT_WALLPAPER_LINK" ]]; then
+  exit 0
+fi
+
+# Wait for hyprpaper socket to be ready
+SOCKET="/run/user/$(id -u)/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprpaper.sock"
+until [[ -S "$SOCKET" ]]; do
+  sleep 0.1
+done
+
+WALLPAPER=$(readlink -f "$CURRENT_WALLPAPER_LINK")
+
+hyprctl hyprpaper preload "$WALLPAPER"
+hyprctl hyprpaper wallpaper ",$WALLPAPER"

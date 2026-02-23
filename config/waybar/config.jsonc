@@ -196,7 +196,7 @@
   "custom/caffeine": {
     "format": "{}",
     "interval": 5,
-    "exec": "if [ -f ~/.cache/hyprkarl-caffeine ]; then echo '☕︎'; else echo ' ☽ '; fi",
+    "exec": "if [ -f ~/.cache/hyprkarl-caffeine ]; then echo ' '; else echo '󰽖 '; fi",
     "on-click": "hyprkarl-caffeine",
     "tooltip-format": "Caffeine"
   },

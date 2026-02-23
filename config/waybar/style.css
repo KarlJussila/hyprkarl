@@ -27,6 +27,9 @@ tooltip {
 .modules-right {
   margin-right: 8px;
 }
+#custom-caffeine {
+  margin-left: 8px;
+}
 
 /* Workspaces */
 #workspaces button {

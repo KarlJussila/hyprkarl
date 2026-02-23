@@ -6,7 +6,7 @@
 # Install packages
 sudo pacman -S --needed --noconfirm \
 	waybar \
-	swaybg \
+	hyprpaper \
 	hyprlock \
 	hypridle \
 	hyprsunset \
@@ -25,12 +25,15 @@ sudo pacman -S --needed --noconfirm \
 	bluetui \
 	wiremix \
 	yazi \
-	ttf-jetbrains-mono-nerd
+	ttf-jetbrains-mono-nerd \
+	ttf-iosevka-nerd \
+	xdg-desktop-portal-gtk
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \
 	hyprshutdown \
-	wifitui-bin
+	wifitui-bin \
+	yaru-icon-theme
 
 # Remove packages
 sudo pacman -Rns --noconfirm \

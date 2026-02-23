@@ -6,7 +6,7 @@
 
 # Create directories in case they don't exist
 mkdir -p $HOME/.config/hypr/bindings
-mkdir -p $HOME/.config/hyprkarl/current/theme
+mkdir -p $HOME/.config/hyprkarl/current/theme/wallpapers
 mkdir -p $HOME/.config/kitty
 mkdir -p $HOME/.config/uwsm
 mkdir -p $HOME/.config/waybar

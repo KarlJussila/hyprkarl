@@ -7,8 +7,10 @@ export PATH=$HYPRKARL_PATH/bin:$PATH
 # Set default terminal and editor
 source ~/.config/uwsm/default
 
-# Set Qt theme to match GTK
+# Set themes to dark mode
 export QT_QPA_PLATFORMTHEME=gtk3
+export QT_STYLE_OVERRIDE=adwaita-dark
+export GTK_THEME=Adwaita:dark
 
 # Activate mise if present on the system
 # omarchy-cmd-present mise && eval "$(mise activate bash)"

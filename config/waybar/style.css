@@ -43,12 +43,10 @@ tooltip {
 }
 
 /* General icon formatting */
-#cpu,
 #battery,
 #pulseaudio,
 #custom-hyprkarl,
-#custom-screenrecording-indicator,
-#custom-update {
+#custom-screenrecording-indicator {
   min-width: 12px;
   margin: 0 7.5px;
 }
@@ -58,6 +56,10 @@ tooltip {
   margin-left: 8px;
 }
 #ram-expander {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+#cpu-expander {
   margin-left: 8px;
 }
 #tray {

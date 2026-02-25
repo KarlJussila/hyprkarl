@@ -4,8 +4,18 @@
   "position": "top",
   "spacing": 0,
   "height": 26,
-  "modules-left": ["custom/hyprkarl", "hyprland/workspaces", "group/tray-expander", "group/ram-expander"],
-  "modules-center": ["clock", "custom/caffeine", "custom/voxtype", "custom/screenrecording-indicator"],
+  "modules-left": [
+    "custom/hyprkarl",
+    "hyprland/workspaces",
+    "group/tray-expander",
+    "group/ram-expander",
+    "group/cpu-expander"
+  ],
+  "modules-center": [
+    "clock",
+    "custom/caffeine",
+    "custom/screenrecording-indicator"
+  ],
   "modules-right": [
     "group/audio-expander",
     "bluetooth",
@@ -38,13 +48,6 @@
     "persistent-workspaces": {
       "1": []
     }
-  },
-
-  // CPU utilization
-  "cpu": {
-    "interval": 5,
-    "format": "󰍛",
-    "on-click": "hyprkarl-launch-or-focus-tui btop"
   },
 
   // Clock and calendar
@@ -172,7 +175,28 @@
     "interval": 10,
     "format": " {used:0.1f}/{total:0.1f} GiB",
     "format-alt": " {used:0.1f}/{total:0.1f} GiB | {swapUsed:0.1f}/{swapTotal:0.1f} GiB",
-    "tooltip-format": ""
+    "tooltip": false
+  },
+
+  //CPU display
+  "group/cpu-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "click-to-reveal": true,
+      "transition-duration": 300,
+      "children-class": "cpu-group-item"
+    },
+    "modules": ["cpu#icon", "cpu"]
+  },
+  "cpu#icon": {
+    "interval": 10,
+    "format": "󰍛 ",
+    "tooltip-format": "{usage}%"
+  },
+  "cpu": {
+    "interval": 5,
+    "format": "{usage}%",
+    "tooltip": false
   },
 
   // Recording indicator

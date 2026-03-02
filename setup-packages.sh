@@ -27,7 +27,9 @@ sudo pacman -S --needed --noconfirm \
 	yazi \
 	ttf-jetbrains-mono-nerd \
 	ttf-iosevka-nerd \
-	xdg-desktop-portal-gtk
+	xdg-desktop-portal-gtk \
+	mpv \
+	imv
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

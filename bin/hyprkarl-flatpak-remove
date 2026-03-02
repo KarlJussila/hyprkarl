@@ -20,4 +20,3 @@ if [[ -n "$pkg_names" ]]; then
   flatpak uninstall -y --unused
   omarchy-show-done
 fi
-

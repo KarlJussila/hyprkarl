@@ -29,7 +29,9 @@ sudo pacman -S --needed --noconfirm \
 	ttf-iosevka-nerd \
 	xdg-desktop-portal-gtk \
 	mpv \
-	imv
+	imv \
+	flatpak \
+	gum
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

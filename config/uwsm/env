@@ -14,3 +14,6 @@ export GTK_THEME=Adwaita:dark
 
 # Activate mise if present on the system
 # omarchy-cmd-present mise && eval "$(mise activate bash)"
+
+# Add flatpak directories
+export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"

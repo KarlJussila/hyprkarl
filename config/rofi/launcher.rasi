@@ -23,7 +23,7 @@ window {
     enabled:                     true;
     margin:                      0px;
     padding:                     0px;
-    border:                      3px solid;
+    border:                      2px solid;
     border-radius:               0px;
     border-color:                @selected;
     background-color:            @background;
@@ -53,7 +53,7 @@ inputbar {
     border-radius:               0px;
     border-color:                @selected;
     background-color:            @selected;
-    text-color:                  @background;
+    text-color:                  @foreground;
     children:                    [ "prompt", "entry" ];
 }
 

@@ -3,7 +3,7 @@
 # Add the named packages to the system from the AUR if they're missing. Returns false if it couldn't be done.
 
 if hyprkarl-pkg-missing "$@"; then
-  paru -S --noconfirm --needed "$@" || exit 1
+  yay -S --noconfirm --needed "$@" || exit 1
 fi
 
 for pkg in "$@"; do

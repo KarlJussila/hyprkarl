@@ -32,7 +32,8 @@ sudo pacman -S --needed --noconfirm \
 	imv \
 	flatpak \
 	gum \
-	localsend
+	localsend \
+	yay-bin
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

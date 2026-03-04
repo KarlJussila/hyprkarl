@@ -31,7 +31,8 @@ sudo pacman -S --needed --noconfirm \
 	mpv \
 	imv \
 	flatpak \
-	gum
+	gum \
+	localsend
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

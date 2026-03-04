@@ -37,3 +37,7 @@ sudo chmod 440 /etc/sudoers.d/passwd-tries
 
 # Set for hyprlock too
 sudo sed -i 's/^# *deny = .*/deny = 10/' /etc/security/faillock.conf
+
+# Allow localsend port
+sudo ufw allow 53317/tcp
+sudo ufw allow 53317/udp

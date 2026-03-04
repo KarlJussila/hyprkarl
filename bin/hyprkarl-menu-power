@@ -1,0 +1,19 @@
+#!/bin/bash
+
+LOCK=" Lock"
+REBOOT=" Reboot"
+SHUTDOWN=" Shutdown"
+
+CHOICE=$(echo -e "$LOCK\n$REBOOT\n$SHUTDOWN" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Power Menu" \
+           -theme ~/.config/rofi/powermenu.rasi) \
+           || pkill rofi
+
+case "$CHOICE" in
+    "$LOCK")     hyprkarl-lock-screen ;;
+    "$REBOOT")   hyprkarl-reboot ;;
+    "$SHUTDOWN") hyprkarl-shutdown ;;
+esac

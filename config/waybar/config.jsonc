@@ -32,8 +32,8 @@
   // Custom icon / app launcher
   "custom/hyprkarl": {
     "format": " ",
-    "on-click": "hyprkarl-app-launcher",
-    "tooltip-format": "App launcher",
+    "tooltip": false,
+    "on-click": "hyprkarl-menu-power",
     "on-click-right": "xdg-terminal-exec"
   }, 
 

@@ -7,9 +7,9 @@
   "modules-left": [
     "custom/hyprkarl",
     "hyprland/workspaces",
-    "group/tray-expander",
     "group/ram-expander",
-    "group/cpu-expander"
+    "group/cpu-expander",
+    "group/tray-expander"
   ],
   "modules-center": [
     "clock",
@@ -31,7 +31,7 @@
 
   // Custom icon / app launcher
   "custom/hyprkarl": {
-    "format": " ",
+    "format": "  ",
     "tooltip": false,
     "on-click": "hyprkarl-menu-power",
     "on-click-right": "xdg-terminal-exec"
@@ -67,14 +67,14 @@
   // Battery
   "battery": {
     "format": "{icon} {capacity}%",
-    "format-discharging": "{icon} {capacity}%",
-    "format-charging": "{icon} {capacity}%",
-    "format-plugged": "",
+    "format-discharging": "{icon}{capacity}%",
+    "format-charging": "{icon}{capacity}%",
+    "format-plugged": " ",
     "format-icons": {
-      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
-      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+      "charging": [" 󰢜 ", " 󰂆 ", " 󰂇 ", " 󰂈 ", " 󰢝 ", " 󰂉 ", " 󰢞 ", " 󰂊 ", " 󰂋 ", " 󰂅 "],
+      "default": [" 󰁺 ", " 󰁻 ", " 󰁼 ", " 󰁽 ", " 󰁾 ", " 󰁿 ", " 󰂀 ", " 󰂁 ", " 󰂂 ", " 󰁹 "]
     },
-    "format-full": "󰂅",
+    "format-full": " 󰂅 ",
     "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
     "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
     "interval": 5,
@@ -86,18 +86,18 @@
 
   // Wireless connections
   "bluetooth": {
-    "format": " ",
-    "format-disabled": " 󰂲",
-    "format-connected": " ",
+    "format": "  ",
+    "format-disabled": " 󰂲 ",
+    "format-connected": "  ",
     "tooltip-format": "Devices connected: {num_connections}",
     "on-click": "hyprkarl-launch-bluetooth"
   },
   "network": {
-    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format-icons": [" 󰤯 ", " 󰤟 ", " 󰤢 ", " 󰤥 ", " 󰤨 "],
     "format": "{icon}",
     "format-wifi": "{icon}",
-    "format-ethernet": "󰀂",
-    "format-disconnected": "󰤮",
+    "format-ethernet": " 󰀂 ",
+    "format-disconnected": " 󰤮 ",
     "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
     "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
     "tooltip-format-disconnected": "Disconnected",
@@ -121,10 +121,10 @@
     "on-click": "hyprkarl-launch-audio",
     "on-click-right": "pamixer -t",
     "scroll-step": 5,
-    "format-muted": "",
+    "format-muted": "  ",
     "format-icons": {
-      "headphone": "",
-      "default": ["", "", ""]
+      "headphone": "  ",
+      "default": ["  ", "  ", "  "]
     }
   },
   "pulseaudio": {
@@ -220,7 +220,7 @@
   "custom/caffeine": {
     "format": "{}",
     "interval": 5,
-    "exec": "if [ -f ~/.cache/hyprkarl-caffeine ]; then echo ' '; else echo '󰽖 '; fi",
+    "exec": "if [ -f ~/.cache/hyprkarl-caffeine ]; then echo '  '; else echo ' 󰽖 '; fi",
     "on-click": "hyprkarl-caffeine",
     "tooltip-format": "Caffeine"
   },

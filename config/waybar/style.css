@@ -25,10 +25,7 @@ tooltip {
   margin-left: 8px;
 }
 .modules-right {
-  margin-right: 8px;
-}
-#custom-caffeine {
-  margin-left: 8px;
+  margin-right: 13px;
 }
 
 /* Workspaces */
@@ -42,52 +39,18 @@ tooltip {
   opacity: 0.5;
 }
 
-/* General icon formatting */
-#battery,
-#pulseaudio,
-#custom-hyprkarl,
-#custom-screenrecording-indicator {
-  min-width: 12px;
-  margin: 0 7.5px;
-}
-
-/* Specific icon formatting */
+/* Expanders */
 #tray-expander {
   margin-left: 8px;
 }
 #ram-expander {
-  margin-left: 8px;
-  margin-right: 8px;
+  padding-right: 6px;
 }
 #cpu-expander {
-  margin-left: 8px;
+  padding-left: 6px;
 }
 #tray {
   margin-left: 8px;
-}
-
-#bluetooth {
-  margin-right: 13px;
-}
-
-#network {
-  margin-right: 13px;
-}
-
-#clock {
-  margin-left: 5px;
-}
-
-/* Screen recording indicator */
-#custom-screenrecording-indicator {
-  min-width: 12px;
-  margin-left: 5px;
-  font-size: 10px;
-  padding-bottom: 1px;
-}
-
-#custom-screenrecording-indicator.active {
-  color: #a55555;
 }
 
 /* Audio slider */
@@ -112,4 +75,22 @@ tooltip {
   min-width: 0px;
   border-radius: 2px;
   background-color: @foreground;
+}
+
+/* Screen recording indicator */
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 5px;
+  font-size: 10px;
+  padding-bottom: 1px;
+}
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}
+
+#pulseaudio {
+  padding-right: 4px;
+}
+#network {
+  padding-right: 4px;
 }

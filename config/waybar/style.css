@@ -11,11 +11,9 @@
   font-family: 'JetBrainsMono Nerd Font';
   font-size: 12px;
 }
-
 .hidden {
   opacity: 0;
 }
-
 tooltip {
   padding: 2px;
 }

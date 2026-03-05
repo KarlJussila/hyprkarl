@@ -4,7 +4,7 @@
 export TERMINAL=kitty
 
 # Use code for VSCode
-export EDITOR=codium
+export EDITOR=nvim
 
 # Use a custom directory for screenshots (remember to make the directory!)
 # export OMARCHY_SCREENSHOT_DIR="$HOME/Pictures/Screenshots"

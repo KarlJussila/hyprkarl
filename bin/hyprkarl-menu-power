@@ -9,11 +9,11 @@ CHOICE=$(echo -e "$LOCK\n$REBOOT\n$SHUTDOWN" \
            -p "" \
            -no-custom \
            -mesg "Power Menu" \
-           -theme ~/.config/rofi/powermenu.rasi) \
+           -theme ~/.config/rofi/custom-menu.rasi) \
            || pkill rofi
 
 case "$CHOICE" in
-    "$LOCK")     hyprkarl-lock-screen ;;
+    "$LOCK")     hyprkarl-lock ;;
     "$REBOOT")   hyprkarl-reboot ;;
     "$SHUTDOWN") hyprkarl-shutdown ;;
 esac

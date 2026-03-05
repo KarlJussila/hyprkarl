@@ -1,0 +1,21 @@
+#!/bin/bash
+
+LAUNCH="󱓟 Launch"
+INSTALL=" Install"
+UNINSTALL=" Uninstall"
+POWER=" Power"
+
+CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$POWER" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Main Menu" \
+           -theme ~/.config/rofi/custom-menu.rasi) \
+           || pkill rofi
+
+case "$CHOICE" in
+    "$LAUNCH")    hyprkarl-menu-launcher ;;
+    "$INSTALL")   hyprkarl-menu-install ;;
+    "$UNINSTALL") hyprkarl-menu-uninstall ;;
+    "$POWER")     hyprkarl-menu-power ;;
+esac

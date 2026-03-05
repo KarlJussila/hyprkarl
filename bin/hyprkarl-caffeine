@@ -14,7 +14,7 @@ enable_caffeine() {
   # No-op if caffeine is already active
   [ -f "$STATE_FILE" ] && return 0
 
-  # Create state file first so Waybar picks up the change immediately
+  # Create state file first
   touch "$STATE_FILE"
 
   # Kill hypridle if it's running
@@ -29,7 +29,7 @@ disable_caffeine() {
   # No-op if caffeine is already inactive
   [ ! -f "$STATE_FILE" ] && return 0
 
-  # Remove state file before relaunching so Waybar reflects the change
+  # Remove state file before relaunching
   rm -f "$STATE_FILE"
 
   # Relaunch hypridle via uwsm in the background

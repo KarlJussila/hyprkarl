@@ -33,7 +33,7 @@
   "custom/hyprkarl": {
     "format": "  ",
     "tooltip": false,
-    "on-click": "hyprkarl-menu-power",
+    "on-click": "hyprkarl-menu",
     "on-click-right": "xdg-terminal-exec"
   }, 
 

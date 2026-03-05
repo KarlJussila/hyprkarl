@@ -1,0 +1,23 @@
+#!/bin/bash
+
+terminal() {
+  xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
+}
+
+PACMAN="Pacman"
+AUR="AUR"
+FLATPAK="Flatpak"
+
+CHOICE=$(echo -e "$PACMAN\n$AUR\n$FLATPAK" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Install" \
+           -theme ~/.config/rofi/custom-menu.rasi) \
+           || pkill rofi
+
+case "$CHOICE" in
+    "$PACMAN")  terminal hyprkarl-pkg-install ;;
+    "$AUR")     terminal hyprkarl-pkg-aur-install ;;
+    "$FLATPAK") terminal hyprkarl-pkg-flatpak-install ;;
+esac

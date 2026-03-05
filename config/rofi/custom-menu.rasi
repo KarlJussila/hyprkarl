@@ -1,5 +1,5 @@
 /**
- * Power Menu Theme
+ * Custom Menu Theme
  **/
 
 configuration {
@@ -56,13 +56,12 @@ textbox {
 listview {
     enabled:                     true;
     columns:                     1;
-    lines:                       3;
     cycle:                       true;
-    dynamic:                     false;
+    dynamic:                     true;
     scrollbar:                   false;
     layout:                      vertical;
     reverse:                     false;
-    fixed-height:                true;
+    fixed-height:                false;
     fixed-columns:               true;
 
     spacing:                     5px;

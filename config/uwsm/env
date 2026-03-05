@@ -17,3 +17,6 @@ export GTK_THEME=Adwaita:dark
 
 # Add flatpak directories
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+# Set wifitui theme
+export WIFITUI_THEME="$HOME/.config/hyprkarl/current/theme/wifitui.toml"

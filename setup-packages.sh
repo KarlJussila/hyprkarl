@@ -33,7 +33,8 @@ sudo pacman -S --needed --noconfirm \
 	flatpak \
 	gum \
 	localsend \
-	yay-bin
+	yay-bin \
+	foot
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

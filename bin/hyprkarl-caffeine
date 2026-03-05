@@ -1,23 +1,56 @@
 #!/bin/bash
-# Omarchy-style caffeine toggle (kill/restart hypridle)
-# This was created despite the existence of omarchy-toggle-idle
-# for the purpose of using a state file for snappier UI in Waybar
+# Caffeine toggle (kill/restart hypridle)
+#
+# Usage: hyprkarl-caffeine [on|off|toggle]
+#   on     - enable caffeine (disable idle/lock), no-op if already on
+#   off    - disable caffeine (restore idle/lock), no-op if already off
+#   toggle - (default) switch to whichever state is not current
 
 STATE_FILE="$HOME/.cache/hyprkarl-caffeine"
 ICON_ON="☕"
 ICON_OFF="💤"
 
-if [ -f "$STATE_FILE" ]; then
-  # Disable caffeine (restart hypridle)
-  rm -f "$STATE_FILE"
-  uwsm app -- hypridle >/dev/null 2>&1 &
-  notify-send "$ICON_OFF Sleep & lock restored"
-else
-  # Enable caffeine (kill hypridle)
+enable_caffeine() {
+  # No-op if caffeine is already active
+  [ -f "$STATE_FILE" ] && return 0
+
+  # Create state file first so Waybar picks up the change immediately
   touch "$STATE_FILE"
+
+  # Kill hypridle if it's running
   if pgrep -x hypridle >/dev/null; then
     pkill -x hypridle
   fi
-  notify-send "$ICON_ON Sleep & lock disabled"
-fi
 
+  notify-send "$ICON_ON Sleep & lock disabled"
+}
+
+disable_caffeine() {
+  # No-op if caffeine is already inactive
+  [ ! -f "$STATE_FILE" ] && return 0
+
+  # Remove state file before relaunching so Waybar reflects the change
+  rm -f "$STATE_FILE"
+
+  # Relaunch hypridle via uwsm in the background
+  uwsm app -- hypridle >/dev/null 2>&1 &
+
+  notify-send "$ICON_OFF Sleep & lock restored"
+}
+
+# Default to toggle if no argument is provided
+case "${1:-toggle}" in
+  on)     enable_caffeine ;;
+  off)    disable_caffeine ;;
+  toggle)
+    if [ -f "$STATE_FILE" ]; then
+      disable_caffeine
+    else
+      enable_caffeine
+    fi
+    ;;
+  *)
+    echo "Usage: $(basename "$0") [on|off|toggle]" >&2
+    exit 1
+    ;;
+esac

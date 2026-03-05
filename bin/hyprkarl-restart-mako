@@ -1,3 +1,5 @@
 #!/bin/bash
 
-hyprkarl-restart-app mako
+# Reload mako configuration
+
+makoctl reload

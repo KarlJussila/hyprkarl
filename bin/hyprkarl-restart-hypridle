@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Restart the hypridle service
+
+hyprkarl-restart-app hypridle

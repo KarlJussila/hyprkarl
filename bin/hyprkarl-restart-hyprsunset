@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Restart the hyprsunset service
+
+omarchy-restart-app hyprsunset

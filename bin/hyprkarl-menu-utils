@@ -12,7 +12,7 @@ CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
-           -mesg "Install" \
+           -mesg "Utilities" \
            -theme ~/.config/rofi/custom-menu.rasi) \
            || pkill rofi
 

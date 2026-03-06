@@ -3,7 +3,7 @@
 LAUNCH="󱓟 Launch"
 INSTALL=" Install"
 UNINSTALL=" Uninstall"
-UTILS=" Utils"
+UTILS=" Utilities"
 POWER=" Power"
 
 CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$POWER" \

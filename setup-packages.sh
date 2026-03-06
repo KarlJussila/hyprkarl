@@ -34,7 +34,8 @@ sudo pacman -S --needed --noconfirm \
 	gum \
 	localsend \
 	yay-bin \
-	foot
+	foot \
+	gpu-screen-recorder
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

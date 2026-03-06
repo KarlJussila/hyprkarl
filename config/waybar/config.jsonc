@@ -12,9 +12,9 @@
     "group/tray-expander"
   ],
   "modules-center": [
+    "custom/screenrecording-indicator",
     "clock",
-    "custom/caffeine",
-    "custom/screenrecording-indicator"
+    "custom/caffeine"
   ],
   "modules-right": [
     "group/audio-expander",
@@ -201,27 +201,17 @@
 
   // Recording indicator
   "custom/screenrecording-indicator": {
-    "on-click": "omarchy-cmd-screenrecord",
-    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "on-click": "hyprkarl-record-screen",
+    "exec": "$HYPRKARL_PATH/scripts/waybar/check-recording.sh",
     "signal": 8,
     "return-type": "json"
   },
   
-  // Idle inhibitors
-	"idle_inhibitor": {
-    "format": " {icon}  ",
-    "format-icons": {
-      "activated": "",
-			"deactivated": ""
-    },
-		"tooltip-format-activated": "Caffeine (on)",
-		"tooltip-format-deactivated": "Caffeine (off)"
-	},
+  // Idle inhibitor
   "custom/caffeine": {
-    "format": "{}",
-    "interval": 5,
-    "exec": "if [ -f ~/.cache/hyprkarl-caffeine ]; then echo '  '; else echo ' 󰽖 '; fi",
     "on-click": "hyprkarl-caffeine",
-    "tooltip-format": "Caffeine"
-  },
+    "exec": "$HYPRKARL_PATH/scripts/waybar/check-caffeine.sh",
+    "signal": 9,
+    "return-type": "json"
+  }
 }

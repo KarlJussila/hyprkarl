@@ -54,3 +54,5 @@ case "${1:-toggle}" in
     exit 1
     ;;
 esac
+
+pkill -RTMIN+9 waybar

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+terminal() {
+  xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
+}
+
+CAFFEINE=" Caffeine"
+NIGHTLIGHT=" Nightlight"
+SCREEN_RECORD=" Screen Record"
+
+CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Install" \
+           -theme ~/.config/rofi/custom-menu.rasi) \
+           || pkill rofi
+
+case "$CHOICE" in
+    "$CAFFEINE")      hyprkarl-caffeine ;;
+    "$NIGHTLIGHT")    hyprkarl-toggle-nightlight ;;
+    "$SCREEN_RECORD") hyprkarl-record-screen ;;
+esac

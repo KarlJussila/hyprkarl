@@ -2,6 +2,7 @@
 Name=VSCodium (X11)
 Comment=Code Editing. Redefined.
 GenericName=Text Editor
+TryExec=/usr/bin/codium
 Exec=/usr/bin/codium %F
 Icon=vscodium
 Type=Application

@@ -1,5 +1,6 @@
 [Desktop Entry]
 Type=Application
+TryExec=foot
 Exec=foot
 Icon=foot
 Terminal=false

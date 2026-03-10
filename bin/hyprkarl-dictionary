@@ -162,7 +162,7 @@ fzf_args=(
   --preview-label-pos='bottom'
   --bind 'alt-k:preview-up,alt-j:preview-down'
   --bind "alt-t:execute-silent(bash -c 'toggle_source')+preview(bash -c 'dict_preview {}')"
-  --bind 'change:reload(bash -c "get_matches {q}")'
+  --bind 'change:reload(bash -c "get_matches {q}" 2>/dev/null || echo)'
   --phony
   --disabled
   --bind 'start:reload(echo)'  # start with empty list

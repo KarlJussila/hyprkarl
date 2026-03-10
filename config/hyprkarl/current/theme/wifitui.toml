@@ -21,7 +21,7 @@ Normal = "#D5D5D5"
 Disabled = "#3d3030"
 
 # Border color for UI elements.
-Border = "#63005A"
+Border = "#6644aa"
 
 # Signal color is a gradient from SignalHigh to SignalLow.
 SignalHigh = ["#bb88ee", "#bb88ee"]

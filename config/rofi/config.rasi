@@ -1,5 +1,5 @@
 configuration {
-	/*---------- General setting ----------*/
+	/*---------- General settings ----------*/
 	modi: "drun,run,filebrowser,window";
 	case-sensitive: false;
 	cycle: true;
@@ -13,7 +13,7 @@ configuration {
 /*	dpi: -1;*/
 	hover-select: true;
 
-	/*---------- Matching setting ----------*/
+	/*---------- Matching settings ----------*/
 	matching: "normal";
 	tokenize: true;
 

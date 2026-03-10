@@ -41,7 +41,8 @@ paru -S --needed --noconfirm \
 	xdg-terminal-exec \
 	hyprshutdown \
 	wifitui-bin \
-	yaru-icon-theme
+	yaru-icon-theme \
+	dragon-drop
 
 # Remove packages
 sudo pacman -Rns --noconfirm \

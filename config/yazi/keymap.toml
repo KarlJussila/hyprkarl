@@ -1,0 +1,30 @@
+# Drop to shell at current location
+[[mgr.prepend_keymap]]
+on   = "!"
+for  = "unix"
+run  = 'shell "$SHELL" --block'
+desc = "Open $SHELL here"
+
+
+# Create tabs if they don't exist when switching
+[[mgr.prepend_keymap]]
+on   = "2"
+run  = "plugin smart-switch 1"
+desc = "Switch or create tab 2"
+
+[[mgr.prepend_keymap]]
+on   = "3"
+run  = "plugin smart-switch 2"
+desc = "Switch or create tab 3"
+
+
+# Drag and Drop
+[[mgr.prepend_keymap]]
+on  = "<C-n>"
+run = "shell -- dragon-drop -x -i -T %h"
+
+
+# Copy to clipboard on yank
+[[mgr.prepend_keymap]]
+on  = "y"
+run = [ 'shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text/uri-list', "yank" ]

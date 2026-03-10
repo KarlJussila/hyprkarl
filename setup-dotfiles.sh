@@ -1,17 +1,14 @@
 #!/bin/bash
 
-# This script installs hyprkarl's dotfiles via symlink in ~/.config
+# This script installs hyprkarl's configs via symlink in ~/.config and ~/.local/share/applications
 # WARNING: This will replace any identically named files.
-# Please back up anything in ~/.config that you might want to keep
+# Please back up anything that you might want to keep
 
-# Create directories in case they don't exist
-mkdir -p $HOME/.config/hypr/bindings
-mkdir -p $HOME/.config/hyprkarl/current/theme/wallpapers
-mkdir -p $HOME/.config/kitty
-mkdir -p $HOME/.config/uwsm
-mkdir -p $HOME/.config/waybar
+# Unstow in case an older version with folding enabled was already installed
+stow -D --dir=$HOME/.local/share/hyprkarl --target=$HOME/.config config
 
 # Adopt the config files, then replace with hyprkarl configs
-stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.config config --adopt
-stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications applications --adopt
+stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.config config --adopt --no-folding
+stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications applications --adopt --no-folding
 git -C ~/.local/share/hyprkarl checkout config/
+git -C ~/.local/share/hyprkarl checkout applications/

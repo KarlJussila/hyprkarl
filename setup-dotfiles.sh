@@ -13,4 +13,5 @@ mkdir -p $HOME/.config/waybar
 
 # Adopt the config files, then replace with hyprkarl configs
 stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.config config --adopt
+stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications applications --adopt
 git -C ~/.local/share/hyprkarl checkout config/

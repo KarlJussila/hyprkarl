@@ -4,9 +4,10 @@ LAUNCH="󱓟 Launch"
 INSTALL=" Install"
 UNINSTALL=" Uninstall"
 UTILS=" Utilities"
+CONFIG=" Config"
 POWER=" Power"
 
-CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$POWER" \
+CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$CONFIG\n$POWER" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -19,5 +20,6 @@ case "$CHOICE" in
     "$INSTALL")   hyprkarl-menu-install ;;
     "$UNINSTALL") hyprkarl-menu-uninstall ;;
     "$UTILS")     hyprkarl-menu-utils ;;
+    "$CONFIG")    hyprkarl-menu-config ;;
     "$POWER")     hyprkarl-menu-power ;;
 esac

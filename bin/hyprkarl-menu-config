@@ -1,0 +1,21 @@
+#!/bin/bash
+
+terminal() {
+  xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
+}
+
+TERMINAL=" Terminal"
+EDITOR=" Editor"
+
+CHOICE=$(echo -e "$TERMINAL\n$EDITOR" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Config" \
+           -theme ~/.config/rofi/custom-menu.rasi) \
+           || pkill rofi
+
+case "$CHOICE" in
+    "$TERMINAL") hyprkarl-menu-terminal ;;
+    "$EDITOR")   hyprkarl-menu-editor ;;
+esac

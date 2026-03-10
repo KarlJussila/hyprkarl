@@ -1,0 +1,21 @@
+#!/bin/bash
+
+ALACRITTY="Alacritty"
+GHOSTTY="Ghostty"
+KITTY="Kitty"
+FOOT="Foot"
+
+CHOICE=$(echo -e "$ALACRITTY\n$GHOSTTY\n$KITTY\n$FOOT" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Default Terminal" \
+           -theme ~/.config/rofi/custom-menu.rasi) \
+           || pkill rofi
+
+case "$CHOICE" in
+    "$ALACRITTY") hyprkarl-default-terminal alacritty ;;
+    "$GHOSTTY")   hyprkarl-default-terminal ghostty ;;
+    "$KITTY")     hyprkarl-default-terminal kitty ;;
+    "$FOOT")      hyprkarl-default-terminal foot ;;
+esac

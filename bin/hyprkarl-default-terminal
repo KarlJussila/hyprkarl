@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Install a terminal emulator and set it as the default (Super + Return, TUIs, etc.)
+
+if (($# == 0)); then
+  echo "Usage: hyprkarl-install-terminal [alacritty|ghostty|kitty|foot]"
+  exit 1
+fi
+
+package="$1"
+
+# Map package name to desktop entry ID
+case "$package" in
+alacritty) desktop_id="Alacritty.desktop" ;;
+ghostty) desktop_id="com.mitchellh.ghostty.desktop" ;;
+kitty) desktop_id="kitty.desktop" ;;
+foot) desktop_id="foot.desktop" ;;
+*)
+  echo "Unknown terminal: $package"
+  exit 1
+  ;;
+esac
+
+# Install package
+if hyprkarl-pkg-add $package; then
+  # Update $TERMINAL
+  sed -i --follow-symlinks "s/^export TERMINAL=.*/export TERMINAL=$package/" ~/.config/uwsm/default
+  
+  # Update xdg-terminals.list to prioritize the proper terminal
+  cat >~/.config/xdg-terminals.list <<EOF
+# Terminal emulator preference order for xdg-terminal-exec
+# The first found and valid terminal will be used
+
+# Recommended options:
+# foot.desktop
+# com.mitchellh.ghostty.desktop
+# Alacritty.desktop
+# kitty.desktop
+
+$desktop_id
+EOF
+else
+  echo "Failed to install $package"
+fi

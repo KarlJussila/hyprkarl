@@ -1,9 +1,5 @@
 #!/bin/bash
 
-terminal() {
-  xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
-}
-
 CAFFEINE=" Caffeine"
 NIGHTLIGHT=" Nightlight"
 SCREEN_RECORD=" Screen Record"

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Install an editor and set it as the default ($EDITOR, used by hyprkarl-launch-editor, etc.)
+
+if (($# == 0)); then
+  echo "Usage: hyprkarl-default-editor [nvim|vim|nano|micro|vscodium]"
+  exit 1
+fi
+
+package="$1"
+
+case "$package" in
+nvim | vim | nano | micro | vscodium) ;;
+*)
+  echo "Unknown editor: $package"
+  exit 1
+  ;;
+esac
+
+if hyprkarl-pkg-add "$package"; then
+  sed -i --follow-symlinks "s/^export EDITOR=.*/export EDITOR=$package/" ~/.config/uwsm/default
+else
+  echo "Failed to install $package"
+fi

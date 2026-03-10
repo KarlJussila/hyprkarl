@@ -1,0 +1,23 @@
+#!/bin/bash
+
+NVIM="Neovim"
+VIM="Vim"
+NANO="Nano"
+MICRO="Micro"
+VSCODIUM="VSCodium"
+
+CHOICE=$(echo -e "$NVIM\n$VIM\n$NANO\n$MICRO\n$VSCODIUM" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Default Editor" \
+           -theme ~/.config/rofi/custom-menu.rasi) \
+           || pkill rofi
+
+case "$CHOICE" in
+    "$NVIM")     hyprkarl-default-editor nvim ;;
+    "$VIM")      hyprkarl-default-editor vim ;;
+    "$NANO")     hyprkarl-default-editor nano ;;
+    "$MICRO")    hyprkarl-default-editor micro ;;
+    "$VSCODIUM") hyprkarl-default-editor vscodium ;;
+esac

@@ -9,7 +9,7 @@ sudo gtk-update-icon-cache /usr/share/icons/Yaru
 
 # Replace any conflicting [Autologin] section from /etc/sddm.conf
 sudo tee /etc/sddm.conf <<EOF
-[Autologin]
+[Autologin]gh
 User=$USER
 Session=hyprland-uwsm
 
@@ -41,3 +41,6 @@ sudo sed -i 's/^# *deny = .*/deny = 10/' /etc/security/faillock.conf
 # Allow localsend port
 sudo ufw allow 53317/tcp
 sudo ufw allow 53317/udp
+
+# Enable ghostty service
+systemctl enable --user app-com.mitchellh.ghostty.service

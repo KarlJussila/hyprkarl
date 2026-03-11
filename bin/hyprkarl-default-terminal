@@ -3,7 +3,7 @@
 # Install a terminal emulator and set it as the default (Super + Return, TUIs, etc.)
 
 if (($# == 0)); then
-  echo "Usage: hyprkarl-install-terminal [alacritty|ghostty|kitty|foot]"
+  echo "Usage: hyprkarl-default-terminal [alacritty|ghostty|kitty|foot]"
   exit 1
 fi
 
@@ -23,9 +23,16 @@ esac
 
 # Install package
 if hyprkarl-pkg-add $package; then
+  # Enable/disable service for ghostty
+  if [[ "$package" == "ghostty" ]]; then
+    systemctl enable --user app-com.mitchellh.ghostty.service
+  else
+    systemctl disable --user app-com.mitchellh.ghostty.service 2>/dev/null
+  fi
+
   # Update $TERMINAL
   sed -i --follow-symlinks "s/^export TERMINAL=.*/export TERMINAL=$package/" ~/.config/uwsm/default
-  
+
   # Update xdg-terminals.list to prioritize the proper terminal
   cat >~/.config/xdg-terminals.list <<EOF
 # Terminal emulator preference order for xdg-terminal-exec

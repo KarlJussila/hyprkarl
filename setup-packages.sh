@@ -36,7 +36,8 @@ sudo pacman -S --needed --noconfirm \
 	yay-bin \
 	foot \
 	gpu-screen-recorder \
-	perl-image-exiftool
+	perl-image-exiftool \
+	ghostty
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

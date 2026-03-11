@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Set the active hyprkarl theme
+
+if [[ -z $1 ]]; then
+  echo "Usage: hyprkarl-theme-set <theme-name>"
+  exit 1
+fi
+
+THEMES_PATH="$HYPRKARL_PATH/themes"
+THEME_LINK="$HYPRKARL_PATH/config/hyprkarl/current/theme"
+THEME_NAME=$(echo "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+if [[ ! -d "$THEMES_PATH/$THEME_NAME" ]]; then
+  echo "Theme '$THEME_NAME' does not exist"
+  exit 1
+fi
+
+# Swap the theme symlink
+ln -sfn "../../../themes/$THEME_NAME" "$THEME_LINK"
+
+# Store theme name for reference
+echo "$THEME_NAME" > "$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
+
+# Refresh wallpaper
+hyprkarl-cycle-wallpaper
+
+# Set gnome themes
+hyprkarl-theme-set-gnome
+
+# Restart components to apply new theme
+if pgrep -x waybar >/dev/null; then
+  hyprkarl-restart-waybar
+fi
+hyprkarl-restart-hyprctl
+hyprkarl-restart-mako
+hyprkarl-restart-swayosd
+hyprkarl-restart-terminal

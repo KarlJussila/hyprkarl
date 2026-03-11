@@ -1,0 +1,13 @@
+#!/bin/bash
+
+CHOICE=$(hyprkarl-theme-list \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Theme" \
+           -theme ~/.config/rofi/custom-menu.rasi) \
+           || pkill rofi
+
+if [[ -n "$CHOICE" ]]; then
+  hyprkarl-theme-set "$CHOICE"
+fi

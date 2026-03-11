@@ -1,0 +1,38 @@
+# hyprkarl default wifitui theme.
+# You can use this as a starting point for your own custom theme.
+# Colors can be a single hex string, or a pair of light, dark] hex strings.
+
+# Primary color, used for selection highlights.
+Primary = "#7fbbb3"
+
+# Subtle color, used for less important text.
+Subtle = "#83c092"
+
+# Success color, used for active connections.
+Success = "#a7c080"
+
+# Error color, used for error messages.
+Error = "#e67e80"
+
+# Normal text color.
+Normal = "#d3c6aa"
+
+# Disabled color, used for hidden or out-of-range networks.
+Disabled = "#475258"
+
+# Border color for UI elements.
+Border = "#7fbbb3"
+
+# Signal color is a gradient from SignalHigh to SignalLow.
+SignalHigh = ["#d3c6aa", "#d3c6aa"]
+SignalLow = ["#475258", "#475258"]
+
+# Color for saved networks
+Saved = "#dbbc7f"
+
+# Icons
+TitleIcon = "󰖩 "
+NetworkSecureIcon = "󰌾 "
+NetworkOpenIcon = "󰿆 "
+NetworkUnknownIcon = " "
+NetworkSavedIcon = " "

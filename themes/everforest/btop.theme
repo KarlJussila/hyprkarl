@@ -1,0 +1,56 @@
+#################################
+# btop Color Theme Configuration
+#################################
+
+theme[main_bg]       = "#2d353b"
+theme[title]         = "#d3c6aa"
+theme[hi_fg]         = "#7fbbb3"
+
+theme[selected_bg]   = "#475258"
+theme[selected_fg]   = "#d3c6aa"
+theme[inactive_fg]   = "#859289"
+
+theme[cpu_box]       = "#475258"
+theme[mem_box]       = "#475258"
+theme[net_box]       = "#475258"
+theme[proc_box]      = "#475258"
+theme[div_line]      = "#475258"
+
+theme[graph_text]    = "#d3c6aa"
+theme[proc_misc]     = "#d3c6aa"
+
+theme[temp_start]    = "#a7c080"
+theme[temp_mid]      = "#dbbc7f"
+theme[temp_end]      = "#e67e80"
+
+theme[cpu_start]     = "#a7c080"
+theme[cpu_mid]       = "#83c092"
+theme[cpu_end]       = "#7fbbb3"
+
+theme[free_start]    = "#a7c080"
+theme[free_mid]      = "#83c092"
+theme[free_end]      = "#7fbbb3"
+
+theme[cached_start]  = "#a7c080"
+theme[cached_mid]    = "#83c092"
+theme[cached_end]    = "#7fbbb3"
+
+theme[available_start] = "#a7c080"
+theme[available_mid]   = "#83c092"
+theme[available_end]   = "#7fbbb3"
+
+theme[used_start]    = "#a7c080"
+theme[used_mid]      = "#83c092"
+theme[used_end]      = "#7fbbb3"
+
+theme[download_start] = "#475258"
+theme[download_mid]   = "#83c092"
+theme[download_end]   = "#a7c080"
+
+theme[upload_start]   = "#475258"
+theme[upload_mid]     = "#7fbbb3"
+theme[upload_end]     = "#83c092"
+
+theme[process_start]  = "#7fbbb3"
+theme[process_mid]    = "#83c092"
+theme[process_end]    = "#a7c080"

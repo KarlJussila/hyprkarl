@@ -1,13 +1,10 @@
 #!/bin/bash
 
-terminal() {
-  xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
-}
-
+THEME=" Theme"
 TERMINAL=" Terminal"
 EDITOR=" Editor"
 
-CHOICE=$(echo -e "$TERMINAL\n$EDITOR" \
+CHOICE=$(echo -e "$THEME\n$TERMINAL\n$EDITOR" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -18,4 +15,5 @@ CHOICE=$(echo -e "$TERMINAL\n$EDITOR" \
 case "$CHOICE" in
     "$TERMINAL") hyprkarl-menu-terminal ;;
     "$EDITOR")   hyprkarl-menu-editor ;;
+    "$THEME")    hyprkarl-menu-theme ;;
 esac

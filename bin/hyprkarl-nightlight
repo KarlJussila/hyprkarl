@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Nightlight toggle (warm/cool screen temperature via hyprsunset)
+#
+# Usage: hyprkarl-toggle-nightlight [on|off|toggle]
+#   on     - enable nightlight (warm temperature), no-op if already on
+#   off    - disable nightlight (cool temperature), no-op if already off
+#   toggle - (default) switch to whichever state is not current
+
+# Default temperature values
+ON_TEMP=4000
+OFF_TEMP=6000
+ON_GAMMA=40
+OFF_GAMMA=100
+
+# Ensure hyprsunset is running
+if ! pgrep -x hyprsunset; then
+  setsid uwsm-app -- hyprsunset &
+  sleep 1
+fi
+
+CURRENT_TEMP=$(hyprctl hyprsunset temperature 2>/dev/null | grep -oE '[0-9]+')
+
+enable_nightlight() {
+  [ "$CURRENT_TEMP" == "$ON_TEMP" ] && return 0
+  hyprctl hyprsunset temperature $ON_TEMP
+  hyprctl hyprsunset gamma $ON_GAMMA
+  notify-send "  Nightlight screen temperature"
+}
+
+disable_nightlight() {
+  [ "$CURRENT_TEMP" == "$OFF_TEMP" ] && return 0
+  hyprctl hyprsunset temperature $OFF_TEMP
+  hyprctl hyprsunset gamma $OFF_GAMMA
+  notify-send "  Daylight screen temperature"
+}
+
+case "${1:-toggle}" in
+  on)     enable_nightlight ;;
+  off)    disable_nightlight ;;
+  toggle)
+    if [[ "$CURRENT_TEMP" == "$OFF_TEMP" ]]; then
+      enable_nightlight
+    else
+      disable_nightlight
+    fi
+    ;;
+  *)
+    echo "Usage: $(basename "$0") [on|off|toggle]" >&2
+    exit 1
+    ;;
+esac

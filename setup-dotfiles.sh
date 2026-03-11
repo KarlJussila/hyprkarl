@@ -12,3 +12,5 @@ stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.config config --adopt --n
 stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications applications --adopt --no-folding
 git -C ~/.local/share/hyprkarl checkout config/
 git -C ~/.local/share/hyprkarl checkout applications/
+
+hyprctl reload

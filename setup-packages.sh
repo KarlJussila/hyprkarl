@@ -35,7 +35,8 @@ sudo pacman -S --needed --noconfirm \
 	localsend \
 	yay-bin \
 	foot \
-	gpu-screen-recorder
+	gpu-screen-recorder \
+	perl-image-exiftool
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

@@ -23,7 +23,7 @@ ln -sfn "../../../themes/$THEME_NAME" "$THEME_LINK"
 echo "$THEME_NAME" > "$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
 
 # Refresh wallpaper
-hyprkarl-cycle-wallpaper
+hyprkarl-wallpaper-cycle
 
 # Set gnome themes
 hyprkarl-theme-set-gnome

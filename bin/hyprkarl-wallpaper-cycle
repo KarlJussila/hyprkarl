@@ -2,8 +2,8 @@
 
 # Cycles through wallpapers for the current theme
 
-WALLPAPERS_PATH="$HOME/.local/share/hyprkarl/config/hyprkarl/current/theme/wallpapers/"
-CURRENT_WALLPAPER_LINK="$HOME/.local/share/hyprkarl/config/hyprkarl/current/wallpaper"
+WALLPAPERS_PATH="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers/"
+CURRENT_WALLPAPER_LINK="$HYPRKARL_PATH/config/hyprkarl/current/wallpaper"
 
 mapfile -d '' -t WALLPAPERS < <(find -L "$WALLPAPERS_PATH" -maxdepth 1 -type f -print0 2>/dev/null | sort -z)
 TOTAL=${#WALLPAPERS[@]}
@@ -13,7 +13,8 @@ if [[ $TOTAL -eq 0 ]]; then
 else
   # Get current wallpaper from symlink
   if [[ -L "$CURRENT_WALLPAPER_LINK" ]]; then
-    CURRENT_WALLPAPER=$(readlink -f "$CURRENT_WALLPAPER_LINK")
+    CURRENT_WALLPAPER=$(readlink "$CURRENT_WALLPAPER_LINK")
+    CURRENT_WALLPAPER="$WALLPAPERS_PATH$(basename "$CURRENT_WALLPAPER")"
   else
     CURRENT_WALLPAPER=""
   fi

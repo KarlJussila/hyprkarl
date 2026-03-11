@@ -39,7 +39,5 @@ else
   ln -nsf "theme/wallpapers/$(basename "$NEW_WALLPAPER")" "$CURRENT_WALLPAPER_LINK"
 
   # Switch wallpaper via hyprpaper socket
-  hyprctl hyprpaper unload "$CURRENT_WALLPAPER"
-  hyprctl hyprpaper preload "$NEW_WALLPAPER"
   hyprctl hyprpaper wallpaper ",$NEW_WALLPAPER"
 fi

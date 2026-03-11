@@ -1,10 +1,15 @@
 #!/bin/bash
 
+terminal() {
+  xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
+}
+
 THEME=" Theme"
 TERMINAL=" Terminal"
 EDITOR=" Editor"
+TIMEZONE="󰇧 Timezone"
 
-CHOICE=$(echo -e "$THEME\n$TERMINAL\n$EDITOR" \
+CHOICE=$(echo -e "$THEME\n$TERMINAL\n$EDITOR\n$TIMEZONE" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -16,4 +21,5 @@ case "$CHOICE" in
     "$TERMINAL") hyprkarl-menu-terminal ;;
     "$EDITOR")   hyprkarl-menu-editor ;;
     "$THEME")    hyprkarl-menu-theme ;;
+    "$TIMEZONE") terminal hyprkarl-setup-timezone ;;
 esac

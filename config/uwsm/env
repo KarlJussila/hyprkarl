@@ -1,19 +1,14 @@
 # Changes require a restart to take effect.
 
-# Ensure Omarchy bins are in the path
+# Ensure hyprkarl bins are in the path
 export HYPRKARL_PATH=$HOME/.local/share/hyprkarl
 export PATH=$HYPRKARL_PATH/bin:$PATH
 
-# Set default terminal and editor
-source ~/.config/uwsm/default
-
-# Set themes to dark mode
-export QT_QPA_PLATFORMTHEME=gtk3
-export QT_STYLE_OVERRIDE=adwaita-dark
-export GTK_THEME=Adwaita:dark
-
 # Add flatpak directories
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+# Set default terminal and editor
+source ~/.config/uwsm/default
 
 # Set wifitui theme
 export WIFITUI_THEME="$HOME/.config/hyprkarl/current/theme/wifitui.toml"

@@ -3,5 +3,6 @@
 # Restart an application by killing it and relaunching via uwsm.
 # Usage: hyprkarl-restart-app <application-name>
 
-pkill -x $1
+pkill -x "$1"
+timeout 2 bash -c "while pgrep -x '$1' >/dev/null; do sleep 0.05; done" || pkill -9 -x "$1"
 setsid uwsm-app -- $1 >/dev/null 2>&1 &

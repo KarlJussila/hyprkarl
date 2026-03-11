@@ -36,3 +36,4 @@ hyprkarl-restart-hyprctl
 hyprkarl-restart-mako
 hyprkarl-restart-swayosd
 hyprkarl-restart-terminal
+hyprkarl-restart-btop

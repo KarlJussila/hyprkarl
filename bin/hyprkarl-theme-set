@@ -25,8 +25,9 @@ echo "$THEME_NAME" > "$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
 # Refresh wallpaper
 hyprkarl-wallpaper-cycle
 
-# Set gnome themes
-hyprkarl-theme-set-gnome
+# Set gtk/qt themes
+hyprkarl-theme-set-gtk
+hyprkarl-theme-set-qt
 
 # Restart components to apply new theme
 if pgrep -x waybar >/dev/null; then

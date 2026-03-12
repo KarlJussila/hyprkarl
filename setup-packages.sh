@@ -37,7 +37,8 @@ sudo pacman -S --needed --noconfirm \
 	foot \
 	gpu-screen-recorder \
 	perl-image-exiftool \
-	ghostty
+	ghostty \
+	kvantum
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

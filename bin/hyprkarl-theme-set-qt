@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Change gnome modes
+if [[ -f ~/.config/hyprkarl/current/theme/light.mode ]]; then
+  kvantummanager --set KvGnome
+else
+  kvantummanager --set KvGnomeDark
+fi

@@ -3,10 +3,8 @@
 # Change gnome modes
 if [[ -f ~/.config/hyprkarl/current/theme/light.mode ]]; then
   gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
-  gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
 else
   gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
-  gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 fi
 
 # Change gnome icon theme color

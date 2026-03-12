@@ -27,7 +27,6 @@ hyprkarl-wallpaper-cycle
 
 # Set gtk/qt themes
 hyprkarl-theme-set-gtk
-hyprkarl-theme-set-qt
 
 # Restart components to apply new theme
 if pgrep -x waybar >/dev/null; then

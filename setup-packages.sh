@@ -38,7 +38,10 @@ sudo pacman -S --needed --noconfirm \
 	gpu-screen-recorder \
 	perl-image-exiftool \
 	ghostty \
-	kvantum
+	kvantum \
+	kvantum-qt5 \
+	qt6ct \
+	qt5ct
 
 paru -S --needed --noconfirm \
 	xdg-terminal-exec \

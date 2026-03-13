@@ -14,6 +14,6 @@ CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD" \
 
 case "$CHOICE" in
     "$CAFFEINE")      hyprkarl-caffeine ;;
-    "$NIGHTLIGHT")    hyprkarl-toggle-nightlight ;;
+    "$NIGHTLIGHT")    hyprkarl-nightlight ;;
     "$SCREEN_RECORD") hyprkarl-record-screen ;;
 esac

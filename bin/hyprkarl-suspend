@@ -1,3 +1,4 @@
 #!/bin/bash
 
+hyprkarl-lock
 systemctl suspend

@@ -143,6 +143,7 @@
   "group/tray-expander": {
     "orientation": "inherit",
     "drawer": {
+      "click-to-reveal": true,
       "transition-duration": 300,
       "children-class": "tray-group-item"
     },

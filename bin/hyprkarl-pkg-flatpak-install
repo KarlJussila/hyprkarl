@@ -46,5 +46,5 @@ pkg_names=$(comm -23 \
 if [[ -n "$pkg_names" ]]; then
   # Install selected apps directly to the terminal, preserving progress bars
   flatpak install flathub --system -y $(echo "$pkg_names" | tr '\n' ' ')
-	omarchy-show-done
+	hyprkarl-show-done
 fi

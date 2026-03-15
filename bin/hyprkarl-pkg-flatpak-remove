@@ -18,5 +18,5 @@ if [[ -n "$pkg_names" ]]; then
   # Uninstall selected apps, data, and dependencies
   flatpak uninstall -y --delete-data $(echo "$pkg_names" | tr '\n' ' ')
   flatpak uninstall -y --unused
-  omarchy-show-done
+  hyprkarl-show-done
 fi

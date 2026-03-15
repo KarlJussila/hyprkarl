@@ -51,6 +51,3 @@ sudo sed -i 's/^# *deny = .*/deny = 10/' /etc/security/faillock.conf
 # Allow localsend port
 sudo ufw allow 53317/tcp
 sudo ufw allow 53317/udp
-
-# Enable ghostty service
-systemctl enable --user app-com.mitchellh.ghostty.service

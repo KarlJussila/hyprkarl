@@ -9,7 +9,7 @@ sudo gtk-update-icon-cache /usr/share/icons/Yaru
 
 # Replace any conflicting [Autologin] section from /etc/sddm.conf
 sudo tee /etc/sddm.conf <<EOF
-[Autologin]gh
+[Autologin]
 User=$USER
 Session=hyprland-uwsm
 

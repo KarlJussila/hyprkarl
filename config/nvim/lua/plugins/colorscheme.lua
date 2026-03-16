@@ -1,0 +1,1 @@
+../../../hyprkarl/current/theme/nvim/colorscheme.lua

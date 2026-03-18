@@ -3,7 +3,8 @@
     background:      #2d353bFF;
     background-alt:  #475258FF;
     foreground:      #d3c6aaFF;
-    selected:        #425047FF;
+    accent:          #425047FF;
+    highlight:       #a7c080FF;
     active:          #a7c080FF;
     urgent:          #e67e80FF;
 }

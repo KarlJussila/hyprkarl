@@ -36,9 +36,6 @@ else
     NEW_WALLPAPER="${WALLPAPERS[$NEXT_INDEX]}"
   fi
 
-  # Update symlink
-  ln -nsf "theme/wallpapers/$(basename "$NEW_WALLPAPER")" "$CURRENT_WALLPAPER_LINK"
-
-  # Switch wallpaper via hyprpaper socket
-  hyprctl hyprpaper wallpaper ",$NEW_WALLPAPER"
+  # Set the wallpaper
+  hyprkarl-wallpaper-set "$(basename "$NEW_WALLPAPER")"
 fi

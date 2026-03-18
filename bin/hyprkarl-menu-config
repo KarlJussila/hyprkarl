@@ -1,15 +1,18 @@
 #!/bin/bash
 
+# Menu for accessing/editing configs
+
 terminal() {
   xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
 }
 
 THEME=" Theme"
+WALLPAPER=" Wallpaper"
 TERMINAL=" Terminal"
 EDITOR=" Editor"
 TIMEZONE="󰇧 Timezone"
 
-CHOICE=$(echo -e "$THEME\n$TERMINAL\n$EDITOR\n$TIMEZONE" \
+CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$TERMINAL\n$EDITOR\n$TIMEZONE" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -18,8 +21,9 @@ CHOICE=$(echo -e "$THEME\n$TERMINAL\n$EDITOR\n$TIMEZONE" \
            || pkill rofi
 
 case "$CHOICE" in
+    "$THEME")    hyprkarl-menu-theme ;;
+    "$WALLPAPER") hyprkarl-menu-wallpaper ;;
     "$TERMINAL") hyprkarl-menu-terminal ;;
     "$EDITOR")   hyprkarl-menu-editor ;;
-    "$THEME")    hyprkarl-menu-theme ;;
     "$TIMEZONE") terminal hyprkarl-setup-timezone ;;
 esac

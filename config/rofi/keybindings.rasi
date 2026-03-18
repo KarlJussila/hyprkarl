@@ -23,7 +23,7 @@ window {
     padding:                     0px;
     border:                      2px solid;
     border-radius:               0px;
-    border-color:                @selected;
+    border-color:                @accent;
     background-color:            @background;
     cursor:                      "default";
 }
@@ -36,7 +36,7 @@ mainbox {
     padding:                     0px;
     border:                      0px solid;
     border-radius:               0px 0px 0px 0px;
-    border-color:                @selected;
+    border-color:                @accent;
     background-color:            transparent;
     children:                    [ "inputbar", "listview" ];
 }
@@ -49,8 +49,8 @@ inputbar {
     padding:                     12px;
     border:                      0px solid;
     border-radius:               0px;
-    border-color:                @selected;
-    background-color:            @selected;
+    border-color:                @accent;
+    background-color:            @accent;
     text-color:                  @foreground;
     children:                    [ "prompt", "entry" ];
 }
@@ -87,7 +87,7 @@ listview {
     padding:                     0px;
     border:                      0px solid;
     border-radius:               0px;
-    border-color:                @selected;
+    border-color:                @accent;
     background-color:            transparent;
     text-color:                  @foreground;
     cursor:                      "default";
@@ -101,7 +101,7 @@ element {
     padding:                     6px 12px;
     border:                      0px solid;
     border-radius:               0px;
-    border-color:                @selected;
+    border-color:                @accent;
     background-color:            transparent;
     text-color:                  @foreground;
     cursor:                      pointer;
@@ -128,7 +128,7 @@ error-message {
     padding:                     15px;
     border:                      0px solid;
     border-radius:               0px;
-    border-color:                @selected;
+    border-color:                @accent;
     background-color:            @background;
     text-color:                  @foreground;
 }

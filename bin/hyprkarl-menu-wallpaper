@@ -1,0 +1,28 @@
+#!/bin/bash
+# hyprkarl-menu-wallpaper
+# Submenu for wallpaper management
+
+terminal() {
+    local tmp=$(mktemp)
+    xdg-terminal-exec --app-id=org.hyprkarl.terminal -e bash -c "$1 > $tmp"
+    cat "$tmp"
+    rm "$tmp"
+}
+
+SELECT="󰋹 Select"
+ADD=" Add"
+REMOVE=" Remove"
+
+CHOICE=$(echo -e "$SELECT\n$ADD\n$REMOVE" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Wallpaper" \
+           -theme ~/.config/rofi/custom-menu.rasi) \
+           || pkill rofi
+
+case "$CHOICE" in
+    "$SELECT") hyprkarl-wallpaper-set "$(hyprkarl-wallpaper-select)" ;;
+    "$ADD")    hyprkarl-wallpaper-add "$(terminal hyprkarl-select-picture)" ;;
+    "$REMOVE") hyprkarl-wallpaper-remove "$(hyprkarl-wallpaper-select '@urgent')" ;;
+esac

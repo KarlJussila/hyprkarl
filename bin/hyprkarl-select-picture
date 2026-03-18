@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# hyprkarl-select-picture
+# Interactive picker for selecting an image from ~/Pictures
+
+selected=$(
+    find ~/Pictures -type f | grep -iE '\.(jpg|jpeg|png|webp)$' \
+    | gum filter --prompt="Select image to add: "
+)
+
+[[ -n "$selected" ]] || exit 1
+echo "$selected"

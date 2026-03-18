@@ -3,10 +3,10 @@
 
     background:      #1b1519FF;
     background-alt:  #2f242bFF;
-
     foreground:      #d2ccd2FF;
+    accent:          #40003aFF;
 
-    selected:        #40003aFF;
+    highlight:       #b773d6;
 
     active:          #c7a3bfFF;
     urgent:          #cc5555FF;

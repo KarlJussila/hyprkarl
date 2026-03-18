@@ -1,0 +1,79 @@
+// wallpapers.rasi - hyprkarl wallpaper picker
+
+configuration {
+    modi:                        "drun";
+    show-icons:                  true;
+    font:                        "JetBrainsMono NF 11";
+}
+
+@import "../hyprkarl/current/theme/rofi.rasi"
+
+* {
+    select-border:               @highlight;
+    border:                      @background-alt;
+}
+
+window {
+    enabled:                     true;
+    fullscreen:                  false;
+    transparency:                "real";
+    cursor:                      "default";
+    spacing:                     0px;
+    padding:                     0px;
+    border:                      3px;
+    border-radius:               0px;
+    border-color:                @accent;
+    background-color:            @background;
+    location:                    center;
+    anchor:                      center;
+}
+
+mainbox {
+    enabled:                     true;
+    children:                    [ "listview" ];
+    background-color:            transparent;
+    padding:                     16px;
+}
+
+listview {
+    enabled:                     true;
+    columns:                     3;
+    lines:                       1;
+    spacing:                     16px;
+    padding:                     0px;
+    cycle:                       true;
+    dynamic:                     false;
+    scrollbar:                   false;
+    layout:                      vertical;
+    fixed-height:                true;
+    fixed-columns:               true;
+    cursor:                      "default";
+    background-color:            transparent;
+}
+
+element {
+    enabled:                     true;
+    orientation:                 vertical;
+    spacing:                     0px;
+    padding:                     3px;
+    border-radius:               0px;
+    cursor:                      pointer;
+    background-color:            @border;
+}
+
+element selected.normal {
+    border:                      3px;
+    border-color:                @select-border;
+    border-radius:               0px;
+}
+
+element-icon {
+    size:                        25%;
+    cursor:                      inherit;
+    border-radius:               0px;
+    background-color:            transparent;
+}
+
+element-text {
+    enabled:                     false;
+}

@@ -1,6 +1,8 @@
 #!/bin/bash
 
-CURRENT_WALLPAPER_LINK="$HOME/.local/share/hyprkarl/config/hyprkarl/current/wallpaper"
+# Initializes the wallpaper on startup
+
+CURRENT_WALLPAPER_LINK="$HYPRKARL_PATH/config/hyprkarl/current/wallpaper"
 
 if [[ ! -L "$CURRENT_WALLPAPER_LINK" ]]; then
   exit 0
@@ -14,5 +16,5 @@ done
 
 WALLPAPER=$(readlink -f "$CURRENT_WALLPAPER_LINK")
 
-hyprctl hyprpaper preload "$WALLPAPER"
 hyprctl hyprpaper wallpaper ",$WALLPAPER"
+

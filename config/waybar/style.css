@@ -2,7 +2,7 @@
 
 /* General styling */
 * {
-  background-color: @background;
+  background-color: transparent;
   color: @foreground;
 
   border: none;
@@ -11,11 +11,15 @@
   font-family: 'JetBrainsMono Nerd Font';
   font-size: 12px;
 }
+#waybar {
+  background-color: alpha(@background, 0.7);
+}
 .hidden {
   opacity: 0;
 }
 tooltip {
   padding: 2px;
+  background-color: @background;
 }
 
 /* Module spacing */
@@ -51,6 +55,11 @@ tooltip {
   margin-left: 8px;
 }
 
+/* Tray items */
+#tray menu {
+    background-color: @background;
+}
+
 /* Audio slider */
 #pulseaudio-slider {
   padding: 0;
@@ -67,7 +76,7 @@ tooltip {
   min-width: 80px;
   border-radius: 2px;
 	border: 1px solid @foreground;
-  background-color: @background;
+  background-color: transparent;
 }
 #pulseaudio-slider highlight {
   min-width: 0px;

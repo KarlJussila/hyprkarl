@@ -28,3 +28,9 @@ run = "shell -- dragon-drop -x -i -T %h"
 [[mgr.prepend_keymap]]
 on  = "y"
 run = [ 'shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text/uri-list', "yank" ]
+
+# Go to hyprkarl directory
+[[mgr.prepend_keymap]]
+on   = [ "g", "H" ]
+run  = "cd $HYPRKARL_PATH"
+desc = "Cd to $HYPRKARL_PATH"

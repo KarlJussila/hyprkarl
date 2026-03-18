@@ -30,7 +30,7 @@ ln -sfn "../../../themes/$THEME_NAME" "$THEME_LINK"
 echo "$THEME_NAME" > "$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
 
 # Refresh wallpaper
-hyprkarl-wallpaper-cycle
+hyprkarl-wallpaper-init || hyprkarl-wallpaper-cycle
 
 # Set gtk/qt themes
 hyprkarl-theme-set-gtk

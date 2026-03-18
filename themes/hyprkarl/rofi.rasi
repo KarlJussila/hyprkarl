@@ -6,7 +6,7 @@
     foreground:      #d2ccd2FF;
     accent:          #40003aFF;
 
-    highlight:       #b773d6;
+    highlight:        #b773d6FF;
 
     active:          #c7a3bfFF;
     urgent:          #cc5555FF;

@@ -1,11 +1,11 @@
 Primary = "#8a1a80"
-Subtle = "#40003a"
+Subtle = "#764a8b"
 Success = "#c7a3bf"
 Error = "#cc5555"
 
 Normal = "#d2ccd2"
 Disabled = "#42333b"
-Border = "#63005A"
+Border = "#96708e"
 
 SignalHigh = ["#dea6f5", "#dea6f5"]
 SignalLow = ["#2e2329", "#2e2329"]

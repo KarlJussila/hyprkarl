@@ -5,7 +5,7 @@
 CURRENT_WALLPAPER_LINK="$HYPRKARL_PATH/config/hyprkarl/current/wallpaper"
 
 if [[ ! -L "$CURRENT_WALLPAPER_LINK" ]]; then
-  exit 0
+  exit 1
 fi
 
 # Wait for hyprpaper socket to be ready

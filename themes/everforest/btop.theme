@@ -1,56 +1,57 @@
-#################################
-# btop Color Theme Configuration
-#################################
+theme[main_bg]       = "#2D353B"
+theme[title]         = "#7FBBB3"
+theme[hi_fg]         = "#527974"
 
-theme[main_bg]       = "#2d353b"
-theme[title]         = "#d3c6aa"
-theme[hi_fg]         = "#7fbbb3"
+theme[selected_bg]   = "#3D484D"
+theme[selected_fg]   = "#D3C6AA"
+theme[inactive_fg]   = "#868D80"
 
-theme[selected_bg]   = "#475258"
-theme[selected_fg]   = "#d3c6aa"
-theme[inactive_fg]   = "#859289"
+theme[cpu_box]       = "#56635F"
+theme[mem_box]       = "#56635F"
+theme[net_box]       = "#56635F"
+theme[proc_box]      = "#56635F"
+theme[div_line]      = "#56635F"
 
-theme[cpu_box]       = "#475258"
-theme[mem_box]       = "#475258"
-theme[net_box]       = "#475258"
-theme[proc_box]      = "#475258"
-theme[div_line]      = "#475258"
+theme[graph_text]    = "#A7C080"
+theme[proc_misc]     = "#A7C080"
 
-theme[graph_text]    = "#d3c6aa"
-theme[proc_misc]     = "#d3c6aa"
+# temperature gradient
+theme[temp_start]    = "#2D353B"
+theme[temp_mid]      = "#DBBC7F"
+theme[temp_end]      = "#DBBC7F"
 
-theme[temp_start]    = "#a7c080"
-theme[temp_mid]      = "#dbbc7f"
-theme[temp_end]      = "#e67e80"
+# cpu
+theme[cpu_start]     = "#E67E80"
+theme[cpu_mid]       = "#E67E80"
+theme[cpu_end]       = "#DBBC7F"
 
-theme[cpu_start]     = "#a7c080"
-theme[cpu_mid]       = "#83c092"
-theme[cpu_end]       = "#7fbbb3"
+# memory
+theme[free_start]    = "#343F44"
+theme[free_mid]      = "#A7C080"
+theme[free_end]      = "#A7C080"
 
-theme[free_start]    = "#a7c080"
-theme[free_mid]      = "#83c092"
-theme[free_end]      = "#7fbbb3"
+theme[cached_start]  = "#343F44"
+theme[cached_mid]    = "#A7C080"
+theme[cached_end]    = "#A7C080"
 
-theme[cached_start]  = "#a7c080"
-theme[cached_mid]    = "#83c092"
-theme[cached_end]    = "#7fbbb3"
+theme[available_start] = "#343F44"
+theme[available_mid]   = "#A7C080"
+theme[available_end]   = "#A7C080"
 
-theme[available_start] = "#a7c080"
-theme[available_mid]   = "#83c092"
-theme[available_end]   = "#7fbbb3"
+theme[used_start]    = "#7FBBB3"
+theme[used_mid]      = "#7FBBB3"
+theme[used_end]      = "#83C092"
 
-theme[used_start]    = "#a7c080"
-theme[used_mid]      = "#83c092"
-theme[used_end]      = "#7fbbb3"
+# network
+theme[download_start] = "#7FBBB3"
+theme[download_mid]   = "#7FBBB3"
+theme[download_end]   = "#DBBC7F"
 
-theme[download_start] = "#475258"
-theme[download_mid]   = "#83c092"
-theme[download_end]   = "#a7c080"
+theme[upload_start]   = "#D699B6"
+theme[upload_mid]     = "#83C092"
+theme[upload_end]     = "#DBBC7F"
 
-theme[upload_start]   = "#475258"
-theme[upload_mid]     = "#7fbbb3"
-theme[upload_end]     = "#83c092"
-
-theme[process_start]  = "#7fbbb3"
-theme[process_mid]    = "#83c092"
-theme[process_end]    = "#a7c080"
+# process
+theme[process_start]  = "#7FBBB3"
+theme[process_mid]    = "#7FBBB3"
+theme[process_end]    = "#83C092"

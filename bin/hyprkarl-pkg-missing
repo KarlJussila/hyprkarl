@@ -1,6 +1,15 @@
 #!/bin/bash
 
-# Returns true if any of the named packages are missing from the system (or false if they're all there).
+# hyprkarl-pkg-missing
+# Returns true if any listed packages are not installed,
+# or false if all packages are present.
+#
+# Usage:
+#   hyprkarl-pkg-missing <package> [package...]
+#
+# Examples:
+#   hyprkarl-pkg-missing gum fzf
+#   hyprkarl-pkg-missing swww && notify-send "swww is not installed"
 
 for pkg in "$@"; do
   if ! pacman -Q "$pkg" &>/dev/null; then

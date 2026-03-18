@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# Set the active hyprkarl theme
+# hyprkarl-theme-set
+# Switches the active hyprkarl theme and reloads all affected components.
+
+# Usage:
+#   hyprkarl-theme-set <theme-name>
+
+# The theme name is case-insensitive and spaces are treated as hyphens,
+# so "Forest Dark" and "forest-dark" are equivalent.
 
 if [[ -z $1 ]]; then
   echo "Usage: hyprkarl-theme-set <theme-name>"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Show a fuzzy-finder TUI for installing flatpaks
+
 fzf_args=(
   --multi
   --with-nth=1

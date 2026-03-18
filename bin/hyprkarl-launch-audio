@@ -1,5 +1,5 @@
 #!/bin/bash
 
-# Launch the Omarchy audio controls TUI (provided by wiremix).
+# Launch the audio controls TUI (provided by wiremix).
 
 hyprkarl-launch-or-focus-tui wiremix

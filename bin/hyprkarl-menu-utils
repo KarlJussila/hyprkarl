@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Menu for common utilities
+
 CAFFEINE=" Caffeine"
 NIGHTLIGHT=" Nightlight"
 SCREEN_RECORD=" Screen Record"

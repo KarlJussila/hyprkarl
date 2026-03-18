@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Menu for selecting a theme
+
 CHOICE=$(hyprkarl-theme-list \
     | rofi -dmenu \
            -p "" \

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Menu for installing packages
+
 terminal() {
   xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
 }

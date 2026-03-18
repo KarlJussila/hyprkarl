@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Nightlight toggle (warm/cool screen temperature via hyprsunset)
+# Nightlight toggle (color temperature and sub-mininmum dimming)
 #
 # Usage: hyprkarl-toggle-nightlight [on|off|toggle]
 #   on     - enable nightlight (warm temperature), no-op if already on

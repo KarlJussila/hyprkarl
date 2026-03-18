@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Menu for uninstalling packages
+
 terminal() {
   xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
 }

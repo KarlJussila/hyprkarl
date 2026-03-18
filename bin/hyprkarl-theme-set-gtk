@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Change gnome settings to match the current theme
+
 # Change gnome modes
 if [[ -f ~/.config/hyprkarl/current/theme/light.mode ]]; then
   gsettings set org.gnome.desktop.interface color-scheme "prefer-light"

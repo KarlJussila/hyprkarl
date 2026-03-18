@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# A dictionary TUI powered by fzf and dict.org
+
 # Create a temporary file to store the current source
 SOURCE_FILE=$(mktemp)
 echo "wn" > "$SOURCE_FILE"

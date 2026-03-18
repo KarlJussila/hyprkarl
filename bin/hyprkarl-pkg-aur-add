@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# Add the named packages to the system from the AUR if they're missing. Returns false if it couldn't be done.
+# Add listed packages to the system from the AUR. Returns false if it couldn't be done.
+
+# Usage:
+#   hyprkarl-pkg-aur-add <package> [package...]
+#
+# Examples:
+#   hyprkarl-pkg-aur-add gum fzf
+#   hyprkarl-pkg-aur-add swww || notify-send "Failed to install swww"
 
 if hyprkarl-pkg-missing "$@"; then
   yay -S --noconfirm --needed "$@" || exit 1

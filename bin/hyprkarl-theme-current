@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Get the name of the current theme and format it nicely
+
 THEME_NAME_PATH="$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
 
 if [[ -f $THEME_NAME_PATH ]]; then

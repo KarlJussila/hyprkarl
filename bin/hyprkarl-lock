@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Script for locking the device
+
 # Lock the screen
 pidof hyprlock || hyprlock &
 

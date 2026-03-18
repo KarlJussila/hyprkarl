@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Power Menu
+
 LOCK=" Lock"
 SUSPEND=" Suspend"
 REBOOT=" Reboot"

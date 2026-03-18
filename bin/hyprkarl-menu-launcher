@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# Launch the Walker application launcher
+# Launch the rofi application launcher
 rofi -show drun -theme $HOME/.config/rofi/launcher.rasi || pkill rofi

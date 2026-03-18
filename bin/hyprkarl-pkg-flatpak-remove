@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Show a fuzzy-finder TUI for uninstalling flatpaks
+
 fzf_args=(
   --multi
   --preview 'flatpak info {1} 2>/dev/null'

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Menu for selecting a default text editor
+
 NVIM="Neovim"
 VIM="Vim"
 NANO="Nano"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Menu for selecting a default terminal emulator
+
 ALACRITTY="Alacritty"
 GHOSTTY="Ghostty"
 KITTY="Kitty"

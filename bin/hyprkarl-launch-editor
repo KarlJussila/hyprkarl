@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Launch the default editor as determined by $EDITOR (set via ~/.config/uwsm/default) (or nvim if missing).
-# Starts suitable editors in a terminal window and otherwise as a regular application.
+# Launch the default editor defined by $EDITOR (~/.config/uwsm/default).
 
 hyprkarl-cmd-present "$EDITOR" || EDITOR=nvim
 

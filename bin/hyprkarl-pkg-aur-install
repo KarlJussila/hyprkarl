@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Show a fuzzy-finder TUI for picking new AUR packages to install.
+# Show a fuzzy-finder TUI for installing AUR packages
 
 fzf_args=(
   --multi

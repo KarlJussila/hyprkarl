@@ -1,6 +1,14 @@
 #!/bin/bash
 
-# Add the named packages to the system if they're missing. Returns false if it couldn't be done.
+# hyprkarl-pkg-add
+# Add listed packages to the system. Returns false if it couldn't be done.
+
+# Usage:
+#   hyprkarl-pkg-add <package> [package...]
+#
+# Examples:
+#   hyprkarl-pkg-add gum fzf
+#   hyprkarl-pkg-add swww || notify-send "Failed to install swww"
 
 if hyprkarl-pkg-missing "$@"; then
   sudo pacman -S --noconfirm --needed "$@" || exit 1

@@ -1,6 +1,15 @@
 #!/bin/bash
 
-# Returns true if all of the named packages are installed on the system (or false if any of them are missing).
+# hyprkarl-pkg-present
+# Returns true if all listed packages are installed,
+# or false if any are missing.
+#
+# Usage:
+#   hyprkarl-pkg-present <package> [package...]
+#
+# Examples:
+#   hyprkarl-pkg-present gum fzf
+#   hyprkarl-pkg-present swww || notify-send "swww is not installed"
 
 for pkg in "$@"; do
   pacman -Q "$pkg" &>/dev/null || exit 1

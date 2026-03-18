@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Install a terminal emulator and set it as the default (Super + Return, TUIs, etc.)
+# Install a terminal emulator and set it as the default
 
 if (($# == 0)); then
   echo "Usage: hyprkarl-default-terminal [alacritty|ghostty|kitty|foot]"
@@ -39,10 +39,10 @@ if hyprkarl-pkg-add $package; then
 # The first found and valid terminal will be used
 
 # Recommended options:
+# kitty.desktop
 # foot.desktop
 # com.mitchellh.ghostty.desktop
 # Alacritty.desktop
-# kitty.desktop
 
 $desktop_id
 EOF

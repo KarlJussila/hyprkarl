@@ -18,13 +18,11 @@ back_cmd="${1:-}"
 
 THEME=" Theme"
 WALLPAPER=" Wallpaper"
-TERMINAL=" Terminal"
-EDITOR=" Editor"
-SHELL=" Shell"
+DEFAULTS="󰆓 Defaults"
 TIMEZONE="󰇧 Timezone"
 FINGERPRINT="󰈷 Fingerprint"
 
-CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$TERMINAL\n$EDITOR\n$SHELL\n$TIMEZONE\n$FINGERPRINT" \
+CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$DEFAULTS\n$TIMEZONE\n$FINGERPRINT" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -35,9 +33,7 @@ CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$TERMINAL\n$EDITOR\n$SHELL\n$TIMEZONE\n$FI
 case "$CHOICE" in
     "$THEME")       hyprkarl-menu-theme "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
     "$WALLPAPER")   hyprkarl-menu-wallpaper "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
-    "$TERMINAL")    hyprkarl-menu-terminal "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
-    "$EDITOR")      hyprkarl-menu-editor "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
-    "$SHELL")       hyprkarl-menu-shell "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
+    "$DEFAULTS")    hyprkarl-menu-defaults "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
     "$TIMEZONE")    terminal hyprkarl-setup-timezone ;;
     "$FINGERPRINT") hyprkarl-menu-fingerprint "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
     "")             [[ -n "$back_cmd" ]] && $back_cmd ;;

@@ -29,8 +29,8 @@ fi
 
 # Calculate icon and window sizing based on focused monitor
 logical_height=$(hyprctl monitors -j | jq '[.[] | select(.focused)][0] | .height / .scale | floor')
-icon_size=$(( logical_height / 4 ))
-window_width=$(( icon_size * 3 + 70 ))
+icon_size=$(( logical_height / 4 )) # 25% of logical height (width of an icon)
+window_width=$(( icon_size * 3 + 70 )) # 3 icons, plus padding
 
 # Rofi command
 rofi_override="window{width:${window_width}px;} element-icon{size:${icon_size}px;} ${color_override:-}"

@@ -12,10 +12,10 @@
 
 back_cmd="${1:-}"
 
-ALACRITTY="Alacritty"
-GHOSTTY="Ghostty"
-KITTY="Kitty"
-FOOT="Foot"
+ALACRITTY="Ａ Alacritty"
+GHOSTTY=" Ghostty"
+KITTY="󰄛 Kitty"
+FOOT="󰽒 Foot"
 
 CHOICE=$(echo -e "$ALACRITTY\n$GHOSTTY\n$KITTY\n$FOOT" \
     | rofi -dmenu \

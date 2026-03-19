@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Menu for selecting a default text editor
+# Menu for setting default applications
 
 # Usage:
-#   hyprkarl-menu-editor [back_cmd]
-
+#   hyprkarl-menu-defaults [back_cmd]
+#
 #   back_cmd   Optional command to invoke if the user dismisses the menu.
 #              Also passed to submenus so they can navigate back to this
 #              menu or continue up the call chain. If omitted, dismissing
@@ -12,25 +12,21 @@
 
 back_cmd="${1:-}"
 
-NVIM=" Neovim"
-VIM=" Vim"
-NANO=" Nano"
-MICRO="μ Micro"
-VSCODIUM=" VSCodium"
+TERMINAL=" Terminal"
+EDITOR=" Editor"
+SHELL=" Shell"
 
-CHOICE=$(echo -e "$NVIM\n$VIM\n$NANO\n$MICRO\n$VSCODIUM" \
+CHOICE=$(echo -e "$TERMINAL\n$EDITOR\n$SHELL" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
-           -mesg "Default Editor" \
+           -mesg "Defaults" \
            -theme ~/.config/rofi/custom-menu.rasi) \
            || pkill rofi
 
 case "$CHOICE" in
-    "$NVIM")     hyprkarl-default-editor nvim ;;
-    "$VIM")      hyprkarl-default-editor vim ;;
-    "$NANO")     hyprkarl-default-editor nano ;;
-    "$MICRO")    hyprkarl-default-editor micro ;;
-    "$VSCODIUM") hyprkarl-default-editor vscodium ;;
+    "$TERMINAL") hyprkarl-menu-terminal "hyprkarl-menu-defaults${back_cmd:+ $back_cmd}" ;;
+    "$EDITOR")   hyprkarl-menu-editor "hyprkarl-menu-defaults${back_cmd:+ $back_cmd}" ;;
+    "$SHELL")    hyprkarl-menu-shell "hyprkarl-menu-defaults${back_cmd:+ $back_cmd}" ;;
     "")          [[ -n "$back_cmd" ]] && $back_cmd ;;
 esac

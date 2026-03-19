@@ -20,10 +20,11 @@ THEME=" Theme"
 WALLPAPER=" Wallpaper"
 TERMINAL=" Terminal"
 EDITOR=" Editor"
+SHELL=" Shell"
 TIMEZONE="󰇧 Timezone"
 FINGERPRINT="󰈷 Fingerprint"
 
-CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$TERMINAL\n$EDITOR\n$TIMEZONE\n$FINGERPRINT" \
+CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$TERMINAL\n$EDITOR\n$SHELL\n$TIMEZONE\n$FINGERPRINT" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -36,6 +37,7 @@ case "$CHOICE" in
     "$WALLPAPER")   hyprkarl-menu-wallpaper "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
     "$TERMINAL")    hyprkarl-menu-terminal "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
     "$EDITOR")      hyprkarl-menu-editor "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
+    "$SHELL")       hyprkarl-menu-shell "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
     "$TIMEZONE")    terminal hyprkarl-setup-timezone ;;
     "$FINGERPRINT") hyprkarl-menu-fingerprint "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
     "")             [[ -n "$back_cmd" ]] && $back_cmd ;;

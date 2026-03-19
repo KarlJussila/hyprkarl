@@ -2,13 +2,23 @@
 
 # Menu for installing packages
 
+# Usage:
+#   hyprkarl-menu-install [back_cmd]
+
+#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
 terminal() {
   xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
 }
 
-PACMAN="Pacman"
-AUR="AUR"
-FLATPAK="Flatpak"
+back_cmd="${1:-}"
+
+PACMAN="󰣇 Pacman"
+AUR=" AUR"
+FLATPAK="󰏖 Flatpak"
 
 CHOICE=$(echo -e "$PACMAN\n$AUR\n$FLATPAK" \
     | rofi -dmenu \
@@ -22,4 +32,5 @@ case "$CHOICE" in
     "$PACMAN")  terminal hyprkarl-pkg-install ;;
     "$AUR")     terminal hyprkarl-pkg-aur-install ;;
     "$FLATPAK") terminal hyprkarl-pkg-flatpak-install ;;
+    "")         [[ -n "$back_cmd" ]] && $back_cmd ;;
 esac

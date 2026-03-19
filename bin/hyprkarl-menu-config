@@ -2,17 +2,28 @@
 
 # Menu for accessing/editing configs
 
+# Usage:
+#   hyprkarl-menu-config [back_cmd]
+
+#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
 terminal() {
   xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
 }
+
+back_cmd="${1:-}"
 
 THEME=" Theme"
 WALLPAPER=" Wallpaper"
 TERMINAL=" Terminal"
 EDITOR=" Editor"
 TIMEZONE="󰇧 Timezone"
+FINGERPRINT="󰈷 Fingerprint"
 
-CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$TERMINAL\n$EDITOR\n$TIMEZONE" \
+CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$TERMINAL\n$EDITOR\n$TIMEZONE\n$FINGERPRINT" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -21,9 +32,11 @@ CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$TERMINAL\n$EDITOR\n$TIMEZONE" \
            || pkill rofi
 
 case "$CHOICE" in
-    "$THEME")    hyprkarl-menu-theme ;;
-    "$WALLPAPER") hyprkarl-menu-wallpaper ;;
-    "$TERMINAL") hyprkarl-menu-terminal ;;
-    "$EDITOR")   hyprkarl-menu-editor ;;
-    "$TIMEZONE") terminal hyprkarl-setup-timezone ;;
+    "$THEME")       hyprkarl-menu-theme "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
+    "$WALLPAPER")   hyprkarl-menu-wallpaper "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
+    "$TERMINAL")    hyprkarl-menu-terminal "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
+    "$EDITOR")      hyprkarl-menu-editor "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
+    "$TIMEZONE")    terminal hyprkarl-setup-timezone ;;
+    "$FINGERPRINT") hyprkarl-menu-fingerprint "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;
+    "")             [[ -n "$back_cmd" ]] && $back_cmd ;;
 esac

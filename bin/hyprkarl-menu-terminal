@@ -2,6 +2,16 @@
 
 # Menu for selecting a default terminal emulator
 
+# Usage:
+#   hyprkarl-menu-terminal [back_cmd]
+
+#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
+back_cmd="${1:-}"
+
 ALACRITTY="Alacritty"
 GHOSTTY="Ghostty"
 KITTY="Kitty"
@@ -20,4 +30,5 @@ case "$CHOICE" in
     "$GHOSTTY")   hyprkarl-default-terminal ghostty ;;
     "$KITTY")     hyprkarl-default-terminal kitty ;;
     "$FOOT")      hyprkarl-default-terminal foot ;;
+    "")           [[ -n "$back_cmd" ]] && $back_cmd ;;
 esac

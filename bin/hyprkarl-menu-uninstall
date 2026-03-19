@@ -2,12 +2,22 @@
 
 # Menu for uninstalling packages
 
+# Usage:
+#   hyprkarl-menu-uninstall [back_cmd]
+
+#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
 terminal() {
   xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
 }
 
-SYSTEM="System"
-FLATPAK="Flatpak"
+back_cmd="${1:-}"
+
+SYSTEM="󰣇 System"
+FLATPAK="󰏖 Flatpak"
 
 CHOICE=$(echo -e "$SYSTEM\n$FLATPAK" \
     | rofi -dmenu \
@@ -20,4 +30,5 @@ CHOICE=$(echo -e "$SYSTEM\n$FLATPAK" \
 case "$CHOICE" in
     "$SYSTEM")  terminal hyprkarl-pkg-remove ;;
     "$FLATPAK") terminal hyprkarl-pkg-flatpak-remove ;;
+    "")         [[ -n "$back_cmd" ]] && $back_cmd ;;
 esac

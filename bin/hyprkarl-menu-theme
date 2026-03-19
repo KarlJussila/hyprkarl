@@ -2,6 +2,16 @@
 
 # Menu for selecting a theme
 
+# Usage:
+#   hyprkarl-menu-theme [back_cmd]
+
+#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
+back_cmd="${1:-}"
+
 CHOICE=$(hyprkarl-theme-list \
     | rofi -dmenu \
            -p "" \
@@ -10,6 +20,7 @@ CHOICE=$(hyprkarl-theme-list \
            -theme ~/.config/rofi/custom-menu.rasi) \
            || pkill rofi
 
-if [[ -n "$CHOICE" ]]; then
-  hyprkarl-theme-set "$CHOICE"
-fi
+case "$CHOICE" in
+    "") [[ -n "$back_cmd" ]] && $back_cmd ;;
+    *) hyprkarl-theme-set "$CHOICE" ;;
+esac

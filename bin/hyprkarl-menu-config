@@ -14,7 +14,7 @@ terminal() {
   xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
 }
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 THEME=" Theme"
 WALLPAPER=" Wallpaper"
@@ -27,8 +27,7 @@ CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$DEFAULTS\n$TIMEZONE\n$FINGERPRINT" \
            -p "" \
            -no-custom \
            -mesg "Config" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$THEME")       hyprkarl-menu-theme "hyprkarl-menu-config${back_cmd:+ $back_cmd}" ;;

@@ -10,7 +10,7 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 NVIM=" Neovim"
 VIM=" Vim"
@@ -23,8 +23,7 @@ CHOICE=$(echo -e "$NVIM\n$VIM\n$NANO\n$MICRO\n$VSCODIUM" \
            -p "" \
            -no-custom \
            -mesg "Default Editor" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$NVIM")     hyprkarl-default-editor nvim ;;

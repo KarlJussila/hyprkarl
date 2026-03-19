@@ -17,7 +17,7 @@ terminal() {
     rm "$tmp"
 }
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 SELECT="󰋹 Select"
 ADD=" Add"
@@ -28,8 +28,7 @@ CHOICE=$(echo -e "$SELECT\n$ADD\n$REMOVE" \
            -p "" \
            -no-custom \
            -mesg "Wallpaper" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$SELECT") hyprkarl-wallpaper-set "$(hyprkarl-wallpaper-select)" ;;

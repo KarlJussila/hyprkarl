@@ -10,15 +10,14 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 CHOICE=$(hyprkarl-theme-list \
     | rofi -dmenu \
            -p "" \
            -no-custom \
            -mesg "Theme" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "") [[ -n "$back_cmd" ]] && $back_cmd ;;

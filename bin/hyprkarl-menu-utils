@@ -10,7 +10,7 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 CAFFEINE=" Caffeine"
 NIGHTLIGHT=" Nightlight"
@@ -21,8 +21,7 @@ CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD" \
            -p "" \
            -no-custom \
            -mesg "Utilities" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$CAFFEINE")      hyprkarl-caffeine ;;

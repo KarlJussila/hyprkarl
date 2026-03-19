@@ -19,7 +19,7 @@ is_setup() {
   command -v fprintd-list &>/dev/null && grep -q pam_fprintd.so /etc/pam.d/sudo 2>/dev/null
 }
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 SETUP="󰈷 Setup"
 ENROLL="󰈷 Add Fingerprint"
@@ -38,8 +38,7 @@ CHOICE=$(echo "$options" \
            -p "" \
            -no-custom \
            -mesg "Fingerprint" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$SETUP")     terminal hyprkarl-fingerprint-setup ;;

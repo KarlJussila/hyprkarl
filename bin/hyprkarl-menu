@@ -10,7 +10,7 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 LAUNCH="󱓟 Launch"
 INSTALL=" Install"
@@ -24,8 +24,7 @@ CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$CONFIG\n$POWER" \
            -p "" \
            -no-custom \
            -mesg "Main Menu" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$LAUNCH")    hyprkarl-menu-launcher "hyprkarl-menu${back_cmd:+ $back_cmd}" ;;

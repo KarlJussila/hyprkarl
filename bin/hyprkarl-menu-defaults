@@ -10,7 +10,7 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 TERMINAL=" Terminal"
 EDITOR=" Editor"
@@ -21,8 +21,7 @@ CHOICE=$(echo -e "$TERMINAL\n$EDITOR\n$SHELL" \
            -p "" \
            -no-custom \
            -mesg "Defaults" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$TERMINAL") hyprkarl-menu-terminal "hyprkarl-menu-defaults${back_cmd:+ $back_cmd}" ;;

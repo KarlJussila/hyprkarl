@@ -10,7 +10,7 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 LOCK=" Lock"
 SUSPEND=" Suspend"
@@ -22,8 +22,7 @@ CHOICE=$(echo -e "$LOCK\n$SUSPEND\n$REBOOT\n$SHUTDOWN" \
            -p "" \
            -no-custom \
            -mesg "Power Menu" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$LOCK")     hyprkarl-lock ;;

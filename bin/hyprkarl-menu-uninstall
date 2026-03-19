@@ -14,7 +14,7 @@ terminal() {
   xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
 }
 
-back_cmd="${1:-}"
+back_cmd="$*"
 
 SYSTEM="󰣇 System"
 FLATPAK="󰏖 Flatpak"
@@ -24,8 +24,7 @@ CHOICE=$(echo -e "$SYSTEM\n$FLATPAK" \
            -p "" \
            -no-custom \
            -mesg "Uninstall Packages" \
-           -theme ~/.config/rofi/custom-menu.rasi) \
-           || pkill rofi
+           -theme ~/.config/rofi/custom-menu.rasi)
 
 case "$CHOICE" in
     "$SYSTEM")  terminal hyprkarl-pkg-remove ;;

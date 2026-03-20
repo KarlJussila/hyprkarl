@@ -1,0 +1,6 @@
+[Unit]
+Description=Keep swayosd warm
+
+[Service]
+Type=oneshot
+ExecStart=hyprkarl-swayosd-poke

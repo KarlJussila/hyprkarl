@@ -1,0 +1,10 @@
+[Unit]
+Description=Run swayosd keepalive every 10 minutes
+
+[Timer]
+OnBootSec=10s
+OnUnitActiveSec=10min
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

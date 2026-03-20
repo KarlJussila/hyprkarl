@@ -6,8 +6,8 @@
 # Usage:
 #   hyprkarl-volume-mic mute-toggle
 
-ICON_MIC_ACTIVE=$(hyprkarl-find-icon "microphone-sensitivity-high-symbolic" status actions)
-ICON_MIC_MUTED=$(hyprkarl-find-icon "microphone-sensitivity-muted-symbolic" status actions)
+ICON_MIC_ACTIVE=$(hyprkarl-find-icon "audio-input-microphone-symbolic" status actions devices)
+ICON_MIC_MUTED=$(hyprkarl-find-icon "microphone-sensitivity-muted-symbolic" status actions devices)
 
 wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 

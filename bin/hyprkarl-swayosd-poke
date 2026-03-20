@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Poke the swayosd-server to prevent failure to display after idle
-
-swayosd-client --custom-message ""

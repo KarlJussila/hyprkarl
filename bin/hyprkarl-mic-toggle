@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# hyprkarl-mic-mute
+# Toggles microphone mute and shows OSD
+
+# Usage:
+#   hyprkarl-volume-mic mute-toggle
+
+ICON_MIC_ACTIVE=$(hyprkarl-find-icon "microphone-sensitivity-high-symbolic" status actions)
+ICON_MIC_MUTED=$(hyprkarl-find-icon "microphone-sensitivity-muted-symbolic" status actions)
+
+wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+
+mic_muted=$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -c MUTED)
+
+if (( mic_muted )); then
+    icon="$ICON_MIC_MUTED"
+    summary="Mic Muted"
+else
+    icon="$ICON_MIC_ACTIVE"
+    summary="Mic Active"
+fi
+
+notify-send \
+    -h string:x-canonical-private-synchronous:microphone \
+    -h int:value:0 \
+    -a "osd-volume" \
+    "$summary" "" \
+    --icon="$icon"

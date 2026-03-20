@@ -10,7 +10,6 @@ sudo pacman -S --needed --noconfirm \
   hyprlock \
   hypridle \
   hyprsunset \
-  swayosd \
   mako \
   hyprpolkitagent \
   brightnessctl \

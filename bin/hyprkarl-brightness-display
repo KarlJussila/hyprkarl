@@ -1,21 +1,31 @@
 #!/bin/bash
 
-# Adjust brightness on the most likely display device.
-# Usage: hyprkarl-brightness-display <step>
+# hyprkarl-brightness-display
+# Adjust brightness on the most likely display device and show OSD
+
+# Usage:
+#   hyprkarl-brightness-display <step>
+
+ICON_BRIGHTNESS=$(hyprkarl-find-icon "display-brightness-symbolic" status actions)
 
 step="${1:-+5%}"
 
-# Start with the first possible output, then refine to the most likely given an order heuristic.
+# Start with the first possible output, then refine to the most likely given an order heuristic
 device="$(ls -1 /sys/class/backlight 2>/dev/null | head -n1)"
 for candidate in amdgpu_bl* intel_backlight acpi_video*; do
-  if [[ -e "/sys/class/backlight/$candidate" ]]; then
-    device="$candidate"
-    break
-  fi
+    if [[ -e "/sys/class/backlight/$candidate" ]]; then
+        device="$candidate"
+        break
+    fi
 done
 
-# Set the actual brightness of the display device.
 brightnessctl -d "$device" set "$step" >/dev/null
 
-# Use SwayOSD to display the new brightness setting.
-hyprkarl-swayosd-brightness "$(brightnessctl -d "$device" -m | cut -d',' -f4 | tr -d '%')"
+brightness="$(brightnessctl -d "$device" -m | cut -d',' -f4 | tr -d '%')"
+
+notify-send \
+    -h string:x-canonical-private-synchronous:brightness \
+    -h int:value:"$brightness" \
+    -a "osd-brightness" \
+    "Brightness" "${brightness}%" \
+    --icon="$ICON_BRIGHTNESS"

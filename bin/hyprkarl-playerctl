@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# hyprkarl-playerctl
+# Controls media playback and shows track info via mako notification
+
+# Usage:
+#   hyprkarl-playerctl <play-pause|next|previous>
+
+icon_theme=$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")
+
+ICON_PLAY=$(hyprkarl-find-icon "media-playback-start-symbolic")
+ICON_PAUSE=$(hyprkarl-find-icon "media-playback-pause-symbolic")
+ICON_NEXT=$(find_icon "media-skip-forward-symbolic")
+ICON_PREV=$(find_icon "media-skip-backward-symbolic")
+
+action="${1:-}"
+[[ -n "$action" ]] || { echo "Usage: hyprkarl-playerctl <play-pause|next|previous>" >&2; exit 1; }
+
+case "$action" in
+    play-pause|next|previous)
+        playerctl "$action"
+        ;;
+    *)
+        echo "Unknown action: $action" >&2
+        exit 1
+        ;;
+esac
+
+# Give playerctl a moment to update state
+sleep 0.1
+
+status=$(playerctl status 2>/dev/null)
+title=$(playerctl metadata title 2>/dev/null)
+artist=$(playerctl metadata artist 2>/dev/null)
+
+[[ -n "$title" ]] || exit 0
+
+case "$action" in
+    play-pause)
+        [[ "$status" == "Playing" ]] && icon="$ICON_PLAY" || icon="$ICON_PAUSE"
+        ;;
+    next)
+        icon="$ICON_NEXT"
+        ;;
+    previous)
+        icon="$ICON_PREV"
+        ;;
+esac
+
+[[ -n "$artist" ]] && body="$artist" || body=""
+
+notify-send \
+    -a "osd-player" \
+    -h string:x-canonical-private-synchronous:player \
+    "$(echo "$title" | head -c 50)" "$body" \
+    --icon="$icon"

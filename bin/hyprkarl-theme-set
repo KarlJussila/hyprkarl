@@ -41,6 +41,5 @@ if pgrep -x waybar >/dev/null; then
 fi
 hyprkarl-restart-hyprctl
 hyprkarl-restart-mako
-hyprkarl-restart-swayosd
 hyprkarl-restart-terminal
 hyprkarl-restart-btop

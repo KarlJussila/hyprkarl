@@ -1,12 +1,22 @@
 #!/bin/bash
 
 # hyprkarl-select-picture
-# Interactive picker for selecting an image from ~/Pictures
+# Interactive picker for selecting an image file
 
-selected=$(
-    find ~/Pictures -type f | grep -iE '\.(jpg|jpeg|png|webp)$' \
-    | gum filter --prompt="Select image to add: "
-)
+# Usage:
+#   hyprkarl-select-picture [directory]
+#
+#   directory   Directory to browse. Defaults to ~/Pictures.
+
+start_dir="${1:-$HOME/Pictures}"
+
+selected=$(yazi "$start_dir" --chooser-file=/dev/stdout)
 
 [[ -n "$selected" ]] || exit 1
+
+if ! echo "$selected" | grep -qiE '\.(jpg|jpeg|png|webp)$'; then
+    echo "Not a supported image file: $selected" >&2
+    exit 1
+fi
+
 echo "$selected"

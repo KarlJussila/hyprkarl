@@ -81,11 +81,7 @@ parse_args() {
 # =============================================================================
 
 prompt_for_input_file() {
-    command -v gum >/dev/null 2>&1 || error "gum not found; supply input file as argument."
-    input=$(
-        find ~/Videos -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.mov" \) \
-        | gum filter --prompt="Select video: "
-    )
+    input=$(hyprkarl-select-video)
     [[ -n "$input" ]] || error "No file selected."
 }
 

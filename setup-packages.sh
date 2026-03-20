@@ -49,10 +49,10 @@ paru -S --needed --noconfirm \
   hyprshutdown \
   wifitui-bin \
   yaru-icon-theme \
-  dragon-drop
+  dragon-drop \
+  xdg-desktop-portal-termfilechooser-hunkyburrito-git
 
 # Remove packages
 sudo pacman -Rns --noconfirm \
   wofi \
   dolphin
-

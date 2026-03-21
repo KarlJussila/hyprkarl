@@ -1,9 +1,13 @@
 #!/bin/bash
 # hyprkarl-lock
-# Script for locking the device
+# Launch hyprlock if not already running, then wait until its
+# Wayland surface is present before returning.
 
-# Lock the screen
 pidof hyprlock || hyprlock &
 
-# Set keyboard layout to default (first layout)
+for i in $(seq 1 20); do
+    hyprctl clients -j 2>/dev/null | jq -e 'any(.[]; .class == "hyprlock")' > /dev/null && break
+    sleep 0.1
+done
+
 hyprctl switchxkblayout all 0 > /dev/null 2>&1

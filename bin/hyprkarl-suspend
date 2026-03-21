@@ -1,13 +1,6 @@
 #!/bin/bash
 # hyprkarl-suspend
-# Lock the screen and suspend the system
+# Make sure hyprlock starts before suspending
 
 hyprkarl-lock
-
-# Wait until hyprlock is actually running (up to 5s)
-for i in $(seq 1 10); do
-    pidof hyprlock > /dev/null && break
-    sleep 0.5
-done
-
 systemctl suspend

@@ -1,4 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-menu-launcher
 # Launch the rofi application launcher
+
 rofi -show drun -theme $HOME/.config/rofi/launcher.rasi

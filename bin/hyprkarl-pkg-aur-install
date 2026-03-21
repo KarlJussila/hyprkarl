@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-pkg-aur-install
 # Show a fuzzy-finder TUI for installing AUR packages
 
 fzf_args=(

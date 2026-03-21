@@ -1,8 +1,7 @@
 #!/bin/bash
-
 # hyprkarl-playerctl
 # Controls media playback and shows track info via mako notification
-
+#
 # Usage:
 #   hyprkarl-playerctl <play-pause|next|previous>
 

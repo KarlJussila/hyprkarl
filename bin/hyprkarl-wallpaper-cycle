@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-wallpaper-cycle
 # Cycles through wallpapers for the current theme
 
 WALLPAPERS_PATH="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers/"

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-wallpaper-set
 # Sets the current wallpaper
 # Usage: hyprkarl-wallpaper-set <wallpaper_filename>
 

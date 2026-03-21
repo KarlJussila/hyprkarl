@@ -1,7 +1,18 @@
 #!/bin/bash
-
-# Launch or focus on a given command identified by the provided window-pattern.
-# Used by some default bindings to ensure there is only one instance of the application open.
+# hyprkarl-launch-or-focus
+# Focuses an existing window matching the given pattern, or launches a new
+# instance if none is found. Matches against both window class and title.
+#
+# Usage:
+#   hyprkarl-launch-or-focus <window-pattern> [launch-command]
+#
+#   window-pattern   Case-insensitive pattern matched against window class and title.
+#   launch-command   Command to run if no matching window is found.
+#                    Defaults to "uwsm-app -- <window-pattern>" if omitted.
+#
+# Examples:
+#   hyprkarl-launch-or-focus firefox
+#   hyprkarl-launch-or-focus nmtui "hyprkarl-launch-tui nmtui"
 
 if (($# == 0)); then
   echo "Usage: hyprkarl-launch-or-focus [window-pattern] [launch-command]"

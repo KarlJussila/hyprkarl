@@ -1,8 +1,7 @@
 #!/bin/bash
-
 # hyprkarl-fingerprint-remove
 # Removes an enrolled fingerprint.
-
+#
 # Usage:
 #   hyprkarl-fingerprint-remove <finger-name>
 #

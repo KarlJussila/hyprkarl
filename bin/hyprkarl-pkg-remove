@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-pkg-remove
 # Show a fuzzy-finder TUI for uninstalling packages
 
 fzf_args=(

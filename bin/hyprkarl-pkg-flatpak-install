@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-pkg-flatpak-install
 # Show a fuzzy-finder TUI for installing flatpaks
 
 fzf_args=(

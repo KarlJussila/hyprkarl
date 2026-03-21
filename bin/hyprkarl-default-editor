@@ -1,6 +1,11 @@
 #!/bin/bash
-
-# Install an editor and set it as the default ($EDITOR)
+# hyprkarl-default-editor
+# Installs an editor and sets it as the default ($EDITOR).
+#
+# Usage:
+#   hyprkarl-default-editor <editor>
+#
+#   editor   One of: nvim, vim, nano, micro, vscodium
 
 if (($# == 0)); then
   echo "Usage: hyprkarl-default-editor [nvim|vim|nano|micro|vscodium]"

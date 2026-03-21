@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-pkg-flatpak-remove
 # Show a fuzzy-finder TUI for uninstalling flatpaks
 
 fzf_args=(

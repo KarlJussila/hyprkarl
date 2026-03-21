@@ -1,6 +1,6 @@
 #!/bin/bash
-
-# Change gnome settings to match the current theme
+# hyprkarl-theme-set-gtk
+# Change gtk settings to match the current theme
 
 # Change gnome modes
 if [[ -f ~/.config/hyprkarl/current/theme/light.mode ]]; then

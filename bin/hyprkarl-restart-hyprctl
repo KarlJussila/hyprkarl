@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-restart-hyprctl
 # Reload hyprland configuration
 
 hyprctl reload >/dev/null

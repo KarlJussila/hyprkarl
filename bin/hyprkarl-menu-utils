@@ -1,10 +1,10 @@
 #!/bin/bash
-
+# hyprkarl-menu-utils
 # Menu for common utilities
-
+#
 # Usage:
 #   hyprkarl-menu-utils [back_cmd]
-
+#
 #   back_cmd   Optional command to invoke if the user dismisses the menu.
 #              Also passed to submenus so they can navigate back to this
 #              menu or continue up the call chain. If omitted, dismissing

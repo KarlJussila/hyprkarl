@@ -1,8 +1,7 @@
 #!/bin/bash
-
 # hyprkarl-select-picture
 # Interactive picker for selecting an image file
-
+#
 # Usage:
 #   hyprkarl-select-picture [directory]
 #

@@ -1,12 +1,11 @@
 #!/bin/bash
-
-# hyprkarl-setup-fingerprint
+# hyprkarl-fingerprint-setup
 # Sets up or removes fingerprint authentication for sudo and polkit.
 # Installs fprintd, configures PAM, and walks through fingerprint enrollment.
-
+#
 # Usage:
-#   hyprkarl-setup-fingerprint            # Install and configure fingerprint auth
-#   hyprkarl-setup-fingerprint --remove   # Remove fingerprint auth and uninstall packages
+#   hyprkarl-fingerprint-setup            # Install and configure fingerprint auth
+#   hyprkarl-fingerprint-setup --remove   # Remove fingerprint auth and uninstall packages
 
 set -e
 

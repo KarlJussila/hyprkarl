@@ -1,11 +1,10 @@
 #!/bin/bash
-
 # hyprkarl-wallpaper-select
 # Displays a wallpaper picker and prints the selected filename to stdout.
-
+#
 # Usage:
 #   hyprkarl-wallpaper-menu [highlight-color]
-
+#
 #   highlight-color   Optional hex color for the selection border (e.g. #cc5555).
 #                     Defaults to the theme's highlight color if omitted.
 

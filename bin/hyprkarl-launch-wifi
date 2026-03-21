@@ -1,6 +1,6 @@
 #!/bin/bash
-
-# Launch wifi controls (provided by the WiFiTUI).
+# hyprkarl-launch-wifi
+# Launch wifi controls (provided by the wifitui).
 # Attempts to unblock the wifi service first in case it is blocked.
 
 rfkill unblock wifi

@@ -1,8 +1,7 @@
 #!/bin/bash
-
 # hyprkarl-brightness-keyboard
 # Adjust keyboard backlight brightness and show OSD
-
+#
 # Usage:
 #   hyprkarl-brightness-keyboard <up|down>
 

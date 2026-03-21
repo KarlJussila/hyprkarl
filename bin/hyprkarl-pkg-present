@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # hyprkarl-pkg-present
 # Returns true if all listed packages are installed,
 # or false if any are missing.

@@ -1,12 +1,11 @@
 #!/bin/bash
-
 # hyprkarl-find-icon
 # Finds an icon file by name, searching the hyprkarl theme icons first,
 # then the current GTK icon theme with fallback to Yaru and hicolor.
-
+#
 # Usage:
 #   hyprkarl-find-icon <icon-name> [category...]
-
+#
 # Categories are only used when searching system icon themes, and default
 # to "actions" if omitted. Multiple categories are searched in order.
 

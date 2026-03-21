@@ -1,7 +1,8 @@
 #!/bin/bash
 
-if [ -f ~/.cache/hyprkarl-caffeine ]; then
-  echo '{"text": "  ", "tooltip": "Caffeine (ON)"}';
+if systemctl --user is-active --quiet hypridle.service; then
+  echo '{"text": " 󰽖 ", "tooltip": "Caffeine (OFF)"}'
 else
-  echo '{"text": " 󰽖 ", "tooltip": "Caffeine (OFF)"}';
+  echo '{"text": "  ", "tooltip": "Caffeine (ON)"}'
 fi
+

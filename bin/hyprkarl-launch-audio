@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-launch-audio
 # Launch the audio controls TUI (provided by wiremix).
 
 hyprkarl-launch-or-focus-tui wiremix

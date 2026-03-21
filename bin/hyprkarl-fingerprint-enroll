@@ -1,8 +1,7 @@
 #!/bin/bash
-
 # hyprkarl-fingerprint-enroll
 # Enrolls a fingerprint. Prompts for finger selection with gum if no argument provided.
-
+#
 # Usage:
 #   hyprkarl-fingerprint-enroll                 # Prompt for finger
 #   hyprkarl-fingerprint-enroll <finger-name>   # Enroll specific finger

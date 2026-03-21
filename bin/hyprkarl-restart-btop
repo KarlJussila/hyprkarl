@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-restart-btop
 # Reload btop configuration
 
 pkill -SIGUSR2 btop

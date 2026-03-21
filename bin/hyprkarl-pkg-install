@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-pkg-install
 # Show a fuzzy-finder TUI for installing pacman packages
 
 fzf_args=(

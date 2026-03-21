@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-restart-app
 # Restart an application by killing it and relaunching via uwsm.
 # Usage: hyprkarl-restart-app <application-name>
 

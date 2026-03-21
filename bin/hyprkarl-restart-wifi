@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-restart-wifi
 # Unblock and restart the Wi-Fi service.
 
 echo -e "Unblocking wifi...\n"

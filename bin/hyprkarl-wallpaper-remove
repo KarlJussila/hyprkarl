@@ -1,8 +1,7 @@
 #!/bin/bash
-
 # hyprkarl-wallpaper-remove
 # Removes a wallpaper from the current theme and deletes its cached thumbnail.
-
+#
 # Usage:
 #   hyprkarl-wallpaper-remove <wallpaper_filename>
 

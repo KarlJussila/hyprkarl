@@ -1,7 +1,13 @@
 #!/bin/bash
-
-# Launch or focus on a given TUI identified by the passed in as the command.
-# Used by commands like hyprkarl-launch-wifi to ensure there is only one wifi configuration screen open.
+# hyprkarl-launch-or-focus-tui
+# Focuses an existing TUI window if one is already open, or launches a new
+# one. Prevents duplicate instances of TUI apps like wifi or bluetooth config.
+#
+# Usage:
+#   hyprkarl-launch-or-focus-tui <command> [args...]
+#
+# Example:
+#   hyprkarl-launch-or-focus-tui btop
 
 APP_ID="org.hyprkarl.$(basename "$1")"
 LAUNCH_COMMAND="hyprkarl-launch-tui $@"

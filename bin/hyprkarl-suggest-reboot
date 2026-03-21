@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-suggest-reboot
 # Notify the user that a reboot is required for changes to take effect
 
 notify-send " Reboot required" --expire-time=0

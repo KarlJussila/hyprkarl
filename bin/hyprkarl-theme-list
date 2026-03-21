@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-theme-list
 # Get a list of the installed themes and format them nicely
 
 {

@@ -1,7 +1,11 @@
 #!/bin/bash
-
+# hyprkarl-wallpaper-add
 # Adds a wallpaper to the current theme
-# Usage: hyprkarl-wallpaper-add <path_to_image>
+#
+# Usage:
+#   hyprkarl-wallpaper-add <path>
+#
+#   path   Path to the image file to add. Supported formats: jpg, jpeg, png, webp
 
 WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
 

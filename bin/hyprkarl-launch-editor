@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-launch-editor
 # Launch the default editor defined by $EDITOR (~/.config/uwsm/default).
 
 hyprkarl-cmd-present "$EDITOR" || EDITOR=nvim

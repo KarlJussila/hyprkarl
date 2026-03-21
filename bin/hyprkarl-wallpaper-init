@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-wallpaper-init
 # Initializes the wallpaper on startup
 
 CURRENT_WALLPAPER_LINK="$HYPRKARL_PATH/config/hyprkarl/current/wallpaper"

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-wallpaper-cache
 # Manages the wallpaper thumbnail cache for the current theme
 #
 # Usage:

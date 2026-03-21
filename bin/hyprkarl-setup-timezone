@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-setup-timezone
 # Show a gum TUI for setting the system timezone
 
 timezone=$(timedatectl list-timezones | gum filter --height 20 --header "Set timezone") || exit 1

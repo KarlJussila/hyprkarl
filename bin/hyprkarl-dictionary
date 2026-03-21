@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-dictionary
 # A dictionary TUI powered by fzf and dict.org
 
 # Create a temporary file to store the current source

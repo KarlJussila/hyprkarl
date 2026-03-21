@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # hyprkarl-compress-video
 # Compresses a video file to a target file size using two-pass encoding.
 #

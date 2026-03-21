@@ -1,4 +1,6 @@
 #!/bin/bash
+# hyprkarl-notify-window-class
+# Send a notification with the class of the currently focused window
 
 # Get the class of the active window
 WINDOW_CLASS=$(hyprctl activewindow -j | jq -r '.class')

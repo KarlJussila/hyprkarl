@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-pkg-drop
 # Remove all the named packages from the system if they're installed (otherwise ignore).
 
 for pkg in "$@"; do

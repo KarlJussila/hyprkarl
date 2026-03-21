@@ -1,4 +1,6 @@
 #!/bin/bash
+# hyprkarl-restart-terminal
+# Reload terminal configs
 
 if [[ -f ~/.config/alacritty/alacritty.toml ]]; then
   touch ~/.config/alacritty/alacritty.toml

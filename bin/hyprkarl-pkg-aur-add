@@ -1,7 +1,7 @@
 #!/bin/bash
-
+# hyprkarl-pkg-aur-add
 # Add listed packages to the system from the AUR. Returns false if it couldn't be done.
-
+#
 # Usage:
 #   hyprkarl-pkg-aur-add <package> [package...]
 #

@@ -41,7 +41,8 @@ sudo pacman -S --needed --noconfirm \
   kvantum-qt5 \
   qt6ct \
   qt5ct \
-  7zip
+  7zip \
+  resvg
 
 paru -S --needed --noconfirm \
   xdg-terminal-exec \

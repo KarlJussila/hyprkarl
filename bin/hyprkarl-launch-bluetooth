@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# hyprkarl-launch-bluetooth
 # Launch bluetooth controls (provided by bluetui).
 # Also attempts to unblock bluetooth service if rfkill had blocked it.
 

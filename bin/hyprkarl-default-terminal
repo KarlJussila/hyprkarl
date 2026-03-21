@@ -1,6 +1,14 @@
 #!/bin/bash
-
-# Install a terminal emulator and set it as the default
+# hyprkarl-default-terminal
+# Installs a terminal emulator and sets it as the system default.
+#
+# Usage:
+#   hyprkarl-default-terminal <terminal>
+#
+#   terminal   One of: alacritty, ghostty, kitty, foot
+#
+# Updates the TERMINAL environment variable, xdg-terminals.list priority,
+# and enables/disables the Ghostty background service as appropriate.
 
 if (($# == 0)); then
   echo "Usage: hyprkarl-default-terminal [alacritty|ghostty|kitty|foot]"

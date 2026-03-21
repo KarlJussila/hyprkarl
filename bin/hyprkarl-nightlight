@@ -1,8 +1,8 @@
 #!/bin/bash
-
+# hyprkarl-nightlight
 # Nightlight toggle (color temperature and sub-mininmum dimming)
 #
-# Usage: hyprkarl-toggle-nightlight [on|off|toggle]
+# Usage: hyprkarl-nightlight [on|off|toggle]
 #   on     - enable nightlight (warm temperature), no-op if already on
 #   off    - disable nightlight (cool temperature), no-op if already off
 #   toggle - (default) switch to whichever state is not current

@@ -2,11 +2,11 @@
     font: "JetBrainsMonoNL Nerd Font Propo 12";
 
     background:      #1b1519FF;
-    background-alt:  #2f242bFF;
+    background-alt:  #2f252cFF;
     foreground:      #d2ccd2FF;
-    accent:          #40003aFF;
+    accent:          #3a0035FF;
 
-    highlight:        #b773d6FF;
+    highlight:        #a46fd6FF;
 
     active:          #c7a3bfFF;
     urgent:          #cc5555FF;

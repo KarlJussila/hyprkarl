@@ -1,10 +1,10 @@
-theme[main_bg]       = "#2D353B"
-theme[title]         = "#7FBBB3"
-theme[hi_fg]         = "#527974"
+theme[main_bg]       = "#2d353b"
+theme[title]         = "#7fbbb3"
+theme[hi_fg]         = "#417a72"
 
 theme[selected_bg]   = "#3D484D"
-theme[selected_fg]   = "#D3C6AA"
-theme[inactive_fg]   = "#868D80"
+theme[selected_fg]   = "#d3c6aa"
+theme[inactive_fg]   = "#868d80"
 
 theme[cpu_box]       = "#56635F"
 theme[mem_box]       = "#56635F"
@@ -12,46 +12,46 @@ theme[net_box]       = "#56635F"
 theme[proc_box]      = "#56635F"
 theme[div_line]      = "#56635F"
 
-theme[graph_text]    = "#A7C080"
-theme[proc_misc]     = "#A7C080"
+theme[graph_text]    = "#a7c080"
+theme[proc_misc]     = "#a7c080"
 
 # temperature gradient
-theme[temp_start]    = "#2D353B"
-theme[temp_mid]      = "#DBBC7F"
-theme[temp_end]      = "#DBBC7F"
+theme[temp_start]    = "#2d353b"
+theme[temp_mid]      = "#dbbc7f"
+theme[temp_end]      = "#dbbc7f"
 
 # cpu
-theme[cpu_start]     = "#E67E80"
-theme[cpu_mid]       = "#E67E80"
-theme[cpu_end]       = "#DBBC7F"
+theme[cpu_start]     = "#e67e80"
+theme[cpu_mid]       = "#e67e80"
+theme[cpu_end]       = "#dbbc7f"
 
 # memory
-theme[free_start]    = "#343F44"
-theme[free_mid]      = "#A7C080"
-theme[free_end]      = "#A7C080"
+theme[free_start]    = "#343f44"
+theme[free_mid]      = "#a7c080"
+theme[free_end]      = "#a7c080"
 
-theme[cached_start]  = "#343F44"
-theme[cached_mid]    = "#A7C080"
-theme[cached_end]    = "#A7C080"
+theme[cached_start]  = "#343f44"
+theme[cached_mid]    = "#a7c080"
+theme[cached_end]    = "#a7c080"
 
-theme[available_start] = "#343F44"
-theme[available_mid]   = "#A7C080"
-theme[available_end]   = "#A7C080"
+theme[available_start] = "#343f44"
+theme[available_mid]   = "#a7c080"
+theme[available_end]   = "#a7c080"
 
-theme[used_start]    = "#7FBBB3"
-theme[used_mid]      = "#7FBBB3"
-theme[used_end]      = "#83C092"
+theme[used_start]    = "#7fbbb3"
+theme[used_mid]      = "#7fbbb3"
+theme[used_end]      = "#83c092"
 
 # network
-theme[download_start] = "#7FBBB3"
-theme[download_mid]   = "#7FBBB3"
-theme[download_end]   = "#DBBC7F"
+theme[download_start] = "#7fbbb3"
+theme[download_mid]   = "#7fbbb3"
+theme[download_end]   = "#dbbc7f"
 
-theme[upload_start]   = "#D699B6"
-theme[upload_mid]     = "#83C092"
-theme[upload_end]     = "#DBBC7F"
+theme[upload_start]   = "#d699b6"
+theme[upload_mid]     = "#83c092"
+theme[upload_end]     = "#dbbc7f"
 
 # process
-theme[process_start]  = "#7FBBB3"
-theme[process_mid]    = "#7FBBB3"
-theme[process_end]    = "#83C092"
+theme[process_start]  = "#7fbbb3"
+theme[process_mid]    = "#7fbbb3"
+theme[process_end]    = "#83c092"

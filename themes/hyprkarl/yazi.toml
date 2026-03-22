@@ -1,10 +1,10 @@
 "$schema" = "https://yazi-rs.github.io/schemas/theme.json"
 
 [mgr]
-cwd = { fg = "#b773d6" }
+cwd = { fg = "#a46fd6" }
 
 find_keyword  = { fg = "#63005A", bold = true }
-find_position = { fg = "#b773d6", bold = true }
+find_position = { fg = "#a46fd6", bold = true }
 
 marker_copied   = { fg = "#c7a3bf", bg = "#c7a3bf" }
 marker_cut      = { fg = "#cc5555", bg = "#cc5555" }
@@ -20,45 +20,45 @@ syntect_theme = ""
 sep_outer = { open = "", close = "" }
 sep_inner = { open = "", close = "" }
 
-active   = { bg = "#b773d6", fg = "#1b1519", bold = true }
-inactive = { fg = "#b773d6", bg = "#251c22" }
+active   = { bg = "#a46fd6", fg = "#1b1519", bold = true }
+inactive = { fg = "#a46fd6", bg = "#241c21" }
 
 # Mode
 [mode]
-normal_main = { bg = "#b773d6", fg = "#1b1519", bold = true }
-normal_alt  = { fg = "#b773d6", bg = "#251c22" }
+normal_main = { bg = "#a46fd6", fg = "#1b1519", bold = true }
+normal_alt  = { fg = "#a46fd6", bg = "#241c21" }
 
 select_main = { bg = "#63005A", fg = "#1b1519", bold = true }
-select_alt  = { fg = "#63005A", bg = "#251c22" }
+select_alt  = { fg = "#63005A", bg = "#241c21" }
 
 unset_main = { bg = "#cc5555", fg = "#1b1519", bold = true }
-unset_alt  = { fg = "#cc5555", bg = "#251c22" }
+unset_alt  = { fg = "#cc5555", bg = "#241c21" }
 
 # Status
 [status]
 sep_left = { open = "", close = "" }
 sep_right = { open = "", close = "" }
 
-perm_sep   = { fg = "#737073" }
+perm_sep   = { fg = "#8a7b8a" }
 perm_type  = { fg = "#c7a3bf" }
 perm_read  = { fg = "#f4b39e" }
 perm_write = { fg = "#cc5555" }
-perm_exec  = { fg = "#b773d6" }
+perm_exec  = { fg = "#a46fd6" }
 
-progress_normal = { fg = "#c7a3bf", bg = "#2f242b" }
+progress_normal = { fg = "#c7a3bf", bg = "#2f252c" }
 progress_error  = { fg = "#f4b39e", bg = "#cc5555" }
 
 # Which menu
 [which]
 mask = { bg = "#1b1519" }
-cand = { fg = "#b773d6" }
-rest = { fg = "#737073" }
+cand = { fg = "#a46fd6" }
+rest = { fg = "#8a7b8a" }
 desc = { fg = "#63005A" }
 
 # Confirm
 [confirm]
-border = { fg = "#b773d6" }
-title  = { fg = "#b773d6" }
+border = { fg = "#a46fd6" }
+title  = { fg = "#a46fd6" }
 
 # Notifications
 [notify]
@@ -68,25 +68,25 @@ title_error = { fg = "#cc5555" }
 
 # Picker
 [pick]
-border = { fg = "#b773d6" }
+border = { fg = "#a46fd6" }
 active = { fg = "#63005A", bold = true }
 
 # Input
 [input]
-border = { fg = "#b773d6" }
+border = { fg = "#a46fd6" }
 
 # Completion
 [cmp]
-border = { fg = "#b773d6" }
+border = { fg = "#a46fd6" }
 
 # Tasks
 [tasks]
-border  = { fg = "#b773d6" }
+border  = { fg = "#a46fd6" }
 hovered = { fg = "#63005A", bold = true }
 
 # Help
 [help]
-on      = { fg = "#b773d6" }
+on      = { fg = "#a46fd6" }
 run     = { fg = "#63005A" }
 desc    = { fg = "#d2ccd2" }
 footer  = { fg = "#1b1519", bg = "#d2ccd2" }
@@ -97,9 +97,9 @@ rules = [
   { mime = "image/*", fg = "#f4b39e" },
   { mime = "{audio,video}/*", fg = "#63005A" },
   { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma}", fg = "#cc5555" },
-  { mime = "application/{pdf,doc,rtf}", fg = "#b773d6" },
+  { mime = "application/{pdf,doc,rtf}", fg = "#a46fd6" },
   { url = "*", is = "exec", fg = "#c7a3bf" },
-  { url = "*/", fg = "#b773d6" }
+  { url = "*/", fg = "#a46fd6" }
 ]
 
 # Indicator

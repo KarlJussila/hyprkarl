@@ -1,5 +1,5 @@
 Primary = "#8a1a80"
-Subtle = "#764a8b"
+Subtle = "#642c9a"
 Success = "#c7a3bf"
 Error = "#cc5555"
 
@@ -10,7 +10,7 @@ Border = "#96708e"
 SignalHigh = ["#dea6f5", "#dea6f5"]
 SignalLow = ["#2e2329", "#2e2329"]
 
-Saved = "#b773d6"
+Saved = "#a46fd6"
 
 TitleIcon = "󰖩 "
 NetworkSecureIcon = "󰌾 "

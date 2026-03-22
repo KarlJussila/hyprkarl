@@ -1,8 +1,8 @@
 theme[main_bg]       = "#1b1519"
 theme[title]         = "#dea6f5"
-theme[hi_fg]         = "#764a8b"
+theme[hi_fg]         = "#642c9a"
 
-theme[selected_bg]   = "#2f242b"
+theme[selected_bg]   = "#2f252c"
 theme[selected_fg]   = "#d2ccd2"
 theme[inactive_fg]   = "#42333b"
 
@@ -48,7 +48,7 @@ theme[download_mid]   = "#9877dc"
 theme[download_end]   = "#d7937d"
 
 theme[upload_start]   = "#63005A"
-theme[upload_mid]     = "#b773d6"
+theme[upload_mid]     = "#a46fd6"
 theme[upload_end]     = "#f4b39e"
 
 # process

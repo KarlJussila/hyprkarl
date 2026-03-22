@@ -14,12 +14,12 @@ vim.opt.background = "dark"
 
 local c = {
   bg             = "#1b1519",
-  surface        = "#2f242b",
+  surface        = "#2f252c",
   surface_alt    = "#43343e",
 
   fg             = "#d2ccd2",
-  fg_muted       = "#b2adb2",
-  fg_dim         = "#737073",
+  fg_muted       = "#b3a9b3",
+  fg_dim         = "#8a7b8a",
 
   black          = "#2e2329",
 
@@ -38,7 +38,7 @@ local c = {
   magenta        = "#63005A",
   magenta_bright = "#8a1a80",
 
-  cyan           = "#b773d6",
+  cyan           = "#a46fd6",
   cyan_bright    = "#dea6f5",
 
   white          = "#d2ccd2",
@@ -47,7 +47,7 @@ local c = {
   cursor         = "#e3a16f",
 
   border         = "#63005A",
-  border_soft    = "#40003a",
+  border_soft    = "#3a0035",
 
   highlight      = "#8a1a80",
 }

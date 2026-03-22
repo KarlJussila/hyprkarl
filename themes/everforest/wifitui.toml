@@ -1,16 +1,16 @@
-Primary = "#A7C080"
-Subtle = "#527974"
-Success = "#A7C080"
-Error = "#E67E80"
+Primary = "#a7c080"
+Subtle = "#417a72"
+Success = "#a7c080"
+Error = "#e67e80"
 
-Normal = "#D3C6AA"
-Disabled = "#868D80"
+Normal = "#d3c6aa"
+Disabled = "#868d80"
 Border = "#56635F"
 
-SignalHigh = ["#83C092", "#83C092"]
-SignalLow = ["#343F44", "#343F44"]
+SignalHigh = ["#83c092", "#83c092"]
+SignalLow = ["#343f44", "#343f44"]
 
-Saved = "#83C092"
+Saved = "#83c092"
 
 TitleIcon = "󰖩 "
 NetworkSecureIcon = "󰌾 "

@@ -13,43 +13,43 @@ vim.opt.background = "dark"
 ----------------------------------------------------------------
 
 local c = {
-  bg             = "#2D353B",
+  bg             = "#2d353b",
   surface        = "#3D484D",
   surface_alt    = "#4F585E",
 
-  fg             = "#D3C6AA",
+  fg             = "#d3c6aa",
   fg_muted       = "#9DA9A0",
   fg_dim         = "#7A8478",
 
-  black          = "#343F44",
+  black          = "#343f44",
 
-  red            = "#E67E80",
-  red_bright     = "#E67E80",
+  red            = "#e67e80",
+  red_bright     = "#e67e80",
 
-  green          = "#A7C080",
-  green_bright   = "#A7C080",
+  green          = "#a7c080",
+  green_bright   = "#a7c080",
 
-  yellow         = "#DBBC7F",
-  yellow_bright  = "#DBBC7F",
+  yellow         = "#dbbc7f",
+  yellow_bright  = "#dbbc7f",
 
-  blue           = "#7FBBB3",
-  blue_bright    = "#7FBBB3",
+  blue           = "#7fbbb3",
+  blue_bright    = "#7fbbb3",
 
-  magenta        = "#D699B6",
-  magenta_bright = "#D699B6",
+  magenta        = "#d699b6",
+  magenta_bright = "#d699b6",
 
-  cyan           = "#83C092",
-  cyan_bright    = "#83C092",
+  cyan           = "#83c092",
+  cyan_bright    = "#83c092",
 
   white          = "#859289",
-  white_bright   = "#9DA9A0",
+  white_bright   = "#9da9a0",
 
-  cursor         = "#D3C6AA",
+  cursor         = "#d3c6aa",
 
-  border         = "#A7C080",
-  border_soft    = "#6c7c53",
+  border         = "#a7c080",
+  border_soft    = "#678140",
 
-  highlight      = "#A7C080",
+  highlight      = "#a7c080",
 }
 
 ----------------------------------------------------------------

@@ -1,13 +1,25 @@
 #!/bin/bash
 # hyprkarl-lock
-# Launch hyprlock if not already running, then wait until its
-# Wayland surface is present before returning.
+# Launch hyprlock if not already running, wait until its Wayland surface
+# is present, ensure fprintd is ready, then return.
 
 pidof hyprlock || hyprlock &
 
+# Wait until hyprlock is fully initialized
 for i in $(seq 1 20); do
     hyprctl clients -j 2>/dev/null | jq -e 'any(.[]; .class == "hyprlock")' > /dev/null && break
     sleep 0.1
 done
 
+# Wait for fprintd if it's installed and hyprlock is configured to use it
+if systemctl list-unit-files fprintd.service &>/dev/null && \
+   grep -qiE '^\s*fingerprint:enabled\s*=\s*true' ~/.config/hypr/hyprlock.conf 2>/dev/null; then
+    for i in $(seq 1 20); do
+        systemctl is-active --quiet fprintd.service && break
+        sleep 0.1
+    done
+    sleep 1
+fi
+
+# Switch to default keyboard layout
 hyprctl switchxkblayout all 0 > /dev/null 2>&1

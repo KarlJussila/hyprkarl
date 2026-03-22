@@ -23,7 +23,7 @@ window {
     enabled:                     true;
     margin:                      0px;
     padding:                     0px;
-    border:                      2px solid;
+    border:                      3px solid;
     border-radius:               0px;
     border-color:                @accent;
     background-color:            @background;
@@ -34,9 +34,9 @@ window {
 mainbox {
     enabled:                     true;
     spacing:                     0px;
-    margin:                      0px;
+    margin:                      6px;
     padding:                     0px;
-    border:                      0px solid;
+    border:                      3px solid;
     border-radius:               0px 0px 0px 0px;
     border-color:                @accent;
     background-color:            transparent;
@@ -47,9 +47,9 @@ mainbox {
 inputbar {
     enabled:                     true;
     spacing:                     10px;
-    margin:                      0px;
-    padding:                     12px;
-    border:                      0px solid;
+    margin:                      6px;
+    padding:                     4px;
+    border:                      3px solid;
     border-radius:               0px;
     border-color:                @accent;
     background-color:            @accent;
@@ -91,8 +91,8 @@ listview {
     fixed-height:                true;
     fixed-columns:               true;
     
-    spacing:                     5px;
-    margin:                      0px;
+    spacing:                     0px;
+    margin:                      0px 6px 6px 6px;
     padding:                     0px;
     border:                      0px solid;
     border-radius:               0px;
@@ -128,6 +128,8 @@ element normal.normal {
 element selected.normal {
     background-color:            @background-alt;
     text-color:                  @foreground;
+    border:                      2px solid;
+    border-color:                @accent;
 }
 element-icon {
     background-color:            transparent;

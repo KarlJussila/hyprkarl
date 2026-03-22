@@ -20,7 +20,7 @@ window {
     cursor:                      "default";
     spacing:                     0px;
     padding:                     0px;
-    border:                      3px;
+    border:                      4px;
     border-radius:               0px;
     border-color:                @accent;
     background-color:            @background;

@@ -1,0 +1,107 @@
+"$schema" = "https://yazi-rs.github.io/schemas/theme.json"
+
+[mgr]
+cwd = { fg = "#7daea3" }
+
+find_keyword  = { fg = "#e78a4e", bold = true }
+find_position = { fg = "#7daea3", bold = true }
+
+marker_copied   = { fg = "#a9b665", bg = "#a9b665" }
+marker_cut      = { fg = "#ea6962", bg = "#ea6962" }
+marker_marked   = { fg = "#7daea3", bg = "#7daea3" }
+marker_selected = { fg = "#e78a4e", bg = "#e78a4e" }
+
+border_style = { fg = "#e78a4e" }
+
+syntect_theme = ""
+
+# Tabs
+[tabs]
+sep_outer = { open = "", close = "" }
+sep_inner = { open = "", close = "" }
+
+active   = { bg = "#7daea3", fg = "#282828", bold = true }
+inactive = { fg = "#7daea3", bg = "#302c29" }
+
+# Mode
+[mode]
+normal_main = { bg = "#7daea3", fg = "#282828", bold = true }
+normal_alt  = { fg = "#7daea3", bg = "#302c29" }
+
+select_main = { bg = "#e78a4e", fg = "#282828", bold = true }
+select_alt  = { fg = "#e78a4e", bg = "#302c29" }
+
+unset_main = { bg = "#ea6962", fg = "#282828", bold = true }
+unset_alt  = { fg = "#ea6962", bg = "#302c29" }
+
+# Status
+[status]
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+
+perm_sep   = { fg = "#928374" }
+perm_type  = { fg = "#a9b665" }
+perm_read  = { fg = "#e78a4e" }
+perm_write = { fg = "#ea6962" }
+perm_exec  = { fg = "#7daea3" }
+
+progress_normal = { fg = "#a9b665", bg = "#3b3530" }
+progress_error  = { fg = "#e78a4e", bg = "#ea6962" }
+
+# Which menu
+[which]
+mask = { bg = "#282828" }
+cand = { fg = "#7daea3" }
+rest = { fg = "#928374" }
+desc = { fg = "#e78a4e" }
+
+# Confirm
+[confirm]
+border = { fg = "#7daea3" }
+title  = { fg = "#7daea3" }
+
+# Notifications
+[notify]
+title_info  = { fg = "#a9b665" }
+title_warn  = { fg = "#e78a4e" }
+title_error = { fg = "#ea6962" }
+
+# Picker
+[pick]
+border = { fg = "#7daea3" }
+active = { fg = "#e78a4e", bold = true }
+
+# Input
+[input]
+border = { fg = "#7daea3" }
+
+# Completion
+[cmp]
+border = { fg = "#7daea3" }
+
+# Tasks
+[tasks]
+border  = { fg = "#7daea3" }
+hovered = { fg = "#e78a4e", bold = true }
+
+# Help
+[help]
+on      = { fg = "#7daea3" }
+run     = { fg = "#e78a4e" }
+desc    = { fg = "#d4be98" }
+footer  = { fg = "#282828", bg = "#d4be98" }
+
+# Filetypes
+[filetype]
+rules = [
+  { mime = "image/*", fg = "#e78a4e" },
+  { mime = "{audio,video}/*", fg = "#e78a4e" },
+  { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma}", fg = "#ea6962" },
+  { mime = "application/{pdf,doc,rtf}", fg = "#7daea3" },
+  { url = "*", is = "exec", fg = "#a9b665" },
+  { url = "*/", fg = "#7daea3" }
+]
+
+# Indicator
+[indicator]
+padding = { open = "█", close = "█" }

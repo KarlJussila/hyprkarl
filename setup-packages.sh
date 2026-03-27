@@ -42,7 +42,8 @@ sudo pacman -S --needed --noconfirm \
   qt6ct \
   qt5ct \
   7zip \
-  resvg
+  resvg \
+  rofi-calc
 
 paru -S --needed --noconfirm \
   xdg-terminal-exec \

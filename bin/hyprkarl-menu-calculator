@@ -1,0 +1,22 @@
+#!/bin/bash
+# hyprkarl-menu-calculator
+# Launches rofi-calc and trims history to 5 entries on exit.
+#
+# Ctrl+Return copies the current result to the clipboard.
+
+HISTORY="$HOME/.local/share/rofi/rofi_calc_history"
+
+rofi -show calc \
+     -modi calc \
+     -no-show-match \
+     -no-sort \
+     -hint-welcome "" \
+     -hint-result "" \
+     -calc-command "echo -n '{result}' | wl-copy" \
+     -theme "$HOME/.config/rofi/calculator.rasi"
+
+# Trim history to 5 most recent entries
+if [[ -f "$HISTORY" ]] && [[ -s "$HISTORY" ]]; then
+    tmp=$(tail -n 5 "$HISTORY")
+    printf '%s\n' "$tmp" > "$HISTORY"
+fi

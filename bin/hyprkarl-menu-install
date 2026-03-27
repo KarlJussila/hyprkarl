@@ -19,8 +19,9 @@ back_cmd="$*"
 PACMAN="󰣇 Pacman"
 AUR=" AUR"
 FLATPAK="󰏖 Flatpak"
+DOCKER="󰡨 Docker"
 
-CHOICE=$(echo -e "$PACMAN\n$AUR\n$FLATPAK" \
+CHOICE=$(echo -e "$PACMAN\n$AUR\n$FLATPAK\n$DOCKER" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -31,5 +32,6 @@ case "$CHOICE" in
     "$PACMAN")  terminal hyprkarl-pkg-install ;;
     "$AUR")     terminal hyprkarl-pkg-aur-install ;;
     "$FLATPAK") terminal hyprkarl-pkg-flatpak-install ;;
+    "$DOCKER") hyprkarl-menu-docker-install "hyprkarl-menu-install $back_cmd" ;;
     "")         [[ -n "$back_cmd" ]] && $back_cmd ;;
 esac

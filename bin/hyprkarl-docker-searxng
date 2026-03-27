@@ -1,0 +1,121 @@
+#!/bin/bash
+# hyprkarl-docker-searxng
+# Installs or removes the SearXNG Docker stack (SearXNG + Valkey).
+#
+# Usage:
+#   hyprkarl-docker-searxng           Install SearXNG
+#   hyprkarl-docker-searxng --remove  Stop, remove, and delete all SearXNG data
+
+set -uo pipefail
+
+SEARXNG_DIR="$HOME/.searxng"
+COMPOSE_FILE="$SEARXNG_DIR/docker-compose.yaml"
+SETTINGS_FILE="$SEARXNG_DIR/searxng/settings.yml"
+ENV_FILE="$SEARXNG_DIR/.env"
+REPO_URL="https://github.com/searxng/searxng-docker.git"
+HOSTNAME="searxng.local:80"
+HOSTS_ENTRY="127.0.0.1 searxng.local"
+
+ensure_network() {
+    docker network inspect traefik-proxy &>/dev/null \
+        || docker network create traefik-proxy
+}
+
+remove() {
+    if [[ ! -f "$COMPOSE_FILE" ]]; then
+        gum log --level error "No SearXNG installation found at $SEARXNG_DIR, nothing to do."
+        exit 0
+    fi
+
+    gum log --level warn "This will stop the SearXNG stack and permanently delete all data in $SEARXNG_DIR."
+    if ! gum confirm "Continue?"; then
+        gum log --level error "Aborted."
+        exit 0
+    fi
+
+    gum log --level info "Stopping and removing SearXNG stack..."
+    docker compose -f "$COMPOSE_FILE" down --rmi all --volumes
+
+    gum log --level info "Deleting $SEARXNG_DIR..."
+    sudo rm -rf "$SEARXNG_DIR"
+
+    gum log --level info "Removing /etc/hosts entry..."
+    sudo sed -i "/^$HOSTS_ENTRY$/d" /etc/hosts
+}
+
+install() {
+    if [[ -d "$SEARXNG_DIR/.git" ]]; then
+        gum log --level info "Existing clone found, pulling latest..."
+        git -C "$SEARXNG_DIR" pull
+    else
+        gum log --level info "Cloning searxng-docker..."
+        git clone "$REPO_URL" "$SEARXNG_DIR"
+    fi
+
+    gum log --level info "Ensuring traefik-proxy network exists..."
+    ensure_network
+
+    gum log --level info "Generating secret key..."
+    sed -i "s|ultrasecretkey|$(openssl rand -hex 32)|g" "$SETTINGS_FILE"
+
+    gum log --level info "Configuring hostname..."
+    sed -i "s|# SEARXNG_HOSTNAME=<host>|SEARXNG_HOSTNAME=$HOSTNAME|" "$ENV_FILE"
+
+    gum log --level info "Setting base URL..."
+    sed -i "s|SEARXNG_BASE_URL=https://\${SEARXNG_HOSTNAME:-localhost}/|SEARXNG_BASE_URL=http://searxng.local/|" "$COMPOSE_FILE"
+
+    gum log --level info "Disabling Let's Encrypt for local use..."
+    sed -i "s|# LETSENCRYPT_EMAIL=<email>|LETSENCRYPT_EMAIL=|" "$ENV_FILE"
+
+    gum log --level info "Removing Caddy from compose..."
+    python3 - "$COMPOSE_FILE" << 'PYEOF'
+import sys, yaml
+
+with open(sys.argv[1]) as f:
+    c = yaml.safe_load(f)
+
+c['services'].pop('caddy', None)
+c['volumes'].pop('caddy-data', None)
+c['volumes'].pop('caddy-config', None)
+
+# Add traefik-proxy network
+c.setdefault('networks', {})['traefik-proxy'] = {'external': True}
+
+# Add network and labels to searxng service
+svc = c['services']['searxng']
+svc.setdefault('networks', ['searxng'])
+if 'searxng' in svc['networks']:
+    svc['networks'] = ['searxng', 'traefik-proxy']
+svc['labels'] = [
+    'traefik.enable=true',
+    'traefik.http.routers.searxng.rule=Host(`searxng.local`)',
+    'traefik.http.routers.searxng.entrypoints=web',
+    'traefik.http.services.searxng.loadbalancer.server.port=8080',
+]
+
+with open(sys.argv[1], 'w') as f:
+    yaml.dump(c, f, default_flow_style=False, allow_unicode=True)
+PYEOF
+
+    gum log --level info "Fixing CSP for local HTTP use..."
+    sed -i 's|upgrade-insecure-requests; ||' "$SEARXNG_DIR/Caddyfile"
+
+    gum log --level info "Removing TLS directive..."
+    sed -i '/^tls {.*}$/d' "$SEARXNG_DIR/Caddyfile"
+
+    gum log --level info "Adding /etc/hosts entry..."
+    if ! grep -qF "$HOSTS_ENTRY" /etc/hosts; then
+        echo "$HOSTS_ENTRY" | sudo tee -a /etc/hosts > /dev/null
+    fi
+
+    gum log --level info "Starting SearXNG stack..."
+    docker compose -f "$COMPOSE_FILE" up -d
+
+    gum log --level info "SearXNG is available at http://searxng.local (requires Traefik) or http://localhost:8080"
+}
+
+case "${1:-}" in
+    --remove) remove && hyprkarl-show-done ;;
+    "")       install && hyprkarl-show-done ;;
+    *)        gum log --level error "Usage: hyprkarl-docker-searxng [--remove]"; exit 1 ;;
+esac

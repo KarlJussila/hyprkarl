@@ -1,0 +1,33 @@
+#!/bin/bash
+# hyprkarl-docker-install
+# Installs Docker and Docker Compose, enables the service, and adds the
+# current user to the docker group. Offers a reboot at the end since the
+# group membership won't take effect until the next login.
+#
+# Usage:
+#   hyprkarl-docker-install
+
+set -uo pipefail
+
+PACKAGES=()
+pacman -Q docker         &>/dev/null || PACKAGES+=(docker)
+pacman -Q docker-compose &>/dev/null || PACKAGES+=(docker-compose)
+
+if (( ${#PACKAGES[@]} > 0 )); then
+    echo "Installing: ${PACKAGES[*]}"
+    sudo pacman -S --needed --noconfirm "${PACKAGES[@]}"
+fi
+
+echo "Enabling docker.service..."
+sudo systemctl enable --now docker.service
+
+echo "Adding $USER to the docker group..."
+sudo usermod -aG docker "$USER"
+
+echo
+echo "Done. You must reboot for the docker group membership to take effect."
+echo
+
+if gum confirm "Reboot now?"; then
+    hyprkarl-reboot
+fi

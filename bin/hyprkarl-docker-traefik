@@ -1,0 +1,71 @@
+#!/bin/bash
+# hyprkarl-docker-traefik
+# Installs or removes Traefik as a reverse proxy for local Docker services.
+# Provides clean .local hostnames for services on the traefik-proxy network.
+#
+# Usage:
+#   hyprkarl-docker-traefik           Install Traefik
+#   hyprkarl-docker-traefik --remove  Stop and remove Traefik
+
+set -uo pipefail
+
+TRAEFIK_DIR="$HOME/.traefik"
+COMPOSE_FILE="$TRAEFIK_DIR/docker-compose.yml"
+
+ensure_network() {
+    docker network inspect traefik-proxy &>/dev/null \
+        || docker network create traefik-proxy
+}
+
+remove() {
+    if [[ ! -f "$COMPOSE_FILE" ]]; then
+        gum log --level error "No Traefik installation found at $TRAEFIK_DIR, nothing to do."
+        exit 0
+    fi
+
+    gum log --level warn "This will remove .local hostnames for other containers. Services will still be accessible via localhost:PORT."
+    if ! gum confirm "Continue?"; then
+        gum log --level error "Aborted."
+        exit 0
+    fi
+
+    gum log --level info "Stopping and removing Traefik..."
+    docker compose -f "$COMPOSE_FILE" down --rmi all --volumes
+
+    gum log --level info "Deleting $TRAEFIK_DIR..."
+    rm -rf "$TRAEFIK_DIR"
+}
+
+install() {
+    gum log --level info "Creating Traefik directory..."
+    mkdir -p "$TRAEFIK_DIR"
+
+    gum log --level info "Ensuring traefik-proxy network exists..."
+    ensure_network
+
+    gum log --level info "Writing docker-compose.yml..."
+    cat > "$COMPOSE_FILE" << 'EOF'
+services:
+  traefik:
+    image: docker.io/library/traefik:v3
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.network=traefik-proxy"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+EOF
+
+    gum log --level info "Starting Traefik..."
+    docker compose -f "$COMPOSE_FILE" up -d
+
+    gum log --level info "Traefik is running and will automatically route .local hostnames."
+}
+
+case "${1:-}" in
+    --remove) remove && hyprkarl-show-done ;;
+    "")       install && hyprkarl-show-done ;;
+    *)        gum log --level error "Usage: hyprkarl-docker-traefik [--remove]"; exit 1 ;;
+esac

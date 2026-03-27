@@ -18,8 +18,9 @@ back_cmd="$*"
 
 SYSTEM="󰣇 System"
 FLATPAK="󰏖 Flatpak"
+DOCKER="󰡨 Docker"
 
-CHOICE=$(echo -e "$SYSTEM\n$FLATPAK" \
+CHOICE=$(echo -e "$SYSTEM\n$FLATPAK\n$DOCKER" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -29,5 +30,6 @@ CHOICE=$(echo -e "$SYSTEM\n$FLATPAK" \
 case "$CHOICE" in
     "$SYSTEM")  terminal hyprkarl-pkg-remove ;;
     "$FLATPAK") terminal hyprkarl-pkg-flatpak-remove ;;
+    "$DOCKER")  hyprkarl-menu-docker-uninstall "hyprkarl-menu-uninstall $back_cmd" ;;
     "")         [[ -n "$back_cmd" ]] && $back_cmd ;;
 esac

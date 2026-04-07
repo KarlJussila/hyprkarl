@@ -16,7 +16,15 @@ CAFFEINE=" Caffeine"
 NIGHTLIGHT=" Nightlight"
 SCREEN_RECORD=" Screen Record"
 
-CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD" \
+case "$(powerprofilesctl get)" in
+    "power-saver")    POWER_PROFILE_ICON="󰌪" ;;
+    "balanced")       POWER_PROFILE_ICON="󰗑" ;;
+    "performance")    POWER_PROFILE_ICON="󱐋" ;;
+    *)                POWER_PROFILE_ICON="󰗑" ;;
+esac
+POWER_PROFILE="$POWER_PROFILE_ICON Power Profile"
+
+CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -27,5 +35,6 @@ case "$CHOICE" in
     "$CAFFEINE")      hyprkarl-caffeine ;;
     "$NIGHTLIGHT")    hyprkarl-nightlight ;;
     "$SCREEN_RECORD") hyprkarl-record-screen ;;
+    "$POWER_PROFILE") hyprkarl-menu-power-profile "hyprkarl-menu-utils $back_cmd" ;;
     "")               [[ -n "$back_cmd" ]] && $back_cmd ;;
 esac

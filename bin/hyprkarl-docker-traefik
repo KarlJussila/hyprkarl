@@ -44,19 +44,7 @@ install() {
     ensure_network
 
     gum log --level info "Writing docker-compose.yml..."
-    cat > "$COMPOSE_FILE" << 'EOF'
-services:
-  traefik:
-    image: docker.io/library/traefik:v3
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.network=traefik-proxy"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    network_mode: host
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-EOF
+    cat "$HYPRKARL_PATH/templates/docker/traefik-docker-compose.yml" > "$COMPOSE_FILE"
 
     gum log --level info "Starting Traefik..."
     docker compose -f "$COMPOSE_FILE" up -d

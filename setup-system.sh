@@ -7,39 +7,12 @@ gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
 
 sudo gtk-update-icon-cache /usr/share/icons/Yaru
 
-# Replace any conflicting [Autologin] section from /etc/sddm.conf
-sudo tee /etc/sddm.conf <<EOF
-[Autologin]
-User=$USER
-Session=hyprland-uwsm
-
-[Theme]
-Current=breeze
-EOF
-
-# Set up autologin for sddm
-sudo mkdir -p /etc/sddm.conf.d
-
-if [ ! -f /etc/sddm.conf.d/autologin.conf ]; then
-  cat <<EOF | sudo tee /etc/sddm.conf.d/autologin.conf
-[Autologin]
-User=$USER
-Session=hyprland-uwsm
-
-[Theme]
-Current=breeze
-EOF
-fi
+# Set up SDDM autologin
+sed "s/{{USER}}/$USER/g" "$HYPRKARL_PATH/templates/setup/sddm.conf" | sudo tee /etc/sddm.conf
 
 # Disable logind lid switch handling
 sudo mkdir -p /etc/systemd/logind.conf.d
-cat <<EOF | sudo tee /etc/systemd/logind.conf.d/lid.conf
-[Login]
-HandleLidSwitch=ignore
-HandleLidSwitchExternalPower=ignore
-HandleLidSwitchDocked=ignore
-HandlePowerKey=ignore
-EOF
+sudo cp "$HYPRKARL_PATH/templates/setup/logind-lid.conf" /etc/systemd/logind.conf.d/lid.conf
 
 # Give the user 10 instead of 3 tries to enter their password before lockout
 echo "Defaults passwd_tries=10" | sudo tee /etc/sudoers.d/passwd-tries

@@ -48,28 +48,7 @@ install() {
     ensure_network
 
     gum log --level info "Writing docker-compose.yml..."
-    cat > "$COMPOSE_FILE" << 'EOF'
-services:
-  kiwix:
-    image: ghcr.io/kiwix/kiwix-serve:latest
-    volumes:
-      - ./data:/data
-    ports:
-      - "127.0.0.1:8888:8080"
-    command: "*.zim"
-    restart: unless-stopped
-    networks:
-      - traefik-proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.kiwix.rule=Host(`kiwix.local`)"
-      - "traefik.http.routers.kiwix.entrypoints=web"
-      - "traefik.http.services.kiwix.loadbalancer.server.port=8080"
-
-networks:
-  traefik-proxy:
-    external: true
-EOF
+    cat "$HYPRKARL_PATH/templates/docker/kiwix-docker-compose.yml" > "$COMPOSE_FILE"
 
     gum log --level info "Adding /etc/hosts entry..."
     if ! grep -qF "$HOSTS_ENTRY" /etc/hosts; then

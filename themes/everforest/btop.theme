@@ -12,46 +12,46 @@ theme[net_box]       = "#56635F"
 theme[proc_box]      = "#56635F"
 theme[div_line]      = "#56635F"
 
-theme[graph_text]    = "#a7c080"
-theme[proc_misc]     = "#a7c080"
+theme[graph_text]    = "#dbbc7f"
+theme[proc_misc]     = "#dbbc7f"
 
-# temperature gradient
+# temperature gradient (semantic → keep warning scale)
 theme[temp_start]    = "#2d353b"
 theme[temp_mid]      = "#dbbc7f"
-theme[temp_end]      = "#dbbc7f"
+theme[temp_end]      = "#a7c080"
 
-# cpu
+# cpu (hot → critical)
 theme[cpu_start]     = "#e67e80"
 theme[cpu_mid]       = "#e67e80"
-theme[cpu_end]       = "#dbbc7f"
+theme[cpu_end]       = "#a7c080"
 
-# memory
-theme[free_start]    = "#343f44"
-theme[free_mid]      = "#a7c080"
-theme[free_end]      = "#a7c080"
+# memory (capacity / availability → calm/positive)
+theme[free_start]        = "#343F44"
+theme[free_mid]          = "#dbbc7f"
+theme[free_end]          = "#dbbc7f"
 
-theme[cached_start]  = "#343f44"
-theme[cached_mid]    = "#a7c080"
-theme[cached_end]    = "#a7c080"
+theme[cached_start]      = "#343F44"
+theme[cached_mid]        = "#dbbc7f"
+theme[cached_end]        = "#dbbc7f"
 
-theme[available_start] = "#343f44"
-theme[available_mid]   = "#a7c080"
-theme[available_end]   = "#a7c080"
+theme[available_start]   = "#343F44"
+theme[available_mid]     = "#dbbc7f"
+theme[available_end]     = "#dbbc7f"
 
-theme[used_start]    = "#7fbbb3"
-theme[used_mid]      = "#7fbbb3"
-theme[used_end]      = "#83c092"
+theme[used_start]        = "#417a72"
+theme[used_mid]          = "#7fbbb3"
+theme[used_end]          = "#7fbbb3"
 
-# network
-theme[download_start] = "#7fbbb3"
-theme[download_mid]   = "#7fbbb3"
-theme[download_end]   = "#dbbc7f"
+# network (distinct but not semantic-danger)
+theme[download_start]    = "#417a72"
+theme[download_mid]      = "#7fbbb3"
+theme[download_end]      = "#a7c080"
 
-theme[upload_start]   = "#d699b6"
-theme[upload_mid]     = "#83c092"
-theme[upload_end]     = "#dbbc7f"
+theme[upload_start]      = "#ab8130"
+theme[upload_mid]        = "#dbbc7f"
+theme[upload_end]        = "#a7c080"
 
-# process
-theme[process_start]  = "#7fbbb3"
-theme[process_mid]    = "#7fbbb3"
-theme[process_end]    = "#83c092"
+# process (neutral activity → use secondary)
+theme[process_start]     = "#417a72"
+theme[process_mid]       = "#7fbbb3"
+theme[process_end]       = "#7fbbb3"

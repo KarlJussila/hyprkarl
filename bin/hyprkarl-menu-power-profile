@@ -18,7 +18,7 @@ label() {
     [[ "$profile" == "$CURRENT" ]] && echo "󰄬 ${2#* }" || echo "$icon"
 }
 
-POWER_SAVER=$(label power-saver "󱊣 Power Saver")
+POWER_SAVER=$(label power-saver "󰌪 Power Saver")
 BALANCED=$(label balanced "󰗑 Balanced")
 PERFORMANCE=$(label performance "󱐋 Performance")
 

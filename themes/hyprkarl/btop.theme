@@ -15,43 +15,43 @@ theme[div_line]      = "#96708e"
 theme[graph_text]    = "#c7a3bf"
 theme[proc_misc]     = "#c7a3bf"
 
-# temperature gradient
+# temperature gradient (semantic → keep warning scale)
 theme[temp_start]    = "#1b1519"
-theme[temp_mid]      = "#d7937d"
-theme[temp_end]      = "#f4b39e"
+theme[temp_mid]      = "#f4b39e"
+theme[temp_end]      = "#8a1a80"
 
-# cpu
+# cpu (hot → critical)
 theme[cpu_start]     = "#cc5555"
 theme[cpu_mid]       = "#dd6666"
-theme[cpu_end]       = "#f4b39e"
+theme[cpu_end]       = "#8a1a80"
 
-# memory
-theme[free_start]    = "#2e2329"
-theme[free_mid]      = "#96708e"
-theme[free_end]      = "#c7a3bf"
+# memory (capacity / availability → calm/positive)
+theme[free_start]        = "#241c21"
+theme[free_mid]          = "#96708e"
+theme[free_end]          = "#c7a3bf"
 
-theme[cached_start]  = "#2e2329"
-theme[cached_mid]    = "#96708e"
-theme[cached_end]    = "#c7a3bf"
+theme[cached_start]      = "#241c21"
+theme[cached_mid]        = "#96708e"
+theme[cached_end]        = "#c7a3bf"
 
-theme[available_start] = "#2e2329"
-theme[available_mid]   = "#96708e"
-theme[available_end]   = "#c7a3bf"
+theme[available_start]   = "#241c21"
+theme[available_mid]     = "#96708e"
+theme[available_end]     = "#c7a3bf"
 
-theme[used_start]    = "#6843ae"
-theme[used_mid]      = "#9877dc"
-theme[used_end]      = "#dea6f5"
+theme[used_start]        = "#642c9a"
+theme[used_mid]          = "#a46fd6"
+theme[used_end]          = "#dea6f5"
 
-# network
-theme[download_start] = "#6843ae"
-theme[download_mid]   = "#9877dc"
-theme[download_end]   = "#d7937d"
+# network (distinct but not semantic-danger)
+theme[download_start]    = "#642c9a"
+theme[download_mid]      = "#a46fd6"
+theme[download_end]      = "#63005A"
 
-theme[upload_start]   = "#63005A"
-theme[upload_mid]     = "#a46fd6"
-theme[upload_end]     = "#f4b39e"
+theme[upload_start]      = "#4e3949"
+theme[upload_mid]        = "#96708e"
+theme[upload_end]        = "#8a1a80"
 
-# process
-theme[process_start]  = "#6843ae"
-theme[process_mid]    = "#9877dc"
-theme[process_end]    = "#dea6f5"
+# process (neutral activity → use secondary)
+theme[process_start]     = "#642c9a"
+theme[process_mid]       = "#a46fd6"
+theme[process_end]       = "#dea6f5"

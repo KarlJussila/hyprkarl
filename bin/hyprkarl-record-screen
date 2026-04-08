@@ -18,7 +18,7 @@ WEBCAM="false"
 WEBCAM_DEVICE=""
 RESOLUTION=""
 STOP_RECORDING="false"
-RECORDING_FILE="/tmp/omarchy-screenrecord-filename"
+RECORDING_FILE="/tmp/hyprkarl-screenrecord-filename"
 
 for arg in "$@"; do
   case "$arg" in

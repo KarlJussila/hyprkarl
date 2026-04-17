@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# gpu-info-nvidia
+# Nvidia-specific GPU info for Waybar.
+#
+# Usage:
+#   gpu-info-nvidia <card> <name>
+
+set -uo pipefail
+
+card="$1"
+name="$2"
+
+if ! command -v nvidia-smi &>/dev/null; then
+    echo '{"text":"N/A","alt":"N/A","tooltip":"'"${name}"': nvidia-smi not found"}'
+    exit 1
+fi
+
+usage_nvidia() {
+    local pct
+    pct=$(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits 2>/dev/null \
+        | head -1 | tr -d ' ')
+    [[ -n "$pct" ]] && echo "${pct}%" || echo "N/A"
+}
+
+vram_nvidia() {
+    local used total
+    used=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null \
+        | head -1 | tr -d ' ')
+    total=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits 2>/dev/null \
+        | head -1 | tr -d ' ')
+    [[ -n "$used" && -n "$total" ]] \
+        && awk "BEGIN{printf \"%.1f/%.1f GiB\n\", $used/1024, $total/1024}" \
+        || echo "N/A"
+}
+
+usage=$(usage_nvidia)
+vram=$(vram_nvidia)
+
+if [[ "$usage" == "N/A" && "$vram" == "N/A" ]]; then
+    echo '{"text":"N/A","alt":"N/A","tooltip":"'"${name}"'"}'
+    exit 1
+fi
+
+echo "{\"text\":\"${usage}\",\"alt\":\"${usage} | ${vram}\",\"tooltip\":\"${name}\"}"

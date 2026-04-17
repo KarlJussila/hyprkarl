@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# gpu-info
+# Reports GPU usage and VRAM for the best available GPU.
+#
+# Usage:
+#   gpu-info [card]
+#
+#   card   Optional card name (e.g. card1) to override auto-detection.
+#          If omitted, selects the best active discrete GPU automatically.
+#
+# Output:
+#   Waybar-compatible JSON: {"text":"<usage>","alt":"<usage> | <vram>","tooltip":"<name>"}
+
+set -uo pipefail
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
+# --- Helpers -----------------------------------------------------------------
+
+# Returns the vendor ID string for a given card
+get_vendor() {
+    local card="$1"
+    local vendor_file="/sys/class/drm/${card}/device/vendor"
+    [[ -r "$vendor_file" ]] || { echo "unknown"; return; }
+    case "$(< "$vendor_file")" in
+        0x1002) echo "amd" ;;
+        0x10de) echo "nvidia" ;;
+        0x8086) echo "intel" ;;
+        *)      echo "unknown" ;;
+    esac
+}
+
+# Returns VRAM total in bytes for a given card
+get_vram_total_bytes() {
+    local card="$1"
+    case "$(get_vendor "$card")" in
+        amd|intel)
+            local f="/sys/class/drm/${card}/device/mem_info_vram_total"
+            [[ -r "$f" ]] && echo "$(< "$f")" || echo 0
+            ;;
+        nvidia)
+            command -v nvidia-smi &>/dev/null || { echo 0; return; }
+            nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits 2>/dev/null \
+                | head -1 | tr -d ' ' | awk '{print $1 * 1048576}'
+            ;;
+        *) echo 0 ;;
+    esac
+}
+
+# Returns the PCI slot for a given card (e.g. "03:00.0")
+get_pci_slot() {
+    local card="$1"
+    readlink -f "/sys/class/drm/${card}/device" 2>/dev/null | xargs basename 2>/dev/null \
+        | sed 's/^0000://'
+}
+
+# Returns true if the card has an active kernel driver
+is_active() {
+    local card="$1"
+    local slot
+    slot=$(get_pci_slot "$card")
+    [[ -z "$slot" ]] && return 1
+    lspci -v -s "$slot" 2>/dev/null | grep -q "Kernel driver in use:"
+}
+
+# Returns the best human-readable name for a card
+get_gpu_name() {
+    local card="$1"
+    # Try sysfs product_name first
+    local product_file="/sys/class/drm/${card}/device/product_name"
+    if [[ -r "$product_file" ]]; then
+        local name
+        name=$(< "$product_file")
+        [[ -n "$name" ]] && { echo "$name"; return; }
+    fi
+    # Fall back to lspci device string, extracting the part in brackets
+    local slot
+    slot=$(get_pci_slot "$card")
+    [[ -z "$slot" ]] && { echo "Unknown GPU"; return; }
+    lspci -s "$slot" 2>/dev/null \
+        | grep -oP '\[.*?\]' \
+        | head -1 \
+        | tr -d '[]' \
+        || echo "Unknown GPU"
+}
+
+# Selects the best active discrete GPU, returns card name (e.g. "card1")
+select_best_card() {
+    local best_card=""
+    local best_vram=0
+    local min_discrete_vram=$(( 256 * 1024 * 1024 )) # 256 MiB threshold
+
+    for card_path in /sys/class/drm/card[0-9]*; do
+        local card
+        card=$(basename "$card_path")
+        [[ -e "/sys/class/drm/${card}/device/vendor" ]] || continue
+        is_active "$card" || continue
+
+        local vram
+        vram=$(get_vram_total_bytes "$card")
+        (( vram < min_discrete_vram )) && continue
+        (( vram > best_vram )) && {
+            best_vram=$vram
+            best_card=$card
+        }
+    done
+
+    echo "$best_card"
+}
+
+# --- Main --------------------------------------------------------------------
+
+card="${1:-}"
+
+if [[ -n "$card" ]]; then
+    [[ -e "/sys/class/drm/${card}/device/vendor" ]] || {
+        echo '{"text":"N/A","alt":"N/A","tooltip":"No GPU found"}'
+        exit 1
+    }
+else
+    card=$(select_best_card)
+fi
+
+if [[ -z "$card" ]]; then
+    echo '{"text":"N/A","alt":"N/A","tooltip":"No GPU found"}'
+    exit 1
+fi
+
+vendor=$(get_vendor "$card")
+vendor_script="${SCRIPT_DIR}/gpu-info-${vendor}"
+
+if [[ ! -x "$vendor_script" ]]; then
+    echo '{"text":"N/A","alt":"N/A","tooltip":"Unsupported vendor: '"${vendor}"'"}'
+    exit 1
+fi
+
+name=$(get_gpu_name "$card")
+"$vendor_script" "$card" "$name"

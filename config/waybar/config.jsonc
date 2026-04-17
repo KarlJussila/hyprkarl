@@ -9,6 +9,7 @@
     "hyprland/workspaces",
     "group/ram-expander",
     "group/cpu-expander",
+    "group/gpu-expander",
     "group/tray-expander"
   ],
   "modules-center": [
@@ -196,8 +197,35 @@
   },
   "cpu": {
     "interval": 5,
-    "format": "{usage}%",
+    "format": " {usage}% ",
     "tooltip": false
+  },
+
+  // GPU display
+  "group/gpu-expander": {
+      "orientation": "inherit",
+      "drawer": {
+          "click-to-reveal": true,
+          "transition-duration": 300,
+          "children-class": "gpu-group-item"
+      },
+      "modules": ["custom/gpu-icon", "custom/gpu"]
+  },
+  "custom/gpu-icon": {
+      "exec": "$HYPRKARL_PATH/scripts/waybar/gpu-info",
+      "interval": 5,
+      "format": "󰾲 ",
+      "return-type": "json",
+      "tooltip": true
+  },
+  "custom/gpu": {
+      "exec": "$HYPRKARL_PATH/scripts/waybar/gpu-info",
+      "interval": 5,
+      "return-type": "json",
+      "format": " {text} ",
+      "format-alt": " {alt} ",
+      "on-click": "mode",
+      "tooltip": false
   },
 
   // Recording indicator

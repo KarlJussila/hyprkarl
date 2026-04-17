@@ -51,6 +51,9 @@ tooltip {
 #cpu-expander {
   padding-left: 6px;
 }
+#gpu-expander {
+  padding-left: 6px;
+}
 #tray {
   margin-left: 8px;
 }

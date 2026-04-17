@@ -1,0 +1,53 @@
+#!/bin/bash
+# hyprkarl-battery-watch
+# Monitors battery level and fires actions at configured thresholds
+
+POLL_INTERVAL=30
+ICON_BATTERY_LOW=$(hyprkarl-find-icon "battery-low-symbolic" status actions)
+FIRED_FILE="/tmp/hyprkarl-battery-fired"
+
+BATTERY=$(ls /sys/class/power_supply/ | grep -m1 "^BAT")
+
+at_battery() {
+    local threshold="$1"
+
+    [[ "$status" == "Charging" || "$status" == "Full" ]] && return 1
+    grep -qx "$threshold" "$FIRED_FILE" 2>/dev/null && return 1
+    [[ "$level" -le "$threshold" ]] || return 1
+
+    echo "$threshold" >> "$FIRED_FILE"
+    return 0
+}
+
+reset_if_charging() {
+    status=$(cat /sys/class/power_supply/$BATTERY/status)
+    if [[ "$status" == "Charging" || "$status" == "Full" ]]; then
+        rm -f "$FIRED_FILE"
+    fi
+}
+
+while true; do
+    level=$(cat /sys/class/power_supply/$BATTERY/capacity)
+    status=$(cat /sys/class/power_supply/$BATTERY/status)
+
+    echo "$status: $level%"
+
+    reset_if_charging
+
+    # Notify at 20%
+    if at_battery 20; then
+        hyprkarl-notify-battery "Battery Low: %p%"
+    fi
+
+    # And 10%
+    if at_battery 10; then
+        hyprkarl-notify-battery "Battery Low: %p%"
+    fi
+
+    # And at 5% (critical)
+    if at_battery 5; then
+        hyprkarl-notify-battery -c "Battery Low: %p%"
+    fi
+
+    sleep "$POLL_INTERVAL"
+done

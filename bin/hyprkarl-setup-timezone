@@ -5,5 +5,5 @@
 timezone=$(timedatectl list-timezones | gum filter --height 20 --header "Set timezone") || exit 1
 sudo timedatectl set-timezone "$timezone"
 echo "Timezone is now set to $timezone. Restarting waybar."
-hyprkarl-restart-waybar
+hyprkarl-waybar-relaunch
 hyprkarl-show-done

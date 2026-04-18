@@ -36,9 +36,9 @@ hyprkarl-theme-set-gtk
 
 # Restart components to apply new theme
 if pgrep -x waybar >/dev/null; then
-  hyprkarl-restart-waybar
+  hyprkarl-waybar-relaunch
 fi
-hyprkarl-restart-hyprctl
-hyprkarl-restart-mako
-hyprkarl-restart-terminal
-hyprkarl-restart-btop
+hyprctl reload >/dev/null
+hyprkarl-mako-relaunch
+hyprkarl-terminal-reload
+hyprkarl-btop-reload

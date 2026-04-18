@@ -1,5 +1,5 @@
 #!/bin/bash
-# hyprkarl-restart-terminal
+# hyprkarl-terminal-reload
 # Reload terminal configs
 
 if [[ -f ~/.config/alacritty/alacritty.toml ]]; then

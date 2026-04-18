@@ -1,5 +1,5 @@
 #!/bin/bash
-# hyprkarl-restart-waybar
+# hyprkarl-waybar-relaunch
 # Restart waybar
 
 hyprkarl-restart-app waybar

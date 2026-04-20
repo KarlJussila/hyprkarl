@@ -13,4 +13,7 @@ stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications 
 git -C ~/.local/share/hyprkarl checkout config/
 git -C ~/.local/share/hyprkarl checkout applications/
 
+# Set up AGS
+ags types -u -d ~/.config/ags
+
 hyprctl reload

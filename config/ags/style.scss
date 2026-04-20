@@ -1,0 +1,68 @@
+// https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
+$fg-color: #{"@theme_fg_color"};
+$bg-color: #{"@theme_bg_color"};
+$accent-color: #{"@theme_selected_bg_color"};
+$alt-bg-color: shade(#{"@theme_bg_color"}, 1.5);
+
+window.Bar {
+
+  background: transparent;
+  color: $fg-color;
+  font-family: "JetBrains Mono Nerd Font Propo";
+  font-size: 12px;
+
+  button {
+    border-radius: 0px;
+    margin: 0px;
+    padding: 0px 8px;
+    background-color: $bg-color;
+    border: 2px solid $alt-bg-color;
+  }
+
+  button.pressed {
+    border-color: $bg-color;
+    background-color: $alt-bg-color;
+  }
+
+  .border-curve {
+    color: $alt-bg-color;
+  }
+
+  > centerbox {
+    border-radius: 0px;
+    margin: 0px;
+    padding: 0px 0px;
+
+    box > button {
+      border-width: 0px 1px 2px 1px;
+    }
+
+    box.top-left > button:nth-last-child(2) {
+      border-radius: 0px 0px 8px 0px;
+      border-right-width: 2px; 
+    }
+
+    box.top-left > button:first-child {
+      border-left-width: 0px;
+    }
+
+    box.top-center > button:nth-last-child(2) {
+      border-radius: 0px 0px 8px 0px;
+      border-right-width: 2px;
+    }
+
+    box.top-center > button:nth-child(2) {
+      border-bottom-left-radius: 8px;
+      border-left-width: 2px;
+    }
+
+  }
+
+  popover {
+    border-radius: 0px;
+    > contents {
+      font-family: "JetBrains Mono Nerd Font Propo";
+      border-radius: 8px;
+    }
+  }
+}

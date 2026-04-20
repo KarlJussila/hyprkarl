@@ -36,14 +36,15 @@ sudo pacman -S --needed --noconfirm \
   foot \
   gpu-screen-recorder \
   perl-image-exiftool \
-  ghostty \
   kvantum \
   kvantum-qt5 \
   qt6ct \
   qt5ct \
   7zip \
   resvg \
-  rofi-calc
+  rofi-calc \
+  aylurs-gtk-shell \
+  dart-sass
 
 paru -S --needed --noconfirm \
   xdg-terminal-exec \

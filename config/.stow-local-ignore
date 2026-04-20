@@ -1,0 +1,3 @@
+# .stow-local-ignore
+ags/@girs
+ags/node_modules

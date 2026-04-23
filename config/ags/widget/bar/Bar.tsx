@@ -4,11 +4,43 @@ import HyprkarlMenu from "./element/HyprkarlMenu"
 import Clock from "./element/Clock"
 import CornerCurve from "./element/CornerCurve"
 import CaffeineToggle from "./element/CaffeineToggle"
+import AnchoredCenterBox from "./element/AnchoredCenterBox"
 
-/* Main Bar */
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
 
+  /*********************/
+  /* WIDGET PLACEMENTS */
+  /*********************/
+  
+  /* LEFT SIDE WIDGETS */
+  const leftWidgets: Array<JSX.Element> =
+  [
+    <HyprkarlMenu />,
+  ]
+
+  /* CENTER WIDGETS */
+  // Centermost widget (anchored to the center)
+  const centerAnchor = <Clock />
+
+  // Left side of center island
+  const centerStartWidgets: Array<JSX.Element> =
+  [
+  
+  ]
+
+  // Right side of center island
+  const centerEndWidgets =
+  [
+    <CaffeineToggle />,
+  ]
+
+  /* RIGHT SIDE WIDGETS */
+  const rightWidgets: Array<JSX.Element> = [
+    <Clock />
+  ]
+
+  /* Overall Bar Layout */
   return (
     <window
       visible
@@ -26,21 +58,29 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           halign={Gtk.Align.START}
           hexpand={false}
         >
-          <HyprkarlMenu />
+          {leftWidgets}
           <CornerCurve position="top-left" size={12} radius={4} class="border-curve" />
         </box>
 
-        <box
+        <AnchoredCenterBox
           $type="center"
           class="top-center"
           cssName="box"
           halign={Gtk.Align.CENTER}
           hexpand={false}
+          start={centerStartWidgets}
+          anchor={centerAnchor}
+          end={centerEndWidgets}
+        />
+
+        <box
+          $type="end"
+          class="top-right"
+          halign={Gtk.Align.END}
+          hexpand={false}
         >
           <CornerCurve position="top-right" size={12} radius={4} class="border-curve" />
-          <Clock />
-          <CaffeineToggle />
-          <CornerCurve position="top-left" size={12} radius={4} class="border-curve" />
+          {rightWidgets}
         </box>
       </centerbox>
     </window>

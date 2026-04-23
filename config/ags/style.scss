@@ -46,12 +46,12 @@ window.Bar {
       border-left-width: 0px;
     }
 
-    box.top-center > button:nth-last-child(2) {
+    button.island-end {
       border-radius: 0px 0px 8px 0px;
       border-right-width: 2px;
     }
 
-    box.top-center > button:nth-child(2) {
+    button.island-start {
       border-bottom-left-radius: 8px;
       border-left-width: 2px;
     }

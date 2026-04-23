@@ -93,14 +93,18 @@ export default function Switch({
         $={(self) => {
           drawingArea = self
 
+          // React to active/inactive state
           createEffect(() => {
             if (active()) {
               self.add_css_class("active")
+              runAnimation(1)
             } else {
               self.remove_css_class("active")
+              runAnimation(0)
             }
           })
 
+          /* MAIN DRAWING FUNCTION */
           self.set_draw_func((area, context, width, height) => {
             const style = area.get_style_context()
 
@@ -189,9 +193,6 @@ export default function Switch({
               PangoCairo.show_layout(context, pangoLayout)
             }
           })
-
-          // Watch for external state changes to trigger animation
-          createEffect(() => runAnimation(active() ? 1 : 0))
           
           self.connect("destroy", () => {
             if (animationTickId) self.remove_tick_callback(animationTickId)

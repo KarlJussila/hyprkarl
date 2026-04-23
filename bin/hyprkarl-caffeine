@@ -37,3 +37,4 @@ case "${1:-toggle}" in
 esac
 
 pkill -RTMIN+9 waybar
+ags request caffeine-sync

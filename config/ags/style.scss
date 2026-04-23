@@ -65,4 +65,17 @@ window.Bar {
       border-radius: 8px;
     }
   }
+
+  .switch {
+    &.switch-bg { color: $bg-color; }
+    &.switch-fg { color: $fg-color; }
+    &.switch-track { color: $bg-color; }
+    &.switch-border { color: $alt-bg-color; }
+    
+    &.active {
+      &.switch-track { color: $accent-color; }
+      &.switch-border { color: $accent-color; }
+    }
+  }
+
 }

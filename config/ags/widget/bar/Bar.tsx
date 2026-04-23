@@ -3,6 +3,7 @@ import { Astal, Gdk, Gtk } from "ags/gtk4"
 import HyprkarlMenu from "./element/HyprkarlMenu"
 import Clock from "./element/Clock"
 import CornerCurve from "./element/CornerCurve"
+import CaffeineToggle from "./element/CaffeineToggle"
 
 /* Main Bar */
 export default function Bar(gdkmonitor: Gdk.Monitor) {
@@ -38,6 +39,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         >
           <CornerCurve position="top-right" size={12} radius={4} class="border-curve" />
           <Clock />
+          <CaffeineToggle />
           <CornerCurve position="top-left" size={12} radius={4} class="border-curve" />
         </box>
       </centerbox>

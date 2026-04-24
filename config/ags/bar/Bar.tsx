@@ -1,10 +1,12 @@
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
-import HyprkarlMenu from "./element/HyprkarlMenu"
-import Clock from "./element/Clock"
-import CornerCurve from "./element/CornerCurve"
-import CaffeineToggle from "./element/CaffeineToggle"
-import AnchoredCenterBox from "./element/AnchoredCenterBox"
+import HyprkarlMenu from "./widget/HyprkarlMenu"
+import Clock from "./widget/time/Clock"
+import CaffeineToggle from "./widget/CaffeineToggle"
+import Battery from "./widget/battery/Battery"
+import Workspaces from "./widget/workspaces/Workspaces"
+import Tray from "./widget/tray/Tray"
+import Island from "./island/Island"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
@@ -16,17 +18,20 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
   /* LEFT SIDE WIDGETS */
   const leftWidgets: Array<JSX.Element> =
   [
+    <Battery monitor={gdkmonitor} />,
     <HyprkarlMenu />,
+    <Workspaces />,
+    <Tray direction="right" />,
+    <Battery monitor={gdkmonitor} />,
   ]
 
   /* CENTER WIDGETS */
   // Centermost widget (anchored to the center)
-  const centerAnchor = <Clock />
+  const centerAnchor = <Clock monitor={gdkmonitor} />
 
   // Left side of center island
   const centerStartWidgets: Array<JSX.Element> =
   [
-  
   ]
 
   // Right side of center island
@@ -37,7 +42,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
 
   /* RIGHT SIDE WIDGETS */
   const rightWidgets: Array<JSX.Element> = [
-    <Clock />
+    <Battery monitor={gdkmonitor} />,
   ]
 
   /* Overall Bar Layout */
@@ -52,36 +57,36 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       application={app}
     >
       <centerbox cssName="centerbox">
-        <box
+        <Island
           $type="start"
           class="top-left"
+          side="left"
           halign={Gtk.Align.START}
           hexpand={false}
         >
           {leftWidgets}
-          <CornerCurve position="top-left" size={12} radius={4} class="border-curve" />
-        </box>
+        </Island>
 
-        <AnchoredCenterBox
+        <Island
           $type="center"
           class="top-center"
           cssName="box"
           halign={Gtk.Align.CENTER}
           hexpand={false}
-          start={centerStartWidgets}
+          left={centerStartWidgets}
           anchor={centerAnchor}
-          end={centerEndWidgets}
+          right={centerEndWidgets}
         />
 
-        <box
+        <Island
           $type="end"
           class="top-right"
+          side="right"
           halign={Gtk.Align.END}
           hexpand={false}
         >
-          <CornerCurve position="top-right" size={12} radius={4} class="border-curve" />
           {rightWidgets}
-        </box>
+        </Island>
       </centerbox>
     </window>
   )

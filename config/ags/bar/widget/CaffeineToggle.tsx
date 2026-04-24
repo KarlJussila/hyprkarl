@@ -1,6 +1,6 @@
 import { createState } from "ags"
 import app from "ags/gtk4/app"
-import Switch from "./Switch"
+import Switch from "../button/Switch"
 import { execAsync } from "ags/process"
 
 const [active, setActive] = createState(false)
@@ -25,7 +25,7 @@ app.connect("request", (_app, args, response) => {
   }
 })
 
-export default function CaffeineSwitch() {
+export default function CaffeineToggle() {
   return (
     <Switch
       glyph=""

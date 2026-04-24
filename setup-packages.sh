@@ -52,7 +52,14 @@ paru -S --needed --noconfirm \
   wifitui-bin \
   yaru-icon-theme \
   dragon-drop \
-  xdg-desktop-portal-termfilechooser-hunkyburrito-git
+  xdg-desktop-portal-termfilechooser-hunkyburrito-git \
+  libastal-hyprland-git \
+  libastal-battery-git \
+  libastal-powerprofiles-git \
+  libastal-network-git \
+  libastal-bluetooth-git \
+  libastal-tray-git \
+  libastal-wireplumber-git
 
 # Remove packages
 sudo pacman -Rns --noconfirm \

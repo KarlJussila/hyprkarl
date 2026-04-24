@@ -1,5 +1,5 @@
 import { execAsync } from "ags/process"
-import Button from "./Button"
+import Button from "../button/Button"
 
 export default function HyprkarlMenu() {
     return (

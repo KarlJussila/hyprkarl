@@ -2,25 +2,78 @@
 $fg-color: #{"@theme_fg_color"};
 $bg-color: #{"@theme_bg_color"};
 $accent-color: #{"@theme_selected_bg_color"};
-$alt-bg-color: shade(#{"@theme_bg_color"}, 1.5);
+$alt-bg-color: shade(#{"@theme_bg_color"}, 2);
+$island-radius: 8px;
+$border-width: 2px;
+
+@mixin flat-control {
+  border-radius: 0px;
+  margin: 0px;
+}
+
+@mixin framed-surface {
+  background-color: $bg-color;
+  border: $border-width solid $alt-bg-color;
+}
+
+@mixin bar-button($padding: 0px 8px) {
+  @include flat-control;
+  padding: $padding;
+}
+
+@mixin island-entry-surface {
+  @include flat-control;
+  @include framed-surface;
+  border-width: 0px $border-width $border-width 0px;
+}
+
+@mixin island-start-shape {
+  border-bottom-left-radius: $island-radius;
+  border-left-width: $border-width;
+}
+
+@mixin island-end-shape {
+  border-radius: 0px 0px $island-radius 0px;
+  border-right-width: $border-width;
+}
+
+@mixin outer-start-edge {
+  border-left-width: 0px;
+}
+
+@mixin outer-end-edge {
+  border-right-width: 0px;
+}
+
+@mixin menu-row {
+  padding: 4px 8px;
+  border-width: 0px;
+  border-radius: 6px;
+  background-color: transparent;
+
+  &:hover,
+  &.active {
+    background-color: $alt-bg-color;
+  }
+
+  &.active {
+    color: $accent-color;
+  }
+}
 
 window.Bar {
-
   background: transparent;
   color: $fg-color;
   font-family: "JetBrains Mono Nerd Font Propo";
   font-size: 12px;
 
   button {
-    border-radius: 0px;
-    margin: 0px;
-    padding: 0px 8px;
-    background-color: $bg-color;
-    border: 2px solid $alt-bg-color;
+    @include bar-button;
+    border-width: 0px;
+    background-color: transparent;
   }
 
   button.pressed {
-    border-color: $bg-color;
     background-color: $alt-bg-color;
   }
 
@@ -29,43 +82,112 @@ window.Bar {
   }
 
   > centerbox {
-    border-radius: 0px;
-    margin: 0px;
-    padding: 0px 0px;
+    padding: 0px;
 
-    box > button {
-      border-width: 0px 1px 2px 1px;
+    .island,
+    .balance-content,
+    .workspace-list,
+    .tray-widget,
+    .tray-items {
+      border-spacing: 0px;
     }
 
-    box.top-left > button:nth-last-child(2) {
-      border-radius: 0px 0px 8px 0px;
-      border-right-width: 2px; 
+    .island-segment {
+      @include island-entry-surface;
     }
 
-    box.top-left > button:first-child {
-      border-left-width: 0px;
+    .island-segment.edge-rounded-end {
+      @include island-end-shape;
     }
 
-    button.island-end {
-      border-radius: 0px 0px 8px 0px;
-      border-right-width: 2px;
+    .island-segment.edge-rounded-start {
+      @include island-start-shape;
     }
 
-    button.island-start {
-      border-bottom-left-radius: 8px;
-      border-left-width: 2px;
+    .island-segment.edge-screen-start {
+      @include outer-start-edge;
     }
 
+    .island-segment.edge-screen-end {
+      @include outer-end-edge;
+    }
+
+    .island-segment > button,
+    .island-segment > .workspace-list,
+    .island-segment > .tray-widget {
+      @include flat-control;
+      border-width: 0px;
+      background-color: transparent;
+    }
+
+    .segmented-inline {
+      border-spacing: 0px;
+    }
+
+    .segmented-inline.segmented-inline-divided > .segmented-inline-item + .segmented-inline-item {
+      border-left: $border-width solid $alt-bg-color;
+    }
+
+    .tray-widget > .segmented-inline-item.open + .segmented-inline-item,
+    .tray-widget > .segmented-inline-item + .segmented-inline-item.open {
+      border-left: $border-width solid $alt-bg-color;
+    }
+
+    button.workspace-button {
+      padding: 0px 2px;
+      border-width: 0px;
+    }
+
+    button.workspace-empty label {
+      opacity: 0.55;
+    }
+
+    .workspace-list {
+      padding: 0px;
+    }
+
+    .workspace-bracket,
+    .workspace-label {
+      font-family: "JetBrains Mono Nerd Font";
+    }
+
+    .tray-toggle,
+    .tray-panel {
+      border-width: 0px;
+      background-color: transparent;
+    }
+
+    .tray-widget > .tray-toggle > button.tray-trigger {
+      padding: 0px;
+      border-width: 0px;
+    }
+
+    .tray-items {
+      background-color: transparent;
+      border-width: 0px;
+    }
+
+    .tray-items > menubutton,
+    .tray-items > menubutton > button {
+      @include flat-control;
+      padding: 0px;
+      border-width: 0px;
+      border-spacing: 0px;
+      box-shadow: none;
+      background-color: transparent;
+    }
+
+    .tray-items > menubutton > button {
+      padding: 0px 6px;
+    }
+
+    .battery-body { color: $bg-color; }
+    .battery-border { color: $fg-color; }
+    .battery-fill { color: $fg-color; }
+    .battery-fill.low { color: #d26a55; }
+    .battery-fill.charging { color: $fg-color; }
+    .battery-glyph { color: $accent-color; }
   }
-
-  popover {
-    border-radius: 0px;
-    > contents {
-      font-family: "JetBrains Mono Nerd Font Propo";
-      border-radius: 8px;
-    }
-  }
-
   .switch {
     &.switch-bg { color: $bg-color; }
     &.switch-fg { color: $fg-color; }
@@ -77,5 +199,49 @@ window.Bar {
       &.switch-border { color: $accent-color; }
     }
   }
+}
 
+window.dropdown-window {
+  background: transparent;
+  font-family: "JetBrains Mono Nerd Font";
+
+  .menu-surface-frame {
+    border-radius: $island-radius;
+    padding: 4px;
+    @include framed-surface;
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  .menu-surface-frame.revealed {
+    opacity: 1;
+  }
+
+  .menu-surface-frame.snapped-left {
+    border-top-left-radius: 0px;
+  }
+
+  .menu-surface-frame.snapped-right {
+    border-top-right-radius: 0px;
+  }
+
+  .menu-surface-body {
+    border-spacing: 0px;
+  }
+
+  .menu-surface-revealer {
+    margin-top: 1px;
+  }
+
+  button.menu-popover-row {
+    @include menu-row;
+  }
+
+  .menu-popover-check {
+    opacity: 0.95;
+  }
+
+  .dropdown-shield {
+    background-color: rgba(0, 0, 0, 0.001);
+  }
 }

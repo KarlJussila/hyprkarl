@@ -14,14 +14,14 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
   /*********************/
   /* WIDGET PLACEMENTS */
   /*********************/
-  
-  /* LEFT SIDE WIDGETS */
-  const leftWidgets: Array<JSX.Element> =
+
+  /* START SIDE WIDGETS */
+  const startWidgets: Array<JSX.Element> =
   [
     <Battery monitor={gdkmonitor} />,
     <HyprkarlMenu />,
     <Workspaces />,
-    <Tray direction="right" />,
+    <Tray direction="end" />,
     <Battery monitor={gdkmonitor} />,
   ]
 
@@ -29,19 +29,19 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
   // Centermost widget (anchored to the center)
   const centerAnchor = <Clock monitor={gdkmonitor} />
 
-  // Left side of center island
+  // Start side of center island
   const centerStartWidgets: Array<JSX.Element> =
   [
   ]
 
-  // Right side of center island
+  // End side of center island
   const centerEndWidgets =
   [
     <CaffeineToggle />,
   ]
 
-  /* RIGHT SIDE WIDGETS */
-  const rightWidgets: Array<JSX.Element> = [
+  /* END SIDE WIDGETS */
+  const endWidgets: Array<JSX.Element> = [
     <Battery monitor={gdkmonitor} />,
   ]
 
@@ -60,11 +60,11 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <Island
           $type="start"
           class="top-left"
-          side="left"
+          side="start"
           halign={Gtk.Align.START}
           hexpand={false}
         >
-          {leftWidgets}
+          {startWidgets}
         </Island>
 
         <Island
@@ -73,19 +73,19 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           cssName="box"
           halign={Gtk.Align.CENTER}
           hexpand={false}
-          left={centerStartWidgets}
+          start={centerStartWidgets}
           anchor={centerAnchor}
-          right={centerEndWidgets}
+          end={centerEndWidgets}
         />
 
         <Island
           $type="end"
           class="top-right"
-          side="right"
+          side="end"
           halign={Gtk.Align.END}
           hexpand={false}
         >
-          {rightWidgets}
+          {endWidgets}
         </Island>
       </centerbox>
     </window>

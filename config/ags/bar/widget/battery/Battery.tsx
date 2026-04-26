@@ -25,7 +25,7 @@ export default function Battery({ monitor }: Props) {
       trigger={triggerButton}
       open={powerProfileMenuOpen}
       onRequestClose={() => setPowerProfileMenuOpen(false)}
-      preferredAlign="center"
+      align="center"
       gap={0}
     >
       <PowerProfileMenu

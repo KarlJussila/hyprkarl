@@ -20,7 +20,7 @@ type Props = {
 
 export default function CalendarDropdownContent({ currentTime }: Props) {
   return (
-    <box class="calendar-dropdown" orientation={Gtk.Orientation.VERTICAL}>
+    <box orientation={Gtk.Orientation.VERTICAL}>
       <label label={currentTime(formatDate)} />
       <Gtk.Calendar showHeading={false} canTarget={false} />
     </box>

@@ -14,7 +14,7 @@ export type DropdownWindowProps = {
   monitor: Gdk.Monitor
   open: Accessor<boolean>
   position?: Accessor<DropdownCoordinates>
-  frameEdgeClass?: Accessor<string>
+  frameSnapClass?: Accessor<string>
   revealTrigger?: Accessor<unknown>
   onReveal?: () => void
   onRequestClose?: () => void
@@ -29,12 +29,12 @@ export default function DropdownWindow({
   monitor,
   open,
   position,
-  frameEdgeClass,
+  frameSnapClass,
   revealTrigger = open,
   onReveal = () => {},
   onRequestClose,
   windowClass = "dropdown-window",
-  surfaceClass = "menu-surface",
+  surfaceClass = "dropdown-surface",
   children,
   onFrameReady = () => {},
 }: DropdownWindowProps) {
@@ -44,7 +44,7 @@ export default function DropdownWindow({
   let windowLayout: Gtk.Fixed | null = null
   const monitorGeometry = monitor.get_geometry()
   const resolvedPosition = createComputed(() => position ? position() : { x: 0, y: 0 })
-  const resolvedFrameEdgeClass = createComputed(() => frameEdgeClass ? frameEdgeClass() : "")
+  const resolvedFrameSnapClass = createComputed(() => frameSnapClass ? frameSnapClass() : "")
   const { windowVisible, contentRevealed } = createDropdownVisibility({
     open,
     revealTrigger,
@@ -68,7 +68,7 @@ export default function DropdownWindow({
 
   const surface = (
     <DropdownSurface
-      frameEdgeClass={resolvedFrameEdgeClass}
+      frameSnapClass={resolvedFrameSnapClass}
       contentRevealed={contentRevealed}
       transitionDuration={revealDuration}
       surfaceClass={surfaceClass}

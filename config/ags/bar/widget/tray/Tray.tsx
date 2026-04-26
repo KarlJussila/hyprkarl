@@ -4,11 +4,11 @@ import TrayExpander from "./TrayExpander"
 import TrayItems from "./TrayItems"
 
 type Props = {
-  direction?: "left" | "right"
+  direction?: "start" | "end"
   mirrorTrigger?: boolean
 }
 
-export default function Tray({ direction = "left", mirrorTrigger = false }: Props) {
+export default function Tray({ direction = "start", mirrorTrigger = false }: Props) {
   const trayService = AstalTray.get_default()
   const trayItems = createConnection(
     [...trayService.items],
@@ -41,14 +41,14 @@ export default function Tray({ direction = "left", mirrorTrigger = false }: Prop
     />
   )
 
-  const [leftContent, rightContent] = direction === "left"
+  const [startContent, endContent] = direction === "start"
     ? [trayPanel, trayExpander]
     : [trayExpander, trayPanel]
 
   return (
-    <box class="tray-widget segmented-inline">
-      {leftContent}
-      {rightContent}
+    <box class="segmented-group">
+      {startContent}
+      {endContent}
     </box>
   )
 }

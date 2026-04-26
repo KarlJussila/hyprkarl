@@ -10,7 +10,7 @@ type Props = {
 export default function TrayItem({ item }: Props) {
   return (
     <menubutton
-      class="tray-item segmented-inline-item"
+      class="tray-item segmented-group-item"
       tooltipMarkup={createBinding(item, "tooltipMarkup")}
       $={(self) => connectTrayMenuButton(self, item)}
     >

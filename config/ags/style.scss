@@ -6,59 +6,9 @@ $alt-bg-color: shade(#{"@theme_bg_color"}, 2);
 $island-radius: 8px;
 $border-width: 2px;
 
-@mixin flat-control {
-  border-radius: 0px;
-  margin: 0px;
-}
-
 @mixin framed-surface {
   background-color: $bg-color;
   border: $border-width solid $alt-bg-color;
-}
-
-@mixin bar-button($padding: 0px 8px) {
-  @include flat-control;
-  padding: $padding;
-}
-
-@mixin island-entry-surface {
-  @include flat-control;
-  @include framed-surface;
-  border-width: 0px $border-width $border-width 0px;
-}
-
-@mixin island-start-shape {
-  border-bottom-left-radius: $island-radius;
-  border-left-width: $border-width;
-}
-
-@mixin island-end-shape {
-  border-radius: 0px 0px $island-radius 0px;
-  border-right-width: $border-width;
-}
-
-@mixin outer-start-edge {
-  border-left-width: 0px;
-}
-
-@mixin outer-end-edge {
-  border-right-width: 0px;
-}
-
-@mixin menu-row {
-  padding: 4px 8px;
-  border-width: 0px;
-  border-radius: 6px;
-  background-color: transparent;
-
-  &:hover,
-  &.active {
-    background-color: $alt-bg-color;
-  }
-
-  &.active {
-    color: $accent-color;
-  }
 }
 
 window.Bar {
@@ -68,16 +18,18 @@ window.Bar {
   font-size: 12px;
 
   button {
-    @include bar-button;
+    margin: 0px;
+    border-radius: 0px;
     border-width: 0px;
     background-color: transparent;
+    padding: 0px 8px;
   }
 
   button.pressed {
     background-color: $alt-bg-color;
   }
 
-  .border-curve {
+  .island-curve {
     color: $alt-bg-color;
   }
 
@@ -86,64 +38,55 @@ window.Bar {
 
     .island,
     .balance-content,
-    .workspace-list,
-    .tray-widget,
-    .tray-items {
+    .tray-item-list {
       border-spacing: 0px;
     }
 
-    .island-segment {
-      @include island-entry-surface;
+    .island-item {
+      margin: 0px;
+      border-radius: 0px;
+      background-color: $bg-color;
+      border: $border-width solid $alt-bg-color;
+      border-width: 0px $border-width $border-width 0px;
     }
 
-    .island-segment.edge-rounded-end {
-      @include island-end-shape;
+    .island-item.edge-rounded-start {
+      border-bottom-left-radius: $island-radius;
+      border-left-width: $border-width;
     }
 
-    .island-segment.edge-rounded-start {
-      @include island-start-shape;
+    .island-item.edge-rounded-end {
+      border-radius: 0px 0px $island-radius 0px;
+      border-right-width: $border-width;
     }
 
-    .island-segment.edge-screen-start {
-      @include outer-start-edge;
+    .island-item.edge-screen-start {
+      border-left-width: 0px;
     }
 
-    .island-segment.edge-screen-end {
-      @include outer-end-edge;
+    .island-item.edge-screen-end {
+      border-right-width: 0px;
     }
 
-    .island-segment > button,
-    .island-segment > .workspace-list,
-    .island-segment > .tray-widget {
-      @include flat-control;
+    .island-item > button,
+    .island-item > .segmented-group {
+      margin: 0px;
+      border-radius: 0px;
       border-width: 0px;
       background-color: transparent;
     }
 
-    .segmented-inline {
+    .segmented-group {
       border-spacing: 0px;
-    }
-
-    .segmented-inline.segmented-inline-divided > .segmented-inline-item + .segmented-inline-item {
-      border-left: $border-width solid $alt-bg-color;
-    }
-
-    .tray-widget > .segmented-inline-item.open + .segmented-inline-item,
-    .tray-widget > .segmented-inline-item + .segmented-inline-item.open {
-      border-left: $border-width solid $alt-bg-color;
-    }
-
-    button.workspace-button {
-      padding: 0px 2px;
-      border-width: 0px;
-    }
-
-    button.workspace-empty label {
-      opacity: 0.55;
-    }
-
-    .workspace-list {
       padding: 0px;
+    }
+
+    .workspace-button {
+      padding: 0px 2px;
+    }
+
+    .workspace-empty label {
+      opacity: 0.55;
     }
 
     .workspace-bracket,
@@ -151,34 +94,30 @@ window.Bar {
       font-family: "JetBrains Mono Nerd Font";
     }
 
-    .tray-toggle,
-    .tray-panel {
+    .tray-panel.open + .tray-expander,
+    .tray-expander + .tray-panel.open {
+      border-left: $border-width solid $alt-bg-color;
+    }
+
+    .tray-expander,
+    .tray-panel,
+    .tray-item-list,
+    .tray-item,
+    .tray-item > button {
+      margin: 0px;
+      border-radius: 0px;
       border-width: 0px;
       background-color: transparent;
     }
 
-    .tray-widget > .tray-toggle > button.tray-trigger {
+    .tray-expander > button {
       padding: 0px;
-      border-width: 0px;
     }
 
-    .tray-items {
-      background-color: transparent;
-      border-width: 0px;
-    }
-
-    .tray-items > menubutton,
-    .tray-items > menubutton > button {
-      @include flat-control;
-      padding: 0px;
-      border-width: 0px;
+    .tray-item > button {
+      padding: 0px 6px;
       border-spacing: 0px;
       box-shadow: none;
-      background-color: transparent;
-    }
-
-    .tray-items > menubutton > button {
-      padding: 0px 6px;
     }
 
     .battery-body { color: $bg-color; }
@@ -188,12 +127,13 @@ window.Bar {
     .battery-fill.charging { color: $fg-color; }
     .battery-glyph { color: $accent-color; }
   }
+
   .switch {
     &.switch-bg { color: $bg-color; }
     &.switch-fg { color: $fg-color; }
     &.switch-track { color: $bg-color; }
     &.switch-border { color: $alt-bg-color; }
-    
+
     &.active {
       &.switch-track { color: $accent-color; }
       &.switch-border { color: $accent-color; }
@@ -205,39 +145,59 @@ window.dropdown-window {
   background: transparent;
   font-family: "JetBrains Mono Nerd Font";
 
-  .menu-surface-frame {
+  .dropdown-surface {
+    margin: 0px;
+    border-radius: 0px;
+    border-width: 0px;
+    background-color: transparent;
+  }
+
+  .dropdown-frame {
+    @include framed-surface;
     border-radius: $island-radius;
     padding: 4px;
-    @include framed-surface;
     opacity: 0;
     transition: opacity 180ms ease;
   }
 
-  .menu-surface-frame.revealed {
+  .dropdown-frame.revealed {
     opacity: 1;
   }
 
-  .menu-surface-frame.snapped-left {
+  .dropdown-frame.snapped-left {
     border-top-left-radius: 0px;
   }
 
-  .menu-surface-frame.snapped-right {
+  .dropdown-frame.snapped-right {
     border-top-right-radius: 0px;
   }
 
-  .menu-surface-body {
+  .dropdown-body {
     border-spacing: 0px;
   }
 
-  .menu-surface-revealer {
+  .dropdown-revealer {
     margin-top: 1px;
   }
 
-  button.menu-popover-row {
-    @include menu-row;
+  .dropdown-row {
+    margin: 0px;
+    border-width: 0px;
+    background-color: transparent;
+    padding: 4px 8px;
+    border-radius: 6px;
   }
 
-  .menu-popover-check {
+  .dropdown-row:hover,
+  .dropdown-row.active {
+    background-color: $alt-bg-color;
+  }
+
+  .dropdown-row.active {
+    color: $accent-color;
+  }
+
+  .dropdown-row-check {
     opacity: 0.95;
   }
 

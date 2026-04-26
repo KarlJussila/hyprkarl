@@ -26,7 +26,7 @@ export default function PowerProfileMenu({
       {profiles.map(({ profile }) => (
         <Button
           class={activeProfile((currentProfile) =>
-            currentProfile === profile ? "menu-popover-row active" : "menu-popover-row",
+            currentProfile === profile ? "dropdown-row active" : "dropdown-row",
           )}
           hexpand
           halign={Gtk.Align.FILL}
@@ -36,7 +36,7 @@ export default function PowerProfileMenu({
             <label hexpand xalign={0} label={formatProfileLabel(profile)} />
             <image
               halign={Gtk.Align.END}
-              class="menu-popover-check"
+              class="dropdown-row-check"
               iconName="object-select-symbolic"
               visible={activeProfile((currentProfile) => currentProfile === profile)}
             />

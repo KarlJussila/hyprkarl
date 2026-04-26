@@ -9,7 +9,7 @@ type Props = {
 
 export default function WorkspaceList({ workspaces }: Props) {
   return (
-    <box class="workspace-list segmented-inline" spacing={0} overflow={Gtk.Overflow.HIDDEN}>
+    <box class="segmented-group" spacing={0} overflow={Gtk.Overflow.HIDDEN}>
       {Array.isArray(workspaces)
         ? workspaces.map((workspace) => (
             <WorkspaceButton id={workspace.id} isEmpty={workspace.isEmpty} />

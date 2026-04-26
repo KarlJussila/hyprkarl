@@ -1,7 +1,7 @@
 import { Gtk } from "ags/gtk4"
 import {
-  createCenterLeftCornerCurve,
-  createCenterRightCornerCurve,
+  createCenterEndCornerCurve,
+  createCenterStartCornerCurve,
   createOuterCornerCurve,
   markCenteredIslandEdges,
   markOuterIslandEdges,
@@ -18,16 +18,16 @@ type BaseProps = {
 }
 
 type OuterIslandProps = BaseProps & {
-  side: "left" | "right"
+  side: "start" | "end"
   children?: JSX.Element | Array<JSX.Element>
 }
 
 type CenterIslandProps = BaseProps & {
-  left?: JSX.Element | Array<JSX.Element>
+  start?: JSX.Element | Array<JSX.Element>
   anchor: JSX.Element
-  right?: JSX.Element | Array<JSX.Element>
-  leftCorner?: JSX.Element
-  rightCorner?: JSX.Element
+  end?: JSX.Element | Array<JSX.Element>
+  startCorner?: JSX.Element
+  endCorner?: JSX.Element
 }
 
 type IslandProps = OuterIslandProps | CenterIslandProps
@@ -91,44 +91,44 @@ function renderOuterIsland({
       halign={halign}
       hexpand={hexpand}
     >
-      {side === "right" && cornerCurve}
+      {side === "end" && cornerCurve}
       {wrappedChildren}
-      {side === "left" && cornerCurve}
+      {side === "start" && cornerCurve}
     </box>
   )
 }
 
 function renderCenterIsland({
-  left,
+  start,
   anchor,
-  right,
-  leftCorner = createCenterLeftCornerCurve(),
-  rightCorner = createCenterRightCornerCurve(),
+  end,
+  startCorner = createCenterStartCornerCurve(),
+  endCorner = createCenterEndCornerCurve(),
   class: className,
   cssName,
   halign,
   hexpand,
 }: CenterIslandProps) {
   const sideSizeGroup = new Gtk.SizeGroup({ mode: Gtk.SizeGroupMode.HORIZONTAL })
-  const leftWidgets = wrapIslandEntries(normalizeChildren(left))
+  const startWidgets = wrapIslandEntries(normalizeChildren(start))
   const centeredAnchor = wrapIslandEntry(anchor)
-  const rightWidgets = wrapIslandEntries(normalizeChildren(right))
+  const endWidgets = wrapIslandEntries(normalizeChildren(end))
 
-  markCenteredIslandEdges(leftWidgets, centeredAnchor, rightWidgets)
+  markCenteredIslandEdges(startWidgets, centeredAnchor, endWidgets)
 
-  const leftSide = createBalancedSide({
+  const startSide = createBalancedSide({
     side: "start",
-    widgets: leftWidgets,
-    corner: leftCorner,
+    widgets: startWidgets,
+    corner: startCorner,
   })
-  const rightSide = createBalancedSide({
+  const endSide = createBalancedSide({
     side: "end",
-    widgets: rightWidgets,
-    corner: rightCorner,
+    widgets: endWidgets,
+    corner: endCorner,
   })
 
-  sideSizeGroup.add_widget(leftSide)
-  sideSizeGroup.add_widget(rightSide)
+  sideSizeGroup.add_widget(startSide)
+  sideSizeGroup.add_widget(endSide)
 
   return (
     <box
@@ -137,9 +137,9 @@ function renderCenterIsland({
       halign={halign}
       hexpand={hexpand}
     >
-      {leftSide}
+      {startSide}
       {centeredAnchor}
-      {rightSide}
+      {endSide}
     </box>
   )
 }

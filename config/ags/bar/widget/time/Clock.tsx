@@ -29,7 +29,7 @@ export default function Clock({ monitor }: Props) {
       trigger={triggerButton}
       open={calendarOpen}
       onRequestClose={() => setCalendarOpen(false)}
-      preferredAlign="center"
+      align="center"
       gap={0}
     >
       <CalendarDropdownContent currentTime={currentTime} />

@@ -2,7 +2,7 @@ import { createComputed, type Accessor } from "ags"
 import { Gtk } from "ags/gtk4"
 
 type Props = {
-  frameEdgeClass: Accessor<string>
+  frameSnapClass: Accessor<string>
   contentRevealed: Accessor<boolean>
   transitionDuration: number
   surfaceClass: string
@@ -11,7 +11,7 @@ type Props = {
 }
 
 export default function DropdownSurface({
-  frameEdgeClass,
+  frameSnapClass,
   contentRevealed,
   transitionDuration,
   surfaceClass,
@@ -19,12 +19,12 @@ export default function DropdownSurface({
   onFrameReady,
 }: Props) {
   const frameClass = createComputed(() => {
-    const classes = ["menu-surface-frame"]
+    const classes = ["dropdown-frame"]
 
     if (contentRevealed()) classes.push("revealed")
 
-    const edgeClass = frameEdgeClass()
-    if (edgeClass) classes.push(edgeClass)
+    const snapClass = frameSnapClass()
+    if (snapClass) classes.push(snapClass)
 
     return classes.join(" ")
   })
@@ -42,12 +42,12 @@ export default function DropdownSurface({
         $={onFrameReady}
       >
         <revealer
-          class="menu-surface-revealer"
+          class="dropdown-revealer"
           transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
           transitionDuration={transitionDuration}
           revealChild={contentRevealed}
         >
-          <box class="menu-surface-body" spacing={2} orientation={Gtk.Orientation.VERTICAL}>
+          <box class="dropdown-body" spacing={2} orientation={Gtk.Orientation.VERTICAL}>
             {children}
           </box>
         </revealer>

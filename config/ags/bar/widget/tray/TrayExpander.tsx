@@ -17,14 +17,14 @@ export default function TrayExpander({
   const collapsedIcon = mirrorTrigger ? "pan-start-symbolic" : "pan-end-symbolic"
   const expandedIcon = mirrorTrigger ? "pan-end-symbolic" : "pan-start-symbolic"
   const triggerIcon = createComputed(() => open() ? expandedIcon : collapsedIcon)
-  const triggerClass = hasItems((itemsAvailable) =>
-    itemsAvailable ? "tray-trigger" : "tray-trigger tray-empty",
+  const buttonStateClass = hasItems((itemsAvailable) =>
+    itemsAvailable ? "" : "tray-expander-empty",
   )
 
   return (
-    <box class="tray-toggle segmented-inline-item">
+    <box class="tray-expander segmented-group-item">
       <Button
-        class={triggerClass}
+        class={buttonStateClass}
         hexpand={false}
         execPrimary={onToggle}
       >

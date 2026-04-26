@@ -9,22 +9,22 @@ import {
   type DropdownAlign,
 } from "./dropdownGeometry"
 
-type Props = Omit<DropdownWindowProps, "position" | "frameEdgeClass" | "revealTrigger" | "onReveal" | "onFrameReady"> & {
+type Props = Omit<DropdownWindowProps, "position" | "frameSnapClass" | "revealTrigger" | "onReveal" | "onFrameReady"> & {
   trigger: Accessor<Gtk.Widget | null>
-  preferredAlign?: DropdownAlign
+  align?: DropdownAlign
   gap?: number
 }
 
 export default function AttachedDropdown({
   trigger,
   monitor,
-  preferredAlign = "center",
+  align = "center",
   gap = 6,
   ...dropdown
 }: Props) {
   const [frameWidget, setFrameWidget] = createState<Gtk.Box | null>(null)
-  const [frameEdgeClass, setFrameEdgeClass] = createState("")
-  const [position, setPosition] = createState({ x: 0, y: 0 })
+  const [frameSnapClass, setFrameSnapClass] = createState("")
+  const [dropdownPosition, setDropdownPosition] = createState({ x: 0, y: 0 })
   const monitorGeometry = monitor.get_geometry()
 
   function updatePosition() {
@@ -37,8 +37,8 @@ export default function AttachedDropdown({
     const [translated, triggerX, triggerY] = triggerWidget.translate_coordinates(rootWidget, 0, 0)
     if (!translated) return
 
-    const nextPosition = computeDropdownPosition({
-      align: preferredAlign,
+    const nextDropdownPosition = computeDropdownPosition({
+      align,
       anchorAllocation: triggerWidget.get_allocation(),
       anchorX: triggerX,
       anchorY: triggerY,
@@ -48,10 +48,10 @@ export default function AttachedDropdown({
       monitorHeight: monitorGeometry.height,
     })
 
-    setFrameEdgeClass(nextPosition.edgeClass)
-    setPosition({
-      x: nextPosition.x,
-      y: nextPosition.y,
+    setFrameSnapClass(nextDropdownPosition.edgeClass)
+    setDropdownPosition({
+      x: nextDropdownPosition.x,
+      y: nextDropdownPosition.y,
     })
   }
 
@@ -59,8 +59,8 @@ export default function AttachedDropdown({
     <DropdownWindow
       {...dropdown}
       monitor={monitor}
-      position={position}
-      frameEdgeClass={frameEdgeClass}
+      position={dropdownPosition}
+      frameSnapClass={frameSnapClass}
       revealTrigger={trigger}
       onReveal={updatePosition}
       onFrameReady={setFrameWidget}

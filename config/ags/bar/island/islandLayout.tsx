@@ -7,7 +7,7 @@ type IslandEdge =
   | "edge-screen-start"
   | "edge-screen-end"
 
-type IslandSide = "left" | "right"
+type IslandSide = "start" | "end"
 
 export function normalizeChildren(children?: JSX.Element | Array<JSX.Element>) {
   return children === undefined ? [] : Array.isArray(children) ? children : [children]
@@ -19,7 +19,7 @@ export function keepNaturalWidth(widget: JSX.Element) {
   }
 }
 
-export function wrapIslandEntry(widget: JSX.Element, className = "island-segment") {
+export function wrapIslandEntry(widget: JSX.Element, className = "island-item") {
   keepNaturalWidth(widget)
 
   return (
@@ -31,7 +31,7 @@ export function wrapIslandEntry(widget: JSX.Element, className = "island-segment
 
 export function wrapIslandEntries(
   widgets: Array<JSX.Element>,
-  className = "island-segment",
+  className = "island-item",
 ) {
   return widgets.map((widget) => wrapIslandEntry(widget, className))
 }
@@ -45,7 +45,7 @@ export function markOuterIslandEdges(widgets: Array<JSX.Element>, side: IslandSi
   const first = widgets[0]
   const last = widgets[widgets.length - 1]
 
-  if (side === "left") {
+  if (side === "start") {
     addClasses(first, ["edge-screen-start"])
     addClasses(last, ["edge-rounded-end"])
     return
@@ -68,15 +68,15 @@ export function markCenteredIslandEdges(
 }
 
 export function createOuterCornerCurve(side: IslandSide) {
-  return side === "left"
-    ? <CornerCurve position="top-left" size={12} radius={4} class="border-curve" />
-    : <CornerCurve position="top-right" size={12} radius={4} class="border-curve" />
+  return side === "start"
+    ? <CornerCurve position="top-left" size={12} radius={4} class="island-curve" />
+    : <CornerCurve position="top-right" size={12} radius={4} class="island-curve" />
 }
 
-export function createCenterLeftCornerCurve() {
-  return <CornerCurve position="top-right" size={12} radius={4} class="border-curve" />
+export function createCenterStartCornerCurve() {
+  return <CornerCurve position="top-right" size={12} radius={4} class="island-curve" />
 }
 
-export function createCenterRightCornerCurve() {
-  return <CornerCurve position="top-left" size={12} radius={4} class="border-curve" />
+export function createCenterEndCornerCurve() {
+  return <CornerCurve position="top-left" size={12} radius={4} class="island-curve" />
 }

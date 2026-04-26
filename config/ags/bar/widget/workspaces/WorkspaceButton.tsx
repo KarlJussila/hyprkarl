@@ -10,14 +10,14 @@ type Props = {
 function workspaceButtonClass(isEmpty: boolean | Accessor<boolean>) {
   if (typeof isEmpty === "boolean") {
     return isEmpty
-      ? "workspace-button workspace-empty segmented-inline-item"
-      : "workspace-button segmented-inline-item"
+      ? "workspace-button workspace-empty segmented-group-item"
+      : "workspace-button segmented-group-item"
   }
 
   return isEmpty((empty) =>
     empty
-      ? "workspace-button workspace-empty segmented-inline-item"
-      : "workspace-button segmented-inline-item",
+      ? "workspace-button workspace-empty segmented-group-item"
+      : "workspace-button segmented-group-item",
   )
 }
 

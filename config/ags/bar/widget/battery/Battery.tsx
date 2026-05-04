@@ -1,5 +1,6 @@
 import { createState } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
+import { type DropdownPlacement } from "../../barPlacement"
 import Button from "../../button/Button"
 import AttachedDropdown from "../../window/dropdown/AttachedDropdown"
 import BatteryIndicator from "./BatteryIndicator"
@@ -9,10 +10,11 @@ import PowerProfileMenu from "./PowerProfileMenu"
 let nextPowerProfileMenuId = 1
 
 type Props = {
+  placement: DropdownPlacement
   monitor: Gdk.Monitor
 }
 
-export default function Battery({ monitor }: Props) {
+export default function Battery({ placement, monitor }: Props) {
   const batteryState = createBatteryState()
   const [powerProfileMenuOpen, setPowerProfileMenuOpen] = createState(false)
   const [triggerButton, setTriggerButton] = createState<Gtk.Widget | null>(null)
@@ -21,6 +23,7 @@ export default function Battery({ monitor }: Props) {
   const mountedPowerProfileDropdown = (
     <AttachedDropdown
       name={`battery-menu-${monitor.connector ?? "monitor"}-${powerProfileMenuId}`}
+      placement={placement}
       monitor={monitor}
       trigger={triggerButton}
       open={powerProfileMenuOpen}
@@ -41,8 +44,38 @@ export default function Battery({ monitor }: Props) {
 
   void mountedPowerProfileDropdown
 
+  const batteryContent = placement.isVertical
+    ? (
+        <box
+          class="battery-display orientation-vertical"
+          orientation={Gtk.Orientation.VERTICAL}
+          spacing={2}
+          hexpand={placement.isVertical}
+          halign={Gtk.Align.CENTER}
+        >
+          <BatteryIndicator
+            orientation={placement.orientation}
+            level={batteryState.percentage}
+            charging={batteryState.isCharging}
+          />
+          <label class="battery-percent" label={batteryState.percentage(formatBatteryPercentage)} />
+        </box>
+      )
+    : (
+        <box class="battery-display orientation-horizontal" spacing={4}>
+          <BatteryIndicator
+            level={batteryState.percentage}
+            charging={batteryState.isCharging}
+          />
+          <label class="battery-percent" label={batteryState.percentage(formatBatteryPercentage)} />
+        </box>
+      )
+
   return (
     <Button
+      class={`battery-button orientation-${placement.orientation}`}
+      hexpand={placement.isVertical}
+      halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       $={(self) => {
         setTriggerButton(self)
         self.connect("destroy", () => {
@@ -52,13 +85,7 @@ export default function Battery({ monitor }: Props) {
       visible={batteryState.isPresent}
       execPrimary={() => setPowerProfileMenuOpen(!powerProfileMenuOpen())}
     >
-      <box spacing={4}>
-        <BatteryIndicator
-          level={batteryState.percentage}
-          charging={batteryState.isCharging}
-        />
-        <label label={batteryState.percentage(formatBatteryPercentage)} />
-      </box>
+      {batteryContent}
     </Button>
   )
 }

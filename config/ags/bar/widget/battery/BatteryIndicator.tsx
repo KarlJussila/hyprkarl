@@ -2,12 +2,14 @@ import { Accessor, createEffect } from "ags"
 import { Gtk } from "ags/gtk4"
 import Pango from "gi://Pango"
 import PangoCairo from "gi://PangoCairo"
+import { type BarOrientation } from "../../barPlacement"
 
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value))
 }
 
 type Props = {
+  orientation?: BarOrientation
   level: Accessor<number>
   charging?: Accessor<boolean>
   width?: number
@@ -19,9 +21,10 @@ type Props = {
 }
 
 export default function BatteryIndicator({
+  orientation = "horizontal",
   level,
   charging,
-  width = 18,
+  width = 16,
   height = 10,
   borderWidth = 2,
   lowThreshold = 0.15,
@@ -29,14 +32,18 @@ export default function BatteryIndicator({
   terminalHeightRatio = 0.4,
 }: Props) {
   const CANVAS_MARGIN = 2
-  const totalWidth = width + terminalWidth + (CANVAS_MARGIN * 2)
-  const totalHeight = height + (CANVAS_MARGIN * 2)
+  const isVertical = orientation === "vertical"
+  const horizontalWidth = width + (terminalWidth * 2) + (CANVAS_MARGIN * 2)
+  const horizontalHeight = height + (CANVAS_MARGIN * 2)
+  const totalWidth = isVertical ? horizontalHeight : horizontalWidth
+  const totalHeight = isVertical ? horizontalWidth : horizontalHeight
 
   return (
     <drawingarea
       contentWidth={totalWidth}
       contentHeight={totalHeight}
       class="battery-indicator"
+      halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
       $={(self) => {
         let pangoLayout: Pango.Layout | null = null
@@ -47,7 +54,7 @@ export default function BatteryIndicator({
           self.queue_draw()
         })
 
-        self.set_draw_func((area, context) => {
+        self.set_draw_func((area, context, _width, drawHeight) => {
           const style = area.get_style_context()
 
           const getColor = (classString: string) => {
@@ -77,7 +84,7 @@ export default function BatteryIndicator({
               ? chargingColor
               : fillColor
 
-          const bodyX = CANVAS_MARGIN
+          const bodyX = CANVAS_MARGIN + terminalWidth
           const bodyY = CANVAS_MARGIN
           const bodyWidth = width
           const bodyHeight = height
@@ -101,6 +108,12 @@ export default function BatteryIndicator({
             context.arc(x + rectRadius, y + rectHeight - rectRadius, rectRadius, Math.PI / 2, Math.PI)
             context.arc(x + rectRadius, y + rectRadius, rectRadius, Math.PI, Math.PI * 1.5)
             context.closePath()
+          }
+
+          if (isVertical) {
+            context.save()
+            context.translate(0, drawHeight)
+            context.rotate(-Math.PI / 2)
           }
 
           if (bodyColor.alpha > 0.01) {
@@ -134,6 +147,10 @@ export default function BatteryIndicator({
           context.rectangle(tipX, tipY, terminalWidth, tipHeight)
           context.fill()
 
+          if (isVertical) {
+            context.restore()
+          }
+
           if (isCharging) {
             if (!pangoLayout) {
               pangoLayout = PangoCairo.create_layout(context)
@@ -144,11 +161,20 @@ export default function BatteryIndicator({
 
             const [, logicalRect] = pangoLayout.get_pixel_extents()
             const metrics = logicalRect || { x: 0, y: 0, width: 0, height: 0 }
+            const glyphCenterX = bodyX + (bodyWidth / 2)
+            const glyphCenterY = bodyY + (bodyHeight / 2)
+
+            const drawX = isVertical
+              ? glyphCenterY
+              : glyphCenterX
+            const drawY = isVertical
+              ? drawHeight - glyphCenterX
+              : glyphCenterY
 
             context.setSourceRGBA(glyphColor.red, glyphColor.green, glyphColor.blue, glyphColor.alpha)
             context.moveTo(
-              bodyX + ((bodyWidth - metrics.width) / 2) - metrics.x,
-              bodyY + ((bodyHeight - metrics.height) / 2) - metrics.y,
+              drawX - (metrics.width / 2) - metrics.x,
+              drawY - (metrics.height / 2) - metrics.y,
             )
             PangoCairo.show_layout(context, pangoLayout)
           }

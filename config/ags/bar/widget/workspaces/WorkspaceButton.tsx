@@ -1,28 +1,37 @@
-import { createBinding, type Accessor } from "ags"
+import { createBinding, createComputed, type Accessor } from "ags"
+import { Gtk } from "ags/gtk4"
 import AstalHyprland from "gi://AstalHyprland"
+import { type BarOrientation } from "../../barPlacement"
 import Button from "../../button/Button"
 
 type Props = {
   id: number
+  orientation: BarOrientation
   isEmpty?: boolean | Accessor<boolean>
 }
 
-function workspaceButtonClass(isEmpty: boolean | Accessor<boolean>) {
-  if (typeof isEmpty === "boolean") {
-    return isEmpty
-      ? "workspace-button workspace-empty segmented-group-item"
-      : "workspace-button segmented-group-item"
-  }
-
-  return isEmpty((empty) =>
-    empty
-      ? "workspace-button workspace-empty segmented-group-item"
-      : "workspace-button segmented-group-item",
-  )
+function workspaceButtonClass({
+  isEmpty,
+  isActive,
+  orientation,
+}: {
+  isEmpty: boolean | Accessor<boolean>
+  isActive: Accessor<boolean>
+  orientation: BarOrientation
+}) {
+  return createComputed(() => {
+    const empty = typeof isEmpty === "boolean" ? isEmpty : isEmpty()
+    const active = isActive()
+    const classes = ["workspace-button", `orientation-${orientation}`, "segmented-group-item"]
+    if (empty) classes.push("workspace-empty")
+    if (active) classes.push("workspace-active")
+    return classes.join(" ")
+  })
 }
 
 export default function WorkspaceButton({
   id,
+  orientation,
   isEmpty = false,
 }: Props) {
   const hyprland = AstalHyprland.get_default()
@@ -33,11 +42,16 @@ export default function WorkspaceButton({
 
   return (
     <Button
-      class={workspaceButtonClass(isEmpty)}
-      hexpand={false}
+      class={workspaceButtonClass({ isEmpty, isActive, orientation })}
+      hexpand={orientation === "vertical"}
+      halign={orientation === "vertical" ? Gtk.Align.FILL : Gtk.Align.CENTER}
       execPrimary={() => hyprland.dispatch("workspace", `${id}`)}
     >
-      <box spacing={0}>
+      <box
+        spacing={0}
+        hexpand={orientation === "vertical"}
+        halign={Gtk.Align.CENTER}
+      >
         <label
           class="workspace-bracket"
           label="["

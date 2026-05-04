@@ -1,4 +1,5 @@
 import { Gtk } from "ags/gtk4"
+import { type BarPlacement } from "../barPlacement"
 import CornerCurve from "../style/CornerCurve"
 
 type IslandEdge =
@@ -16,14 +17,29 @@ export function normalizeChildren(children?: JSX.Element | Array<JSX.Element>) {
 export function keepNaturalWidth(widget: JSX.Element) {
   if (widget instanceof Gtk.Widget) {
     widget.hexpand = false
+    widget.vexpand = false
   }
 }
 
-export function wrapIslandEntry(widget: JSX.Element, className = "island-item") {
-  keepNaturalWidth(widget)
+function allowVerticalFill(widget: JSX.Element) {
+  if (widget instanceof Gtk.Widget) {
+    widget.vexpand = false
+  }
+}
+
+export function wrapIslandEntry(
+  widget: JSX.Element,
+  placement: BarPlacement,
+  className = "island-item",
+) {
+  if (placement.isVertical) {
+    allowVerticalFill(widget)
+  } else {
+    keepNaturalWidth(widget)
+  }
 
   return (
-    <box class={className} hexpand={false}>
+    <box class={className} hexpand={placement.isVertical}>
       {widget}
     </box>
   ) as Gtk.Box
@@ -31,9 +47,10 @@ export function wrapIslandEntry(widget: JSX.Element, className = "island-item") 
 
 export function wrapIslandEntries(
   widgets: Array<JSX.Element>,
+  placement: BarPlacement,
   className = "island-item",
 ) {
-  return widgets.map((widget) => wrapIslandEntry(widget, className))
+  return widgets.map((widget) => wrapIslandEntry(widget, placement, className))
 }
 
 function addClasses(widget: JSX.Element | undefined, classes: Array<IslandEdge>) {
@@ -67,16 +84,72 @@ export function markCenteredIslandEdges(
   addClasses(last, ["edge-rounded-end"])
 }
 
-export function createOuterCornerCurve(side: IslandSide) {
-  return side === "start"
-    ? <CornerCurve position="top-left" size={12} radius={4} class="island-curve" />
-    : <CornerCurve position="top-right" size={12} radius={4} class="island-curve" />
+function outerCornerPosition(placement: BarPlacement, side: IslandSide) {
+  switch (placement.edge) {
+    case "bottom":
+      return side === "start" ? "bottom-left" : "bottom-right"
+
+    case "left":
+      return side === "start" ? "top-left" : "bottom-left"
+
+    case "right":
+      return side === "start" ? "top-right" : "bottom-right"
+
+    case "top":
+    default:
+      return side === "start" ? "top-left" : "top-right"
+  }
 }
 
-export function createCenterStartCornerCurve() {
-  return <CornerCurve position="top-right" size={12} radius={4} class="island-curve" />
+function centerStartCornerPosition(placement: BarPlacement) {
+  switch (placement.edge) {
+    case "bottom":
+      return "bottom-right"
+
+    case "left":
+      return "bottom-left"
+
+    case "right":
+      return "bottom-right"
+
+    case "top":
+    default:
+      return "top-right"
+  }
 }
 
-export function createCenterEndCornerCurve() {
-  return <CornerCurve position="top-left" size={12} radius={4} class="island-curve" />
+function centerEndCornerPosition(placement: BarPlacement) {
+  switch (placement.edge) {
+    case "bottom":
+      return "bottom-left"
+
+    case "left":
+      return "top-left"
+
+    case "right":
+      return "top-right"
+
+    case "top":
+    default:
+      return "top-left"
+  }
+}
+
+export function createOuterCornerCurve(placement: BarPlacement, side: IslandSide) {
+  return (
+    <CornerCurve
+      position={outerCornerPosition(placement, side)}
+      size={12}
+      radius={4}
+      class="island-curve"
+    />
+  )
+}
+
+export function createCenterStartCornerCurve(placement: BarPlacement) {
+  return <CornerCurve position={centerStartCornerPosition(placement)} size={12} radius={4} class="island-curve" />
+}
+
+export function createCenterEndCornerCurve(placement: BarPlacement) {
+  return <CornerCurve position={centerEndCornerPosition(placement)} size={12} radius={4} class="island-curve" />
 }

@@ -1,6 +1,7 @@
 import app from "ags/gtk4/app"
-import { Accessor, createComputed, createEffect, createState, onCleanup } from "ags"
+import { Accessor, createComputed, createEffect, onCleanup } from "ags"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
+import { type DropdownPlacement, placementClasses } from "../../barPlacement"
 import DropdownSurface from "./DropdownSurface"
 import { createDropdownVisibility } from "./dropdownVisibility"
 
@@ -10,12 +11,14 @@ type DropdownCoordinates = {
 }
 
 export type DropdownWindowProps = {
+  placement: DropdownPlacement
   name: string
   monitor: Gdk.Monitor
   open: Accessor<boolean>
   position?: Accessor<DropdownCoordinates>
   frameSnapClass?: Accessor<string>
   revealTrigger?: Accessor<unknown>
+  revealTransition?: "down" | "up" | "right" | "left"
   onReveal?: () => void
   onRequestClose?: () => void
   windowClass?: string
@@ -25,12 +28,14 @@ export type DropdownWindowProps = {
 }
 
 export default function DropdownWindow({
+  placement,
   name,
   monitor,
   open,
   position,
   frameSnapClass,
   revealTrigger = open,
+  revealTransition = "down",
   onReveal = () => {},
   onRequestClose,
   windowClass = "dropdown-window",
@@ -40,6 +45,13 @@ export default function DropdownWindow({
 }: DropdownWindowProps) {
   const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor
   const revealDuration = 180
+  const transitionType = revealTransition === "up"
+    ? Gtk.RevealerTransitionType.SLIDE_UP
+    : revealTransition === "right"
+      ? Gtk.RevealerTransitionType.SLIDE_RIGHT
+      : revealTransition === "left"
+        ? Gtk.RevealerTransitionType.SLIDE_LEFT
+        : Gtk.RevealerTransitionType.SLIDE_DOWN
 
   let windowLayout: Gtk.Fixed | null = null
   const monitorGeometry = monitor.get_geometry()
@@ -68,9 +80,11 @@ export default function DropdownWindow({
 
   const surface = (
     <DropdownSurface
+      placement={placement}
       frameSnapClass={resolvedFrameSnapClass}
       contentRevealed={contentRevealed}
       transitionDuration={revealDuration}
+      transitionType={transitionType}
       surfaceClass={surfaceClass}
       onFrameReady={onFrameReady}
     >
@@ -86,7 +100,7 @@ export default function DropdownWindow({
   const dropdownWindow = (
     <window
       name={name}
-      class={windowClass}
+      class={`${windowClass} ${placementClasses(placement)}`}
       application={app}
       visible={windowVisible}
       gdkmonitor={monitor}

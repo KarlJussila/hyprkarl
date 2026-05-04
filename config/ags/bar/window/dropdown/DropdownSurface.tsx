@@ -1,19 +1,24 @@
 import { createComputed, type Accessor } from "ags"
 import { Gtk } from "ags/gtk4"
+import { type DropdownPlacement } from "../../barPlacement"
 
 type Props = {
+  placement: DropdownPlacement
   frameSnapClass: Accessor<string>
   contentRevealed: Accessor<boolean>
   transitionDuration: number
+  transitionType: Gtk.RevealerTransitionType
   surfaceClass: string
   children?: JSX.Element | Array<JSX.Element>
   onFrameReady: (frame: Gtk.Box) => void
 }
 
 export default function DropdownSurface({
+  placement,
   frameSnapClass,
   contentRevealed,
   transitionDuration,
+  transitionType,
   surfaceClass,
   children,
   onFrameReady,
@@ -28,6 +33,10 @@ export default function DropdownSurface({
 
     return classes.join(" ")
   })
+  const {
+    frameHalign,
+    frameValign,
+  } = placement.dropdown
 
   return (
     <box
@@ -39,15 +48,21 @@ export default function DropdownSurface({
         class={frameClass}
         hexpand={false}
         vexpand={false}
+        halign={frameHalign}
+        valign={frameValign}
         $={onFrameReady}
       >
         <revealer
-          class="dropdown-revealer"
-          transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+          class={`dropdown-revealer edge-${placement.edge}`}
+          transitionType={transitionType}
           transitionDuration={transitionDuration}
           revealChild={contentRevealed}
         >
-          <box class="dropdown-body" spacing={2} orientation={Gtk.Orientation.VERTICAL}>
+          <box
+            class="dropdown-body"
+            spacing={2}
+            orientation={Gtk.Orientation.VERTICAL}
+          >
             {children}
           </box>
         </revealer>

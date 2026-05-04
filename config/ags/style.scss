@@ -33,7 +33,7 @@ window.Bar {
     color: $alt-bg-color;
   }
 
-  > centerbox {
+  > centerbox.bar-layout {
     padding: 0px;
 
     .island,
@@ -47,25 +47,6 @@ window.Bar {
       border-radius: 0px;
       background-color: $bg-color;
       border: $border-width solid $alt-bg-color;
-      border-width: 0px $border-width $border-width 0px;
-    }
-
-    .island-item.edge-rounded-start {
-      border-bottom-left-radius: $island-radius;
-      border-left-width: $border-width;
-    }
-
-    .island-item.edge-rounded-end {
-      border-radius: 0px 0px $island-radius 0px;
-      border-right-width: $border-width;
-    }
-
-    .island-item.edge-screen-start {
-      border-left-width: 0px;
-    }
-
-    .island-item.edge-screen-end {
-      border-right-width: 0px;
     }
 
     .island-item > button,
@@ -85,6 +66,10 @@ window.Bar {
       padding: 0px 2px;
     }
 
+    .workspace-button.workspace-active {
+      color: $accent-color;
+    }
+
     .workspace-empty label {
       opacity: 0.55;
     }
@@ -94,9 +79,9 @@ window.Bar {
       font-family: "JetBrains Mono Nerd Font";
     }
 
-    .tray-panel.open + .tray-expander,
-    .tray-expander + .tray-panel.open {
-      border-left: $border-width solid $alt-bg-color;
+    .clock-display,
+    .battery-display {
+      margin: 0px;
     }
 
     .tray-expander,
@@ -126,6 +111,164 @@ window.Bar {
     .battery-fill.low { color: #d26a55; }
     .battery-fill.charging { color: $fg-color; }
     .battery-glyph { color: $accent-color; }
+  }
+
+  > centerbox.bar-layout.orientation-horizontal {
+    .tray-panel.open + .tray-expander,
+    .tray-expander + .tray-panel.open {
+      border-left: $border-width solid $alt-bg-color;
+    }
+  }
+
+  > centerbox.bar-layout.orientation-vertical {
+    .island-item > button,
+    .island-item > button.switch-button,
+    .island-item > .segmented-group {
+      padding-top: 4px;
+      padding-bottom: 4px;
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    .island-item > .tray-group {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+
+    .menu-button,
+    .clock-button,
+    .battery-button,
+    .switch-button.caffeine-button {
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+
+    .battery-percent {
+      font-size: 10px;
+    }
+
+    .menu-button,
+    .clock-button,
+    .battery-button,
+    .switch-button.caffeine-button,
+    .tray-expander,
+    .tray-panel,
+    .tray-item-list,
+    .tray-item,
+    .tray-expander > button,
+    .tray-item > button {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    .tray-expander,
+    .tray-panel,
+    .tray-item-list,
+    .tray-item,
+    .tray-expander > button,
+    .tray-item > button {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+
+    .tray-panel.open + .tray-expander,
+    .tray-expander + .tray-panel.open {
+      border-top: $border-width solid $alt-bg-color;
+    }
+  }
+
+  > centerbox.bar-layout.edge-top {
+    .island-item {
+      border-width: 0px $border-width $border-width 0px;
+    }
+
+    .island-item.edge-rounded-start {
+      border-bottom-left-radius: $island-radius;
+      border-left-width: $border-width;
+    }
+
+    .island-item.edge-rounded-end {
+      border-bottom-right-radius: $island-radius;
+      border-right-width: $border-width;
+    }
+
+    .island-item.edge-screen-start {
+      border-left-width: 0px;
+    }
+
+    .island-item.edge-screen-end {
+      border-right-width: 0px;
+    }
+  }
+
+  > centerbox.bar-layout.edge-bottom {
+    .island-item {
+      border-width: $border-width $border-width 0px 0px;
+    }
+
+    .island-item.edge-rounded-start {
+      border-top-left-radius: $island-radius;
+      border-left-width: $border-width;
+    }
+
+    .island-item.edge-rounded-end {
+      border-top-right-radius: $island-radius;
+      border-right-width: $border-width;
+    }
+
+    .island-item.edge-screen-start {
+      border-left-width: 0px;
+    }
+
+    .island-item.edge-screen-end {
+      border-right-width: 0px;
+    }
+  }
+
+  > centerbox.bar-layout.edge-left {
+    .island-item {
+      border-width: 0px $border-width $border-width 0px;
+    }
+
+    .island-item.edge-rounded-start {
+      border-top-right-radius: $island-radius;
+      border-top-width: $border-width;
+    }
+
+    .island-item.edge-rounded-end {
+      border-bottom-right-radius: $island-radius;
+    }
+
+    .island-item.edge-screen-start {
+      border-top-width: 0px;
+    }
+
+    .island-item.edge-screen-end {
+      border-bottom-width: 0px;
+    }
+  }
+
+  > centerbox.bar-layout.edge-right {
+    .island-item {
+      border-width: 0px 0px $border-width $border-width;
+    }
+
+    .island-item.edge-rounded-start {
+      border-top-left-radius: $island-radius;
+      border-top-width: $border-width;
+    }
+
+    .island-item.edge-rounded-end {
+      border-bottom-left-radius: $island-radius;
+    }
+
+    .island-item.edge-screen-start {
+      border-top-width: 0px;
+    }
+
+    .island-item.edge-screen-end {
+      border-bottom-width: 0px;
+    }
   }
 
   .switch {
@@ -164,20 +307,64 @@ window.dropdown-window {
     opacity: 1;
   }
 
-  .dropdown-frame.snapped-left {
-    border-top-left-radius: 0px;
+  &.edge-top {
+    .dropdown-frame.snapped-left {
+      border-top-left-radius: 0px;
+    }
+
+    .dropdown-frame.snapped-right {
+      border-top-right-radius: 0px;
+    }
   }
 
-  .dropdown-frame.snapped-right {
-    border-top-right-radius: 0px;
+  &.edge-bottom {
+    .dropdown-frame.snapped-left {
+      border-bottom-left-radius: 0px;
+    }
+
+    .dropdown-frame.snapped-right {
+      border-bottom-right-radius: 0px;
+    }
+  }
+
+  &.edge-left {
+    .dropdown-frame.snapped-top {
+      border-top-left-radius: 0px;
+    }
+
+    .dropdown-frame.snapped-bottom {
+      border-bottom-left-radius: 0px;
+    }
+  }
+
+  &.edge-right {
+    .dropdown-frame.snapped-top {
+      border-top-right-radius: 0px;
+    }
+
+    .dropdown-frame.snapped-bottom {
+      border-bottom-right-radius: 0px;
+    }
   }
 
   .dropdown-body {
     border-spacing: 0px;
   }
 
-  .dropdown-revealer {
+  .dropdown-revealer.edge-top {
     margin-top: 1px;
+  }
+
+  .dropdown-revealer.edge-bottom {
+    margin-bottom: 1px;
+  }
+
+  .dropdown-revealer.edge-left {
+    margin-left: 1px;
+  }
+
+  .dropdown-revealer.edge-right {
+    margin-right: 1px;
   }
 
   .dropdown-row {

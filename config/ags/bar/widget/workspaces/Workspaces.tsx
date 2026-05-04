@@ -1,22 +1,30 @@
 import { createConnection } from "ags"
 import AstalHyprland from "gi://AstalHyprland"
+import { type BarOrientation } from "../../barPlacement"
 import WorkspaceList from "./WorkspaceList"
 import { currentVisibleWorkspaces, type VisibleWorkspace } from "./workspaceVisibility"
 
 type Props = {
+  orientation: BarOrientation
   workspaceIds?: Array<number>
 }
 
-function FixedWorkspaceList({ workspaceIds }: { workspaceIds: Array<number> }) {
+function FixedWorkspaceList({
+  orientation,
+  workspaceIds,
+}: {
+  orientation: BarOrientation
+  workspaceIds: Array<number>
+}) {
   const workspaces: Array<VisibleWorkspace> = workspaceIds.map((id) => ({
     id,
     isEmpty: false,
   }))
 
-  return <WorkspaceList workspaces={workspaces} />
+  return <WorkspaceList orientation={orientation} workspaces={workspaces} />
 }
 
-function DynamicWorkspaceList() {
+function DynamicWorkspaceList({ orientation }: { orientation: BarOrientation }) {
   const hyprland = AstalHyprland.get_default()
   const visibleWorkspaceList = createConnection(
     currentVisibleWorkspaces(hyprland),
@@ -26,13 +34,13 @@ function DynamicWorkspaceList() {
     [hyprland, "client-moved", () => currentVisibleWorkspaces(hyprland)],
   )
 
-  return <WorkspaceList workspaces={visibleWorkspaceList} />
+  return <WorkspaceList orientation={orientation} workspaces={visibleWorkspaceList} />
 }
 
-export default function Workspaces({ workspaceIds }: Props) {
+export default function Workspaces({ orientation, workspaceIds }: Props) {
   if (workspaceIds && workspaceIds.length > 0) {
-    return <FixedWorkspaceList workspaceIds={workspaceIds} />
+    return <FixedWorkspaceList orientation={orientation} workspaceIds={workspaceIds} />
   }
 
-  return <DynamicWorkspaceList />
+  return <DynamicWorkspaceList orientation={orientation} />
 }

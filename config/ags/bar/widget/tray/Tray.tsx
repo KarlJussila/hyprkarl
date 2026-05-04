@@ -1,14 +1,21 @@
 import { createConnection, createState } from "ags"
+import { Gtk } from "ags/gtk4"
 import AstalTray from "gi://AstalTray"
+import { type TrayPlacement } from "../../barPlacement"
 import TrayExpander from "./TrayExpander"
 import TrayItems from "./TrayItems"
 
 type Props = {
+  placement: TrayPlacement
   direction?: "start" | "end"
   mirrorTrigger?: boolean
 }
 
-export default function Tray({ direction = "start", mirrorTrigger = false }: Props) {
+export default function Tray({
+  placement,
+  direction = "start",
+  mirrorTrigger = false,
+}: Props) {
   const trayService = AstalTray.get_default()
   const trayItems = createConnection(
     [...trayService.items],
@@ -26,6 +33,7 @@ export default function Tray({ direction = "start", mirrorTrigger = false }: Pro
 
   const trayPanel = (
     <TrayItems
+      placement={placement}
       direction={direction}
       items={trayItems}
       open={trayOpen}
@@ -34,8 +42,9 @@ export default function Tray({ direction = "start", mirrorTrigger = false }: Pro
 
   const trayExpander = (
     <TrayExpander
+      fill={placement.isVertical}
+      icons={placement.tray.expanderIcons(direction, mirrorTrigger)}
       hasItems={hasTrayItems}
-      mirrorTrigger={mirrorTrigger}
       open={trayOpen}
       onToggle={toggleTray}
     />
@@ -46,7 +55,12 @@ export default function Tray({ direction = "start", mirrorTrigger = false }: Pro
     : [trayExpander, trayPanel]
 
   return (
-    <box class="segmented-group">
+    <box
+      class={`tray-group segmented-group orientation-${placement.orientation}`}
+      hexpand={placement.isVertical}
+      halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      orientation={placement.layoutOrientation}
+    >
       {startContent}
       {endContent}
     </box>

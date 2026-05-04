@@ -1,5 +1,7 @@
 import { createState } from "ags"
 import app from "ags/gtk4/app"
+import { Gtk } from "ags/gtk4"
+import { type BarOrientation } from "../barPlacement"
 import Switch from "../button/Switch"
 import { execAsync } from "ags/process"
 
@@ -25,11 +27,20 @@ app.connect("request", (_app, args, response) => {
   }
 })
 
-export default function CaffeineToggle() {
+type Props = {
+  orientation: BarOrientation
+}
+
+export default function CaffeineToggle({ orientation }: Props) {
+  const isVertical = orientation === "vertical"
+
   return (
     <Switch
+      class={`caffeine-button orientation-${orientation}`}
+      hexpand={isVertical}
+      halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      orientation={orientation}
       glyph=""
-      trackLength={24}
       active={active}
       onToggle={(next) => {
         setActive(next)

@@ -3,6 +3,7 @@ import GLib from "gi://GLib"
 import Pango from "gi://Pango"
 import PangoCairo from "gi://PangoCairo"
 import { Accessor, createEffect } from "ags"
+import { type BarOrientation } from "../barPlacement"
 
 function interpolate(start: number, end: number, factor: number) {
   return start + (end - start) * factor
@@ -18,6 +19,10 @@ function interpolateRGBA(start: Gdk.RGBA, end: Gdk.RGBA, factor: number): Gdk.RG
 }
 
 type SwitchProps = {
+  class?: string
+  hexpand?: boolean
+  halign?: Gtk.Align
+  orientation?: BarOrientation
   active: Accessor<boolean>
   onToggle?: (next: boolean) => void
   glyph?: string
@@ -33,12 +38,16 @@ type SwitchProps = {
 }
 
 export default function Switch({
+  class: className = "",
+  hexpand = false,
+  halign = Gtk.Align.CENTER,
+  orientation = "horizontal",
   active,
   onToggle,
   glyph = "",
   thumbSize = 16,
   trackHeight = 12,
-  trackLength = 28,
+  trackLength = 24,
   thumbPadding = 7,
   glyphOffsetX = 0,
   glyphOffsetY = 0,
@@ -46,6 +55,7 @@ export default function Switch({
   fontSize = 8,
   fontFamily = "JetBrains Mono Nerd Font Propo"
 }: SwitchProps) {
+  const isVertical = orientation === "vertical"
   let drawingArea!: Gtk.DrawingArea
   let pangoLayout: Pango.Layout | null = null
   
@@ -55,8 +65,10 @@ export default function Switch({
   const ANIMATION_DURATION_US = 140_000
   const CANVAS_MARGIN = 2
   
-  const totalWidth = Math.ceil(trackLength + thumbSize + (CANVAS_MARGIN * 2) - (thumbPadding * 2))
-  const totalHeight = Math.ceil(Math.max(thumbSize, trackHeight) + CANVAS_MARGIN * 2)
+  const horizontalWidth = Math.ceil(trackLength + thumbSize + (CANVAS_MARGIN * 2) - (thumbPadding * 2))
+  const horizontalHeight = Math.ceil(Math.max(thumbSize, trackHeight) + CANVAS_MARGIN * 2)
+  const totalWidth = isVertical ? horizontalHeight : horizontalWidth
+  const totalHeight = isVertical ? horizontalWidth : horizontalHeight
 
   const easeOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 
@@ -83,13 +95,17 @@ export default function Switch({
   }
 
   return (
-    <button class="switch-button"
+    <button
+      class={`switch-button ${className}`.trim()}
+      hexpand={hexpand}
+      halign={halign}
       onClicked={() => onToggle?.(!active())}
     >
       <drawingarea
         contentWidth={totalWidth}
         contentHeight={totalHeight}
         class={active() ? "switch active" : "switch"}
+        halign={Gtk.Align.CENTER}
         $={(self) => {
           drawingArea = self
 
@@ -105,7 +121,7 @@ export default function Switch({
           })
 
           /* MAIN DRAWING FUNCTION */
-          self.set_draw_func((area, context, width, height) => {
+          self.set_draw_func((area, context, drawWidth, drawHeight) => {
             const style = area.get_style_context()
 
             // Evil color fetching hack
@@ -133,9 +149,10 @@ export default function Switch({
             const trackColor = interpolateRGBA(trackOff, trackOn, animationProgress)
             const borderColor = interpolateRGBA(borderOff, borderOn, animationProgress)
             
-            const thumbX = interpolate(CANVAS_MARGIN, width - thumbSize - CANVAS_MARGIN, animationProgress)
-            const thumbY = (height - thumbSize) / 2
+            const thumbX = interpolate(CANVAS_MARGIN, horizontalWidth - thumbSize - CANVAS_MARGIN, animationProgress)
+            const thumbY = (horizontalHeight - thumbSize) / 2
             const trackX = CANVAS_MARGIN + (thumbSize / 2) - thumbPadding
+            const trackY = (horizontalHeight - trackHeight) / 2
 
             const drawRoundedRect = (x: number, y: number, w: number, h: number, r: number) => {
               context.newPath()
@@ -152,9 +169,15 @@ export default function Switch({
               context.paint()
             }
 
+            if (isVertical) {
+              context.save()
+              context.translate(0, drawHeight)
+              context.rotate(-Math.PI / 2)
+            }
+
             // Draw Track
             context.setSourceRGBA(trackColor.red, trackColor.green, trackColor.blue, trackColor.alpha)
-            drawRoundedRect(trackX, (height - trackHeight) / 2, trackLength, trackHeight, trackHeight / 2)
+            drawRoundedRect(trackX, trackY, trackLength, trackHeight, trackHeight / 2)
             context.fillPreserve()
             
             // Track Border
@@ -176,6 +199,10 @@ export default function Switch({
               context.stroke()
             }
 
+            if (isVertical) {
+              context.restore()
+            }
+
             // Render Glyph
             if (glyph) {
               if (!pangoLayout) {
@@ -187,9 +214,20 @@ export default function Switch({
               }
               const [, logicalRect] = pangoLayout.get_pixel_extents()
               const metrics = logicalRect || { x: 0, y: 0, width: 0, height: 0 }
+              const glyphCenterX = thumbX + (thumbSize / 2)
+              const glyphCenterY = thumbY + (thumbSize / 2)
+              const drawX = isVertical
+                ? glyphCenterY
+                : glyphCenterX
+              const drawY = isVertical
+                ? drawHeight - glyphCenterX
+                : glyphCenterY
               
               context.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha)
-              context.moveTo(thumbX + glyphOffsetX, thumbY + (thumbSize - metrics.height) / 2 - metrics.y + glyphOffsetY)
+              context.moveTo(
+                drawX - (metrics.width / 2) - metrics.x + glyphOffsetX,
+                drawY - (metrics.height / 2) - metrics.y + glyphOffsetY,
+              )
               PangoCairo.show_layout(context, pangoLayout)
             }
           })

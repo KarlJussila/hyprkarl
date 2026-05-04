@@ -40,7 +40,6 @@ export function createDropdownVisibility({
     revealTimer = timeout(1, () => {
       onReveal()
       setContentRevealed(true)
-      timeout(1, onReveal)
       revealTimer = null
     })
   }

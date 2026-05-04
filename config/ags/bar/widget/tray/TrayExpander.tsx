@@ -1,34 +1,45 @@
 import { createComputed, type Accessor } from "ags"
+import { Gtk } from "ags/gtk4"
 import Button from "../../button/Button"
 
 type Props = {
+  fill?: boolean
+  icons: {
+    collapsed: string
+    expanded: string
+  }
   hasItems: Accessor<boolean>
-  mirrorTrigger: boolean
   open: Accessor<boolean>
   onToggle: () => void
 }
 
 export default function TrayExpander({
+  fill = false,
+  icons,
   hasItems,
-  mirrorTrigger,
   open,
   onToggle,
 }: Props) {
-  const collapsedIcon = mirrorTrigger ? "pan-start-symbolic" : "pan-end-symbolic"
-  const expandedIcon = mirrorTrigger ? "pan-end-symbolic" : "pan-start-symbolic"
-  const triggerIcon = createComputed(() => open() ? expandedIcon : collapsedIcon)
+  const triggerIcon = createComputed(() => open() ? icons.expanded : icons.collapsed)
   const buttonStateClass = hasItems((itemsAvailable) =>
     itemsAvailable ? "" : "tray-expander-empty",
   )
 
   return (
-    <box class="tray-expander segmented-group-item">
+    <box
+      class="tray-expander segmented-group-item"
+      hexpand={fill}
+      halign={fill ? Gtk.Align.FILL : Gtk.Align.CENTER}
+    >
       <Button
         class={buttonStateClass}
-        hexpand={false}
+        hexpand={fill}
+        halign={fill ? Gtk.Align.FILL : Gtk.Align.CENTER}
         execPrimary={onToggle}
       >
-        <image iconName={triggerIcon} pixelSize={14} />
+        <box hexpand={fill} halign={Gtk.Align.CENTER}>
+          <image iconName={triggerIcon} pixelSize={14} />
+        </box>
       </Button>
     </box>
   )

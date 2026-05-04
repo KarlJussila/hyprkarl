@@ -1,4 +1,5 @@
 import { Gtk } from "ags/gtk4"
+import { type BarEdge } from "../../barPlacement"
 
 export type DropdownAlign = "start" | "center" | "end"
 export type DropdownSize = { width: number; height: number }
@@ -16,6 +17,21 @@ export function measureWidget(widget: Gtk.Widget | null): DropdownSize {
     width: naturalWidth,
     height: naturalHeight,
   }
+}
+
+export function rootRelativeAnchorPosition({
+  anchorWidget,
+  rootWidget,
+}: {
+  anchorWidget: Gtk.Widget
+  rootWidget: Gtk.Widget
+}) {
+  const [translated, anchorX, anchorY] = anchorWidget.translate_coordinates(rootWidget, 0, 0)
+  if (!translated) {
+    return null
+  }
+
+  return { anchorX, anchorY }
 }
 
 function alignDropdownX({
@@ -40,27 +56,66 @@ function alignDropdownX({
   }
 }
 
+function alignDropdownY({
+  align,
+  anchorY,
+  anchorHeight,
+  dropdownHeight,
+}: {
+  align: DropdownAlign
+  anchorY: number
+  anchorHeight: number
+  dropdownHeight: number
+}) {
+  switch (align) {
+    case "start":
+      return anchorY
+    case "end":
+      return anchorY + anchorHeight - dropdownHeight
+    case "center":
+    default:
+      return anchorY + ((anchorHeight - dropdownHeight) / 2)
+  }
+}
+
 function frameSnapClass({
+  edge,
   gap,
   x,
+  y,
   maxX,
+  maxY,
 }: {
+  edge: BarEdge
   gap: number
   x: number
+  y: number
   maxX: number
+  maxY: number
 }) {
-  if (gap <= 0 && x === 0) {
+  if (gap > 0) return ""
+
+  if ((edge === "top" || edge === "bottom") && x === 0) {
     return "snapped-left"
   }
 
-  if (gap <= 0 && x === maxX) {
+  if ((edge === "top" || edge === "bottom") && x === maxX) {
     return "snapped-right"
+  }
+
+  if ((edge === "left" || edge === "right") && y === 0) {
+    return "snapped-top"
+  }
+
+  if ((edge === "left" || edge === "right") && y === maxY) {
+    return "snapped-bottom"
   }
 
   return ""
 }
 
 export function computeDropdownPosition({
+  edge,
   align,
   anchorAllocation,
   anchorX,
@@ -70,6 +125,7 @@ export function computeDropdownPosition({
   monitorWidth,
   monitorHeight,
 }: {
+  edge: BarEdge
   align: DropdownAlign
   anchorAllocation: Gtk.Allocation
   anchorX: number
@@ -79,13 +135,26 @@ export function computeDropdownPosition({
   monitorWidth: number
   monitorHeight: number
 }) {
-  const unclampedX = alignDropdownX({
-    align,
-    anchorX,
-    anchorWidth: anchorAllocation.width,
-    dropdownWidth: dropdownSize.width,
-  })
-  const unclampedY = anchorY + anchorAllocation.height + gap
+  const unclampedX = edge === "left"
+    ? anchorX + anchorAllocation.width + gap
+    : edge === "right"
+      ? anchorX - dropdownSize.width - gap
+      : alignDropdownX({
+          align,
+          anchorX,
+          anchorWidth: anchorAllocation.width,
+          dropdownWidth: dropdownSize.width,
+        })
+  const unclampedY = edge === "top"
+    ? anchorY + anchorAllocation.height + gap
+    : edge === "bottom"
+      ? anchorY - dropdownSize.height - gap
+      : alignDropdownY({
+          align,
+          anchorY,
+          anchorHeight: anchorAllocation.height,
+          dropdownHeight: dropdownSize.height,
+        })
 
   const maxX = Math.max(0, monitorWidth - dropdownSize.width)
   const maxY = Math.max(0, monitorHeight - dropdownSize.height)
@@ -96,6 +165,6 @@ export function computeDropdownPosition({
   return {
     x,
     y,
-    edgeClass: frameSnapClass({ gap, x, maxX }),
+    edgeClass: frameSnapClass({ edge, gap, x, y, maxX, maxY }),
   } satisfies DropdownPosition
 }

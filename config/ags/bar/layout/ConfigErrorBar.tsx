@@ -1,0 +1,57 @@
+import app from "ags/gtk4/app"
+import { Astal, Gdk, Gtk } from "ags/gtk4"
+import { type BarConfigError } from "../configError"
+import { type BarEdge } from "../configuration"
+import { createBarPlacement, placementClasses } from "./placement"
+
+type Props = {
+  edge: BarEdge
+  error: BarConfigError
+  monitor: Gdk.Monitor
+}
+
+function errorLocationLabel(error: BarConfigError) {
+  if (error.path) {
+    return `${error.sourceFile}: ${error.path}`
+  }
+
+  return error.sourceFile
+}
+
+export default function ConfigErrorBar({ edge, error, monitor }: Props) {
+  const placement = createBarPlacement(edge)
+  const itemOrientation = placement.isVertical
+    ? Gtk.Orientation.VERTICAL
+    : Gtk.Orientation.HORIZONTAL
+
+  return (
+    <window
+      visible
+      name="bar"
+      class={`Bar bar-config-error ${placementClasses(placement)}`}
+      gdkmonitor={monitor}
+      exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      anchor={placement.window.anchor}
+      application={app}
+      tooltipText={error.message}
+    >
+      <box
+        class={`bar-config-error-layout ${placementClasses(placement)}`}
+        orientation={placement.layoutOrientation}
+      >
+        <box
+          class={`bar-config-error-item orientation-${placement.orientation}`}
+          orientation={itemOrientation}
+          spacing={placement.isVertical ? 4 : 8}
+          hexpand={!placement.isVertical}
+          vexpand={placement.isVertical}
+          halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+          valign={placement.isVertical ? Gtk.Align.START : Gtk.Align.CENTER}
+        >
+          <label class="bar-config-error-title" xalign={0.5} label="Bar config error" />
+          <label class="bar-config-error-path" xalign={0.5} label={errorLocationLabel(error)} />
+        </box>
+      </box>
+    </window>
+  )
+}

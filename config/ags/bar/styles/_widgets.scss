@@ -1,0 +1,145 @@
+@use "../theme" as *;
+
+window.Bar {
+  button {
+    margin: 0px;
+    border-radius: 0px;
+    border-width: 0px;
+    background-color: transparent;
+    padding: 0px $bar-button-padding-inline;
+  }
+
+  button.pressed {
+    background-color: $bar-alt-bg-color;
+  }
+
+  .island-item > button,
+  .island-item > .segmented-group {
+    margin: 0px;
+    border-radius: 0px;
+    border-width: 0px;
+    background-color: transparent;
+  }
+
+  .workspace-button {
+    padding: 0px $bar-workspace-padding-inline;
+  }
+
+  .workspace-button.workspace-active {
+    color: $bar-accent-color;
+  }
+
+  .workspace-empty label {
+    opacity: 0.55;
+  }
+
+  .workspace-bracket,
+  .workspace-label {
+    font-family: $bar-font-family-mono;
+  }
+
+  .clock-display,
+  .battery-display {
+    margin: 0px;
+  }
+
+  .battery-display.orientation-horizontal .battery-percent {
+    margin-left: $bar-battery-percent-gap-horizontal;
+  }
+
+  .battery-display.orientation-vertical .battery-percent {
+    margin-top: $bar-battery-percent-gap-vertical;
+  }
+
+  .tray-expander,
+  .tray-panel,
+  .tray-item-list,
+  .tray-item,
+  .tray-item > button {
+    margin: 0px;
+    border-radius: 0px;
+    border-width: 0px;
+    background-color: transparent;
+  }
+
+  .tray-expander > button {
+    padding: 0px;
+  }
+
+  .tray-item > button {
+    padding: 0px $bar-tray-item-padding-inline;
+    border-spacing: 0px;
+    box-shadow: none;
+  }
+
+  .battery-body { color: $bar-bg-color; }
+  .battery-border { color: $bar-fg-color; }
+  .battery-fill { color: $bar-fg-color; }
+  .battery-fill.low { color: $bar-low-battery-color; }
+  .battery-fill.charging { color: $bar-fg-color; }
+  .battery-glyph { color: $bar-accent-color; }
+
+  .switch {
+    &.switch-bg { color: $bar-bg-color; }
+    &.switch-fg { color: $bar-fg-color; }
+    &.switch-track { color: $bar-bg-color; }
+    &.switch-border { color: $bar-alt-bg-color; }
+
+    &.active {
+      &.switch-track { color: $bar-accent-color; }
+      &.switch-border { color: $bar-accent-color; }
+    }
+  }
+
+  > centerbox.bar-layout.orientation-vertical {
+    .island-item > button,
+    .island-item > button.switch-button,
+    .island-item > .segmented-group {
+      padding-top: $bar-vertical-button-padding-block;
+      padding-bottom: $bar-vertical-button-padding-block;
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    .island-item > .tray-group {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+
+    .menu-button,
+    .clock-button,
+    .battery-button,
+    .switch-button.caffeine-button {
+      padding-top: $bar-vertical-button-padding-block;
+      padding-bottom: $bar-vertical-button-padding-block;
+    }
+
+    .battery-percent {
+      font-size: $bar-battery-percent-font-size-vertical;
+    }
+
+    .menu-button,
+    .clock-button,
+    .battery-button,
+    .switch-button.caffeine-button,
+    .tray-expander,
+    .tray-panel,
+    .tray-item-list,
+    .tray-item,
+    .tray-expander > button,
+    .tray-item > button {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    .tray-expander,
+    .tray-panel,
+    .tray-item-list,
+    .tray-item,
+    .tray-expander > button,
+    .tray-item > button {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }
+}

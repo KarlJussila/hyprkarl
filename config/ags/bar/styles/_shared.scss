@@ -1,0 +1,6 @@
+@use "../theme" as *;
+
+@mixin framed-surface {
+  background-color: $bar-bg-color;
+  border: $bar-border-width solid $bar-alt-bg-color;
+}

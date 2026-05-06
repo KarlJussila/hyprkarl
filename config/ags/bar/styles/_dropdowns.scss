@@ -1,0 +1,111 @@
+@use "../theme" as *;
+@use "./shared" as *;
+
+window.dropdown-window {
+  background: transparent;
+  font-family: $bar-font-family-mono;
+
+  .dropdown-surface {
+    margin: 0px;
+    border-radius: 0px;
+    border-width: 0px;
+    background-color: transparent;
+  }
+
+  .dropdown-frame {
+    @include framed-surface;
+    border-radius: $bar-island-radius;
+    padding: $bar-dropdown-padding;
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  .dropdown-frame.revealed {
+    opacity: 1;
+  }
+
+  &.edge-top {
+    .dropdown-frame.snapped-left {
+      border-top-left-radius: 0px;
+    }
+
+    .dropdown-frame.snapped-right {
+      border-top-right-radius: 0px;
+    }
+  }
+
+  &.edge-bottom {
+    .dropdown-frame.snapped-left {
+      border-bottom-left-radius: 0px;
+    }
+
+    .dropdown-frame.snapped-right {
+      border-bottom-right-radius: 0px;
+    }
+  }
+
+  &.edge-left {
+    .dropdown-frame.snapped-top {
+      border-top-left-radius: 0px;
+    }
+
+    .dropdown-frame.snapped-bottom {
+      border-bottom-left-radius: 0px;
+    }
+  }
+
+  &.edge-right {
+    .dropdown-frame.snapped-top {
+      border-top-right-radius: 0px;
+    }
+
+    .dropdown-frame.snapped-bottom {
+      border-bottom-right-radius: 0px;
+    }
+  }
+
+  .dropdown-body {
+    border-spacing: 0px;
+  }
+
+  .dropdown-revealer.edge-top {
+    margin-top: 1px;
+  }
+
+  .dropdown-revealer.edge-bottom {
+    margin-bottom: 1px;
+  }
+
+  .dropdown-revealer.edge-left {
+    margin-left: 1px;
+  }
+
+  .dropdown-revealer.edge-right {
+    margin-right: 1px;
+  }
+
+  .dropdown-row {
+    margin: 0px;
+    border-width: 0px;
+    background-color: transparent;
+    padding: $bar-dropdown-row-padding-block $bar-dropdown-row-padding-inline;
+    border-radius: $bar-dropdown-row-radius;
+  }
+
+  .dropdown-row:hover,
+  .dropdown-row.active {
+    background-color: $bar-alt-bg-color;
+  }
+
+  .dropdown-row.active {
+    color: $bar-accent-color;
+  }
+
+  .dropdown-row-check {
+    opacity: 0.95;
+  }
+
+  .dropdown-shield {
+    background-color: rgba(0, 0, 0, 0.001);
+  }
+}

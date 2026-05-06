@@ -1,62 +1,48 @@
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
-import { createBarPlacement, placementClasses } from "./barPlacement"
-import { barEdge, barLayout, type BarWidgetConfig } from "./barConfig"
-import Island from "./island/Island"
-import HyprkarlMenu from "./widget/HyprkarlMenu"
-import Clock from "./widget/time/Clock"
-import CaffeineToggle from "./widget/CaffeineToggle"
-import Battery from "./widget/battery/Battery"
-import Workspaces from "./widget/workspaces/Workspaces"
-import Tray from "./widget/tray/Tray"
+import {
+  fallbackBarEdge,
+  formatBarConfigError,
+  isBarConfigError,
+} from "./configError"
+import layoutConfig from "./config/layout.config"
+import widgetDefinitions from "./config/widgets.config"
+import type { ResolvedBarConfiguration } from "./configuration"
+import ConfigErrorBar from "./layout/ConfigErrorBar"
+import Island from "./layout/Island"
+import { createBarPlacement, placementClasses } from "./layout/placement"
+import { renderBarWidget } from "./widgets/registry"
+import { normalizeBarConfiguration } from "./widgets/registry.shared"
 
-export default function Bar(gdkmonitor: Gdk.Monitor) {
-  const placement = createBarPlacement(barEdge)
+function ResolvedBar({
+  gdkmonitor,
+  resolvedBarConfiguration,
+}: {
+  gdkmonitor: Gdk.Monitor
+  resolvedBarConfiguration: ResolvedBarConfiguration
+}) {
+  const placement = createBarPlacement(resolvedBarConfiguration.edge)
   const verticalIslandSizeGroup = placement.isVertical
     ? new Gtk.SizeGroup({ mode: Gtk.SizeGroupMode.HORIZONTAL })
     : null
 
-  function renderWidget(widget: BarWidgetConfig) {
-    if (widget === "menu") {
-      return <HyprkarlMenu orientation={placement.orientation} />
-    }
+  function renderWidget(widgetId: string) {
+    const widgetConfig = resolvedBarConfiguration.widgets[widgetId]
 
-    if (widget === "workspaces") {
-      return <Workspaces orientation={placement.orientation} />
-    }
-
-    if (widget === "clock") {
-      return <Clock monitor={gdkmonitor} placement={placement} />
-    }
-
-    if (widget === "caffeine") {
-      return <CaffeineToggle orientation={placement.orientation} />
-    }
-
-    if (widget === "battery") {
-      return <Battery monitor={gdkmonitor} placement={placement} />
-    }
-
-    if (widget === "tray") {
-      return <Tray placement={placement} />
-    }
-
-    return (
-      <Tray
-        placement={placement}
-        direction={widget.direction}
-        mirrorTrigger={widget.mirrorTrigger}
-      />
-    )
+    return renderBarWidget({
+      id: widgetId,
+      config: widgetConfig,
+      placement,
+      monitor: gdkmonitor,
+    })
   }
 
-  const startWidgets = barLayout.start.map(renderWidget)
-  const centerStartWidgets = barLayout.center.start.map(renderWidget)
-  const centerAnchor = renderWidget(barLayout.center.anchor)
-  const centerEndWidgets = barLayout.center.end.map(renderWidget)
-  const endWidgets = barLayout.end.map(renderWidget)
+  const startWidgets = resolvedBarConfiguration.layout.start.map(renderWidget)
+  const centerStartWidgets = resolvedBarConfiguration.layout.center.start.map(renderWidget)
+  const centerAnchor = renderWidget(resolvedBarConfiguration.layout.center.anchor)
+  const centerEndWidgets = resolvedBarConfiguration.layout.center.end.map(renderWidget)
+  const endWidgets = resolvedBarConfiguration.layout.end.map(renderWidget)
 
-  /* Overall Bar Layout */
   return (
     <window
       visible
@@ -117,4 +103,31 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       </centerbox>
     </window>
   )
+}
+
+export default function Bar(gdkmonitor: Gdk.Monitor) {
+  try {
+    const resolvedBarConfiguration = normalizeBarConfiguration(layoutConfig, widgetDefinitions)
+
+    return (
+      <ResolvedBar
+        gdkmonitor={gdkmonitor}
+        resolvedBarConfiguration={resolvedBarConfiguration}
+      />
+    )
+  } catch (error) {
+    if (!isBarConfigError(error)) {
+      throw error
+    }
+
+    console.error(formatBarConfigError(error))
+
+    return (
+      <ConfigErrorBar
+        edge={fallbackBarEdge((layoutConfig as { edge?: unknown }).edge)}
+        error={error}
+        monitor={gdkmonitor}
+      />
+    )
+  }
 }

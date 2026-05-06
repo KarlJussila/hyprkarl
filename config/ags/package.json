@@ -1,7 +1,14 @@
 {
+  "type": "module",
   "dependencies": {
     "ags": "*",
     "gnim": "*"
+  },
+  "scripts": {
+    "bundle:check": "ags bundle app.ts /tmp/hyprkarl-ags-bundle.js -r .",
+    "check": "npm test && npm run bundle:check",
+    "test:bar-config": "node --experimental-strip-types --test ./bar/widgets/registry.shared.test.ts",
+    "test": "npm run test:bar-config"
   },
   "prettier": {
     "semi": false,

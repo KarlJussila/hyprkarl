@@ -1,0 +1,172 @@
+@use "../theme" as *;
+@use "./shared" as *;
+
+window.Bar {
+  background: transparent;
+  color: $bar-fg-color;
+  font-family: $bar-font-family;
+  font-size: $bar-font-size;
+
+  .island-curve {
+    color: $bar-alt-bg-color;
+  }
+
+  > centerbox.bar-layout {
+    padding: 0px;
+
+    .island,
+    .balance-content,
+    .tray-item-list {
+      border-spacing: 0px;
+    }
+
+    .island-item {
+      margin: 0px;
+      border-radius: 0px;
+      background-color: $bar-bg-color;
+      border: $bar-border-width solid $bar-alt-bg-color;
+    }
+
+    .segmented-group {
+      border-spacing: 0px;
+      padding: 0px;
+    }
+  }
+
+  > centerbox.bar-layout.orientation-horizontal {
+    .tray-panel.open + .tray-expander,
+    .tray-expander + .tray-panel.open {
+      border-left: $bar-border-width solid $bar-alt-bg-color;
+    }
+  }
+
+  > centerbox.bar-layout.orientation-vertical {
+    .tray-panel.open + .tray-expander,
+    .tray-expander + .tray-panel.open {
+      border-top: $bar-border-width solid $bar-alt-bg-color;
+    }
+  }
+
+  > centerbox.bar-layout.edge-top {
+    .island-item {
+      border-width: 0px $bar-border-width $bar-border-width 0px;
+    }
+
+    .island-item.edge-rounded-start {
+      border-bottom-left-radius: $bar-island-radius;
+      border-left-width: $bar-border-width;
+    }
+
+    .island-item.edge-rounded-end {
+      border-bottom-right-radius: $bar-island-radius;
+      border-right-width: $bar-border-width;
+    }
+
+    .island-item.edge-screen-start {
+      border-left-width: 0px;
+    }
+
+    .island-item.edge-screen-end {
+      border-right-width: 0px;
+    }
+  }
+
+  > centerbox.bar-layout.edge-bottom {
+    .island-item {
+      border-width: $bar-border-width $bar-border-width 0px 0px;
+    }
+
+    .island-item.edge-rounded-start {
+      border-top-left-radius: $bar-island-radius;
+      border-left-width: $bar-border-width;
+    }
+
+    .island-item.edge-rounded-end {
+      border-top-right-radius: $bar-island-radius;
+      border-right-width: $bar-border-width;
+    }
+
+    .island-item.edge-screen-start {
+      border-left-width: 0px;
+    }
+
+    .island-item.edge-screen-end {
+      border-right-width: 0px;
+    }
+  }
+
+  > centerbox.bar-layout.edge-left {
+    .island-item {
+      border-width: 0px $bar-border-width $bar-border-width 0px;
+    }
+
+    .island-item.edge-rounded-start {
+      border-top-right-radius: $bar-island-radius;
+      border-top-width: $bar-border-width;
+    }
+
+    .island-item.edge-rounded-end {
+      border-bottom-right-radius: $bar-island-radius;
+    }
+
+    .island-item.edge-screen-start {
+      border-top-width: 0px;
+    }
+
+    .island-item.edge-screen-end {
+      border-bottom-width: 0px;
+    }
+  }
+
+  > centerbox.bar-layout.edge-right {
+    .island-item {
+      border-width: 0px 0px $bar-border-width $bar-border-width;
+    }
+
+    .island-item.edge-rounded-start {
+      border-top-left-radius: $bar-island-radius;
+      border-top-width: $bar-border-width;
+    }
+
+    .island-item.edge-rounded-end {
+      border-bottom-left-radius: $bar-island-radius;
+    }
+
+    .island-item.edge-screen-start {
+      border-top-width: 0px;
+    }
+
+    .island-item.edge-screen-end {
+      border-bottom-width: 0px;
+    }
+  }
+}
+
+window.Bar.bar-config-error {
+  > .bar-config-error-layout {
+    padding: 0px;
+
+    > .bar-config-error-item {
+      @include framed-surface;
+      border-color: $bar-error-color;
+      border-radius: $bar-island-radius;
+    }
+
+    > .bar-config-error-item.orientation-horizontal {
+      padding: 0px $bar-button-padding-inline;
+    }
+
+    > .bar-config-error-item.orientation-vertical {
+      padding: $bar-vertical-button-padding-block 0px;
+    }
+  }
+
+  .bar-config-error-title {
+    color: $bar-error-color;
+    font-family: $bar-font-family-mono;
+  }
+
+  .bar-config-error-path {
+    font-family: $bar-font-family-mono;
+  }
+}

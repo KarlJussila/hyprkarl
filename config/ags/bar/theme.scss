@@ -1,0 +1,30 @@
+// Edit this file for normal bar styling changes.
+// Colors intentionally come from the active GTK theme.
+
+$bar-fg-color: #{"@theme_fg_color"};
+$bar-bg-color: #{"@theme_bg_color"};
+$bar-accent-color: #{"@theme_selected_bg_color"};
+$bar-alt-bg-color: shade(#{"@theme_bg_color"}, 2);
+
+$bar-font-family: "JetBrains Mono Nerd Font Propo";
+$bar-font-family-mono: "JetBrains Mono Nerd Font";
+$bar-font-size: 12px;
+
+$bar-island-radius: 8px;
+$bar-border-width: 2px;
+
+$bar-button-padding-inline: 8px;
+$bar-vertical-button-padding-block: 4px;
+$bar-workspace-padding-inline: 2px;
+$bar-tray-item-padding-inline: 6px;
+$bar-battery-percent-font-size-vertical: 10px;
+$bar-battery-percent-gap-horizontal: 4px;
+$bar-battery-percent-gap-vertical: 2px;
+
+$bar-dropdown-padding: 4px;
+$bar-dropdown-row-padding-block: 4px;
+$bar-dropdown-row-padding-inline: 8px;
+$bar-dropdown-row-radius: 6px;
+
+$bar-error-color: #{"@error_color"};
+$bar-low-battery-color: #d26a55;

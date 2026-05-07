@@ -9,9 +9,17 @@
 #   %p in title/body will be replaced with current battery percentage
 #   %s in title/body will be replaced with battery status
 
-BATTERY=$(ls /sys/class/power_supply/ | grep -m1 "^BAT")
-level=$(cat /sys/class/power_supply/$BATTERY/capacity)
-status=$(cat /sys/class/power_supply/$BATTERY/status)
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
+
+BATTERY=$(hyprkarl_find_battery) || {
+    echo "No battery device found." >&2
+    exit 1
+}
+
+level=$(< "/sys/class/power_supply/$BATTERY/capacity")
+status=$(< "/sys/class/power_supply/$BATTERY/status")
 
 urgency="normal"
 use_value=false

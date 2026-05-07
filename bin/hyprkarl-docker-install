@@ -7,8 +7,6 @@
 # Usage:
 #   hyprkarl-docker-install
 
-set -uo pipefail
-
 PACKAGES=()
 pacman -Q docker         &>/dev/null || PACKAGES+=(docker)
 pacman -Q docker-compose &>/dev/null || PACKAGES+=(docker-compose)

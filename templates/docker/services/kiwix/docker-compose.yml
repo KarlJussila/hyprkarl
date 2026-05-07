@@ -1,3 +1,5 @@
+name: kiwix
+
 services:
   kiwix:
     image: ghcr.io/kiwix/kiwix-serve:latest

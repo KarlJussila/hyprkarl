@@ -3,14 +3,18 @@
 # Menu for selecting a default terminal emulator
 #
 # Usage:
-#   hyprkarl-menu-terminal [back_cmd]
+#   hyprkarl-menu-terminal [--back <command> [args...]]
 #
-#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#   --back     Optional command to invoke if the user dismisses the menu.
 #              Also passed to submenus so they can navigate back to this
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="$*"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
+
+hyprkarl_parse_back_args "$@"
 
 ALACRITTY="Ａ Alacritty"
 GHOSTTY=" Ghostty"
@@ -22,12 +26,12 @@ CHOICE=$(echo -e "$ALACRITTY\n$GHOSTTY\n$KITTY\n$FOOT" \
            -p "" \
            -no-custom \
            -mesg "Default Terminal" \
-           -theme ~/.config/rofi/custom-menu.rasi)
+           -theme "$HYPRKARL_ROFI_CUSTOM_THEME")
 
 case "$CHOICE" in
     "$ALACRITTY") hyprkarl-default-terminal alacritty ;;
     "$GHOSTTY")   hyprkarl-default-terminal ghostty ;;
     "$KITTY")     hyprkarl-default-terminal kitty ;;
     "$FOOT")      hyprkarl-default-terminal foot ;;
-    "")           [[ -n "$back_cmd" ]] && $back_cmd ;;
+    "")           hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
 esac

@@ -14,10 +14,9 @@ fzf_args=(
   --color 'pointer:green,marker:green'
 )
 
-pkg_names=$(pacman -Slq | sort -u | fzf "${fzf_args[@]}")
+mapfile -t pkg_names < <(pacman -Slq | sort -u | fzf "${fzf_args[@]}")
 
-if [[ -n "$pkg_names" ]]; then
-  # Convert newline-separated selections to space-separated for paru
-  echo "$pkg_names" | tr '\n' ' ' | xargs sudo pacman -S --noconfirm
+if ((${#pkg_names[@]} > 0)); then
+  sudo pacman -S --noconfirm "${pkg_names[@]}"
   hyprkarl-show-done
 fi

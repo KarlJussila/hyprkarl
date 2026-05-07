@@ -4,27 +4,57 @@
 # instance if none is found. Matches against both window class and title.
 #
 # Usage:
-#   hyprkarl-launch-or-focus <window-pattern> [launch-command]
+#   hyprkarl-launch-or-focus <window-pattern> [-- <command> [args...]]
 #
 #   window-pattern   Case-insensitive pattern matched against window class and title.
-#   launch-command   Command to run if no matching window is found.
+#   command          Command to run if no matching window is found.
 #                    Defaults to "uwsm-app -- <window-pattern>" if omitted.
 #
 # Examples:
 #   hyprkarl-launch-or-focus firefox
-#   hyprkarl-launch-or-focus nmtui "hyprkarl-launch-tui nmtui"
+#   hyprkarl-launch-or-focus nmtui -- hyprkarl-launch-tui nmtui
 
 if (($# == 0)); then
-  echo "Usage: hyprkarl-launch-or-focus [window-pattern] [launch-command]"
+  echo "Usage: hyprkarl-launch-or-focus <window-pattern> [-- <command> [args...]]" >&2
   exit 1
 fi
 
-WINDOW_PATTERN="$1"
-LAUNCH_COMMAND="${2:-"uwsm-app -- $WINDOW_PATTERN"}"
-WINDOW_ADDRESS=$(hyprctl clients -j | jq -r --arg p "$WINDOW_PATTERN" '.[]|select((.class|test("\\b" + $p + "\\b";"i")) or (.title|test("\\b" + $p + "\\b";"i")))|.address' | head -n1)
+window_pattern="$1"
+shift
 
-if [[ -n $WINDOW_ADDRESS ]]; then
-  hyprctl dispatch focuswindow "address:$WINDOW_ADDRESS"
+launch_command=()
+if (($# == 0)); then
+  launch_command=(uwsm-app -- "$window_pattern")
+elif [[ "$1" == "--" ]]; then
+  shift
+  launch_command=("$@")
 else
-  eval exec setsid $LAUNCH_COMMAND
+  echo "Usage: hyprkarl-launch-or-focus <window-pattern> [-- <command> [args...]]" >&2
+  exit 1
 fi
+
+window_address=$(
+  hyprctl clients -j \
+    | jq -r --arg pattern "$window_pattern" '
+        .[]
+        | select(
+            (.class | test("\\b" + $pattern + "\\b"; "i"))
+            or
+            (.title | test("\\b" + $pattern + "\\b"; "i"))
+          )
+        | .address
+      ' \
+    | head -n1
+)
+
+if [[ -n "$window_address" ]]; then
+  hyprctl dispatch focuswindow "address:$window_address"
+  exit 0
+fi
+
+((${#launch_command[@]} > 0)) || {
+  echo "No launch command was provided." >&2
+  exit 1
+}
+
+exec setsid "${launch_command[@]}"

@@ -3,21 +3,18 @@
 # Submenu for wallpaper management
 #
 # Usage:
-#   hyprkarl-menu-wallpaper [back_cmd]
+#   hyprkarl-menu-wallpaper [--back <command> [args...]]
 #
-#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#   --back     Optional command to invoke if the user dismisses the menu.
 #              Also passed to submenus so they can navigate back to this
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-terminal() {
-    local tmp=$(mktemp)
-    xdg-terminal-exec --app-id=org.hyprkarl.terminal -e bash -c "$1 > $tmp"
-    cat "$tmp"
-    rm "$tmp"
-}
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
 
-back_cmd="$*"
+hyprkarl_parse_back_args "$@"
 
 SELECT="󰋹 Select"
 ADD=" Add"
@@ -28,11 +25,11 @@ CHOICE=$(echo -e "$SELECT\n$ADD\n$REMOVE" \
            -p "" \
            -no-custom \
            -mesg "Wallpaper" \
-           -theme ~/.config/rofi/custom-menu.rasi)
+           -theme "$HYPRKARL_ROFI_CUSTOM_THEME")
 
 case "$CHOICE" in
     "$SELECT") hyprkarl-wallpaper-set "$(hyprkarl-wallpaper-select)" ;;
-    "$ADD")    hyprkarl-wallpaper-add "$(terminal hyprkarl-select-picture)" ;;
+    "$ADD")    hyprkarl-wallpaper-add "$(hyprkarl_capture_terminal_output hyprkarl-select-picture)" ;;
     "$REMOVE") hyprkarl-wallpaper-remove "$(hyprkarl-wallpaper-select '@urgent')" ;;
-    "")        [[ -n "$back_cmd" ]] && $back_cmd ;;
+    "")        hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
 esac

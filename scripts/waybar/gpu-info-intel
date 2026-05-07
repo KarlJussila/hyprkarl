@@ -5,8 +5,6 @@
 # Usage:
 #   gpu-info-intel <card> <name>
 
-set -uo pipefail
-
 card="$1"
 name="$2"
 

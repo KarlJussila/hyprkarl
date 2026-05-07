@@ -3,12 +3,16 @@
 # Menu for setting the system power profile via power-profiles-daemon
 #
 # Usage:
-#   hyprkarl-menu-power-profile [back_cmd]
+#   hyprkarl-menu-power-profile [--back <command> [args...]]
 #
-#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#   --back     Optional command to invoke if the user dismisses the menu.
 #              If omitted, dismissing the menu does nothing.
 
-back_cmd="$*"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
+
+hyprkarl_parse_back_args "$@"
 
 CURRENT=$(powerprofilesctl get)
 
@@ -27,11 +31,11 @@ CHOICE=$(echo -e "$POWER_SAVER\n$BALANCED\n$PERFORMANCE" \
            -p "" \
            -no-custom \
            -mesg "Power Profile" \
-           -theme ~/.config/rofi/custom-menu.rasi)
+           -theme "$HYPRKARL_ROFI_CUSTOM_THEME")
 
 case "$CHOICE" in
     "$POWER_SAVER")   powerprofilesctl set power-saver ;;
     "$BALANCED")      powerprofilesctl set balanced ;;
     "$PERFORMANCE")   powerprofilesctl set performance ;;
-    "")               [[ -n "$back_cmd" ]] && $back_cmd ;;
+    "")               hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
 esac

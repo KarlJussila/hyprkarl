@@ -16,18 +16,21 @@ fzf_args=(
 
 # Preview function for fzf
 preview_flatpak() {
-  app="$1"
+  local app="$1"
 
   # Fetch summary from Flathub API v1
+  local summary
   summary=$(curl -s "https://flathub.org/api/v2/appstream/$app" | jq -r '.summary // empty')
 
   # Get flatpak remote info
+  local info
   info=$(flatpak remote-info flathub "$app" --system 2>/dev/null)
 
   # Determine maximum field name length for alignment
+  local max_len
   max_len=$(awk -F: '{print length($1)}' <<<"$info" | sort -nr | head -n1)
-  sum_label="Summary"
-  pad=$((max_len - ${#sum_label}))
+  local sum_label="Summary"
+  local pad=$((max_len - ${#sum_label}))
   [[ $pad -lt 0 ]] && pad=0
 
   # Print summary first, aligned
@@ -40,13 +43,13 @@ preview_flatpak() {
 export -f preview_flatpak
 
 # List only app IDs from flathub that are not installed
-pkg_names=$(comm -23 \
+mapfile -t pkg_names < <(comm -23 \
   <(flatpak remote-ls flathub --system --columns=application | sort) \
   <(flatpak list --system --app --columns=application | sort) \
   | fzf "${fzf_args[@]}" --preview 'bash -c "preview_flatpak {}"')
 
-if [[ -n "$pkg_names" ]]; then
+if ((${#pkg_names[@]} > 0)); then
   # Install selected apps directly to the terminal, preserving progress bars
-  flatpak install flathub --system -y $(echo "$pkg_names" | tr '\n' ' ')
-	hyprkarl-show-done
+  flatpak install flathub --system -y "${pkg_names[@]}"
+  hyprkarl-show-done
 fi

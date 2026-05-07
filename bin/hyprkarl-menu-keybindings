@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 # hyprkarl-menu-keybindings
 # Displays all Hyprland keybindings in a searchable rofi menu
 #

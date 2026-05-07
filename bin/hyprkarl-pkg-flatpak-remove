@@ -14,11 +14,11 @@ fzf_args=(
   --color 'pointer:red,marker:red'
 )
 
-pkg_names=$(flatpak list --app --columns=application | fzf "${fzf_args[@]}")
+mapfile -t pkg_names < <(flatpak list --app --columns=application | fzf "${fzf_args[@]}")
 
-if [[ -n "$pkg_names" ]]; then
+if ((${#pkg_names[@]} > 0)); then
   # Uninstall selected apps, data, and dependencies
-  flatpak uninstall -y --delete-data $(echo "$pkg_names" | tr '\n' ' ')
+  flatpak uninstall -y --delete-data "${pkg_names[@]}"
   flatpak uninstall -y --unused
   hyprkarl-show-done
 fi

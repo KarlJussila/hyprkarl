@@ -18,7 +18,6 @@
 #   proportionally with a more aggressive margin to guarantee an undershoot.
 #   If the required bitrate falls below MIN_VIDEO_BITRATE, the video is
 #   downscaled to DOWNSCALE_WIDTH before encoding.
-set -uo pipefail
 
 # --- Tuning ---
 MIN_VIDEO_BITRATE=300       # kbps — if required bitrate falls below this, downscale instead

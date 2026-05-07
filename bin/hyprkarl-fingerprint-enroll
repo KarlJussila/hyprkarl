@@ -6,8 +6,6 @@
 #   hyprkarl-fingerprint-enroll                 # Prompt for finger
 #   hyprkarl-fingerprint-enroll <finger-name>   # Enroll specific finger
 
-set -e
-
 # Ensure user PATH includes common locations
 export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 

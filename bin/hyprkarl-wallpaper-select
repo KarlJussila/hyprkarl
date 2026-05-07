@@ -8,6 +8,10 @@
 #   highlight-color   Optional hex color for the selection border (e.g. #cc5555).
 #                     Defaults to the theme's highlight color if omitted.
 
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
+
 THEME_NAME=$(cat "$HYPRKARL_PATH/config/hyprkarl/current/theme.name")
 WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
 CACHE_DIR="$HOME/.cache/hyprkarl/wallpapers/$THEME_NAME"
@@ -17,13 +21,18 @@ if [[ -n "$1" ]]; then
     color_override="* { select-border: $1; }"
 fi
 
-# Get wallpaper list
-wallpapers=$(ls "$WALLPAPER_DIR" | grep -iE '\.(jpg|jpeg|png|webp)$' | sort)
+hyprkarl-wallpaper-cache
 
-# Sync cache if needed
-cached=$(ls "$CACHE_DIR" 2>/dev/null | sort)
-if [ "$wallpapers" != "$cached" ]; then
-    hyprkarl-wallpaper-cache
+mapfile -t wallpapers < <(
+    find "$WALLPAPER_DIR" -maxdepth 1 -type f \
+        \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+        -printf '%f\n' \
+        | sort
+)
+
+if ((${#wallpapers[@]} == 0)); then
+    echo "No wallpapers found in $WALLPAPER_DIR" >&2
+    exit 1
 fi
 
 # Calculate icon and window sizing based on focused monitor
@@ -36,10 +45,10 @@ rofi_override="window{width:${window_width}px;} element-icon{size:${icon_size}px
 
 # Display menu
 selected=$(
-    echo "$wallpapers" | \
-    while read -r name; do
+    for name in "${wallpapers[@]}"; do
         echo -en "$name\x00icon\x1f$CACHE_DIR/$name\n"
-    done | \
+    done \
+        | \
     rofi -dmenu -theme "$HOME/.config/rofi/wallpapers.rasi" -theme-str "$rofi_override"
 )
 

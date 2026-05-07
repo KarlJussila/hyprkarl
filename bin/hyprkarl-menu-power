@@ -3,14 +3,18 @@
 # Power Menu
 #
 # Usage:
-#   hyprkarl-menu-power [back_cmd]
+#   hyprkarl-menu-power [--back <command> [args...]]
 #
-#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#   --back     Optional command to invoke if the user dismisses the menu.
 #              Also passed to submenus so they can navigate back to this
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="$*"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
+
+hyprkarl_parse_back_args "$@"
 
 LOCK=" Lock"
 SUSPEND=" Suspend"
@@ -22,12 +26,12 @@ CHOICE=$(echo -e "$LOCK\n$SUSPEND\n$REBOOT\n$SHUTDOWN" \
            -p "" \
            -no-custom \
            -mesg "Power Menu" \
-           -theme ~/.config/rofi/custom-menu.rasi)
+           -theme "$HYPRKARL_ROFI_CUSTOM_THEME")
 
 case "$CHOICE" in
     "$LOCK")     hyprkarl-lock ;;
     "$SUSPEND")  hyprkarl-suspend ;;
     "$REBOOT")   hyprkarl-reboot ;;
     "$SHUTDOWN") hyprkarl-shutdown ;;
-    "")          [[ -n "$back_cmd" ]] && $back_cmd ;;
+    "")          hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
 esac

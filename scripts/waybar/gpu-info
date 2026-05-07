@@ -11,8 +11,6 @@
 # Output:
 #   Waybar-compatible JSON: {"text":"<usage>","alt":"<usage> | <vram>","tooltip":"<name>"}
 
-set -uo pipefail
-
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 # --- Helpers -----------------------------------------------------------------
@@ -50,8 +48,9 @@ get_vram_total_bytes() {
 # Returns the PCI slot for a given card (e.g. "03:00.0")
 get_pci_slot() {
     local card="$1"
-    readlink -f "/sys/class/drm/${card}/device" 2>/dev/null | xargs basename 2>/dev/null \
-        | sed 's/^0000://'
+    local device_path
+    device_path=$(readlink -f "/sys/class/drm/${card}/device" 2>/dev/null) || return 1
+    basename "$device_path" | sed 's/^0000://'
 }
 
 # Returns true if the card has an active kernel driver

@@ -1,12 +1,20 @@
 #!/bin/bash
-# hyprkarl-battery-watch
+# hyprkarl-battery-monitor
 # Monitors battery level and fires actions at configured thresholds
 
-POLL_INTERVAL=30
-ICON_BATTERY_LOW=$(hyprkarl-find-icon "battery-low-symbolic" status actions)
-FIRED_FILE="/tmp/hyprkarl-battery-fired"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
 
-BATTERY=$(ls /sys/class/power_supply/ | grep -m1 "^BAT")
+POLL_INTERVAL=30
+FIRED_FILE="$HYPRKARL_RUNTIME_DIR/battery-fired"
+
+mkdir -p "$HYPRKARL_RUNTIME_DIR"
+
+BATTERY=$(hyprkarl_find_battery) || {
+    echo "No battery device found; battery monitor disabled." >&2
+    exit 0
+}
 
 at_battery() {
     local threshold="$1"
@@ -20,15 +28,15 @@ at_battery() {
 }
 
 reset_if_charging() {
-    status=$(cat /sys/class/power_supply/$BATTERY/status)
+    status=$(< "/sys/class/power_supply/$BATTERY/status")
     if [[ "$status" == "Charging" || "$status" == "Full" ]]; then
         rm -f "$FIRED_FILE"
     fi
 }
 
 while true; do
-    level=$(cat /sys/class/power_supply/$BATTERY/capacity)
-    status=$(cat /sys/class/power_supply/$BATTERY/status)
+    level=$(< "/sys/class/power_supply/$BATTERY/capacity")
+    status=$(< "/sys/class/power_supply/$BATTERY/status")
 
     echo "$status: $level%"
 

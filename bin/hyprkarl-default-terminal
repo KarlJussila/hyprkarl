@@ -30,7 +30,7 @@ foot) desktop_id="foot.desktop" ;;
 esac
 
 # Install package
-if hyprkarl-pkg-add $package; then
+if hyprkarl-pkg-add "$package"; then
   # Enable/disable service for ghostty
   if [[ "$package" == "ghostty" ]]; then
     systemctl enable --user app-com.mitchellh.ghostty.service

@@ -5,6 +5,7 @@ A curated configuration layer for CachyOS + Hyprland, inspired by Omarchy. Hyprk
 
 ## Requirements
 - Base CachyOS (Hyprland) install
+- Single-user. Hyprkarl does not try to support multi-user setups.
 - Btrfs filesystem (with LUKS encryption) and Limine boot loader are strongly recommended. Hyprkarl may implement changes involving either one in the future.
 - Hyprland must be running under UWSM (this is the default on CachyOS). SDDM autologin is configured to launch `hyprland-uwsm.desktop`.
 

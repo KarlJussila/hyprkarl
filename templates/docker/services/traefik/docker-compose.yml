@@ -1,3 +1,5 @@
+name: traefik
+
 services:
   traefik:
     image: docker.io/library/traefik:v3
@@ -7,5 +9,6 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
     network_mode: host
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro

@@ -5,69 +5,57 @@
 # exposes container install options.
 #
 # Usage:
-#   hyprkarl-menu-docker-install [back_cmd]
+#   hyprkarl-menu-docker-install [--back <command> [args...]]
 #
-#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#   --back     Optional command to invoke if the user dismisses the menu.
 #              Also passed to submenus so they can navigate back to this
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-terminal() {
-    xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
-}
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-docker.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-docker.sh"
 
-back_cmd="$*"
+hyprkarl_parse_back_args "$@"
+hyprkarl_build_self_command "$0"
 
 DOCKER="󰡨 Install Docker"
-DEGOOG="Degoog"
-SEARXNG="SearXNG"
-KIWIX="Kiwix"
-TRAEFIK="Traefik"
+CHOICES=()
+CHOICE_IDS=()
 
-docker_ready() {
-    command -v docker &>/dev/null && id -nG "$USER" | grep -qw docker
-}
-
-degoog_installed() {
-    [[ -f "$HOME/.degoog/docker-compose.yml" ]]
-}
-
-searxng_installed() {
-    [[ -f "$HOME/.searxng/docker-compose.yaml" ]]
-}
-
-kiwix_installed() {
-    [[ -f "$HOME/.kiwix/docker-compose.yml" ]]
-}
-
-traefik_installed() {
-    [[ -f "$HOME/.traefik/docker-compose.yml" ]]
-}
-
-if ! docker_ready; then
-    CHOICES="$DOCKER"
+if ! hyprkarl_docker_ready; then
+    CHOICES=("$DOCKER")
     MESG="Docker Setup"
 else
-    CHOICES=""
-    degoog_installed || CHOICES+="${CHOICES:+$'\n'}$DEGOOG"
-    searxng_installed || CHOICES+="${CHOICES:+$'\n'}$SEARXNG"
-    kiwix_installed || CHOICES+="${CHOICES:+$'\n'}$KIWIX"
-    traefik_installed || CHOICES+="${CHOICES:+$'\n'}$TRAEFIK"
     MESG="Install Container"
+    while IFS= read -r service_id; do
+        hyprkarl_docker_load_service "$service_id" || exit 1
+        if [[ ! -f "$(hyprkarl_docker_compose_path)" ]]; then
+            CHOICES+=("$HYPRKARL_DOCKER_SERVICE_LABEL")
+            CHOICE_IDS+=("$service_id")
+        fi
+    done < <(hyprkarl_docker_service_ids)
+
+    if (( ${#CHOICE_IDS[@]} == 0 )); then
+        CHOICES=("(nothing to install)")
+    fi
 fi
 
-CHOICE=$(echo -e "$CHOICES" \
+CHOICE=$(printf '%s\n' "${CHOICES[@]}" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
            -mesg "$MESG" \
-           -theme ~/.config/rofi/custom-menu.rasi)
+           -theme "$HYPRKARL_ROFI_CUSTOM_THEME")
 
 case "$CHOICE" in
-    "$DOCKER")  terminal hyprkarl-docker-install ;;
-    "$DEGOOG")  terminal hyprkarl-docker-degoog ;;
-    "$SEARXNG") terminal hyprkarl-docker-searxng ;;
-    "$KIWIX")   terminal hyprkarl-docker-kiwix ;;
-    "$TRAEFIK") terminal hyprkarl-docker-traefik ;;
-    "")         [[ -n "$back_cmd" ]] && eval "$back_cmd" ;;
+    "$DOCKER")  hyprkarl_open_terminal hyprkarl-docker-install ;;
+    "")         hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
 esac
+
+for index in "${!CHOICE_IDS[@]}"; do
+    if [[ "$CHOICE" == "${CHOICES[$index]}" ]]; then
+        hyprkarl_open_terminal "hyprkarl-docker-${CHOICE_IDS[$index]}"
+        exit 0
+    fi
+done

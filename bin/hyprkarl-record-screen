@@ -4,13 +4,24 @@
 # Resolution is capped to 4K for monitors above 4K, native otherwise.
 # Override via --resolution= (e.g. --resolution=1920x1080, --resolution=0x0 for native).
 
-[[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
-OUTPUT_DIR="${HYPRKARL_SCREENRECORD_DIR:-${XDG_VIDEOS_DIR:-$HOME/Videos}}"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
+
+default_videos_dir=$(xdg-user-dir VIDEOS 2>/dev/null)
+[[ -n "$default_videos_dir" ]] || default_videos_dir="$HOME/Videos"
+
+OUTPUT_DIR="${HYPRKARL_SCREENRECORD_DIR:-${XDG_VIDEOS_DIR:-$default_videos_dir}}"
+PID_FILE="$HYPRKARL_RUNTIME_DIR/screenrecording.pid"
+RECORDING_FILE="$HYPRKARL_RUNTIME_DIR/screenrecording.path"
+WEBCAM_PID_FILE="$HYPRKARL_RUNTIME_DIR/screenrecording-webcam.pid"
 
 if [[ ! -d $OUTPUT_DIR ]]; then
   notify-send "Screen recording directory does not exist: $OUTPUT_DIR" -u critical -t 3000
   exit 1
 fi
+
+mkdir -p "$HYPRKARL_RUNTIME_DIR"
 
 DESKTOP_AUDIO="false"
 MICROPHONE_AUDIO="false"
@@ -18,7 +29,6 @@ WEBCAM="false"
 WEBCAM_DEVICE=""
 RESOLUTION=""
 STOP_RECORDING="false"
-RECORDING_FILE="/tmp/hyprkarl-screenrecord-filename"
 
 for arg in "$@"; do
   case "$arg" in
@@ -31,12 +41,45 @@ for arg in "$@"; do
   esac
 done
 
+read_pid_file() {
+  local pid_file="$1"
+  local pid=""
+
+  [[ -f "$pid_file" ]] || return 1
+
+  pid=$(< "$pid_file")
+  [[ "$pid" =~ ^[0-9]+$ ]] || return 1
+
+  printf '%s\n' "$pid"
+}
+
+recording_pid() {
+  local pid
+  pid=$(read_pid_file "$PID_FILE") || return 1
+  kill -0 "$pid" 2>/dev/null || return 1
+  printf '%s\n' "$pid"
+}
+
+screenrecording_active() {
+  recording_pid >/dev/null || {
+    rm -f "$PID_FILE"
+    return 1
+  }
+
+  return 0
+}
+
+find_webcam_device() {
+  v4l2-ctl --list-devices 2>/dev/null \
+    | awk '/^[[:space:]]*\/dev\/video/ { gsub(/\t/, "", $0); print; exit }'
+}
+
 start_webcam_overlay() {
   cleanup_webcam
 
   # Auto-detect first available webcam if none specified
   if [[ -z $WEBCAM_DEVICE ]]; then
-    WEBCAM_DEVICE=$(v4l2-ctl --list-devices 2>/dev/null | grep -m1 "^[[:space:]]*/dev/video" | tr -d '\t')
+    WEBCAM_DEVICE=$(find_webcam_device)
     if [[ -z $WEBCAM_DEVICE ]]; then
       notify-send "No webcam devices found" -u critical -t 3000
       return 1
@@ -51,28 +94,36 @@ start_webcam_overlay() {
 
   # Try preferred 16:9 resolutions in order, use first available
   local preferred_resolutions=("640x360" "1280x720" "1920x1080")
-  local video_size_arg=""
+  local ffplay_args=(-f v4l2)
   local available_formats=$(v4l2-ctl --list-formats-ext -d "$WEBCAM_DEVICE" 2>/dev/null)
 
   for resolution in "${preferred_resolutions[@]}"; do
     if echo "$available_formats" | grep -q "$resolution"; then
-      video_size_arg="-video_size $resolution"
+      ffplay_args+=(-video_size "$resolution")
       break
     fi
   done
 
-  ffplay -f v4l2 $video_size_arg -framerate 30 "$WEBCAM_DEVICE" \
+  ffplay "${ffplay_args[@]}" -framerate 30 "$WEBCAM_DEVICE" \
     -vf "scale=${target_width}:-1" \
     -window_title "WebcamOverlay" \
     -noborder \
     -fflags nobuffer -flags low_delay \
     -probesize 32 -analyzeduration 0 \
     -loglevel quiet &
+  echo "$!" >"$WEBCAM_PID_FILE"
   sleep 1
 }
 
 cleanup_webcam() {
-  pkill -f "WebcamOverlay" 2>/dev/null
+  local webcam_pid
+  webcam_pid=$(read_pid_file "$WEBCAM_PID_FILE") || {
+    rm -f "$WEBCAM_PID_FILE"
+    return 0
+  }
+
+  kill "$webcam_pid" 2>/dev/null || true
+  rm -f "$WEBCAM_PID_FILE"
 }
 
 default_resolution() {
@@ -104,6 +155,7 @@ start_screenrecording() {
 
   gpu-screen-recorder -w portal -k auto -s "$resolution" -f 60 -fm cfr -fallback-cpu-encoding yes -o "$filename" "${audio_args[@]}" &
   local pid=$!
+  echo "$pid" >"$PID_FILE"
 
   # Wait for recording to actually start (file appears after portal selection)
   while kill -0 $pid 2>/dev/null && [[ ! -f $filename ]]; do
@@ -113,15 +165,22 @@ start_screenrecording() {
   if kill -0 $pid 2>/dev/null; then
     echo "$filename" >"$RECORDING_FILE"
     toggle_screenrecording_indicator
+    return 0
   fi
+
+  rm -f "$PID_FILE" "$RECORDING_FILE"
+  return 1
 }
 
 stop_screenrecording() {
-  pkill -SIGINT -f "^gpu-screen-recorder" # SIGINT required to save video properly
+  local pid
+  pid=$(recording_pid) || return 1
+
+  kill -SIGINT "$pid" 2>/dev/null || true
 
   # Wait a maximum of 5 seconds to finish before hard killing
   local count=0
-  while pgrep -f "^gpu-screen-recorder" >/dev/null && ((count < 50)); do
+  while kill -0 "$pid" 2>/dev/null && ((count < 50)); do
     sleep 0.1
     count=$((count + 1))
   done
@@ -129,23 +188,15 @@ stop_screenrecording() {
   toggle_screenrecording_indicator
   cleanup_webcam
 
-  if pgrep -f "^gpu-screen-recorder" >/dev/null; then
-    pkill -9 -f "^gpu-screen-recorder"
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -9 "$pid" 2>/dev/null || true
     notify-send "Screen recording error" "Recording process had to be force-killed. Video may be corrupted." -u critical -t 5000
   else
     trim_first_frame
     notify-send "Screen recording saved to $OUTPUT_DIR" -t 2000
   fi
 
-  rm -f "$RECORDING_FILE"
-}
-
-toggle_screenrecording_indicator() {
-  pkill -RTMIN+8 waybar
-}
-
-screenrecording_active() {
-  pgrep -f "^gpu-screen-recorder" >/dev/null
+  rm -f "$PID_FILE" "$RECORDING_FILE"
 }
 
 trim_first_frame() {
@@ -162,7 +213,21 @@ trim_first_frame() {
   fi
 }
 
-if screenrecording_active; then
+toggle_screenrecording_indicator() {
+  pkill -RTMIN+8 waybar
+}
+
+if [[ "$WEBCAM" == "true" ]] && ! command -v v4l2-ctl >/dev/null 2>&1; then
+  notify-send "Screen recording error" "v4l2-ctl is required for webcam overlays." -u critical -t 5000
+  exit 1
+fi
+
+if ! command -v gpu-screen-recorder >/dev/null 2>&1; then
+  notify-send "Screen recording error" "gpu-screen-recorder is not installed." -u critical -t 5000
+  exit 1
+fi
+
+if screenrecording_active >/dev/null; then
   stop_screenrecording
 elif [[ $STOP_RECORDING == "true" ]]; then
   exit 1

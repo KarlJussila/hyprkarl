@@ -3,14 +3,19 @@
 # Menu for common utilities
 #
 # Usage:
-#   hyprkarl-menu-utils [back_cmd]
+#   hyprkarl-menu-utils [--back <command> [args...]]
 #
-#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#   --back     Optional command to invoke if the user dismisses the menu.
 #              Also passed to submenus so they can navigate back to this
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-back_cmd="$*"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
+
+hyprkarl_parse_back_args "$@"
+hyprkarl_build_self_command "$0"
 
 CAFFEINE=" Caffeine"
 NIGHTLIGHT=" Nightlight"
@@ -29,12 +34,12 @@ CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE" \
            -p "" \
            -no-custom \
            -mesg "Utilities" \
-           -theme ~/.config/rofi/custom-menu.rasi)
+           -theme "$HYPRKARL_ROFI_CUSTOM_THEME")
 
 case "$CHOICE" in
     "$CAFFEINE")      hyprkarl-caffeine ;;
     "$NIGHTLIGHT")    hyprkarl-nightlight ;;
     "$SCREEN_RECORD") hyprkarl-record-screen ;;
-    "$POWER_PROFILE") hyprkarl-menu-power-profile "hyprkarl-menu-utils $back_cmd" ;;
-    "")               [[ -n "$back_cmd" ]] && $back_cmd ;;
+    "$POWER_PROFILE") hyprkarl-menu-power-profile --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "")               hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
 esac

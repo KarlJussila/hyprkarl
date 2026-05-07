@@ -9,7 +9,11 @@
 # Example:
 #   hyprkarl-launch-or-focus-tui btop
 
-APP_ID="org.hyprkarl.$(basename "$1")"
-LAUNCH_COMMAND="hyprkarl-launch-tui $@"
+if (($# == 0)); then
+  echo "Usage: hyprkarl-launch-or-focus-tui <command> [args...]" >&2
+  exit 1
+fi
 
-exec hyprkarl-launch-or-focus "$APP_ID" "$LAUNCH_COMMAND"
+app_id="org.hyprkarl.$(basename "$1")"
+
+exec hyprkarl-launch-or-focus "$app_id" -- hyprkarl-launch-tui "$@"

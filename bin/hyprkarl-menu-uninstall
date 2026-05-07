@@ -3,18 +3,19 @@
 # Menu for uninstalling packages
 #
 # Usage:
-#   hyprkarl-menu-uninstall [back_cmd]
+#   hyprkarl-menu-uninstall [--back <command> [args...]]
 #
-#   back_cmd   Optional command to invoke if the user dismisses the menu.
+#   --back     Optional command to invoke if the user dismisses the menu.
 #              Also passed to submenus so they can navigate back to this
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-terminal() {
-  xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"
-}
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../scripts/lib/hyprkarl-shell.sh
+source "$SCRIPT_DIR/../scripts/lib/hyprkarl-shell.sh"
 
-back_cmd="$*"
+hyprkarl_parse_back_args "$@"
+hyprkarl_build_self_command "$0"
 
 SYSTEM="󰣇 System"
 FLATPAK="󰏖 Flatpak"
@@ -25,11 +26,11 @@ CHOICE=$(echo -e "$SYSTEM\n$FLATPAK\n$DOCKER" \
            -p "" \
            -no-custom \
            -mesg "Uninstall Packages" \
-           -theme ~/.config/rofi/custom-menu.rasi)
+           -theme "$HYPRKARL_ROFI_CUSTOM_THEME")
 
 case "$CHOICE" in
-    "$SYSTEM")  terminal hyprkarl-pkg-remove ;;
-    "$FLATPAK") terminal hyprkarl-pkg-flatpak-remove ;;
-    "$DOCKER")  hyprkarl-menu-docker-uninstall "hyprkarl-menu-uninstall $back_cmd" ;;
-    "")         [[ -n "$back_cmd" ]] && $back_cmd ;;
+    "$SYSTEM")  hyprkarl_open_terminal hyprkarl-pkg-remove ;;
+    "$FLATPAK") hyprkarl_open_terminal hyprkarl-pkg-flatpak-remove ;;
+    "$DOCKER")  hyprkarl-menu-docker-uninstall --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "")         hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
 esac

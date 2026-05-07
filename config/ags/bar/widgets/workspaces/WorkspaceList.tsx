@@ -12,25 +12,25 @@ type Props = {
 }
 
 export default function WorkspaceList({ orientation, workspaces }: Props) {
-  const workspaceList = Array.isArray(workspaces)
+  const workspaceSignature = Array.isArray(workspaces)
     ? null
     : createComputed(() => workspaces().map((workspace) => `${workspace.id}:${workspace.isEmpty ? "e" : "o"}`).join(","))
 
   return (
     <box
-      class={`segmented-group orientation-${orientation}`}
+      class={`widget-group workspace-list orientation-${orientation} is-${orientation}`}
       spacing={0}
       overflow={Gtk.Overflow.HIDDEN}
       hexpand={orientation === "vertical"}
       halign={orientation === "vertical" ? Gtk.Align.FILL : Gtk.Align.CENTER}
       orientation={orientation === "vertical" ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
       $={(self) => {
-        if (!workspaceList) return
+        if (!workspaceSignature) return
         let previousMeasuredWidth = 0
         let widthMeasureTimer: Timer | null = null
 
         createEffect(() => {
-          workspaceList()
+          workspaceSignature()
 
           widthMeasureTimer?.cancel()
           widthMeasureTimer = timeout(1, () => {
@@ -72,4 +72,3 @@ export default function WorkspaceList({ orientation, workspaces }: Props) {
     </box>
   )
 }
-

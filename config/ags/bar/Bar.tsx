@@ -22,9 +22,11 @@ function ResolvedBar({
   resolvedBarConfiguration: ResolvedBarConfiguration
 }) {
   const placement = createBarPlacement(resolvedBarConfiguration.edge)
-  const verticalIslandSizeGroup = placement.isVertical
-    ? new Gtk.SizeGroup({ mode: Gtk.SizeGroupMode.HORIZONTAL })
-    : null
+  const islandCrossAxisSizeGroup = new Gtk.SizeGroup({
+    mode: placement.isVertical
+      ? Gtk.SizeGroupMode.HORIZONTAL
+      : Gtk.SizeGroupMode.VERTICAL,
+  })
 
   function renderWidget(widgetId: string) {
     const widgetConfig = resolvedBarConfiguration.widgets[widgetId]
@@ -39,15 +41,18 @@ function ResolvedBar({
 
   const startWidgets = resolvedBarConfiguration.layout.start.map(renderWidget)
   const centerStartWidgets = resolvedBarConfiguration.layout.center.start.map(renderWidget)
-  const centerAnchor = renderWidget(resolvedBarConfiguration.layout.center.anchor)
+  const centerAnchor = resolvedBarConfiguration.layout.center.anchor
+    ? renderWidget(resolvedBarConfiguration.layout.center.anchor)
+    : null
   const centerEndWidgets = resolvedBarConfiguration.layout.center.end.map(renderWidget)
   const endWidgets = resolvedBarConfiguration.layout.end.map(renderWidget)
+  const hasCenterIsland = centerAnchor !== null || centerStartWidgets.length > 0 || centerEndWidgets.length > 0
 
   return (
     <window
       visible
       name="bar"
-      class={`Bar ${placementClasses(placement)}`}
+      class={`Bar bar-shell ${placementClasses(placement)}`}
       gdkmonitor={gdkmonitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={placement.window.anchor}
@@ -55,13 +60,13 @@ function ResolvedBar({
     >
       <centerbox
         cssName="centerbox"
-        class={`bar-layout ${placementClasses(placement)}`}
+        class={`bar-layout bar-layout-root ${placementClasses(placement)}`}
         orientation={placement.layoutOrientation}
       >
         <Island
           $type="start"
-          $={(self) => verticalIslandSizeGroup?.add_widget(self)}
-          class="bar-start"
+          $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
+          class="bar-island-start"
           placement={placement}
           side="start"
           halign={placement.island.start.halign}
@@ -72,25 +77,27 @@ function ResolvedBar({
           {startWidgets}
         </Island>
 
-        <Island
-          $type="center"
-          $={(self) => verticalIslandSizeGroup?.add_widget(self)}
-          class="bar-center"
-          cssName="box"
-          placement={placement}
-          halign={placement.island.center.halign}
-          valign={placement.island.center.valign}
-          hexpand={placement.island.center.hexpand}
-          vexpand={placement.island.center.vexpand}
-          start={centerStartWidgets}
-          anchor={centerAnchor}
-          end={centerEndWidgets}
-        />
+        {hasCenterIsland && (
+          <Island
+            $type="center"
+            $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
+            class="bar-island-main"
+            cssName="box"
+            placement={placement}
+            halign={placement.island.center.halign}
+            valign={placement.island.center.valign}
+            hexpand={placement.island.center.hexpand}
+            vexpand={placement.island.center.vexpand}
+            start={centerStartWidgets}
+            anchor={centerAnchor ?? undefined}
+            end={centerEndWidgets}
+          />
+        )}
 
         <Island
           $type="end"
-          $={(self) => verticalIslandSizeGroup?.add_widget(self)}
-          class="bar-end"
+          $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
+          class="bar-island-end"
           placement={placement}
           side="end"
           halign={placement.island.end.halign}

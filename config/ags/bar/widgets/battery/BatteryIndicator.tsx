@@ -37,7 +37,7 @@ export default function BatteryIndicator({
     <drawingarea
       contentWidth={totalWidth}
       contentHeight={totalHeight}
-      class="battery-indicator"
+      class="widget-battery-indicator"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
       $={(self) => {
@@ -66,12 +66,12 @@ export default function BatteryIndicator({
             return color
           }
 
-          const bodyColor = getColor("battery-body")
-          const borderColor = getColor("battery-border")
-          const fillColor = getColor("battery-fill")
-          const lowColor = getColor("battery-fill low")
-          const chargingColor = getColor("battery-fill charging")
-          const glyphColor = getColor("battery-glyph")
+          const bodyColor = getColor("battery-indicator-surface")
+          const borderColor = getColor("battery-indicator-border")
+          const fillColor = getColor("battery-indicator-fill")
+          const lowColor = getColor("battery-indicator-fill is-low")
+          const chargingColor = getColor("battery-indicator-fill is-charging")
+          const glyphColor = getColor("battery-indicator-glyph")
           const clampedLevel = clamp(level())
           const isCharging = charging ? charging() : false
           const currentFillColor = clampedLevel <= lowThreshold
@@ -175,4 +175,3 @@ export default function BatteryIndicator({
     />
   )
 }
-

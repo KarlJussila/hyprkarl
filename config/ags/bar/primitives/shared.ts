@@ -10,4 +10,3 @@ export type CommonButtonProps<TWidget extends Gtk.Widget> = {
   visible?: boolean | Accessor<boolean>
   children?: ButtonChildren
 }
-

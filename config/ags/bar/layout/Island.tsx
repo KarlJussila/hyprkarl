@@ -4,6 +4,7 @@ import {
   createCenterEndCornerCurve,
   createCenterStartCornerCurve,
   createOuterCornerCurve,
+  markCenteredGroupEdges,
   markCenteredIslandEdges,
   markOuterIslandEdges,
   normalizeChildren,
@@ -30,7 +31,7 @@ type OuterIslandProps = BaseProps & {
 
 type CenterIslandProps = BaseProps & {
   start?: JSX.Element | Array<JSX.Element>
-  anchor: JSX.Element
+  anchor?: JSX.Element
   end?: JSX.Element | Array<JSX.Element>
   startCorner?: JSX.Element
   endCorner?: JSX.Element
@@ -39,11 +40,11 @@ type CenterIslandProps = BaseProps & {
 type IslandProps = OuterIslandProps | CenterIslandProps
 
 function islandClassName(className?: string) {
-  return className ? `${className} island` : "island"
+  return className ? `${className} bar-island` : "bar-island"
 }
 
 function isCenterIsland(props: IslandProps): props is CenterIslandProps {
-  return "anchor" in props
+  return "start" in props || "anchor" in props || "end" in props
 }
 
 function createBalancedSide({
@@ -60,7 +61,7 @@ function createBalancedSide({
   const content = side === "start"
     ? (
         <box
-          class="balance-content"
+          class="bar-island-balance-content"
           hexpand={false}
           vexpand={false}
           orientation={placement.layoutOrientation}
@@ -71,7 +72,7 @@ function createBalancedSide({
       )
     : (
         <box
-          class="balance-content"
+          class="bar-island-balance-content"
           hexpand={false}
           vexpand={false}
           orientation={placement.layoutOrientation}
@@ -83,12 +84,12 @@ function createBalancedSide({
 
   return (
     <box
-      class={`balance-slot balance-${side}`}
+      class={`bar-island-balance-slot bar-island-balance-slot-${side}`}
       orientation={placement.layoutOrientation}
     >
       {side === "start" && (
         <box
-          class="balance-spacer"
+          class="bar-island-balance-spacer"
           hexpand={!placement.isVertical}
           vexpand={placement.isVertical}
         />
@@ -96,7 +97,7 @@ function createBalancedSide({
       {content}
       {side === "end" && (
         <box
-          class="balance-spacer"
+          class="bar-island-balance-spacer"
           hexpand={!placement.isVertical}
           vexpand={placement.isVertical}
         />
@@ -123,7 +124,7 @@ function renderOuterIsland({
 
   return (
     <box
-      class={`${islandClassName(className)} outer-island ${placementClasses(placement)}`}
+      class={`${islandClassName(className)} bar-island-outer ${placementClasses(placement)}`}
       cssName={cssName}
       halign={halign}
       valign={valign}
@@ -154,14 +155,37 @@ function renderCenterIsland({
   vexpand,
   $: setup,
 }: CenterIslandProps) {
+  const startWidgets = wrapIslandEntries(normalizeChildren(start), placement)
+  const endWidgets = wrapIslandEntries(normalizeChildren(end), placement)
+
+  if (!anchor) {
+    const centeredWidgets = [...startWidgets, ...endWidgets]
+    markCenteredGroupEdges(centeredWidgets)
+
+    return (
+      <box
+        class={`${islandClassName(className)} bar-island-center ${placementClasses(placement)}`}
+        cssName={cssName}
+        halign={halign}
+        valign={valign}
+        hexpand={hexpand}
+        vexpand={vexpand}
+        orientation={placement.layoutOrientation}
+        $={setup}
+      >
+        {startCorner}
+        {centeredWidgets}
+        {endCorner}
+      </box>
+    )
+  }
+
   const sideSizeGroup = new Gtk.SizeGroup({
     mode: placement.isVertical
       ? Gtk.SizeGroupMode.VERTICAL
       : Gtk.SizeGroupMode.HORIZONTAL,
   })
-  const startWidgets = wrapIslandEntries(normalizeChildren(start), placement)
   const centeredAnchor = wrapIslandEntry(anchor, placement)
-  const endWidgets = wrapIslandEntries(normalizeChildren(end), placement)
 
   markCenteredIslandEdges(startWidgets, centeredAnchor, endWidgets)
 
@@ -183,7 +207,7 @@ function renderCenterIsland({
 
   return (
     <box
-      class={`${islandClassName(className)} center-island ${placementClasses(placement)}`}
+      class={`${islandClassName(className)} bar-island-center ${placementClasses(placement)}`}
       cssName={cssName}
       halign={halign}
       valign={valign}

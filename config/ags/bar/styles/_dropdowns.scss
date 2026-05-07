@@ -1,21 +1,18 @@
-@use "../theme" as *;
-@use "./shared" as *;
+@use "../theme" as theme;
+@use "./shared" as shared;
 
 window.dropdown-window {
   background: transparent;
-  font-family: $bar-font-family-mono;
+  font-family: theme.$font-mono;
 
   .dropdown-surface {
-    margin: 0px;
-    border-radius: 0px;
-    border-width: 0px;
-    background-color: transparent;
+    @include shared.reset-flat-surface;
   }
 
   .dropdown-frame {
-    @include framed-surface;
-    border-radius: $bar-island-radius;
-    padding: $bar-dropdown-padding;
+    @include shared.bar-surface;
+    border-radius: theme.$radius;
+    padding: theme.$dropdown-pad;
     opacity: 0;
     transition: opacity 180ms ease;
   }
@@ -85,20 +82,18 @@ window.dropdown-window {
   }
 
   .dropdown-row {
-    margin: 0px;
-    border-width: 0px;
-    background-color: transparent;
-    padding: $bar-dropdown-row-padding-block $bar-dropdown-row-padding-inline;
-    border-radius: $bar-dropdown-row-radius;
+    @include shared.reset-flat-button;
+    padding: theme.$dropdown-row-pad-y theme.$dropdown-row-pad-x;
+    border-radius: theme.$dropdown-row-radius;
   }
 
   .dropdown-row:hover,
   .dropdown-row.active {
-    background-color: $bar-alt-bg-color;
+    background-color: theme.$border;
   }
 
   .dropdown-row.active {
-    color: $bar-accent-color;
+    color: theme.$accent;
   }
 
   .dropdown-row-check {

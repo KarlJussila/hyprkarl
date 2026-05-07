@@ -16,7 +16,7 @@ export type BarLayoutConfig = {
   start: Array<string>
   center: {
     start: Array<string>
-    anchor: string
+    anchor?: string
     end: Array<string>
   }
   end: Array<string>
@@ -165,7 +165,9 @@ export type CaffeineWidgetConfig = {
   kind: "caffeine"
   glyph?: string
   command?: string
-  switch?: SwitchMetrics
+  advanced?: {
+    switch?: SwitchMetrics
+  }
 }
 
 export type BatteryWidgetConfig = {
@@ -173,18 +175,22 @@ export type BatteryWidgetConfig = {
   showPercentage?: boolean
   lowThreshold?: number
   dropdown?: DropdownConfig
-  indicator?: BatteryIndicatorMetrics
+  advanced?: {
+    indicator?: BatteryIndicatorMetrics
+  }
 }
 
-export type BarWidgetDefinition =
-  | MenuWidgetConfig
-  | WorkspacesWidgetConfig
-  | TrayWidgetConfig
-  | ClockWidgetConfig
-  | CaffeineWidgetConfig
-  | BatteryWidgetConfig
+export type WidgetDefinitionByKind = {
+  menu: MenuWidgetConfig
+  workspaces: WorkspacesWidgetConfig
+  tray: TrayWidgetConfig
+  clock: ClockWidgetConfig
+  caffeine: CaffeineWidgetConfig
+  battery: BatteryWidgetConfig
+}
 
-export type WidgetKind = BarWidgetDefinition["kind"]
+export type WidgetKind = keyof WidgetDefinitionByKind
+export type BarWidgetDefinition = WidgetDefinitionByKind[WidgetKind]
 export type BarWidgetDefinitions = Record<string, BarWidgetDefinition>
 
 export type NormalizedMenuWidgetConfig = {
@@ -241,17 +247,25 @@ export type NormalizedBarWidgetDefinition =
   | NormalizedCaffeineWidgetConfig
   | NormalizedBatteryWidgetConfig
 
+export type NormalizedWidgetConfigByKind = {
+  menu: NormalizedMenuWidgetConfig
+  workspaces: NormalizedWorkspacesWidgetConfig
+  tray: NormalizedTrayWidgetConfig
+  clock: NormalizedClockWidgetConfig
+  caffeine: NormalizedCaffeineWidgetConfig
+  battery: NormalizedBatteryWidgetConfig
+}
+
 export type ResolvedBarConfiguration = {
   edge: BarEdge
   layout: {
     start: Array<string>
     center: {
       start: Array<string>
-      anchor: string
+      anchor?: string
       end: Array<string>
     }
     end: Array<string>
   }
   widgets: Record<string, NormalizedBarWidgetDefinition>
 }
-

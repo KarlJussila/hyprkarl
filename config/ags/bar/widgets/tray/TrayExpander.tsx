@@ -22,12 +22,12 @@ export default function TrayExpander({
 }: Props) {
   const triggerIcon = createComputed(() => open() ? icons.expanded : icons.collapsed)
   const buttonStateClass = hasItems((itemsAvailable) =>
-    itemsAvailable ? "" : "tray-expander-empty",
+    itemsAvailable ? "widget-tray-toggle-button" : "widget-tray-toggle-button is-empty",
   )
 
   return (
     <box
-      class="tray-expander segmented-group-item"
+      class="widget-tray-toggle widget-group-item"
       hexpand={fill}
       halign={fill ? Gtk.Align.FILL : Gtk.Align.CENTER}
     >
@@ -37,11 +37,14 @@ export default function TrayExpander({
         halign={fill ? Gtk.Align.FILL : Gtk.Align.CENTER}
         execPrimary={onToggle}
       >
-        <box hexpand={fill} halign={Gtk.Align.CENTER}>
-          <image iconName={triggerIcon} pixelSize={14} />
+        <box
+          class="widget-tray-toggle-content"
+          hexpand={fill}
+          halign={Gtk.Align.CENTER}
+        >
+          <image class="widget-tray-toggle-icon" iconName={triggerIcon} pixelSize={14} />
         </box>
       </Button>
     </box>
   )
 }
-

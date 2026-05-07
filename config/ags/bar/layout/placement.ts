@@ -100,19 +100,19 @@ function verticalSlotLayout(crossAlign: Gtk.Align): Record<IslandSlot, BarSlotLa
       halign: crossAlign,
       valign: Gtk.Align.START,
       hexpand: false,
-      vexpand: true,
+      vexpand: false,
     },
     center: {
       halign: crossAlign,
       valign: Gtk.Align.CENTER,
       hexpand: false,
-      vexpand: true,
+      vexpand: false,
     },
     end: {
       halign: crossAlign,
       valign: Gtk.Align.END,
       hexpand: false,
-      vexpand: true,
+      vexpand: false,
     },
   }
 }
@@ -125,8 +125,8 @@ function horizontalTrayIcons(mirrorTrigger: boolean): TrayExpanderIcons {
 
 function verticalTrayIcons(direction: TrayDirection): TrayExpanderIcons {
   return direction === "start"
-    ? { collapsed: "pan-down-symbolic", expanded: "pan-up-symbolic" }
-    : { collapsed: "pan-up-symbolic", expanded: "pan-down-symbolic" }
+    ? { collapsed: "pan-up-symbolic", expanded: "pan-down-symbolic" }
+    : { collapsed: "pan-down-symbolic", expanded: "pan-up-symbolic" }
 }
 
 function verticalTrayRevealTransition(): Record<TrayDirection, Gtk.RevealerTransitionType> {
@@ -302,7 +302,10 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
 export function placementClasses(
   placement: Pick<BarPlacement, "edge" | "orientation"> | BarEdge,
 ) {
-  return typeof placement === "string"
-    ? `edge-${placement} orientation-${barOrientation(placement)}`
-    : `edge-${placement.edge} orientation-${placement.orientation}`
+  const edge = typeof placement === "string" ? placement : placement.edge
+  const orientation = typeof placement === "string"
+    ? barOrientation(placement)
+    : placement.orientation
+
+  return `edge-${edge} orientation-${orientation} is-${orientation}`
 }

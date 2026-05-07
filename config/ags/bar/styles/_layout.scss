@@ -1,142 +1,137 @@
-@use "../theme" as *;
-@use "./shared" as *;
+@use "../theme" as theme;
+@use "./shared" as shared;
 
-window.Bar {
+window.Bar.bar-shell {
   background: transparent;
-  color: $bar-fg-color;
-  font-family: $bar-font-family;
-  font-size: $bar-font-size;
+  color: theme.$text;
+  font-family: theme.$font-ui;
+  font-size: theme.$font-size;
 
-  .island-curve {
-    color: $bar-alt-bg-color;
+  .bar-island-curve {
+    color: theme.$border;
   }
 
-  > centerbox.bar-layout {
+  > centerbox.bar-layout-root {
     padding: 0px;
 
-    .island,
-    .balance-content,
-    .tray-item-list {
+    .bar-island,
+    .bar-island-balance-content,
+    .widget-tray-item-list {
       border-spacing: 0px;
     }
 
-    .island-item {
+    .bar-segment {
       margin: 0px;
       border-radius: 0px;
-      background-color: $bar-bg-color;
-      border: $bar-border-width solid $bar-alt-bg-color;
-    }
-
-    .segmented-group {
-      border-spacing: 0px;
-      padding: 0px;
+      background-color: theme.$surface;
+      border: theme.$border-width solid theme.$border;
     }
   }
 
-  > centerbox.bar-layout.orientation-horizontal {
-    .tray-panel.open + .tray-expander,
-    .tray-expander + .tray-panel.open {
-      border-left: $bar-border-width solid $bar-alt-bg-color;
+  > centerbox.bar-layout-root.is-horizontal {
+    .widget-tray-panel.is-open + .widget-tray-toggle,
+    .widget-tray-toggle + .widget-tray-panel.is-open {
+      border-left: theme.$border-width solid theme.$border;
     }
   }
 
-  > centerbox.bar-layout.orientation-vertical {
-    .tray-panel.open + .tray-expander,
-    .tray-expander + .tray-panel.open {
-      border-top: $bar-border-width solid $bar-alt-bg-color;
+  > centerbox.bar-layout-root.is-vertical {
+    .widget-tray-panel.is-open + .widget-tray-toggle,
+    .widget-tray-toggle + .widget-tray-panel.is-open {
+      border-top: theme.$border-width solid theme.$border;
     }
   }
 
-  > centerbox.bar-layout.edge-top {
-    .island-item {
-      border-width: 0px $bar-border-width $bar-border-width 0px;
+  > centerbox.bar-layout-root.edge-top {
+    .bar-segment {
+      border-width: 0px theme.$border-width theme.$border-width 0px;
     }
 
-    .island-item.edge-rounded-start {
-      border-bottom-left-radius: $bar-island-radius;
-      border-left-width: $bar-border-width;
+    .bar-segment.segment-edge-rounded-start {
+      border-bottom-left-radius: theme.$radius;
+      border-left-width: theme.$border-width;
     }
 
-    .island-item.edge-rounded-end {
-      border-bottom-right-radius: $bar-island-radius;
-      border-right-width: $bar-border-width;
+    .bar-segment.segment-edge-rounded-end {
+      border-bottom-right-radius: theme.$radius;
+      border-right-width: theme.$border-width;
     }
 
-    .island-item.edge-screen-start {
+    .bar-segment.segment-edge-screen-start {
       border-left-width: 0px;
     }
 
-    .island-item.edge-screen-end {
+    .bar-segment.segment-edge-screen-end {
       border-right-width: 0px;
     }
   }
 
-  > centerbox.bar-layout.edge-bottom {
-    .island-item {
-      border-width: $bar-border-width $bar-border-width 0px 0px;
+  > centerbox.bar-layout-root.edge-bottom {
+    .bar-segment {
+      border-width: theme.$border-width theme.$border-width 0px 0px;
     }
 
-    .island-item.edge-rounded-start {
-      border-top-left-radius: $bar-island-radius;
-      border-left-width: $bar-border-width;
+    .bar-segment.segment-edge-rounded-start {
+      border-top-left-radius: theme.$radius;
+      border-left-width: theme.$border-width;
     }
 
-    .island-item.edge-rounded-end {
-      border-top-right-radius: $bar-island-radius;
-      border-right-width: $bar-border-width;
+    .bar-segment.segment-edge-rounded-end {
+      border-top-right-radius: theme.$radius;
+      border-right-width: theme.$border-width;
     }
 
-    .island-item.edge-screen-start {
+    .bar-segment.segment-edge-screen-start {
       border-left-width: 0px;
     }
 
-    .island-item.edge-screen-end {
+    .bar-segment.segment-edge-screen-end {
       border-right-width: 0px;
     }
   }
 
-  > centerbox.bar-layout.edge-left {
-    .island-item {
-      border-width: 0px $bar-border-width $bar-border-width 0px;
+  > centerbox.bar-layout-root.edge-left {
+    .bar-segment {
+      border-width: 0px theme.$border-width theme.$border-width 0px;
     }
 
-    .island-item.edge-rounded-start {
-      border-top-right-radius: $bar-island-radius;
-      border-top-width: $bar-border-width;
+    .bar-segment.segment-edge-rounded-start {
+      border-top-right-radius: theme.$radius;
+      border-top-width: theme.$border-width;
     }
 
-    .island-item.edge-rounded-end {
-      border-bottom-right-radius: $bar-island-radius;
+    .bar-segment.segment-edge-rounded-end {
+      border-bottom-right-radius: theme.$radius;
     }
 
-    .island-item.edge-screen-start {
+    .bar-segment.segment-edge-screen-start {
       border-top-width: 0px;
     }
 
-    .island-item.edge-screen-end {
+    .bar-segment.segment-edge-screen-end {
       border-bottom-width: 0px;
     }
   }
 
-  > centerbox.bar-layout.edge-right {
-    .island-item {
-      border-width: 0px 0px $bar-border-width $bar-border-width;
+  > centerbox.bar-layout-root.edge-right {
+    .bar-segment {
+      border-width: 0px 0px theme.$border-width theme.$border-width;
     }
 
-    .island-item.edge-rounded-start {
-      border-top-left-radius: $bar-island-radius;
-      border-top-width: $bar-border-width;
+    .bar-segment.segment-edge-rounded-start {
+      border-top-left-radius: theme.$radius;
+      border-top-width: theme.$border-width;
     }
 
-    .island-item.edge-rounded-end {
-      border-bottom-left-radius: $bar-island-radius;
+    .bar-segment.segment-edge-rounded-end {
+      border-bottom-left-radius: theme.$radius;
     }
 
-    .island-item.edge-screen-start {
+    .bar-segment.segment-edge-screen-start {
       border-top-width: 0px;
     }
 
-    .island-item.edge-screen-end {
+    .bar-segment.segment-edge-screen-end {
       border-bottom-width: 0px;
     }
   }
@@ -146,27 +141,27 @@ window.Bar.bar-config-error {
   > .bar-config-error-layout {
     padding: 0px;
 
-    > .bar-config-error-item {
-      @include framed-surface;
-      border-color: $bar-error-color;
-      border-radius: $bar-island-radius;
+    > .config-error-surface {
+      @include shared.bar-surface;
+      border-color: theme.$error;
+      border-radius: theme.$radius;
     }
 
-    > .bar-config-error-item.orientation-horizontal {
-      padding: 0px $bar-button-padding-inline;
+    > .config-error-surface.is-horizontal {
+      padding: 0px theme.$button-pad-x;
     }
 
-    > .bar-config-error-item.orientation-vertical {
-      padding: $bar-vertical-button-padding-block 0px;
+    > .config-error-surface.is-vertical {
+      padding: theme.$button-pad-y 0px;
     }
   }
 
   .bar-config-error-title {
-    color: $bar-error-color;
-    font-family: $bar-font-family-mono;
+    color: theme.$error;
+    font-family: theme.$font-mono;
   }
 
   .bar-config-error-path {
-    font-family: $bar-font-family-mono;
+    font-family: theme.$font-mono;
   }
 }

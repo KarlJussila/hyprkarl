@@ -16,8 +16,8 @@ type Props = {
 export default function TrayItems({ placement, direction, items, open, revealDurationMs }: Props) {
   const panelClass = open((isOpen) =>
     isOpen
-      ? "tray-panel segmented-group-item open"
-      : "tray-panel segmented-group-item",
+      ? "widget-tray-panel widget-group-item is-open"
+      : "widget-tray-panel widget-group-item",
   )
   const transitionType = placement.tray.revealTransition[direction]
   const revealerClass = createComputed(() =>
@@ -34,7 +34,7 @@ export default function TrayItems({ placement, direction, items, open, revealDur
       revealChild={open}
     >
       <box
-        class={`tray-item-list segmented-group orientation-${placement.orientation}`}
+        class={`widget-tray-item-list widget-group orientation-${placement.orientation} is-${placement.orientation}`}
         spacing={0}
         overflow={Gtk.Overflow.HIDDEN}
         orientation={placement.layoutOrientation}
@@ -48,4 +48,3 @@ export default function TrayItems({ placement, direction, items, open, revealDur
     </revealer>
   )
 }
-

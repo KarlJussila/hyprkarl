@@ -1,14 +1,10 @@
-import { createState } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
-import { type NormalizedBatteryWidgetConfig } from "../../configuration"
-import { type DropdownPlacement } from "../../layout/placement"
-import AttachedDropdown from "../../overlays/dropdown/AttachedDropdown"
-import Button from "../../primitives/Button"
+import { type NormalizedBatteryWidgetConfig } from "../../configuration.ts"
+import { type DropdownPlacement } from "../../layout/placement.ts"
+import DropdownButton from "../shared/DropdownButton.tsx"
 import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState, formatBatteryPercentage } from "./batteryState"
 import PowerProfileMenu from "./PowerProfileMenu"
-
-let nextPowerProfileMenuId = 1
 
 type Props = {
   placement: DropdownPlacement
@@ -18,40 +14,11 @@ type Props = {
 
 export default function BatteryWidget({ placement, monitor, config }: Props) {
   const batteryState = createBatteryState()
-  const [powerProfileMenuOpen, setPowerProfileMenuOpen] = createState(false)
-  const [triggerButton, setTriggerButton] = createState<Gtk.Widget | null>(null)
-  const powerProfileMenuId = nextPowerProfileMenuId++
-
-  if (config.dropdown.enabled) {
-    const mountedPowerProfileDropdown = (
-      <AttachedDropdown
-        name={`battery-menu-${monitor.connector ?? "monitor"}-${powerProfileMenuId}`}
-        placement={placement}
-        monitor={monitor}
-        trigger={triggerButton}
-        open={powerProfileMenuOpen}
-        onRequestClose={() => setPowerProfileMenuOpen(false)}
-        align={config.dropdown.align}
-        gap={config.dropdown.gap}
-      >
-        <PowerProfileMenu
-          activeProfile={batteryState.activePowerProfile}
-          profiles={batteryState.availablePowerProfiles}
-          onSelect={(profileName) => {
-            batteryState.setActivePowerProfile(profileName)
-            setPowerProfileMenuOpen(false)
-          }}
-        />
-      </AttachedDropdown>
-    )
-
-    void mountedPowerProfileDropdown
-  }
 
   const batteryContent = placement.isVertical
     ? (
         <box
-          class="battery-display orientation-vertical"
+          class="widget-battery-display orientation-vertical is-vertical"
           orientation={Gtk.Orientation.VERTICAL}
           spacing={0}
           hexpand={placement.isVertical}
@@ -65,12 +32,12 @@ export default function BatteryWidget({ placement, monitor, config }: Props) {
             metrics={config.indicator}
           />
           {config.showPercentage && (
-            <label class="battery-percent" label={batteryState.percentage(formatBatteryPercentage)} />
+            <label class="widget-battery-percent" label={batteryState.percentage(formatBatteryPercentage)} />
           )}
         </box>
       )
     : (
-        <box class="battery-display orientation-horizontal" spacing={0}>
+        <box class="widget-battery-display orientation-horizontal is-horizontal" spacing={0}>
           <BatteryIndicator
             orientation={placement.orientation}
             level={batteryState.percentage}
@@ -79,31 +46,33 @@ export default function BatteryWidget({ placement, monitor, config }: Props) {
             metrics={config.indicator}
           />
           {config.showPercentage && (
-            <label class="battery-percent" label={batteryState.percentage(formatBatteryPercentage)} />
+            <label class="widget-battery-percent" label={batteryState.percentage(formatBatteryPercentage)} />
           )}
         </box>
       )
 
   return (
-    <Button
-      class={`battery-button orientation-${placement.orientation}`}
+    <DropdownButton
+      buttonClass={`widget-battery-button orientation-${placement.orientation} is-${placement.orientation}`}
       hexpand={placement.isVertical}
       halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
-      $={config.dropdown.enabled
-        ? (self) => {
-            setTriggerButton(self)
-            self.connect("destroy", () => {
-              setTriggerButton(null)
-            })
-          }
-        : undefined}
+      placement={placement}
+      monitor={monitor}
+      dropdownName={`battery-menu-${monitor.connector ?? "monitor"}`}
+      dropdown={config.dropdown}
       visible={batteryState.isPresent}
-      execPrimary={config.dropdown.enabled
-        ? () => setPowerProfileMenuOpen(!powerProfileMenuOpen())
-        : undefined}
+      renderDropdownContent={(closeDropdown) => (
+        <PowerProfileMenu
+          activeProfile={batteryState.activePowerProfile}
+          profiles={batteryState.availablePowerProfiles}
+          onSelect={(profileName) => {
+            batteryState.setActivePowerProfile(profileName)
+            closeDropdown()
+          }}
+        />
+      )}
     >
       {batteryContent}
-    </Button>
+    </DropdownButton>
   )
 }
-

@@ -1,30 +1,48 @@
-// Edit this file for normal bar styling changes.
+// Edit this file for most visual changes to the bar.
 // Colors intentionally come from the active GTK theme.
+// Tokens live in one Sass module, so keep names short and semantic.
 
-$bar-fg-color: #{"@theme_fg_color"};
-$bar-bg-color: #{"@theme_bg_color"};
-$bar-accent-color: #{"@theme_selected_bg_color"};
-$bar-alt-bg-color: shade(#{"@theme_bg_color"}, 2);
+// Common edits first:
+// - font: $font-ui / $font-size
+// - island shape: $radius / $border-width
+// - button spacing: $button-pad-x / $button-pad-y
+// - glyph buttons: $glyph-pad-y / $workspace-edge-pad
+// - dropdown feel: $dropdown-pad / $dropdown-row-radius
 
-$bar-font-family: "JetBrains Mono Nerd Font Propo";
-$bar-font-family-mono: "JetBrains Mono Nerd Font";
-$bar-font-size: 12px;
+// Core colors
+$text: #{"@theme_fg_color"};
+$surface: #{"@theme_bg_color"};
+$accent: #{"@theme_selected_bg_color"};
+$border: shade(#{"@theme_bg_color"}, 2);
+$error: #{"@error_color"};
+$battery-low: #d26a55;
 
-$bar-island-radius: 8px;
-$bar-border-width: 2px;
+// Typography
+$font-ui: "JetBrains Mono Nerd Font Propo";
+$font-mono: "JetBrains Mono Nerd Font";
+$font-size: 12px;
 
-$bar-button-padding-inline: 8px;
-$bar-vertical-button-padding-block: 4px;
-$bar-workspace-padding-inline: 2px;
-$bar-tray-item-padding-inline: 6px;
-$bar-battery-percent-font-size-vertical: 10px;
-$bar-battery-percent-gap-horizontal: 4px;
-$bar-battery-percent-gap-vertical: 2px;
+// Bar shell
+$radius: 8px;
+$border-width: 2px;
 
-$bar-dropdown-padding: 4px;
-$bar-dropdown-row-padding-block: 4px;
-$bar-dropdown-row-padding-inline: 8px;
-$bar-dropdown-row-radius: 6px;
+// Shared controls
+$button-pad-x: 8px;
+$button-pad-y: 4px;
 
-$bar-error-color: #{"@error_color"};
-$bar-low-battery-color: #d26a55;
+// Widget tuning
+// Extra top/bottom breathing room for single-glyph controls like menu and tray.
+$glyph-pad-y: 2px;
+$workspace-edge-pad: 6px;
+$workspace-pad-x: 0px;
+$tray-item-pad-y: 4px;
+$tray-item-pad-x: 4px;
+$battery-gap-x: 4px;
+$battery-gap-y: 2px;
+$battery-font-size: 12px;
+
+// Dropdowns
+$dropdown-pad: 4px;
+$dropdown-row-pad-y: 4px;
+$dropdown-row-pad-x: 8px;
+$dropdown-row-radius: 6px;

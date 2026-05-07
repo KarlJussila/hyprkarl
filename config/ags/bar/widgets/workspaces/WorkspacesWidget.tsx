@@ -13,18 +13,17 @@ type Props = {
 export default function WorkspacesWidget({ orientation, config }: Props) {
   const hyprland = AstalHyprland.get_default()
 
-  const snapshotVisibleWorkspaces = () => config.mode === "fixed"
+  const listVisibleWorkspaces = () => config.mode === "fixed"
     ? fixedVisibleWorkspaces(hyprland, config.ids)
     : currentVisibleWorkspaces(hyprland, config.visibility)
 
-  const visibleWorkspaceList = createConnection(
-    snapshotVisibleWorkspaces(),
-    [hyprland, "notify::focused-workspace", snapshotVisibleWorkspaces],
-    [hyprland, "client-added", snapshotVisibleWorkspaces],
-    [hyprland, "client-removed", snapshotVisibleWorkspaces],
-    [hyprland, "client-moved", snapshotVisibleWorkspaces],
+  const visibleWorkspaces = createConnection(
+    listVisibleWorkspaces(),
+    [hyprland, "notify::focused-workspace", listVisibleWorkspaces],
+    [hyprland, "client-added", listVisibleWorkspaces],
+    [hyprland, "client-removed", listVisibleWorkspaces],
+    [hyprland, "client-moved", listVisibleWorkspaces],
   )
 
-  return <WorkspaceList orientation={orientation} workspaces={visibleWorkspaceList} />
+  return <WorkspaceList orientation={orientation} workspaces={visibleWorkspaces} />
 }
-

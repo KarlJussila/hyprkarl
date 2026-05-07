@@ -1,3 +1,4 @@
+import { createComputed } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 import { timeout } from "ags/time"
 import { CommonButtonProps } from "./shared"
@@ -22,13 +23,17 @@ export default function Button({
 }: Props) {
   function press(button: Gtk.Button, action: () => void) {
     action()
-    button.add_css_class("pressed")
-    timeout(120, () => button.remove_css_class("pressed"))
+    button.add_css_class("is-pressed")
+    timeout(120, () => button.remove_css_class("is-pressed"))
   }
+
+  const resolvedClassName = typeof className === "string"
+    ? `widget-button ${className}`.trim()
+    : createComputed(() => `widget-button ${className()}`.trim())
 
   const button = (
     <button
-      class={className}
+      class={resolvedClassName}
       hexpand={hexpand}
       halign={halign}
       visible={visible}

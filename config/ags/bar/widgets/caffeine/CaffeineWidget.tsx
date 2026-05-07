@@ -1,31 +1,8 @@
-import { createState } from "ags"
-import app from "ags/gtk4/app"
 import { Gtk } from "ags/gtk4"
-import { execAsync } from "ags/process"
-import { type NormalizedCaffeineWidgetConfig } from "../../configuration"
-import { type BarOrientation } from "../../layout/placement"
+import { type NormalizedCaffeineWidgetConfig } from "../../configuration.ts"
+import { type BarOrientation } from "../../layout/placement.ts"
 import Switch from "../../primitives/Switch"
-
-const [active, setActive] = createState(false)
-
-const syncStatus = async () => {
-  try {
-    const status = await execAsync("systemctl --user show hypridle.service --property=ActiveState")
-    const isHypridleActive = status.trim() === "ActiveState=active"
-    setActive(!isHypridleActive)
-  } catch {
-    setActive(false)
-  }
-}
-
-syncStatus()
-
-app.connect("request", (_app, args, response) => {
-  if (args[0] === "caffeine-sync") {
-    syncStatus()
-    response("ok")
-  }
-})
+import { getCaffeineController } from "./controller.ts"
 
 type Props = {
   orientation: BarOrientation
@@ -34,21 +11,20 @@ type Props = {
 
 export default function CaffeineWidget({ orientation, config }: Props) {
   const isVertical = orientation === "vertical"
+  const caffeineController = getCaffeineController()
 
   return (
     <Switch
-      class={`caffeine-button orientation-${orientation}`}
+      class={`widget-caffeine-switch orientation-${orientation} is-${orientation}`}
       hexpand={isVertical}
       halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       orientation={orientation}
       glyph={config.glyph}
       metrics={config.switch}
-      active={active}
+      active={caffeineController.active}
       onToggle={(next) => {
-        setActive(next)
-        execAsync(`${config.command} ${next ? "on" : "off"}`).catch(print)
+        caffeineController.toggle(config.command, next)
       }}
     />
   )
 }
-

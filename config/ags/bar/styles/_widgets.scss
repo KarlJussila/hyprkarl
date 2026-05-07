@@ -1,145 +1,190 @@
-@use "../theme" as *;
+@use "../theme" as theme;
+@use "./shared" as shared;
 
-window.Bar {
-  button {
-    margin: 0px;
-    border-radius: 0px;
-    border-width: 0px;
-    background-color: transparent;
-    padding: 0px $bar-button-padding-inline;
+window.Bar.bar-shell {
+  // Shared controls
+  .widget-button {
+    @include shared.reset-flat-button;
+    padding: 0px theme.$button-pad-x;
   }
 
-  button.pressed {
-    background-color: $bar-alt-bg-color;
+  .bar-segment > .widget-button,
+  .bar-segment > .widget-group {
+    @include shared.reset-flat-surface;
   }
 
-  .island-item > button,
-  .island-item > .segmented-group {
-    margin: 0px;
-    border-radius: 0px;
-    border-width: 0px;
-    background-color: transparent;
+  .widget-button.is-pressed {
+    background-color: theme.$border;
   }
 
-  .workspace-button {
-    padding: 0px $bar-workspace-padding-inline;
+  .widget-group {
+    border-spacing: 0px;
+    padding: 0px;
   }
 
-  .workspace-button.workspace-active {
-    color: $bar-accent-color;
+  .widget-group-item {
+    @include shared.reset-flat-surface;
   }
 
-  .workspace-empty label {
+  // Workspace widget
+  .widget-workspace-button {
+    padding: 0px theme.$workspace-pad-x;
+  }
+
+  .workspace-list.is-horizontal {
+    padding-left: theme.$workspace-edge-pad;
+    padding-right: theme.$workspace-edge-pad;
+  }
+
+  // Single-glyph buttons look cramped without a little top/bottom space.
+  .widget-menu-button,
+  .widget-tray-toggle > .widget-tray-toggle-button {
+    padding-top: theme.$glyph-pad-y;
+    padding-bottom: theme.$glyph-pad-y;
+  }
+
+  .widget-workspace-button.is-active {
+    color: theme.$accent;
+  }
+
+  .widget-workspace-button.is-empty label {
     opacity: 0.55;
   }
 
   .workspace-bracket,
-  .workspace-label {
-    font-family: $bar-font-family-mono;
+  .workspace-label,
+  .widget-clock-time,
+  .widget-clock-meridiem,
+  .widget-battery-percent {
+    font-family: theme.$font-mono;
   }
 
-  .clock-display,
-  .battery-display {
+  .widget-battery-percent {
+    font-size: theme.$battery-font-size;
+  }
+
+  // Clock and battery content
+  .widget-clock-display,
+  .widget-battery-display {
     margin: 0px;
   }
 
-  .battery-display.orientation-horizontal .battery-percent {
-    margin-left: $bar-battery-percent-gap-horizontal;
+  .widget-battery-display.is-horizontal .widget-battery-percent {
+    margin-left: theme.$battery-gap-x;
   }
 
-  .battery-display.orientation-vertical .battery-percent {
-    margin-top: $bar-battery-percent-gap-vertical;
+  .widget-battery-display.is-vertical .widget-battery-percent {
+    margin-top: theme.$battery-gap-y;
   }
 
-  .tray-expander,
-  .tray-panel,
-  .tray-item-list,
-  .tray-item,
-  .tray-item > button {
-    margin: 0px;
-    border-radius: 0px;
-    border-width: 0px;
-    background-color: transparent;
+  // Tray widget
+  .widget-tray,
+  .widget-tray-toggle,
+  .widget-tray-panel,
+  .widget-tray-item-list,
+  .widget-tray-item {
+    @include shared.reset-flat-surface;
   }
 
-  .tray-expander > button {
-    padding: 0px;
+  .widget-tray-toggle > .widget-tray-toggle-button {
+    padding-left: 0px;
+    padding-right: 0px;
   }
 
-  .tray-item > button {
-    padding: 0px $bar-tray-item-padding-inline;
+  .widget-tray-item > button {
+    @include shared.reset-flat-button;
+    padding: theme.$tray-item-pad-y theme.$tray-item-pad-x;
     border-spacing: 0px;
     box-shadow: none;
   }
 
-  .battery-body { color: $bar-bg-color; }
-  .battery-border { color: $bar-fg-color; }
-  .battery-fill { color: $bar-fg-color; }
-  .battery-fill.low { color: $bar-low-battery-color; }
-  .battery-fill.charging { color: $bar-fg-color; }
-  .battery-glyph { color: $bar-accent-color; }
+  // Custom-drawn battery colors
+  .battery-indicator-surface { color: theme.$surface; }
+  .battery-indicator-border { color: theme.$text; }
+  .battery-indicator-fill { color: theme.$text; }
+  .battery-indicator-fill.is-low { color: theme.$battery-low; }
+  .battery-indicator-fill.is-charging { color: theme.$text; }
+  .battery-indicator-glyph { color: theme.$accent; }
 
-  .switch {
-    &.switch-bg { color: $bar-bg-color; }
-    &.switch-fg { color: $bar-fg-color; }
-    &.switch-track { color: $bar-bg-color; }
-    &.switch-border { color: $bar-alt-bg-color; }
+  // Custom-drawn switch colors
+  .switch-surface { color: theme.$surface; }
+  .switch-glyph { color: theme.$text; }
+  .switch-track { color: theme.$surface; }
+  .switch-border { color: theme.$border; }
+  .switch-track.is-active { color: theme.$accent; }
+  .switch-border.is-active { color: theme.$accent; }
 
-    &.active {
-      &.switch-track { color: $bar-accent-color; }
-      &.switch-border { color: $bar-accent-color; }
-    }
-  }
-
-  > centerbox.bar-layout.orientation-vertical {
-    .island-item > button,
-    .island-item > button.switch-button,
-    .island-item > .segmented-group {
-      padding-top: $bar-vertical-button-padding-block;
-      padding-bottom: $bar-vertical-button-padding-block;
-      padding-left: 0px;
-      padding-right: 0px;
-    }
-
-    .island-item > .tray-group {
+  // Vertical overrides
+  > centerbox.bar-layout-root.is-vertical {
+    label,
+    image {
+      margin-top: 0px;
+      margin-bottom: 0px;
       padding-top: 0px;
       padding-bottom: 0px;
     }
 
-    .menu-button,
-    .clock-button,
-    .battery-button,
-    .switch-button.caffeine-button {
-      padding-top: $bar-vertical-button-padding-block;
-      padding-bottom: $bar-vertical-button-padding-block;
-    }
-
-    .battery-percent {
-      font-size: $bar-battery-percent-font-size-vertical;
-    }
-
-    .menu-button,
-    .clock-button,
-    .battery-button,
-    .switch-button.caffeine-button,
-    .tray-expander,
-    .tray-panel,
-    .tray-item-list,
-    .tray-item,
-    .tray-expander > button,
-    .tray-item > button {
+    .bar-segment > .widget-button,
+    .bar-segment > .widget-switch-button,
+    .bar-segment > .widget-group {
+      padding-top: theme.$button-pad-y;
+      padding-bottom: theme.$button-pad-y;
       padding-left: 0px;
       padding-right: 0px;
     }
 
-    .tray-expander,
-    .tray-panel,
-    .tray-item-list,
-    .tray-item,
-    .tray-expander > button,
-    .tray-item > button {
+    .widget-menu-button,
+    .widget-clock-button,
+    .widget-battery-button,
+    .widget-caffeine-switch {
+      padding-top: theme.$button-pad-y;
+      padding-bottom: theme.$button-pad-y;
+    }
+
+    // Keep vertical segments tight, then add back only the spacing that is
+    // intentionally part of the widget's visual design.
+    .bar-segment > .widget-menu-button,
+    .bar-segment > .workspace-list,
+    .bar-segment > .widget-tray {
       padding-top: 0px;
       padding-bottom: 0px;
+    }
+
+    .bar-segment > .widget-menu-button {
+      padding-top: theme.$glyph-pad-y;
+      padding-bottom: theme.$glyph-pad-y;
+    }
+
+    .bar-segment > .workspace-list {
+      padding-top: theme.$workspace-edge-pad;
+      padding-bottom: theme.$workspace-edge-pad;
+    }
+
+    .widget-menu-button,
+    .widget-clock-button,
+    .widget-battery-button,
+    .widget-caffeine-switch,
+    .widget-tray-toggle,
+    .widget-tray-panel,
+    .widget-tray-item-list,
+    .widget-tray-item,
+    .widget-tray-toggle > .widget-tray-toggle-button {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    .widget-tray-toggle,
+    .widget-tray-panel,
+    .widget-tray-item-list,
+    .widget-tray-item,
+    .widget-tray-toggle > .widget-tray-toggle-button {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+
+    .widget-tray-toggle > .widget-tray-toggle-button {
+      padding-top: theme.$glyph-pad-y;
+      padding-bottom: theme.$glyph-pad-y;
     }
   }
 }

@@ -11,7 +11,7 @@ type Props = {
 export default function TrayItem({ fill = false, item }: Props) {
   return (
     <menubutton
-      class="tray-item segmented-group-item"
+      class="widget-tray-item widget-group-item"
       hexpand={fill}
       halign={fill ? Gtk.Align.FILL : Gtk.Align.CENTER}
       tooltipMarkup={createBinding(item, "tooltipMarkup")}
@@ -26,4 +26,3 @@ export default function TrayItem({ fill = false, item }: Props) {
     </menubutton>
   ) as Gtk.MenuButton
 }
-

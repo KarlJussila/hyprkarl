@@ -3,10 +3,10 @@ import { type BarPlacement } from "./placement"
 import CornerCurve from "../styles/CornerCurve"
 
 type IslandEdge =
-  | "edge-rounded-start"
-  | "edge-rounded-end"
-  | "edge-screen-start"
-  | "edge-screen-end"
+  | "segment-edge-rounded-start"
+  | "segment-edge-rounded-end"
+  | "segment-edge-screen-start"
+  | "segment-edge-screen-end"
 
 type IslandSide = "start" | "end"
 
@@ -30,7 +30,7 @@ function allowVerticalFill(widget: JSX.Element) {
 export function wrapIslandEntry(
   widget: JSX.Element,
   placement: BarPlacement,
-  className = "island-item",
+  className = "bar-segment",
 ) {
   if (placement.isVertical) {
     allowVerticalFill(widget)
@@ -48,7 +48,7 @@ export function wrapIslandEntry(
 export function wrapIslandEntries(
   widgets: Array<JSX.Element>,
   placement: BarPlacement,
-  className = "island-item",
+  className = "bar-segment",
 ) {
   return widgets.map((widget) => wrapIslandEntry(widget, placement, className))
 }
@@ -63,13 +63,13 @@ export function markOuterIslandEdges(widgets: Array<JSX.Element>, side: IslandSi
   const last = widgets[widgets.length - 1]
 
   if (side === "start") {
-    addClasses(first, ["edge-screen-start"])
-    addClasses(last, ["edge-rounded-end"])
+    addClasses(first, ["segment-edge-screen-start"])
+    addClasses(last, ["segment-edge-rounded-end"])
     return
   }
 
-  addClasses(first, ["edge-rounded-start"])
-  addClasses(last, ["edge-screen-end"])
+  addClasses(first, ["segment-edge-rounded-start"])
+  addClasses(last, ["segment-edge-screen-end"])
 }
 
 export function markCenteredIslandEdges(
@@ -80,8 +80,16 @@ export function markCenteredIslandEdges(
   const first = startWidgets[0] ?? anchor
   const last = endWidgets[endWidgets.length - 1] ?? anchor
 
-  addClasses(first, ["edge-rounded-start"])
-  addClasses(last, ["edge-rounded-end"])
+  addClasses(first, ["segment-edge-rounded-start"])
+  addClasses(last, ["segment-edge-rounded-end"])
+}
+
+export function markCenteredGroupEdges(widgets: Array<JSX.Element>) {
+  const first = widgets[0]
+  const last = widgets[widgets.length - 1]
+
+  addClasses(first, ["segment-edge-rounded-start"])
+  addClasses(last, ["segment-edge-rounded-end"])
 }
 
 function outerCornerPosition(placement: BarPlacement, side: IslandSide) {
@@ -137,20 +145,19 @@ function centerEndCornerPosition(placement: BarPlacement) {
 
 export function createOuterCornerCurve(placement: BarPlacement, side: IslandSide) {
   return (
-    <CornerCurve
+      <CornerCurve
       position={outerCornerPosition(placement, side)}
       size={12}
       radius={4}
-      class="island-curve"
+      class="bar-island-curve"
     />
   )
 }
 
 export function createCenterStartCornerCurve(placement: BarPlacement) {
-  return <CornerCurve position={centerStartCornerPosition(placement)} size={12} radius={4} class="island-curve" />
+  return <CornerCurve position={centerStartCornerPosition(placement)} size={12} radius={4} class="bar-island-curve" />
 }
 
 export function createCenterEndCornerCurve(placement: BarPlacement) {
-  return <CornerCurve position={centerEndCornerPosition(placement)} size={12} radius={4} class="island-curve" />
+  return <CornerCurve position={centerEndCornerPosition(placement)} size={12} radius={4} class="bar-island-curve" />
 }
-

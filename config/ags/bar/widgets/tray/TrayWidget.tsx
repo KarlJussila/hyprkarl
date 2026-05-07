@@ -53,9 +53,8 @@ export default function TrayWidget({ placement, config }: Props) {
 
   return (
     <box
-      class={`tray-group segmented-group orientation-${placement.orientation}`}
-      hexpand={placement.isVertical}
-      halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      class={`widget-tray widget-group orientation-${placement.orientation} is-${placement.orientation}`}
+      halign={Gtk.Align.CENTER}
       orientation={placement.layoutOrientation}
     >
       {startContent}

@@ -106,7 +106,7 @@ test("rejects missing widget references in the layout", () => {
   )
 })
 
-test("rejects duplicate widget IDs in the layout", () => {
+test("allows the same widget ID to appear more than once in the layout", () => {
   const layout = {
     edge: "top",
     start: ["menu"],
@@ -123,15 +123,56 @@ test("rejects duplicate widget IDs in the layout", () => {
     clock: { kind: "clock" },
   } satisfies BarWidgetDefinitions
 
-  const error = expectBarConfigError(() => normalizeBarConfiguration(layout, widgets))
+  const resolved = normalizeBarConfiguration(layout, widgets)
 
-  assert.equal(error.sourceFile, BAR_LAYOUT_SOURCE_FILE)
-  assert.equal(error.path, "center.end[0]")
-  assert.equal(error.message, 'widget ID "menu" is used more than once in the layout')
-  assert.equal(
-    formatBarConfigError(error),
-    'Bar config error in layout.config.ts at center.end[0]: widget ID "menu" is used more than once in the layout',
-  )
+  assert.deepEqual(resolved.layout.start, ["menu"])
+  assert.deepEqual(resolved.layout.center.end, ["menu"])
+})
+
+test("allows an empty center island without an anchor", () => {
+  const layout = {
+    edge: "top",
+    start: ["menu"],
+    center: {
+      start: [],
+      end: [],
+    },
+    end: ["battery"],
+  } satisfies BarLayoutConfig
+
+  const widgets = {
+    menu: { kind: "menu" },
+    battery: { kind: "battery" },
+  } satisfies BarWidgetDefinitions
+
+  const resolved = normalizeBarConfiguration(layout, widgets)
+
+  assert.equal(resolved.layout.center.anchor, undefined)
+  assert.deepEqual(resolved.layout.center.start, [])
+  assert.deepEqual(resolved.layout.center.end, [])
+})
+
+test("allows center side widgets without a center anchor", () => {
+  const layout = {
+    edge: "top",
+    start: ["menu"],
+    center: {
+      start: ["clock"],
+      end: [],
+    },
+    end: [],
+  } satisfies BarLayoutConfig
+
+  const widgets = {
+    menu: { kind: "menu" },
+    clock: { kind: "clock" },
+  } satisfies BarWidgetDefinitions
+
+  const resolved = normalizeBarConfiguration(layout, widgets)
+
+  assert.equal(resolved.layout.center.anchor, undefined)
+  assert.deepEqual(resolved.layout.center.start, ["clock"])
+  assert.deepEqual(resolved.layout.center.end, [])
 })
 
 test("rejects unknown widget kinds at normalization time", () => {
@@ -209,6 +250,52 @@ test("normalizes fixed workspaces and widget-specific overrides", () => {
     middle: "%M",
     bottom: "%p",
   })
+})
+
+test("normalizes advanced widget appearance overrides behind nested config", () => {
+  const layout = {
+    edge: "top",
+    start: ["caffeine"],
+    center: {
+      start: [],
+      anchor: "clock",
+      end: [],
+    },
+    end: ["battery"],
+  } satisfies BarLayoutConfig
+
+  const widgets = {
+    caffeine: {
+      kind: "caffeine",
+      advanced: {
+        switch: {
+          trackLength: 32,
+          glyphOffsetY: -1,
+        },
+      },
+    },
+    clock: {
+      kind: "clock",
+    },
+    battery: {
+      kind: "battery",
+      advanced: {
+        indicator: {
+          width: 20,
+          chargingGlyphFontSize: 10,
+        },
+      },
+    },
+  } satisfies BarWidgetDefinitions
+
+  const resolved = normalizeBarConfiguration(layout, widgets)
+  const caffeine = resolved.widgets.caffeine as Extract<typeof resolved.widgets.caffeine, { kind: "caffeine" }>
+  const battery = resolved.widgets.battery as NormalizedBatteryWidgetConfig
+
+  assert.equal(caffeine.switch.trackLength, 32)
+  assert.equal(caffeine.switch.glyphOffsetY, -1)
+  assert.equal(battery.indicator.width, 20)
+  assert.equal(battery.indicator.chargingGlyphFontSize, 10)
 })
 
 test("rejects invalid widget option values with widget metadata", () => {

@@ -1,14 +1,10 @@
-import { createState } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import GLib from "gi://GLib?version=2.0"
-import { type NormalizedClockWidgetConfig } from "../../configuration"
-import { type DropdownPlacement } from "../../layout/placement"
-import AttachedDropdown from "../../overlays/dropdown/AttachedDropdown"
-import Button from "../../primitives/Button"
+import { type NormalizedClockWidgetConfig } from "../../configuration.ts"
+import { type DropdownPlacement } from "../../layout/placement.ts"
+import DropdownButton from "../shared/DropdownButton.tsx"
 import CalendarDropdownContent from "./CalendarDropdownContent"
-
-let nextCalendarDropdownId = 1
 
 function formatTime(time: GLib.DateTime, format: string) {
   return time.format(format) ?? ""
@@ -26,28 +22,6 @@ export default function ClockWidget({ placement, monitor, config }: Props) {
     1000,
     () => GLib.DateTime.new_now_local(),
   )
-  const [calendarOpen, setCalendarOpen] = createState(false)
-  const [triggerButton, setTriggerButton] = createState<Gtk.Widget | null>(null)
-  const calendarDropdownId = nextCalendarDropdownId++
-
-  if (config.dropdown.enabled) {
-    const mountedCalendarDropdown = (
-      <AttachedDropdown
-        name={`calendar-menu-${calendarDropdownId}`}
-        placement={placement}
-        monitor={monitor}
-        trigger={triggerButton}
-        open={calendarOpen}
-        onRequestClose={() => setCalendarOpen(false)}
-        align={config.dropdown.align}
-        gap={config.dropdown.gap}
-      >
-        <CalendarDropdownContent currentTime={currentTime} />
-      </AttachedDropdown>
-    )
-
-    void mountedCalendarDropdown
-  }
 
   const horizontalClock = (
     <label label={currentTime((time) => formatTime(time, config.display.horizontal))} />
@@ -55,37 +29,30 @@ export default function ClockWidget({ placement, monitor, config }: Props) {
 
   const verticalClock = (
     <box
-      class="clock-display orientation-vertical"
+      class="widget-clock-display orientation-vertical is-vertical"
       orientation={Gtk.Orientation.VERTICAL}
       spacing={0}
       hexpand={placement.isVertical}
       halign={Gtk.Align.CENTER}
     >
-      <label class="clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.top))} />
-      <label class="clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.middle))} />
-      <label class="clock-meridiem" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.bottom))} />
+      <label class="widget-clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.top))} />
+      <label class="widget-clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.middle))} />
+      <label class="widget-clock-meridiem" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.bottom))} />
     </box>
   )
 
   return (
-    <Button
-      class={`clock-button orientation-${placement.orientation}`}
+    <DropdownButton
+      buttonClass={`widget-clock-button orientation-${placement.orientation} is-${placement.orientation}`}
       hexpand={placement.isVertical}
       halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
-      $={config.dropdown.enabled
-        ? (self) => {
-            setTriggerButton(self)
-            self.connect("destroy", () => {
-              setTriggerButton(null)
-            })
-          }
-        : undefined}
-      execPrimary={config.dropdown.enabled
-        ? () => setCalendarOpen(!calendarOpen())
-        : undefined}
+      placement={placement}
+      monitor={monitor}
+      dropdownName={`calendar-menu-${monitor.connector ?? "monitor"}`}
+      dropdown={config.dropdown}
+      renderDropdownContent={() => <CalendarDropdownContent currentTime={currentTime} />}
     >
       {placement.isVertical ? verticalClock : horizontalClock}
-    </Button>
+    </DropdownButton>
   )
 }
-

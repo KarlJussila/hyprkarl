@@ -82,7 +82,7 @@ export default function Switch({
 
   return (
     <button
-      class={`switch-button ${className}`.trim()}
+      class={`widget-button widget-switch-button ${className}`.trim()}
       hexpand={hexpand}
       halign={halign}
       onClicked={() => onToggle?.(!active())}
@@ -90,7 +90,7 @@ export default function Switch({
       <drawingarea
         contentWidth={totalWidth}
         contentHeight={totalHeight}
-        class={active() ? "switch active" : "switch"}
+        class={active() ? "switch-control is-active" : "switch-control"}
         halign={Gtk.Align.CENTER}
         $={(self) => {
           drawingArea = self
@@ -122,12 +122,12 @@ export default function Switch({
               return color
             }
 
-            const bg = getColor("switch-bg")
-            const fg = getColor("switch-fg")
+            const bg = getColor("switch-surface")
+            const fg = getColor("switch-glyph")
             const trackOff = getColor("switch-track")
-            const trackOn = getColor("switch-track active")
+            const trackOn = getColor("switch-track is-active")
             const borderOff = getColor("switch-border")
-            const borderOn = getColor("switch-border active")
+            const borderOn = getColor("switch-border is-active")
             const trackColor = interpolateRGBA(trackOff, trackOn, animationProgress)
             const borderColor = interpolateRGBA(borderOff, borderOn, animationProgress)
             const thumbX = interpolate(CANVAS_MARGIN, horizontalWidth - metrics.thumbSize - CANVAS_MARGIN, animationProgress)
@@ -214,4 +214,3 @@ export default function Switch({
     </button>
   )
 }
-

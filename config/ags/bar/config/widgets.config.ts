@@ -1,6 +1,7 @@
 import type { BarWidgetDefinitions } from "../configuration"
 
 // Edit this file to change widget behavior without touching rendering code.
+// Keep this file focused on high-level behavior and content, not low-level drawing metrics.
 const widgetDefinitions = {
   menu: {
     kind: "menu",
@@ -51,17 +52,6 @@ const widgetDefinitions = {
     kind: "caffeine",
     glyph: "",
     command: "hyprkarl-caffeine",
-    switch: {
-      thumbSize: 16,
-      trackHeight: 12,
-      trackLength: 24,
-      thumbPadding: 7,
-      glyphOffsetX: 0,
-      glyphOffsetY: 0,
-      borderWidth: 2,
-      fontSize: 8,
-      fontFamily: "JetBrains Mono Nerd Font Propo",
-    },
   },
 
   battery: {
@@ -73,18 +63,7 @@ const widgetDefinitions = {
       align: "center",
       gap: 0,
     },
-    indicator: {
-      width: 16,
-      height: 10,
-      borderWidth: 2,
-      terminalWidth: 3,
-      terminalHeightRatio: 0.4,
-      chargingGlyph: "󱐋",
-      chargingGlyphFontSize: 8,
-      chargingGlyphFontFamily: "JetBrains Mono Nerd Font Propo",
-    },
   },
 } satisfies BarWidgetDefinitions
 
 export default widgetDefinitions
-

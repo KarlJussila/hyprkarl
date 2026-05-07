@@ -28,7 +28,7 @@ export default function ConfigErrorBar({ edge, error, monitor }: Props) {
     <window
       visible
       name="bar"
-      class={`Bar bar-config-error ${placementClasses(placement)}`}
+      class={`Bar bar-shell bar-config-error ${placementClasses(placement)}`}
       gdkmonitor={monitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={placement.window.anchor}
@@ -36,11 +36,11 @@ export default function ConfigErrorBar({ edge, error, monitor }: Props) {
       tooltipText={error.message}
     >
       <box
-        class={`bar-config-error-layout ${placementClasses(placement)}`}
+        class={`bar-config-error-layout bar-layout-root ${placementClasses(placement)}`}
         orientation={placement.layoutOrientation}
       >
         <box
-          class={`bar-config-error-item orientation-${placement.orientation}`}
+          class={`bar-config-error-item config-error-surface orientation-${placement.orientation} is-${placement.orientation}`}
           orientation={itemOrientation}
           spacing={placement.isVertical ? 4 : 8}
           hexpand={!placement.isVertical}

@@ -14,7 +14,7 @@ export default function MenuWidget({ orientation, config }: Props) {
 
   return (
     <Button
-      class="menu-button"
+      class="widget-menu-button"
       hexpand={isVertical}
       halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       execPrimary={() => execAsync(config.commands.primary).catch(() => {})}
@@ -22,10 +22,13 @@ export default function MenuWidget({ orientation, config }: Props) {
         ? () => execAsync(config.commands.secondary!).catch(() => {})
         : undefined}
     >
-      <box hexpand={isVertical} halign={Gtk.Align.CENTER}>
-        <label xalign={0.5} label={config.icon} />
+      <box
+        class="widget-menu-content"
+        hexpand={isVertical}
+        halign={Gtk.Align.CENTER}
+      >
+        <label class="widget-menu-glyph" xalign={0.5} label={config.icon} />
       </box>
     </Button>
   )
 }
-

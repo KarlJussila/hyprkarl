@@ -22,9 +22,14 @@ function workspaceButtonClass({
   return createComputed(() => {
     const empty = typeof isEmpty === "boolean" ? isEmpty : isEmpty()
     const active = isActive()
-    const classes = ["workspace-button", `orientation-${orientation}`, "segmented-group-item"]
-    if (empty) classes.push("workspace-empty")
-    if (active) classes.push("workspace-active")
+    const classes = [
+      "widget-workspace-button",
+      "widget-group-item",
+      `orientation-${orientation}`,
+      `is-${orientation}`,
+    ]
+    if (empty) classes.push("is-empty")
+    if (active) classes.push("is-active")
     return classes.join(" ")
   })
 }
@@ -48,6 +53,7 @@ export default function WorkspaceButton({
       execPrimary={() => hyprland.dispatch("workspace", `${id}`)}
     >
       <box
+        class="widget-workspace-content"
         spacing={0}
         hexpand={orientation === "vertical"}
         halign={Gtk.Align.CENTER}
@@ -71,4 +77,3 @@ export default function WorkspaceButton({
     </Button>
   )
 }
-

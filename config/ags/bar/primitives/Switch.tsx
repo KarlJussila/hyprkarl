@@ -85,6 +85,8 @@ export default function Switch({
       class={`widget-button widget-switch-button ${className}`.trim()}
       hexpand={hexpand}
       halign={halign}
+      valign={Gtk.Align.CENTER}
+      vexpand={false}
       onClicked={() => onToggle?.(!active())}
     >
       <drawingarea
@@ -92,6 +94,8 @@ export default function Switch({
         contentHeight={totalHeight}
         class={active() ? "switch-control is-active" : "switch-control"}
         halign={Gtk.Align.CENTER}
+        valign={Gtk.Align.CENTER}
+        vexpand={false}
         $={(self) => {
           drawingArea = self
 

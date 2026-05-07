@@ -2,7 +2,7 @@ import type { BarLayoutConfig } from "../configuration"
 
 // Edit this file to rearrange the bar or move it to another screen edge.
 const layoutConfig = {
-  edge: "right",
+  edge: "top",
 
   start: [
     "menu",

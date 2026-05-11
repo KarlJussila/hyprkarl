@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""Show the GTK app chooser dialog for a file and launch the chosen app."""
+import sys
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gio, Gtk, GLib
+
+GLib.set_prgname("hyprkarl-dialog")
+GLib.set_application_name("Open With")
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        return 1
+
+    file = Gio.File.new_for_path(sys.argv[1])
+    dialog = None
+
+    try:
+        info = file.query_info("standard::content-type", 0, None)
+        content_type = info.get_content_type()
+        if not content_type: return 1
+
+        dialog = Gtk.AppChooserDialog.new_for_content_type(None, 0, content_type)
+        if dialog.run() != Gtk.ResponseType.OK: return 1
+
+        app = dialog.get_app_info()
+        app.launch([file], None)
+        return 0
+    except Exception:
+        return 1
+    finally:
+        if dialog is not None:
+            dialog.destroy()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

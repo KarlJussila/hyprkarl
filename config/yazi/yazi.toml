@@ -1,3 +1,9 @@
+[[opener.open-with]]
+run    = "$HYPRKARL_PATH/bin/hyprkarl-open-with %s1"
+for    = "linux"
+orphan = true
+desc   = "Open with..."
+
 [[opener.set-wallpaper]]
 run  = "hyprkarl-wallpaper-add %s1"
 for  = "linux"
@@ -5,4 +11,8 @@ desc = "Set as wallpaper"
 
 [[open.prepend_rules]]
 mime = "image/*"
-use  = [ "open", "reveal", "set-wallpaper" ]
+use  = [ "open", "open-with", "reveal", "set-wallpaper" ]
+
+[[open.append_rules]]
+url = "*"
+use = [ "open", "open-with" ]

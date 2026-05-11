@@ -1,137 +1,423 @@
 #!/usr/bin/env bash
 # gpu-info
-# Reports GPU usage and VRAM for the best available GPU.
+# Reports usage and VRAM for the strongest GPU that is already in use.
 #
 # Usage:
 #   gpu-info [card]
 #
-#   card   Optional card name (e.g. card1) to override auto-detection.
-#          If omitted, selects the best active discrete GPU automatically.
+#   card   Optional DRM card name (for example: card1).
+#          If omitted, auto-selects the best active GPU.
 #
 # Output:
 #   Waybar-compatible JSON: {"text":"<usage>","alt":"<usage> | <vram>","tooltip":"<name>"}
 
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+FUSER_BIN="$(command -v fuser || true)"
+NVIDIA_SMI_BIN="$(command -v nvidia-smi || true)"
 
-# --- Helpers -----------------------------------------------------------------
+NVIDIA_CACHE_CARD=""
+NVIDIA_CACHE_METRICS=""
 
-# Returns the vendor ID string for a given card
+json_escape() {
+    local value="$1"
+    value=${value//\\/\\\\}
+    value=${value//\"/\\\"}
+    value=${value//$'\n'/ }
+    value=${value//$'\r'/ }
+    value=${value//$'\t'/ }
+    printf '%s' "$value"
+}
+
+print_json() {
+    local text="$1"
+    local alt="$2"
+    local tooltip="$3"
+
+    printf '{"text":"%s","alt":"%s","tooltip":"%s"}\n' \
+        "$(json_escape "$text")" \
+        "$(json_escape "$alt")" \
+        "$(json_escape "$tooltip")"
+}
+
+list_cards() {
+    local card_path
+
+    shopt -s nullglob
+    for card_path in /sys/class/drm/card[0-9]*; do
+        [[ -r "${card_path}/device/vendor" ]] || continue
+        basename "$card_path"
+    done
+}
+
 get_vendor() {
     local card="$1"
     local vendor_file="/sys/class/drm/${card}/device/vendor"
-    [[ -r "$vendor_file" ]] || { echo "unknown"; return; }
+
+    [[ -r "$vendor_file" ]] || { printf 'unknown\n'; return; }
+
     case "$(< "$vendor_file")" in
-        0x1002) echo "amd" ;;
-        0x10de) echo "nvidia" ;;
-        0x8086) echo "intel" ;;
-        *)      echo "unknown" ;;
+        0x1002) printf 'amd\n' ;;
+        0x10de) printf 'nvidia\n' ;;
+        0x8086) printf 'intel\n' ;;
+        *)      printf 'unknown\n' ;;
     esac
 }
 
-# Returns VRAM total in bytes for a given card
-get_vram_total_bytes() {
-    local card="$1"
-    case "$(get_vendor "$card")" in
-        amd|intel)
-            local f="/sys/class/drm/${card}/device/mem_info_vram_total"
-            [[ -r "$f" ]] && echo "$(< "$f")" || echo 0
-            ;;
-        nvidia)
-            command -v nvidia-smi &>/dev/null || { echo 0; return; }
-            nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits 2>/dev/null \
-                | head -1 | tr -d ' ' | awk '{print $1 * 1048576}'
-            ;;
-        *) echo 0 ;;
-    esac
-}
-
-# Returns the PCI slot for a given card (e.g. "03:00.0")
-get_pci_slot() {
+get_pci_addr() {
     local card="$1"
     local device_path
+
     device_path=$(readlink -f "/sys/class/drm/${card}/device" 2>/dev/null) || return 1
-    basename "$device_path" | sed 's/^0000://'
+    basename "$device_path"
 }
 
-# Returns true if the card has an active kernel driver
-is_active() {
+get_pci_slot() {
     local card="$1"
-    local slot
-    slot=$(get_pci_slot "$card")
-    [[ -z "$slot" ]] && return 1
-    lspci -v -s "$slot" 2>/dev/null | grep -q "Kernel driver in use:"
+    local addr
+
+    addr=$(get_pci_addr "$card") || return 1
+    printf '%s\n' "${addr#0000:}"
 }
 
-# Returns the best human-readable name for a card
+normalize_pci_addr() {
+    local addr="${1,,}"
+
+    addr="${addr#00000000:}"
+    addr="${addr#0000:}"
+    printf '%s\n' "$addr"
+}
+
+is_boot_vga() {
+    local card="$1"
+    local file="/sys/class/drm/${card}/device/boot_vga"
+
+    [[ -r "$file" && "$(< "$file")" == "1" ]]
+}
+
+get_runtime_status() {
+    local card="$1"
+    local file="/sys/class/drm/${card}/device/power/runtime_status"
+
+    [[ -r "$file" ]] || { printf 'unknown\n'; return; }
+    printf '%s\n' "$(< "$file")"
+}
+
+get_dri_nodes() {
+    local card="$1"
+    local render_node
+
+    [[ -e "/dev/dri/${card}" ]] && printf '/dev/dri/%s\n' "$card"
+
+    shopt -s nullglob
+    for render_node in "/sys/class/drm/${card}/device/drm"/renderD*; do
+        printf '/dev/dri/%s\n' "$(basename "$render_node")"
+    done
+}
+
+has_dri_clients() {
+    local card="$1"
+    local node
+
+    [[ -n "$FUSER_BIN" ]] || return 1
+
+    while IFS= read -r node; do
+        [[ -e "$node" ]] || continue
+        "$FUSER_BIN" "$node" >/dev/null 2>&1 && return 0
+    done < <(get_dri_nodes "$card")
+
+    return 1
+}
+
 get_gpu_name() {
     local card="$1"
-    # Try sysfs product_name first
     local product_file="/sys/class/drm/${card}/device/product_name"
+    local slot line
+
     if [[ -r "$product_file" ]]; then
-        local name
-        name=$(< "$product_file")
-        [[ -n "$name" ]] && { echo "$name"; return; }
+        line=$(< "$product_file")
+        [[ -n "$line" ]] && { printf '%s\n' "$line"; return; }
     fi
-    # Fall back to lspci device string, extracting the part in brackets
-    local slot
-    slot=$(get_pci_slot "$card")
-    [[ -z "$slot" ]] && { echo "Unknown GPU"; return; }
-    lspci -s "$slot" 2>/dev/null \
-        | grep -oP '\[.*?\]' \
-        | head -1 \
-        | tr -d '[]' \
-        || echo "Unknown GPU"
+
+    slot=$(get_pci_slot "$card") || { printf 'Unknown GPU\n'; return; }
+    line=$(lspci -s "$slot" 2>/dev/null | sed -E 's/^[^ ]+ .*: //; s/ \[[0-9a-fA-F]{4}:[0-9a-fA-F]{4}\]//; s/ \(rev .*\)$//')
+    [[ -n "$line" ]] && printf '%s\n' "$line" || printf 'Unknown GPU\n'
 }
 
-# Selects the best active discrete GPU, returns card name (e.g. "card1")
-select_best_card() {
-    local best_card=""
-    local best_vram=0
-    local min_discrete_vram=$(( 256 * 1024 * 1024 )) # 256 MiB threshold
+get_sysfs_vram_total_bytes() {
+    local card="$1"
+    local file="/sys/class/drm/${card}/device/mem_info_vram_total"
 
-    for card_path in /sys/class/drm/card[0-9]*; do
-        local card
-        card=$(basename "$card_path")
-        [[ -e "/sys/class/drm/${card}/device/vendor" ]] || continue
-        is_active "$card" || continue
+    [[ -r "$file" ]] || return 1
+    printf '%s\n' "$(< "$file")"
+}
 
-        local vram
-        vram=$(get_vram_total_bytes "$card")
-        (( vram < min_discrete_vram )) && continue
-        (( vram > best_vram )) && {
-            best_vram=$vram
-            best_card=$card
-        }
+get_sysfs_vram_used_bytes() {
+    local card="$1"
+    local file="/sys/class/drm/${card}/device/mem_info_vram_used"
+
+    [[ -r "$file" ]] || return 1
+    printf '%s\n' "$(< "$file")"
+}
+
+get_nvidia_metrics() {
+    local card="$1"
+    local slot bus_id util used total line
+
+    [[ -n "$NVIDIA_SMI_BIN" ]] || return 1
+
+    if [[ "$card" == "$NVIDIA_CACHE_CARD" && -n "$NVIDIA_CACHE_METRICS" ]]; then
+        printf '%s\n' "$NVIDIA_CACHE_METRICS"
+        return 0
+    fi
+
+    slot=$(normalize_pci_addr "$(get_pci_slot "$card")") || return 1
+
+    while IFS=',' read -r bus_id util used total; do
+        bus_id=$(normalize_pci_addr "${bus_id// /}")
+        [[ "$bus_id" == "$slot" ]] || continue
+
+        util=${util// /}
+        used=${used// /}
+        total=${total// /}
+        line="${util}|${used}|${total}"
+
+        NVIDIA_CACHE_CARD="$card"
+        NVIDIA_CACHE_METRICS="$line"
+        printf '%s\n' "$line"
+        return 0
+    done < <("$NVIDIA_SMI_BIN" --query-gpu=pci.bus_id,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits 2>/dev/null)
+
+    return 1
+}
+
+get_nvidia_metric_field() {
+    local card="$1"
+    local index="$2"
+    local metrics field1 field2 field3
+
+    metrics=$(get_nvidia_metrics "$card") || return 1
+    IFS='|' read -r field1 field2 field3 <<< "$metrics"
+
+    case "$index" in
+        1) printf '%s\n' "$field1" ;;
+        2) printf '%s\n' "$field2" ;;
+        3) printf '%s\n' "$field3" ;;
+        *) return 1 ;;
+    esac
+}
+
+get_vram_total_bytes() {
+    local card="$1"
+    local mib
+
+    if get_sysfs_vram_total_bytes "$card"; then
+        return 0
+    fi
+
+    if [[ "$(get_vendor "$card")" == "nvidia" ]]; then
+        mib=$(get_nvidia_metric_field "$card" 3) || return 1
+        [[ "$mib" =~ ^[0-9]+([.][0-9]+)?$ ]] || return 1
+        awk -v mib="$mib" 'BEGIN { printf "%.0f\n", mib * 1048576 }'
+        return 0
+    fi
+
+    return 1
+}
+
+get_vram_used_bytes() {
+    local card="$1"
+    local mib
+
+    if get_sysfs_vram_used_bytes "$card"; then
+        return 0
+    fi
+
+    if [[ "$(get_vendor "$card")" == "nvidia" ]]; then
+        mib=$(get_nvidia_metric_field "$card" 2) || return 1
+        [[ "$mib" =~ ^[0-9]+([.][0-9]+)?$ ]] || return 1
+        awk -v mib="$mib" 'BEGIN { printf "%.0f\n", mib * 1048576 }'
+        return 0
+    fi
+
+    return 1
+}
+
+get_vram_text() {
+    local card="$1"
+    local used total
+
+    used=$(get_vram_used_bytes "$card") || { printf 'N/A\n'; return; }
+    total=$(get_vram_total_bytes "$card") || { printf 'N/A\n'; return; }
+    [[ "$used" =~ ^[0-9]+$ && "$total" =~ ^[0-9]+$ && "$total" -gt 0 ]] || { printf 'N/A\n'; return; }
+
+    awk -v used="$used" -v total="$total" 'BEGIN {
+        printf "%.1f/%.1f GiB\n", used / 1073741824, total / 1073741824
+    }'
+}
+
+get_sysfs_usage_percent() {
+    local card="$1"
+    local file="/sys/class/drm/${card}/device/gpu_busy_percent"
+    local pct
+
+    [[ -r "$file" ]] || return 1
+    pct=$(< "$file")
+    [[ "$pct" =~ ^[0-9]+$ ]] || return 1
+    printf '%s%%\n' "$pct"
+}
+
+get_engine_usage_percent() {
+    local card="$1"
+    local file value
+    local sample_seconds="0.20"
+    local window_ns="200000000"
+    local total_before=0
+    local total_after=0
+    local delta
+    local busy_files=()
+
+    mapfile -t busy_files < <(find "/sys/class/drm/${card}/device" -type f -path '*/engines/*/busy' 2>/dev/null | sort)
+    ((${#busy_files[@]} > 0)) || return 1
+
+    for file in "${busy_files[@]}"; do
+        value=$(< "$file")
+        [[ "$value" =~ ^[0-9]+$ ]] || continue
+        ((total_before += value))
     done
 
-    echo "$best_card"
+    sleep "$sample_seconds"
+
+    for file in "${busy_files[@]}"; do
+        value=$(< "$file")
+        [[ "$value" =~ ^[0-9]+$ ]] || continue
+        ((total_after += value))
+    done
+
+    delta=$((total_after - total_before))
+
+    awk -v delta="$delta" -v window_ns="$window_ns" 'BEGIN {
+        pct = (delta / window_ns) * 100
+        if (pct < 0) pct = 0
+        if (pct > 100) pct = 100
+        printf "%.0f%%\n", pct
+    }'
 }
 
-# --- Main --------------------------------------------------------------------
+get_nvidia_usage_percent() {
+    local card="$1"
+    local util
 
-card="${1:-}"
+    util=$(get_nvidia_metric_field "$card" 1) || return 1
+    [[ "$util" =~ ^[0-9]+$ ]] || return 1
+    printf '%s%%\n' "$util"
+}
 
-if [[ -n "$card" ]]; then
-    [[ -e "/sys/class/drm/${card}/device/vendor" ]] || {
-        echo '{"text":"N/A","alt":"N/A","tooltip":"No GPU found"}'
+get_usage_percent() {
+    local card="$1"
+    local vendor
+
+    if get_sysfs_usage_percent "$card"; then
+        return 0
+    fi
+
+    if get_engine_usage_percent "$card"; then
+        return 0
+    fi
+
+    vendor=$(get_vendor "$card")
+    if [[ "$vendor" == "nvidia" ]] && get_nvidia_usage_percent "$card"; then
+        return 0
+    fi
+
+    printf 'N/A\n'
+}
+
+build_alt_text() {
+    local usage="$1"
+    local vram="$2"
+
+    if [[ "$usage" != "N/A" && "$vram" != "N/A" ]]; then
+        printf '%s | %s\n' "$usage" "$vram"
+    elif [[ "$vram" != "N/A" ]]; then
+        printf '%s\n' "$vram"
+    else
+        printf '%s\n' "$usage"
+    fi
+}
+
+select_best_card() {
+    local best_card=""
+    local best_has_clients=-1
+    local best_vram=-1
+    local best_boot_vga=-1
+    local card
+    local has_clients=0
+    local boot_vga=0
+    local runtime_status
+    local vram
+
+    while IFS= read -r card; do
+        has_clients=0
+        boot_vga=0
+
+        runtime_status=$(get_runtime_status "$card")
+        [[ "$runtime_status" == "active" || "$runtime_status" == "unsupported" ]] || continue
+
+        has_dri_clients "$card" && has_clients=1
+
+        vram=$(get_vram_total_bytes "$card" 2>/dev/null || true)
+        vram=${vram:-0}
+        is_boot_vga "$card" && boot_vga=1
+
+        if [[ -z "$best_card" ]] \
+            || ((has_clients > best_has_clients)) \
+            || ((has_clients == best_has_clients && vram > best_vram)) \
+            || ((has_clients == best_has_clients && vram == best_vram && boot_vga > best_boot_vga)); then
+            best_card="$card"
+            best_has_clients=$has_clients
+            best_vram=$vram
+            best_boot_vga=$boot_vga
+        fi
+    done < <(list_cards)
+
+    if [[ -n "$best_card" ]]; then
+        printf '%s\n' "$best_card"
+        return 0
+    fi
+
+    while IFS= read -r card; do
+        if is_boot_vga "$card"; then
+            printf '%s\n' "$card"
+            return 0
+        fi
+    done < <(list_cards)
+
+    list_cards | head -1
+}
+
+main() {
+    local card="${1:-}"
+    local usage vram alt_text name
+
+    if [[ -n "$card" ]]; then
+        [[ -r "/sys/class/drm/${card}/device/vendor" ]] || {
+            print_json "N/A" "N/A" "No GPU found"
+            exit 1
+        }
+    else
+        card=$(select_best_card)
+    fi
+
+    [[ -n "$card" ]] || {
+        print_json "N/A" "N/A" "No GPU found"
         exit 1
     }
-else
-    card=$(select_best_card)
-fi
 
-if [[ -z "$card" ]]; then
-    echo '{"text":"N/A","alt":"N/A","tooltip":"No GPU found"}'
-    exit 1
-fi
+    usage=$(get_usage_percent "$card")
+    vram=$(get_vram_text "$card")
+    alt_text=$(build_alt_text "$usage" "$vram")
+    name=$(get_gpu_name "$card")
 
-vendor=$(get_vendor "$card")
-vendor_script="${SCRIPT_DIR}/gpu-info-${vendor}"
+    print_json "$usage" "$alt_text" "$name"
+}
 
-if [[ ! -x "$vendor_script" ]]; then
-    echo '{"text":"N/A","alt":"N/A","tooltip":"Unsupported vendor: '"${vendor}"'"}'
-    exit 1
-fi
-
-name=$(get_gpu_name "$card")
-"$vendor_script" "$card" "$name"
+main "$@"

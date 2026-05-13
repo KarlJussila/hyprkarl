@@ -11,7 +11,7 @@ import {
 
 const caffeineDefaults: Omit<NormalizedCaffeineWidgetConfig, "kind"> = {
   glyph: "",
-  command: "hyprkarl-caffeine",
+  command: "hk-caffeine",
   switch: {
     thumbSize: 16,
     trackHeight: 12,

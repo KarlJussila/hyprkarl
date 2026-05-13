@@ -51,7 +51,7 @@ const widgetDefinitions = {
   caffeine: {
     kind: "caffeine",
     glyph: "",
-    command: "hyprkarl-caffeine",
+    command: "hk-caffeine",
   },
 
   battery: {

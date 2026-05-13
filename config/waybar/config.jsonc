@@ -34,7 +34,7 @@
   "custom/hyprkarl": {
     "format": "  ",
     "tooltip": false,
-    "on-click": "hyprkarl-menu",
+    "on-click": "hk-menu",
     "on-click-right": "xdg-terminal-exec"
   }, 
 
@@ -91,7 +91,7 @@
     "format-disabled": " 󰂲 ",
     "format-connected": "  ",
     "tooltip-format": "Devices connected: {num_connections}",
-    "on-click": "hyprkarl-launch-bluetooth"
+    "on-click": "hk-launch-bluetooth"
   },
   "network": {
     "format-icons": [" 󰤯 ", " 󰤟 ", " 󰤢 ", " 󰤥 ", " 󰤨 "],
@@ -104,7 +104,7 @@
     "tooltip-format-disconnected": "Disconnected",
     "interval": 3,
     "spacing": 1,
-    "on-click": "hyprkarl-launch-wifi"
+    "on-click": "hk-launch-wifi"
   },
 
   // Audio
@@ -119,7 +119,7 @@
   },
   "pulseaudio#icon": {
     "format": "{icon}",
-    "on-click": "hyprkarl-launch-audio",
+    "on-click": "hk-launch-audio",
     "on-click-right": "pamixer -t",
     "scroll-step": 5,
     "format-muted": "  ",
@@ -130,7 +130,7 @@
   },
   "pulseaudio": {
     "format": "{volume}%",
-    "on-click": "hyprkarl-launch-audio",
+    "on-click": "hk-launch-audio",
     "on-click-right": "pamixer -t",
     "scroll-step": 5
   },
@@ -227,7 +227,7 @@
 
   // Recording indicator
   "custom/screenrecording-indicator": {
-    "on-click": "hyprkarl-record-screen",
+    "on-click": "hk-record-screen",
     "exec": "$HYPRKARL_PATH/scripts/waybar/check-recording.sh",
     "signal": 8,
     "return-type": "json"
@@ -235,7 +235,7 @@
   
   // Idle inhibitor
   "custom/caffeine": {
-    "on-click": "hyprkarl-caffeine",
+    "on-click": "hk-caffeine",
     "exec": "$HYPRKARL_PATH/scripts/waybar/check-caffeine.sh",
     "signal": 9,
     "return-type": "json"

@@ -3,6 +3,7 @@ import { type BarEdge, type DropdownAlign } from "../../configuration"
 
 export type DropdownSize = { width: number; height: number }
 export type DropdownPosition = { x: number; y: number; edgeClass: string }
+export type WidgetBounds = { x: number; y: number; width: number; height: number }
 
 export function measureWidget(widget: Gtk.Widget | null): DropdownSize {
   if (!widget) {
@@ -18,19 +19,24 @@ export function measureWidget(widget: Gtk.Widget | null): DropdownSize {
   }
 }
 
-export function rootRelativeAnchorPosition({
+export function rootRelativeAnchorBounds({
   anchorWidget,
   rootWidget,
 }: {
   anchorWidget: Gtk.Widget
   rootWidget: Gtk.Widget
 }) {
-  const [translated, anchorX, anchorY] = anchorWidget.translate_coordinates(rootWidget, 0, 0)
-  if (!translated) {
+  const [resolved, bounds] = anchorWidget.compute_bounds(rootWidget)
+  if (!resolved) {
     return null
   }
 
-  return { anchorX, anchorY }
+  return {
+    x: bounds.origin.x,
+    y: bounds.origin.y,
+    width: bounds.size.width,
+    height: bounds.size.height,
+  } satisfies WidgetBounds
 }
 
 function alignDropdownX({
@@ -116,7 +122,8 @@ function frameSnapClass({
 export function computeDropdownPosition({
   edge,
   align,
-  anchorAllocation,
+  anchorWidth,
+  anchorHeight,
   anchorX,
   anchorY,
   dropdownSize,
@@ -126,7 +133,8 @@ export function computeDropdownPosition({
 }: {
   edge: BarEdge
   align: DropdownAlign
-  anchorAllocation: Gtk.Allocation
+  anchorWidth: number
+  anchorHeight: number
   anchorX: number
   anchorY: number
   dropdownSize: DropdownSize
@@ -135,23 +143,23 @@ export function computeDropdownPosition({
   monitorHeight: number
 }) {
   const unclampedX = edge === "left"
-    ? anchorX + anchorAllocation.width + gap
+    ? anchorX + anchorWidth + gap
     : edge === "right"
       ? anchorX - dropdownSize.width - gap
       : alignDropdownX({
           align,
           anchorX,
-          anchorWidth: anchorAllocation.width,
+          anchorWidth,
           dropdownWidth: dropdownSize.width,
         })
   const unclampedY = edge === "top"
-    ? anchorY + anchorAllocation.height + gap
+    ? anchorY + anchorHeight + gap
     : edge === "bottom"
       ? anchorY - dropdownSize.height - gap
       : alignDropdownY({
           align,
           anchorY,
-          anchorHeight: anchorAllocation.height,
+          anchorHeight,
           dropdownHeight: dropdownSize.height,
         })
 
@@ -166,4 +174,3 @@ export function computeDropdownPosition({
     edgeClass: frameSnapClass({ edge, gap, x, y, maxX, maxY }),
   } satisfies DropdownPosition
 }
-

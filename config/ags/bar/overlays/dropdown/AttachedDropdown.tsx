@@ -7,7 +7,7 @@ import DropdownWindow, { type DropdownWindowProps } from "./DropdownWindow"
 import {
   computeDropdownPosition,
   measureWidget,
-  rootRelativeAnchorPosition,
+  rootRelativeAnchorBounds,
 } from "./dropdownGeometry"
 
 type Props = Omit<DropdownWindowProps, "position" | "frameSnapClass" | "revealTrigger" | "onReveal" | "onFrameReady"> & {
@@ -59,24 +59,28 @@ export default function AttachedDropdown({
 
     const rootWidget = triggerWidget.get_root()
     if (!(rootWidget instanceof Gtk.Widget)) return
+    const rootCoordinateWidget = rootWidget instanceof Gtk.Window
+      ? (rootWidget.get_child() ?? rootWidget)
+      : rootWidget
 
     const rootOrigin = placement.window.origin({
       monitorWidth: monitorGeometry.width,
       monitorHeight: monitorGeometry.height,
-      rootAllocation: rootWidget.get_allocation(),
+      rootAllocation: rootCoordinateWidget.get_allocation(),
     })
-    const rootRelativePosition = rootRelativeAnchorPosition({
+    const rootRelativeBounds = rootRelativeAnchorBounds({
       anchorWidget: triggerWidget,
-      rootWidget,
+      rootWidget: rootCoordinateWidget,
     })
-    if (!rootRelativePosition) return
+    if (!rootRelativeBounds) return
 
     const nextDropdownPosition = computeDropdownPosition({
       edge: placement.edge,
       align,
-      anchorAllocation: triggerWidget.get_allocation(),
-      anchorX: rootOrigin.x + rootRelativePosition.anchorX,
-      anchorY: rootOrigin.y + rootRelativePosition.anchorY,
+      anchorWidth: rootRelativeBounds.width,
+      anchorHeight: rootRelativeBounds.height,
+      anchorX: rootOrigin.x + rootRelativeBounds.x,
+      anchorY: rootOrigin.y + rootRelativeBounds.y,
       dropdownSize: currentDropdownSize(),
       gap,
       monitorWidth: monitorGeometry.width,

@@ -59,6 +59,7 @@ test("normalizes built-in widget defaults from data-only config", () => {
   const battery = resolved.widgets.battery as NormalizedBatteryWidgetConfig
 
   assert.equal(resolved.edge, "right")
+  assert.equal(resolved.showCornerCurves, true)
   assert.equal(menu.icon, "")
   assert.equal(menu.commands.primary, "hyprkarl-menu")
   assert.equal(workspaces.mode, "dynamic")
@@ -76,6 +77,29 @@ test("normalizes built-in widget defaults from data-only config", () => {
   })
   assert.equal(battery.lowThreshold, 0.15)
   assert.equal(battery.indicator.chargingGlyph, "󱐋")
+})
+
+test("allows layout config to disable decorative corner curves independently", () => {
+  const layout = {
+    edge: "top",
+    showCornerCurves: false,
+    start: ["menu"],
+    center: {
+      start: [],
+      anchor: "clock",
+      end: [],
+    },
+    end: [],
+  } satisfies BarLayoutConfig
+
+  const widgets = {
+    menu: { kind: "menu" },
+    clock: { kind: "clock" },
+  } satisfies BarWidgetDefinitions
+
+  const resolved = normalizeBarConfiguration(layout, widgets)
+
+  assert.equal(resolved.showCornerCurves, false)
 })
 
 test("rejects missing widget references in the layout", () => {
@@ -173,6 +197,35 @@ test("allows center side widgets without a center anchor", () => {
   assert.equal(resolved.layout.center.anchor, undefined)
   assert.deepEqual(resolved.layout.center.start, ["clock"])
   assert.deepEqual(resolved.layout.center.end, [])
+})
+
+test("rejects invalid layout-level corner curve toggle values", () => {
+  const layout = {
+    edge: "top",
+    showCornerCurves: "sometimes",
+    start: ["menu"],
+    center: {
+      start: [],
+      anchor: "clock",
+      end: [],
+    },
+    end: [],
+  } as unknown as BarLayoutConfig
+
+  const widgets = {
+    menu: { kind: "menu" },
+    clock: { kind: "clock" },
+  } satisfies BarWidgetDefinitions
+
+  const error = expectBarConfigError(() => normalizeBarConfiguration(layout, widgets))
+
+  assert.equal(error.sourceFile, BAR_LAYOUT_SOURCE_FILE)
+  assert.equal(error.path, "showCornerCurves")
+  assert.equal(error.message, "must be true or false")
+  assert.equal(
+    formatBarConfigError(error),
+    "Bar config error in layout.config.ts at showCornerCurves: must be true or false",
+  )
 })
 
 test("rejects unknown widget kinds at normalization time", () => {

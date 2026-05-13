@@ -13,6 +13,7 @@ export type DropdownAlign = "start" | "center" | "end"
 
 export type BarLayoutConfig = {
   edge: BarEdge
+  showCornerCurves?: boolean
   start: Array<string>
   center: {
     start: Array<string>
@@ -258,6 +259,7 @@ export type NormalizedWidgetConfigByKind = {
 
 export type ResolvedBarConfiguration = {
   edge: BarEdge
+  showCornerCurves: boolean
   layout: {
     start: Array<string>
     center: {

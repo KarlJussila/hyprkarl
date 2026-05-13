@@ -12,6 +12,7 @@ import {
   isRecord,
   layoutContext,
   normalizeBarEdge,
+  normalizeBoolean,
   normalizeLayoutWidgetId,
   normalizeOptionalLayoutWidgetId,
   indexContext,
@@ -25,6 +26,7 @@ type LayoutReference = {
 
 type ResolvedLayoutConfig = ResolvedBarConfiguration["layout"] & {
   edge: BarEdge
+  showCornerCurves: boolean
 }
 
 function normalizeLayoutIdList(path: string, value: unknown) {
@@ -49,6 +51,11 @@ function normalizeLayoutConfig(layoutConfig: BarLayoutConfig): ResolvedLayoutCon
 
   return {
     edge: normalizeBarEdge(rawLayout.edge),
+    showCornerCurves: normalizeBoolean(
+      layoutContext("showCornerCurves"),
+      rawLayout.showCornerCurves,
+      true,
+    ),
     start: normalizeLayoutIdList("start", rawLayout.start),
     center: {
       start: normalizeLayoutIdList("center.start", centerLayout.start),
@@ -147,6 +154,7 @@ export function normalizeBarConfiguration(
 
   return {
     edge: resolvedLayout.edge,
+    showCornerCurves: resolvedLayout.showCornerCurves,
     layout: {
       start: resolvedLayout.start,
       center: resolvedLayout.center,

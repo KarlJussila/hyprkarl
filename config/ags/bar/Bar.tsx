@@ -68,6 +68,7 @@ function ResolvedBar({
           $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
           class="bar-island-start"
           placement={placement}
+          showCornerCurves={resolvedBarConfiguration.showCornerCurves}
           side="start"
           halign={placement.island.start.halign}
           valign={placement.island.start.valign}
@@ -84,6 +85,7 @@ function ResolvedBar({
             class="bar-island-main"
             cssName="box"
             placement={placement}
+            showCornerCurves={resolvedBarConfiguration.showCornerCurves}
             halign={placement.island.center.halign}
             valign={placement.island.center.valign}
             hexpand={placement.island.center.hexpand}
@@ -99,6 +101,7 @@ function ResolvedBar({
           $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
           class="bar-island-end"
           placement={placement}
+          showCornerCurves={resolvedBarConfiguration.showCornerCurves}
           side="end"
           halign={placement.island.end.halign}
           valign={placement.island.end.valign}

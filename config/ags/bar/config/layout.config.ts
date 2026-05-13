@@ -1,8 +1,9 @@
 import type { BarLayoutConfig } from "../configuration"
 
-// Edit this file to rearrange the bar or move it to another screen edge.
+// Edit this file to rearrange the bar, move it to another screen edge, or toggle decorative corner curves.
 const layoutConfig = {
   edge: "top",
+  showCornerCurves: true,
 
   start: [
     "menu",
@@ -24,4 +25,3 @@ const layoutConfig = {
 } satisfies BarLayoutConfig
 
 export default layoutConfig
-

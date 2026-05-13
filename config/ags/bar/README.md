@@ -12,7 +12,7 @@ Advanced users:
 
 ## Start Here
 
-- `config/layout.config.ts`: move the bar and reorder widget IDs
+- `config/layout.config.ts`: move the bar, reorder widget IDs, and toggle decorative corner curves
 - `config/widgets.config.ts`: change labels, commands, visibility rules, dropdown settings, and other high-level behavior
 - `theme.scss`: change spacing, radii, typography, borders, and most visual styling through grouped public tokens
 
@@ -21,6 +21,7 @@ Advanced users:
 Move widgets:
 
 ```ts
+showCornerCurves: false,
 start: ["menu", "workspaces"],
 center: {
   start: [],
@@ -93,6 +94,7 @@ Common styling changes:
 
 - tighter buttons: lower `$button-pad-x`
 - rounder islands: raise `$radius`
+- hide only the decorative curve cutouts: set `showCornerCurves: false` in `layout.config.ts`
 - softer separators: change `$border`
 - bigger dropdown rows: raise `$dropdown-row-pad-y`
 - more obvious active workspace: change `$accent`

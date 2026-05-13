@@ -18,6 +18,7 @@ type BaseProps = {
   class?: string
   cssName?: string
   placement: BarPlacement
+  showCornerCurves: boolean
   halign?: Gtk.Align
   hexpand?: boolean
   valign?: Gtk.Align
@@ -56,7 +57,7 @@ function createBalancedSide({
   placement: BarPlacement
   side: "start" | "end"
   widgets: Array<JSX.Element>
-  corner: JSX.Element
+  corner: JSX.Element | null
 }) {
   const content = side === "start"
     ? (
@@ -112,6 +113,7 @@ function renderOuterIsland({
   class: className,
   cssName,
   placement,
+  showCornerCurves,
   $: setup,
   halign,
   hexpand,
@@ -120,7 +122,7 @@ function renderOuterIsland({
 }: OuterIslandProps) {
   const wrappedChildren = wrapIslandEntries(normalizeChildren(children), placement)
   markOuterIslandEdges(wrappedChildren, side)
-  const cornerCurve = createOuterCornerCurve(placement, side)
+  const cornerCurve = showCornerCurves ? createOuterCornerCurve(placement, side) : null
 
   return (
     <box
@@ -145,8 +147,9 @@ function renderCenterIsland({
   anchor,
   end,
   placement,
-  startCorner = createCenterStartCornerCurve(placement),
-  endCorner = createCenterEndCornerCurve(placement),
+  showCornerCurves,
+  startCorner,
+  endCorner,
   class: className,
   cssName,
   halign,
@@ -157,6 +160,12 @@ function renderCenterIsland({
 }: CenterIslandProps) {
   const startWidgets = wrapIslandEntries(normalizeChildren(start), placement)
   const endWidgets = wrapIslandEntries(normalizeChildren(end), placement)
+  const resolvedStartCorner = startCorner ?? (
+    showCornerCurves ? createCenterStartCornerCurve(placement) : null
+  )
+  const resolvedEndCorner = endCorner ?? (
+    showCornerCurves ? createCenterEndCornerCurve(placement) : null
+  )
 
   if (!anchor) {
     const centeredWidgets = [...startWidgets, ...endWidgets]
@@ -173,9 +182,9 @@ function renderCenterIsland({
         orientation={placement.layoutOrientation}
         $={setup}
       >
-        {startCorner}
+        {resolvedStartCorner}
         {centeredWidgets}
-        {endCorner}
+        {resolvedEndCorner}
       </box>
     )
   }
@@ -193,13 +202,13 @@ function renderCenterIsland({
     placement,
     side: "start",
     widgets: startWidgets,
-    corner: startCorner,
+    corner: resolvedStartCorner,
   })
   const endSide = createBalancedSide({
     placement,
     side: "end",
     widgets: endWidgets,
-    corner: endCorner,
+    corner: resolvedEndCorner,
   })
 
   sideSizeGroup.add_widget(startSide)

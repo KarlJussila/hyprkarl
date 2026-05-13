@@ -1,0 +1,14 @@
+#!/bin/bash
+# hk-launch-editor
+# Launch the default editor defined by $EDITOR (~/.config/uwsm/default).
+
+hk-cmd-present "$EDITOR" || EDITOR=nvim
+
+case "$EDITOR" in
+nvim | vim | nano | micro | hx | helix | fresh)
+  exec hk-launch-tui "$EDITOR" "$@"
+  ;;
+*)
+  exec setsid uwsm-app -- "$EDITOR" "$@"
+  ;;
+esac

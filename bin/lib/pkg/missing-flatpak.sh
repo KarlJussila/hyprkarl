@@ -1,0 +1,11 @@
+#!/bin/bash
+# Returns true if any listed Flatpaks are not installed,
+# or false if all are present.
+
+for app in "$@"; do
+  if ! flatpak info --system "$app" &>/dev/null; then
+    exit 0
+  fi
+done
+
+exit 1

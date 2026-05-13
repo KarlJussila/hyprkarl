@@ -1,5 +1,0 @@
-#!/bin/bash
-# hyprkarl-restart-hyprsunset
-# Restart the hyprsunset service
-
-hyprkarl-restart-app hyprsunset

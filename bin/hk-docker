@@ -1,0 +1,62 @@
+#!/bin/bash
+# hk-docker
+# Manage Docker setup and local Docker service stacks.
+#
+# Usage:
+#   hk-docker setup
+#   hk-docker install <service>
+#   hk-docker uninstall <service>
+#   hk-docker list
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/docker.sh"
+
+docker_usage() {
+  cat <<EOF
+Usage:
+  hk-docker setup
+  hk-docker install <service>
+  hk-docker uninstall <service>
+  hk-docker list
+EOF
+}
+
+action=${1:-}
+
+case "$action" in
+  setup)
+    if [[ $# -ne 1 ]]; then
+      docker_usage
+      exit 1
+    fi
+    docker_setup || exit 1
+    ;;
+  install)
+    if [[ $# -ne 2 ]]; then
+      docker_usage
+      exit 1
+    fi
+    docker_install_service "$2" || exit 1
+    ;;
+  uninstall)
+    if [[ $# -ne 2 ]]; then
+      docker_usage
+      exit 1
+    fi
+    docker_uninstall_service "$2" || exit 1
+    ;;
+  list)
+    if [[ $# -ne 1 ]]; then
+      docker_usage
+      exit 1
+    fi
+    service_ids || exit 1
+    exit 0
+    ;;
+  *)
+    docker_usage
+    exit 1
+    ;;
+esac
+
+hk-show-done

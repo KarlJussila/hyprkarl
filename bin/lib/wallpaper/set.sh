@@ -1,0 +1,23 @@
+#!/bin/bash
+# Set the current wallpaper.
+# Usage: hk-wallpaper set <wallpaper_filename>
+
+WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
+CURRENT_WALLPAPER_LINK="$HYPRKARL_PATH/config/hyprkarl/current/wallpaper"
+
+wallpaper_name="$1"
+
+if [[ -z "$wallpaper_name" ]]; then
+    echo "Usage: hk-wallpaper set <wallpaper_filename>" >&2
+    exit 1
+fi
+
+wallpaper_path="$WALLPAPER_DIR/$wallpaper_name"
+
+if [[ ! -f "$wallpaper_path" ]]; then
+    echo "Wallpaper not found: $wallpaper_path" >&2
+    exit 1
+fi
+
+ln -nsf "theme/wallpapers/$wallpaper_name" "$CURRENT_WALLPAPER_LINK"
+hyprctl hyprpaper wallpaper ",$wallpaper_path"

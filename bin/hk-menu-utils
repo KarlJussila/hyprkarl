@@ -1,0 +1,45 @@
+#!/bin/bash
+# hk-menu-utils
+# Menu for common utilities
+#
+# Usage:
+#   hk-menu-utils [--back <command> [args...]]
+#
+#   --back     Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+hyprkarl_parse_back_args "$@"
+hyprkarl_build_self_command "$0"
+
+CAFFEINE=" Caffeine"
+NIGHTLIGHT=" Nightlight"
+SCREEN_RECORD=" Screen Record"
+
+case "$(powerprofilesctl get)" in
+    "power-saver")    POWER_PROFILE_ICON="󰌪" ;;
+    "balanced")       POWER_PROFILE_ICON="󰗑" ;;
+    "performance")    POWER_PROFILE_ICON="󱐋" ;;
+    *)                POWER_PROFILE_ICON="󰗑" ;;
+esac
+POWER_PROFILE="$POWER_PROFILE_ICON Power Profile"
+
+CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Utilities" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$CAFFEINE")      hk-caffeine ;;
+    "$NIGHTLIGHT")    hk-nightlight ;;
+    "$SCREEN_RECORD") hk-record-screen ;;
+    "$POWER_PROFILE") hk-menu-power-profile --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "")               hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+esac

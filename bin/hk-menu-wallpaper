@@ -1,0 +1,35 @@
+#!/bin/bash
+# hk-menu-wallpaper
+# Submenu for wallpaper management
+#
+# Usage:
+#   hk-menu-wallpaper [--back <command> [args...]]
+#
+#   --back     Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+hyprkarl_parse_back_args "$@"
+
+SELECT="󰋹 Select"
+ADD=" Add"
+REMOVE=" Remove"
+
+CHOICE=$(echo -e "$SELECT\n$ADD\n$REMOVE" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Wallpaper" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$SELECT") hk-wallpaper set "$(hk-wallpaper select)" ;;
+    "$ADD")    hk-wallpaper add "$(hyprkarl_capture_terminal_output hk-select-picture)" ;;
+    "$REMOVE") hk-wallpaper remove "$(hk-wallpaper select '@urgent')" ;;
+    "")        hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+esac

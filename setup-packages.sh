@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # This script installs packages for the hyprkarl setup.
-# NOTE: It also removes some packages that are replaced with alternatives
+# NOTE: It also removes some packages that are replaced with alternatives.
+# Use yay consistently for AUR-backed installs and queries.
 
 # Install packages
 sudo pacman -S --needed --noconfirm \
@@ -13,7 +14,13 @@ sudo pacman -S --needed --noconfirm \
   mako \
   hyprpolkitagent \
   brightnessctl \
+  curl \
+  ffmpeg \
+  fzf \
+  imagemagick \
+  jq \
   nautilus \
+  playerctl \
   rofi \
   hyprshot \
   hyprpicker \
@@ -36,6 +43,10 @@ sudo pacman -S --needed --noconfirm \
   foot \
   gpu-screen-recorder \
   perl-image-exiftool \
+  v4l-utils \
+  wl-clipboard \
+  xkbcommon-tools \
+  ghostty \
   kvantum \
   kvantum-qt5 \
   qt6ct \
@@ -46,7 +57,7 @@ sudo pacman -S --needed --noconfirm \
   aylurs-gtk-shell \
   dart-sass
 
-paru -S --needed --noconfirm \
+yay -S --needed --noconfirm \
   xdg-terminal-exec \
   hyprshutdown \
   wifitui-bin \

@@ -1,0 +1,8 @@
+#!/bin/bash
+# List installed themes and format them nicely.
+
+{
+  find "$HYPRKARL_PATH/themes/" -mindepth 1 -maxdepth 1 -type d -printf '%f\n'
+} | sort -u | while read -r name; do
+  echo "$name" | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g'
+done

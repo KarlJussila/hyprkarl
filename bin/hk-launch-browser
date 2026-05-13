@@ -1,0 +1,33 @@
+#!/bin/bash
+# hk-launch-browser
+# Launches the default browser as defined by xdg-settings, automatically
+# translating --private into the correct private browsing flag for the browser.
+#
+# Usage:
+#   hk-launch-browser [--private] [args...]
+#
+#   --private   Open in private/incognito mode. Translated to the appropriate
+#               flag for the detected browser (--private-window for Firefox-based,
+#               --inprivate for Edge, --incognito for everything else).
+
+default_browser=$(xdg-settings get default-web-browser)
+browser_exec=$(sed -n 's/^Exec=\([^ ]*\).*/\1/p' {~/.local,~/.nix-profile,/usr}/share/applications/$default_browser 2>/dev/null | head -1)
+
+if [[ $browser_exec =~ (firefox|zen|librewolf|mullvad) ]]; then
+  private_flag="--private-window"
+elif [[ $browser_exec =~ edge ]]; then
+  private_flag="--inprivate"
+else
+  private_flag="--incognito"
+fi
+
+browser_args=()
+for arg in "$@"; do
+  if [[ "$arg" == "--private" ]]; then
+    browser_args+=("$private_flag")
+  else
+    browser_args+=("$arg")
+  fi
+done
+
+exec setsid uwsm-app -- "$browser_exec" "${browser_args[@]}"

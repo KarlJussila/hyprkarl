@@ -1,0 +1,64 @@
+#!/bin/bash
+# hk-playerctl
+# Controls media playback and shows track info via mako notification
+#
+# Usage:
+#   hk-playerctl <play-pause|next|previous>
+
+icon_theme=$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")
+
+ICON_PLAY=$(hk-find-icon "media-playback-start-symbolic")
+ICON_PAUSE=$(hk-find-icon "media-playback-pause-symbolic")
+ICON_NEXT=$(hk-find-icon "media-skip-forward-symbolic")
+ICON_PREV=$(hk-find-icon "media-skip-backward-symbolic")
+
+action="${1:-}"
+[[ -n "$action" ]] || { echo "Usage: hk-playerctl <play-pause|next|previous>" >&2; exit 1; }
+
+if [[ "$action" == "next" || "$action" == "previous" ]]; then
+    old_title=$(playerctl metadata title 2>/dev/null)
+    playerctl "$action"
+    for i in $(seq 1 20); do
+        sleep 0.1
+        new_title=$(playerctl metadata title 2>/dev/null)
+        [[ "$new_title" != "$old_title" ]] && break
+    done
+else
+    playerctl "$action"
+    sleep 0.1
+fi
+
+status=$(playerctl status 2>/dev/null)
+title=$(playerctl metadata title 2>/dev/null)
+artist=$(playerctl metadata artist 2>/dev/null)
+
+[[ -n "$title" ]] || exit 0
+
+case "$action" in
+    play-pause)
+        [[ "$status" == "Playing" ]] && icon="$ICON_PLAY" || icon="$ICON_PAUSE"
+        ;;
+    next)
+        icon="$ICON_NEXT"
+        ;;
+    previous)
+        icon="$ICON_PREV"
+        ;;
+esac
+
+[[ -n "$artist" ]] && body="$artist" || body=""
+
+position=$(playerctl position 2>/dev/null)
+length=$(playerctl metadata mpris:length 2>/dev/null)
+progress=0
+
+if [[ "$action" == "play-pause" && -n "$position" && -n "$length" && "$length" -gt 0 ]]; then
+    progress=$(awk -v pos="$position" -v len="$length" 'BEGIN { printf "%d", (pos / (len / 1000000)) * 100 }')
+fi
+
+notify-send \
+    -a "osd-player" \
+    -h string:x-canonical-private-synchronous:player \
+    -h int:value:"$progress" \
+    "$(echo "$title" | head -c 50)" "$body" \
+    --icon="$icon"

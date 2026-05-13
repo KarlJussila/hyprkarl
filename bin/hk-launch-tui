@@ -1,0 +1,20 @@
+#!/bin/bash
+# hk-launch-tui
+# Launches a TUI command in the default terminal with a hyprkarl app ID,
+# allowing it to be styled independently via window rules.
+#
+# Usage:
+#   hk-launch-tui <command> [args...]
+#
+# Example:
+#   hk-launch-tui btop
+#   hk-launch-tui nvim ~/notes.md
+
+if (($# == 0)); then
+  echo "Usage: hk-launch-tui <command> [args...]" >&2
+  exit 1
+fi
+
+app_id="org.hyprkarl.$(basename "$1")"
+
+exec setsid uwsm-app -- xdg-terminal-exec --app-id="$app_id" -e "$1" "${@:2}"

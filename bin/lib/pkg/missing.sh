@@ -1,0 +1,11 @@
+#!/bin/bash
+# Returns true if any listed packages are not installed,
+# or false if all packages are present.
+
+for pkg in "$@"; do
+  if ! pacman -Q "$pkg" &>/dev/null; then
+    exit 0
+  fi
+done
+
+exit 1

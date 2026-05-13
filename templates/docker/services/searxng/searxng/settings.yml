@@ -1,0 +1,22 @@
+use_default_settings: true
+
+general:
+  debug: false
+  instance_name: "SearXNG"
+
+search:
+  safe_search: 2
+  autocomplete: "duckduckgo"
+  formats:
+    - html
+
+server:
+  bind_address: "0.0.0.0"
+  port: 8080
+  base_url: "http://searxng.local/"
+  secret_key: "@SEARXNG_SECRET@"
+  limiter: true
+  image_proxy: true
+
+valkey:
+  url: "valkey://valkey:6379/0"

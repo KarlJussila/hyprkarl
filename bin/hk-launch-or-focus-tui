@@ -1,0 +1,19 @@
+#!/bin/bash
+# hk-launch-or-focus-tui
+# Focuses an existing TUI window if one is already open, or launches a new
+# one. Prevents duplicate instances of TUI apps like wifi or bluetooth config.
+#
+# Usage:
+#   hk-launch-or-focus-tui <command> [args...]
+#
+# Example:
+#   hk-launch-or-focus-tui btop
+
+if (($# == 0)); then
+  echo "Usage: hk-launch-or-focus-tui <command> [args...]" >&2
+  exit 1
+fi
+
+app_id="org.hyprkarl.$(basename "$1")"
+
+exec hk-launch-or-focus "$app_id" -- hk-launch-tui "$@"

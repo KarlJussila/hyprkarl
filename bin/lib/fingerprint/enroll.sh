@@ -1,0 +1,123 @@
+#!/bin/bash
+# Enroll a fingerprint. Prompt for finger selection with gum if no argument is given.
+#
+# Usage:
+#   hk-fingerprint enroll                 # Prompt for finger
+#   hk-fingerprint enroll <finger-name>   # Enroll specific finger
+
+# Ensure user PATH includes common locations
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+
+# Valid finger names for fprintd
+FINGERS=(
+  "left-thumb"
+  "left-index-finger"
+  "left-middle-finger"
+  "left-ring-finger"
+  "left-little-finger"
+  "right-thumb"
+  "right-index-finger"
+  "right-middle-finger"
+  "right-ring-finger"
+  "right-little-finger"
+)
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+print_success() { echo -e "${GREEN}$1${NC}"; }
+print_error() { echo -e "${RED}$1${NC}"; }
+print_info() { echo -e "${YELLOW}$1${NC}"; }
+
+# Format for display: hyphens to spaces, capitalize
+format_display() {
+  echo "$1" | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g'
+}
+
+# Convert back: spaces to hyphens, lowercase
+format_store() {
+  echo "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-'
+}
+
+# Check if finger name is valid
+is_valid_finger() {
+  local finger="$1"
+  for f in "${FINGERS[@]}"; do
+    [[ "$f" == "$finger" ]] && return 0
+  done
+  return 1
+}
+
+# Check prerequisites
+if ! command -v fprintd-enroll &>/dev/null; then
+  print_error "fprintd is not installed."
+  print_info "Run 'hk-fingerprint setup' first."
+  hk-show-done && exit 1
+fi
+
+if ! grep -q pam_fprintd.so /etc/pam.d/sudo 2>/dev/null; then
+  print_error "Fingerprint authentication is not configured."
+  print_info "Run 'hk-fingerprint setup' first."
+  hk-show-done && exit 1
+fi
+
+# Get finger name
+if [[ -n "$1" ]]; then
+  finger="$1"
+  if ! is_valid_finger "$finger"; then
+    print_error "Invalid finger name: $finger"
+    print_info "Valid names: ${FINGERS[*]}"
+    hk-show-done && exit 1
+  fi
+else
+  # Get already enrolled fingers
+  enrolled=$(hk-fingerprint list)
+
+  # Build list of unenrolled fingers
+  options=()
+  for f in "${FINGERS[@]}"; do
+    if ! echo "$enrolled" | grep -qx "$f"; then
+      options+=("$f")
+    fi
+  done
+
+  if [[ ${#options[@]} -eq 0 ]]; then
+    print_error "All fingers are already enrolled."
+    exit 1
+  fi
+
+  # Build display list
+  display_options=()
+  for f in "${options[@]}"; do
+    display_options+=("$(format_display "$f")")
+  done
+
+  # Display gum filter menu
+  finger=$(printf '%s\n' "${display_options[@]}" \
+  | gum filter --placeholder "Select finger...") || exit 1
+
+  # Convert back to storage format
+  finger=$(format_store "$finger")
+fi
+
+display_name=$(format_display "$finger")
+
+print_success "\nEnrolling $display_name..."
+print_info "Keep moving your finger on the sensor until complete.\n"
+
+if fprintd-enroll -f "$finger" "$USER"; then
+  print_success "\n$display_name enrolled successfully!"
+
+  print_info "\nVerifying...\n"
+  if fprintd-verify -f "$finger" "$USER"; then
+    print_success "\n$display_name verified!"
+  else
+    print_error "\nVerification failed. Try enrolling again."
+  fi
+else
+  print_error "\nEnrollment failed for $display_name."
+fi
+
+hk-show-done

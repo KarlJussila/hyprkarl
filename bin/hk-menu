@@ -1,0 +1,42 @@
+#!/bin/bash
+# hk-menu
+# Main hyprkarl menu
+#
+# Usage:
+#   hk-menu [--back <command> [args...]]
+#
+#   --back     Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+hyprkarl_parse_back_args "$@"
+hyprkarl_build_self_command "$0"
+
+LAUNCH="󱓟 Launch"
+INSTALL=" Install"
+UNINSTALL="󱧖 Uninstall"
+UTILS=" Utilities"
+CONFIG=" Config"
+POWER=" Power"
+
+CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$CONFIG\n$POWER" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Main Menu" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$LAUNCH")    hk-menu-launcher ;;
+    "$INSTALL")   hk-menu-install --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "$UNINSTALL") hk-menu-uninstall --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "$UTILS")     hk-menu-utils --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "$CONFIG")    hk-menu-config --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "$POWER")     hk-menu-power --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "")           hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+esac

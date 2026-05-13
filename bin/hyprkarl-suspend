@@ -1,6 +1,0 @@
-#!/bin/bash
-# hyprkarl-suspend
-# Make sure hyprlock starts before suspending
-
-hyprkarl-lock
-systemctl suspend

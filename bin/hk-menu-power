@@ -1,0 +1,37 @@
+#!/bin/bash
+# hk-menu-power
+# Power Menu
+#
+# Usage:
+#   hk-menu-power [--back <command> [args...]]
+#
+#   --back     Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+hyprkarl_parse_back_args "$@"
+
+LOCK=" Lock"
+SUSPEND=" Suspend"
+REBOOT=" Reboot"
+SHUTDOWN=" Shutdown"
+
+CHOICE=$(echo -e "$LOCK\n$SUSPEND\n$REBOOT\n$SHUTDOWN" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Power Menu" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$LOCK")     hk-lock ;;
+    "$SUSPEND")  hk-suspend ;;
+    "$REBOOT")   hk-reboot ;;
+    "$SHUTDOWN") hk-shutdown ;;
+    "")          hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+esac

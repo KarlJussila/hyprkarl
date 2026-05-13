@@ -1,0 +1,64 @@
+#!/bin/bash
+# hk-notify-battery
+# Sends a battery notification with appropriate icon and urgency
+#
+# Usage: hk-notify-battery [-c] [-v] [-i icon] [title] [body]
+#   -c        critical urgency
+#   -v        show progress bar
+#   -i icon   override icon
+#   %p in title/body will be replaced with current battery percentage
+#   %s in title/body will be replaced with battery status
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+
+BATTERY=$(hyprkarl_find_battery) || {
+    echo "No battery device found." >&2
+    exit 1
+}
+
+level=$(< "/sys/class/power_supply/$BATTERY/capacity")
+status=$(< "/sys/class/power_supply/$BATTERY/status")
+
+urgency="normal"
+use_value=false
+custom_icon=""
+
+while getopts "cvi:" opt; do
+    case "$opt" in
+        c) urgency="critical" ;;
+        v) use_value=true ;;
+        i) custom_icon="$OPTARG" ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+title="${1:-${status} - ${level}%}"
+body="${2:-}"
+title="${title//%p/$level}"
+title="${title//%s/$status}"
+body="${body//%p/$level}"
+body="${body//%s/$status}"
+
+if [[ -n "$custom_icon" ]]; then
+    icon="$custom_icon"
+elif [[ "$level" -le 33 ]]; then
+    icon=$(hk-find-icon "battery-caution-symbolic" status devices)
+elif [[ "$level" -le 66 ]]; then
+    icon=$(hk-find-icon "battery-low-symbolic" status devices)
+else
+    icon=$(hk-find-icon "battery-symbolic" status devices)
+fi
+
+args=(
+    "$title"
+    -u "$urgency"
+    -h string:x-canonical-private-synchronous:battery
+    --icon="$icon"
+    -a "battery"
+)
+
+[[ -n "$body" ]] && args+=("$body")
+$use_value && args+=(-h "int:value:$level")
+
+notify-send "${args[@]}"

@@ -1,0 +1,9 @@
+#!/bin/bash
+# hk-cmd-present
+# Returns true if all the commands passed in as arguments exist on the system.
+
+for cmd in "$@"; do
+  command -v "$cmd" &>/dev/null || exit 1
+done
+
+exit 0

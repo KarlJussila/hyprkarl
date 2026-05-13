@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""Show a rofi-based app picker for opening a file."""
+from __future__ import annotations
+
+import html
+import os
+import subprocess
+import sys
+
+import gi
+
+gi.require_version("Gio", "2.0")
+from gi.repository import Gio
+
+
+def icon_name(app: Gio.AppInfo) -> str | None:
+    icon = app.get_icon()
+    if icon is None:
+        return None
+    if hasattr(icon, "get_names"):
+        if names := icon.get_names():
+            return names[0]
+    if hasattr(icon, "get_file"):
+        if (file := icon.get_file()) is not None:
+            return file.get_path()
+    if hasattr(icon, "to_string"):
+        return icon.to_string()
+    return None
+
+
+def app_label(app: Gio.AppInfo) -> str:
+    name = html.escape(app.get_display_name() or app.get_name())
+    generic = app.get_generic_name() if hasattr(app, "get_generic_name") else None
+    if generic and generic != app.get_display_name():
+        return f"{name} <span weight='light' size='small'><i>({html.escape(generic)})</i></span>"
+    return name
+
+
+def app_meta(app: Gio.AppInfo) -> str:
+    fields = [
+        app.get_display_name(),
+        app.get_name(),
+        app.get_executable(),
+        app.get_id(),
+    ]
+    if hasattr(app, "get_generic_name"):
+        fields.append(app.get_generic_name())
+    return " ".join(field for field in fields if field)
+
+
+def _sort_key(app: Gio.AppInfo) -> str:
+    return (app.get_display_name() or app.get_name()).casefold()
+
+
+def visible_apps() -> list[Gio.AppInfo]:
+    apps = [app for app in Gio.AppInfo.get_all() if app.should_show()]
+    apps.sort(key=_sort_key)
+    return apps
+
+
+def rofi_theme() -> str:
+    config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    return os.path.join(config_home, "rofi", "launcher.rasi")
+
+
+def chooser_input(apps: list[Gio.AppInfo]) -> str:
+    rows = []
+    for app in apps:
+        parts = [app_label(app)]
+        if icon := icon_name(app):
+            parts.append(f"icon\x1f{icon}")
+        if meta := app_meta(app):
+            parts.append(f"meta\x1f{meta}")
+        rows.append("\0".join(parts))
+    return "\n".join(rows) + "\n"
+
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        return 1
+
+    file = Gio.File.new_for_path(sys.argv[1])
+    apps = visible_apps()
+    if not apps:
+        return 1
+
+    try:
+        result = subprocess.run(
+            [
+                "rofi",
+                "-dmenu",
+                "-i",
+                "-no-custom",
+                "-show-icons",
+                "-markup-rows",
+                "-format", "i",
+                "-p", "",
+                "-window-title", "Open With",
+                "-theme", rofi_theme(),
+            ],
+            input=chooser_input(apps),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        if result.returncode != 0:
+            return 1
+        selected = int(result.stdout.strip())
+        apps[selected].launch([file], None)
+
+    except Exception:
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

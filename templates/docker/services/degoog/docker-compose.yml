@@ -1,0 +1,21 @@
+name: degoog
+
+services:
+  degoog:
+    image: ghcr.io/fccview/degoog:latest
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "127.0.0.1:4444:4444"
+    restart: unless-stopped
+    networks:
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.degoog.rule=Host(`degoog.local`)"
+      - "traefik.http.routers.degoog.entrypoints=web"
+      - "traefik.http.services.degoog.loadbalancer.server.port=4444"
+
+networks:
+  traefik-proxy:
+    external: true

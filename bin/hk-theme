@@ -1,0 +1,45 @@
+#!/bin/bash
+# hk-theme
+# Manage Hyprkarl theme state.
+#
+# Usage:
+#   hk-theme current
+#   hk-theme list
+#   hk-theme set <theme-name>
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+ACTION_DIR="$SCRIPT_DIR/lib/theme"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  hk-theme current
+  hk-theme list
+  hk-theme set <theme-name>
+EOF
+}
+
+action=${1:-}
+shift || true
+
+case "$action" in
+  current|list|set)
+    ;;
+  ""|-h|--help|help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac
+
+action_path="$ACTION_DIR/$action.sh"
+
+if [[ ! -x "$action_path" ]]; then
+  printf 'Unknown theme subcommand: %s\n' "$action" >&2
+  exit 1
+fi
+
+exec "$action_path" "$@"

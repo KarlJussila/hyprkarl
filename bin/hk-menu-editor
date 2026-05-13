@@ -1,0 +1,39 @@
+#!/bin/bash
+# hk-menu-editor
+# Menu for selecting a default text editor
+#
+# Usage:
+#   hk-menu-editor [--back <command> [args...]]
+#
+#   --back     Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+hyprkarl_parse_back_args "$@"
+
+NVIM=" Neovim"
+VIM=" Vim"
+NANO=" Nano"
+MICRO="μ Micro"
+VSCODIUM=" VSCodium"
+
+CHOICE=$(echo -e "$NVIM\n$VIM\n$NANO\n$MICRO\n$VSCODIUM" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Default Editor" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$NVIM")     hk-default-editor nvim ;;
+    "$VIM")      hk-default-editor vim ;;
+    "$NANO")     hk-default-editor nano ;;
+    "$MICRO")    hk-default-editor micro ;;
+    "$VSCODIUM") hk-default-editor vscodium ;;
+    "")          hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+esac

@@ -1,5 +1,0 @@
-#!/bin/bash
-# hyprkarl-restart-hypridle
-# Restarts the hypridle systemd user service
-
-systemctl --user restart hypridle.service

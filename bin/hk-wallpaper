@@ -1,0 +1,53 @@
+#!/bin/bash
+# hk-wallpaper
+# Manage wallpapers within the active theme.
+#
+# Usage:
+#   hk-wallpaper add <path>
+#   hk-wallpaper cache [--regenerate|--single <filename>]
+#   hk-wallpaper cycle
+#   hk-wallpaper init
+#   hk-wallpaper remove <filename>
+#   hk-wallpaper select [highlight-color]
+#   hk-wallpaper set <filename>
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+ACTION_DIR="$SCRIPT_DIR/lib/wallpaper"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  hk-wallpaper add <path>
+  hk-wallpaper cache [--regenerate|--single <filename>]
+  hk-wallpaper cycle
+  hk-wallpaper init
+  hk-wallpaper remove <filename>
+  hk-wallpaper select [highlight-color]
+  hk-wallpaper set <filename>
+EOF
+}
+
+action=${1:-}
+shift || true
+
+case "$action" in
+  add|cache|cycle|init|remove|select|set)
+    ;;
+  ""|-h|--help|help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac
+
+action_path="$ACTION_DIR/$action.sh"
+
+if [[ ! -x "$action_path" ]]; then
+  printf 'Unknown wallpaper subcommand: %s\n' "$action" >&2
+  exit 1
+fi
+
+exec "$action_path" "$@"

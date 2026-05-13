@@ -1,0 +1,41 @@
+#!/bin/bash
+# hk-menu-power-profile
+# Menu for setting the system power profile via power-profiles-daemon
+#
+# Usage:
+#   hk-menu-power-profile [--back <command> [args...]]
+#
+#   --back     Optional command to invoke if the user dismisses the menu.
+#              If omitted, dismissing the menu does nothing.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+hyprkarl_parse_back_args "$@"
+
+CURRENT=$(powerprofilesctl get)
+
+
+label() {
+    local profile="$1" icon="$2"
+    [[ "$profile" == "$CURRENT" ]] && echo "󰄬 ${2#* }" || echo "$icon"
+}
+
+POWER_SAVER=$(label power-saver "󰌪 Power Saver")
+BALANCED=$(label balanced "󰗑 Balanced")
+PERFORMANCE=$(label performance "󱐋 Performance")
+
+CHOICE=$(echo -e "$POWER_SAVER\n$BALANCED\n$PERFORMANCE" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Power Profile" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$POWER_SAVER")   powerprofilesctl set power-saver ;;
+    "$BALANCED")      powerprofilesctl set balanced ;;
+    "$PERFORMANCE")   powerprofilesctl set performance ;;
+    "")               hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+esac

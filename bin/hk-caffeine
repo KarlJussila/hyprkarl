@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# hk-caffeine
+# Toggles hypridle on/off to prevent sleep and lock
+
+# Usage:
+#   hk-caffeine [on|off|toggle]
+
+#   on      Enable caffeine (stop hypridle). No-op if already on.
+#   off     Disable caffeine (start hypridle). No-op if already off.
+#   toggle  (default) Switch to whichever state is not current.
+
+ICON_ON="☕"
+ICON_OFF="💤"
+
+is_active() {
+    systemctl --user is-active --quiet hypridle.service
+}
+
+enable_caffeine() {
+    is_active || return 0
+    systemctl --user stop hypridle.service
+    notify-send "$ICON_ON Sleep & lock disabled"
+}
+
+disable_caffeine() {
+    is_active && return 0
+    systemctl --user start hypridle.service
+    notify-send "$ICON_OFF Sleep & lock restored"
+}
+
+case "${1:-toggle}" in
+    on)     enable_caffeine ;;
+    off)    disable_caffeine ;;
+    toggle) is_active && enable_caffeine || disable_caffeine ;;
+    *)      echo "Usage: $(basename "$0") [on|off|toggle]" >&2; exit 1 ;;
+esac
+
+pkill -RTMIN+9 waybar
+ags request caffeine-sync

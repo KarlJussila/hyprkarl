@@ -1,0 +1,5 @@
+#!/bin/bash
+# hk-btop-reload
+# Reload btop configuration
+
+pkill -SIGUSR2 btop

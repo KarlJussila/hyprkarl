@@ -1,0 +1,20 @@
+#!/bin/bash
+# Remove an enrolled fingerprint.
+#
+# Usage:
+#   hk-fingerprint remove <finger-name>
+#
+# Example:
+#   hk-fingerprint remove left-index-finger
+
+finger="$1"
+
+if [[ -z "$finger" ]]; then
+  echo "Usage: hk-fingerprint remove <finger-name>" >&2
+  exit 1
+fi
+
+if ! fprintd-delete "$USER" -f "$finger" 2>/dev/null; then
+  echo "Failed to remove fingerprint: $finger" >&2
+  exit 1
+fi

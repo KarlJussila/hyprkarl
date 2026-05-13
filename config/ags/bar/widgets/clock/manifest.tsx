@@ -3,8 +3,9 @@ import { type WidgetManifest } from "../shared/widgetManifest.tsx"
 
 const clockManifest: WidgetManifest<"clock"> = {
   kind: "clock",
-  render: ({ config, placement, monitor }) => (
+  render: ({ id, config, placement, monitor }) => (
     <ClockWidget
+      id={id}
       placement={placement}
       monitor={monitor}
       config={config}

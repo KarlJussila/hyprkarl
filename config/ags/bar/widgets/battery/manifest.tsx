@@ -3,8 +3,9 @@ import { type WidgetManifest } from "../shared/widgetManifest.tsx"
 
 const batteryManifest: WidgetManifest<"battery"> = {
   kind: "battery",
-  render: ({ config, placement, monitor }) => (
+  render: ({ id, config, placement, monitor }) => (
     <BatteryWidget
+      id={id}
       placement={placement}
       monitor={monitor}
       config={config}

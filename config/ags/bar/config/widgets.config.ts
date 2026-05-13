@@ -2,6 +2,8 @@ import type { BarWidgetDefinitions } from "../configuration"
 
 // Edit this file to change widget behavior without touching rendering code.
 // Keep this file focused on high-level behavior and content, not low-level drawing metrics.
+// Widget IDs are instance names, not fixed kind names. You can define multiple
+// entries with the same `kind` when you want different variants on the bar.
 const widgetDefinitions = {
   menu: {
     kind: "menu",
@@ -57,6 +59,16 @@ const widgetDefinitions = {
   battery: {
     kind: "battery",
     showPercentage: true,
+    lowThreshold: 0.15,
+    dropdown: {
+      enabled: true,
+      align: "center",
+      gap: 0,
+    },
+  },
+  batteryCompact: {
+    kind: "battery",
+    showPercentage: false,
     lowThreshold: 0.15,
     dropdown: {
       enabled: true,

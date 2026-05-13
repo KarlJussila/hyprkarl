@@ -4,6 +4,7 @@ import GLib from "gi://GLib?version=2.0"
 import { type NormalizedClockWidgetConfig } from "../../configuration.ts"
 import { type DropdownPlacement } from "../../layout/placement.ts"
 import DropdownButton from "../shared/DropdownButton.tsx"
+import { createWidgetDropdownName } from "../shared/instanceNames.ts"
 import CalendarDropdownContent from "./CalendarDropdownContent"
 
 function formatTime(time: GLib.DateTime, format: string) {
@@ -11,12 +12,13 @@ function formatTime(time: GLib.DateTime, format: string) {
 }
 
 type Props = {
+  id: string
   placement: DropdownPlacement
   monitor: Gdk.Monitor
   config: NormalizedClockWidgetConfig
 }
 
-export default function ClockWidget({ placement, monitor, config }: Props) {
+export default function ClockWidget({ id, placement, monitor, config }: Props) {
   const currentTime = createPoll(
     GLib.DateTime.new_now_local(),
     1000,
@@ -48,7 +50,7 @@ export default function ClockWidget({ placement, monitor, config }: Props) {
       halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       placement={placement}
       monitor={monitor}
-      dropdownName={`calendar-menu-${monitor.connector ?? "monitor"}`}
+      dropdownName={createWidgetDropdownName("calendar-menu", id, monitor.connector)}
       dropdown={config.dropdown}
       renderDropdownContent={() => <CalendarDropdownContent currentTime={currentTime} />}
     >

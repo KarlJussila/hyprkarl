@@ -2,17 +2,19 @@ import { Gdk, Gtk } from "ags/gtk4"
 import { type NormalizedBatteryWidgetConfig } from "../../configuration.ts"
 import { type DropdownPlacement } from "../../layout/placement.ts"
 import DropdownButton from "../shared/DropdownButton.tsx"
+import { createWidgetDropdownName } from "../shared/instanceNames.ts"
 import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState, formatBatteryPercentage } from "./batteryState"
 import PowerProfileMenu from "./PowerProfileMenu"
 
 type Props = {
+  id: string
   placement: DropdownPlacement
   monitor: Gdk.Monitor
   config: NormalizedBatteryWidgetConfig
 }
 
-export default function BatteryWidget({ placement, monitor, config }: Props) {
+export default function BatteryWidget({ id, placement, monitor, config }: Props) {
   const batteryState = createBatteryState()
 
   const batteryContent = placement.isVertical
@@ -58,7 +60,7 @@ export default function BatteryWidget({ placement, monitor, config }: Props) {
       halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       placement={placement}
       monitor={monitor}
-      dropdownName={`battery-menu-${monitor.connector ?? "monitor"}`}
+      dropdownName={createWidgetDropdownName("battery-menu", id, monitor.connector)}
       dropdown={config.dropdown}
       visible={batteryState.isPresent}
       renderDropdownContent={(closeDropdown) => (

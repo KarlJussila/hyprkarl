@@ -18,9 +18,10 @@ Advanced users:
 
 ## Quick Examples
 
-Move widgets:
+Move the bar, reorder widgets, and hide the decorative corner curves:
 
 ```ts
+edge: "left",
 showCornerCurves: false,
 start: ["menu", "workspaces"],
 center: {
@@ -29,6 +30,16 @@ center: {
   end: ["caffeine"],
 },
 end: ["tray", "battery"],
+```
+
+Keep the standard rounded corners but hide only the extra curve cutouts:
+
+```ts
+// layout.config.ts
+showCornerCurves: false
+
+// theme.scss
+$radius: 8px;
 ```
 
 Leave the center island empty:
@@ -49,7 +60,55 @@ center: {
 },
 ```
 
-Layout references can reuse the same widget ID more than once when you want the same widget in multiple slots.
+Layout references can reuse the same widget ID more than once when you want the exact same widget instance in multiple slots.
+
+Widget IDs are instance names, not kind names. When you want two differently configured copies of the same widget, define two IDs with the same `kind` and reference those IDs in the layout.
+
+Use the same widget instance more than once:
+
+```ts
+start: ["clock"],
+center: {
+  start: [],
+  anchor: "clock",
+  end: [],
+},
+```
+
+Create two different widget instances of the same kind:
+
+```ts
+clockCompact: {
+  kind: "clock",
+  display: {
+    horizontal: "%H:%M",
+  },
+  dropdown: {
+    enabled: false,
+  },
+},
+
+clockFull: {
+  kind: "clock",
+  display: {
+    horizontal: "%a %-I:%M %p",
+  },
+},
+```
+
+```ts
+start: ["clockCompact"],
+center: {
+  start: [],
+  anchor: "clockFull",
+  end: [],
+},
+```
+
+In practice:
+
+- Reuse the same ID when you want the same config in multiple places.
+- Create a second ID with the same `kind` when you want a variant with different behavior.
 
 Change widget behavior:
 
@@ -79,6 +138,29 @@ battery: {
 },
 ```
 
+## Layout And Instance Model
+
+`layout.config.ts` controls bar-level structure:
+
+- `edge`: which side of the screen the bar attaches to
+- `showCornerCurves`: whether the decorative concave corner cutouts are drawn
+- `start`, `center`, and `end`: which widget IDs appear in each island
+
+`widgets.config.ts` controls widget instances:
+
+- each top-level key is a widget ID
+- `kind` chooses the widget implementation
+- the rest of the object configures that specific instance
+
+That means this is valid:
+
+```ts
+clockCompact: { kind: "clock", dropdown: { enabled: false } },
+clockFull: { kind: "clock", dropdown: { enabled: true } },
+```
+
+Both are `clock` widgets, but they are different instances because their IDs are different.
+
 ## Styling Guide
 
 `theme.scss` is the public styling surface. It is grouped by editing task:
@@ -100,6 +182,11 @@ Common styling changes:
 - more obvious active workspace: change `$accent`
 
 Theme tokens stay short because `theme.scss` is already a namespace. Rendered CSS classes stay prefixed (`bar-*`, `widget-*`, `is-*`) because they live in the global selector space and act as the public styling hooks for the actual widget tree.
+
+`showCornerCurves` and `$radius` are intentionally independent:
+
+- `showCornerCurves` controls the extra drawn corner pieces between islands and the screen edge.
+- `$radius` controls the normal rounded segment corners in the bar CSS.
 
 ## Architecture
 

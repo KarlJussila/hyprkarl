@@ -16,6 +16,7 @@ import type {
   NormalizedWorkspacesWidgetConfig,
 } from "../configuration.ts"
 import { normalizeBarConfiguration } from "./registry.shared.ts"
+import { createWidgetDropdownName } from "./shared/instanceNames.ts"
 
 function expectBarConfigError(callback: () => void): BarConfigError {
   try {
@@ -153,6 +154,53 @@ test("allows the same widget ID to appear more than once in the layout", () => {
   assert.deepEqual(resolved.layout.center.end, ["menu"])
 })
 
+test("allows multiple widget IDs of the same kind with independent configs", () => {
+  const layout = {
+    edge: "top",
+    start: ["clockCompact"],
+    center: {
+      start: [],
+      anchor: "clockFull",
+      end: [],
+    },
+    end: [],
+  } satisfies BarLayoutConfig
+
+  const widgets = {
+    clockCompact: {
+      kind: "clock",
+      display: {
+        horizontal: "%H:%M",
+      },
+      dropdown: {
+        enabled: false,
+      },
+    },
+    clockFull: {
+      kind: "clock",
+      display: {
+        horizontal: "%a %-I:%M %p",
+      },
+      dropdown: {
+        enabled: true,
+        align: "end",
+      },
+    },
+  } satisfies BarWidgetDefinitions
+
+  const resolved = normalizeBarConfiguration(layout, widgets)
+  const compactClock = resolved.widgets.clockCompact as NormalizedClockWidgetConfig
+  const fullClock = resolved.widgets.clockFull as NormalizedClockWidgetConfig
+
+  assert.equal(compactClock.kind, "clock")
+  assert.equal(fullClock.kind, "clock")
+  assert.equal(compactClock.display.horizontal, "%H:%M")
+  assert.equal(fullClock.display.horizontal, "%a %-I:%M %p")
+  assert.equal(compactClock.dropdown.enabled, false)
+  assert.equal(fullClock.dropdown.enabled, true)
+  assert.equal(fullClock.dropdown.align, "end")
+})
+
 test("allows an empty center island without an anchor", () => {
   const layout = {
     edge: "top",
@@ -197,6 +245,17 @@ test("allows center side widgets without a center anchor", () => {
   assert.equal(resolved.layout.center.anchor, undefined)
   assert.deepEqual(resolved.layout.center.start, ["clock"])
   assert.deepEqual(resolved.layout.center.end, [])
+})
+
+test("uses widget IDs to make same-kind dropdown window names unique", () => {
+  assert.equal(
+    createWidgetDropdownName("calendar-menu", "clockCompact", "eDP-1"),
+    "calendar-menu-clockCompact-eDP-1",
+  )
+  assert.equal(
+    createWidgetDropdownName("battery-menu", "batterySecondary"),
+    "battery-menu-batterySecondary-monitor",
+  )
 })
 
 test("rejects invalid layout-level corner curve toggle values", () => {

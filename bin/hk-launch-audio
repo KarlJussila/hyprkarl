@@ -1,0 +1,5 @@
+#!/bin/bash
+# hk-launch-audio
+# Launch the audio controls TUI (provided by wiremix).
+
+hk-launch-or-focus-tui wiremix

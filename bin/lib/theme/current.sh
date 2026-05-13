@@ -1,0 +1,10 @@
+#!/bin/bash
+# Print the current theme name and format it nicely.
+
+THEME_NAME_PATH="$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
+
+if [[ -f $THEME_NAME_PATH ]]; then
+  cat $THEME_NAME_PATH | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g'
+else
+  echo "Unknown"
+fi

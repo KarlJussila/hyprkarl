@@ -1,0 +1,48 @@
+#!/bin/bash
+# hk-default-terminal
+# Installs a terminal emulator and sets it as the system default.
+#
+# Usage:
+#   hk-default-terminal <terminal>
+#
+#   terminal   One of: alacritty, ghostty, kitty, foot
+#
+# Updates the TERMINAL environment variable, xdg-terminals.list priority,
+# and enables/disables the Ghostty background service as appropriate.
+
+if (($# == 0)); then
+  echo "Usage: hk-default-terminal [alacritty|ghostty|kitty|foot]"
+  exit 1
+fi
+
+package="$1"
+
+# Map package name to desktop entry ID
+case "$package" in
+alacritty) desktop_id="Alacritty.desktop" ;;
+ghostty) desktop_id="com.mitchellh.ghostty.desktop" ;;
+kitty) desktop_id="kitty.desktop" ;;
+foot) desktop_id="foot.desktop" ;;
+*)
+  echo "Unknown terminal: $package"
+  exit 1
+  ;;
+esac
+
+# Install package
+if hk-pkg install "$package"; then
+  # Enable/disable service for ghostty
+  if [[ "$package" == "ghostty" ]]; then
+    systemctl enable --user app-com.mitchellh.ghostty.service
+  else
+    systemctl disable --user app-com.mitchellh.ghostty.service 2>/dev/null
+  fi
+
+  # Update $TERMINAL
+  sed -i --follow-symlinks "s/^export TERMINAL=.*/export TERMINAL=$package/" ~/.config/uwsm/default
+
+  # Update xdg-terminals.list to prioritize the proper terminal
+  sed "s|{{desktop_id}}|$desktop_id|" "$HYPRKARL_PATH/templates/xdg/xdg-terminals.list" > ~/.config/xdg-terminals.list
+else
+  echo "Failed to install $package"
+fi

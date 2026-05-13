@@ -1,0 +1,144 @@
+#!/bin/bash
+# hk-pkg-install-tui
+# Interactive package picker for pacman, AUR, or Flatpak installs.
+#
+# Usage:
+#   hk-pkg-install-tui [--aur|--flatpak]
+
+usage() {
+  cat <<'EOF'
+Usage:
+  hk-pkg-install-tui [--aur|--flatpak]
+EOF
+}
+
+set_source() {
+  local requested_source=$1
+
+  if [[ "$source_name" != "pacman" && "$source_name" != "$requested_source" ]]; then
+    printf 'Choose only one source flag.\n' >&2
+    return 1
+  fi
+
+  source_name=$requested_source
+}
+
+run_pacman_picker() {
+  local -a fzf_args=(
+    --multi
+    --preview 'pacman -Sii {1}'
+    --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select'
+    --preview-label-pos='bottom'
+    --preview-window 'down:65%:wrap'
+    --bind 'alt-p:toggle-preview'
+    --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+    --bind 'alt-k:preview-up,alt-j:preview-down'
+    --color 'pointer:green,marker:green'
+  )
+  local -a pkg_names=()
+
+  mapfile -t pkg_names < <(pacman -Slq | sort -u | fzf "${fzf_args[@]}")
+
+  if ((${#pkg_names[@]} > 0)); then
+    sudo pacman -S --noconfirm "${pkg_names[@]}"
+    hk-show-done
+  fi
+}
+
+run_aur_picker() {
+  local -a fzf_args=(
+    --multi
+    --preview 'yay -Siia {1}'
+    --preview-label='alt-p: toggle description, alt-b/B: toggle PKGBUILD, alt-j/k: scroll, tab: multi-select'
+    --preview-label-pos='bottom'
+    --preview-window 'down:65%:wrap'
+    --bind 'alt-p:toggle-preview'
+    --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+    --bind 'alt-k:preview-up,alt-j:preview-down'
+    --bind 'alt-b:change-preview:yay -Gpa {1} | tail -n +5'
+    --bind 'alt-B:change-preview:yay -Siia {1}'
+    --color 'pointer:green,marker:green'
+  )
+  local -a pkg_names=()
+
+  mapfile -t pkg_names < <(yay -Slqa | fzf "${fzf_args[@]}")
+
+  if ((${#pkg_names[@]} > 0)); then
+    yay -S --noconfirm "${pkg_names[@]}"
+    sudo updatedb
+    hk-show-done
+  fi
+}
+
+preview_flatpak() {
+  local app=$1
+  local summary
+  local info
+  local max_len
+  local sum_label="Summary"
+  local pad
+
+  summary=$(curl -s "https://flathub.org/api/v2/appstream/$app" | jq -r '.summary // empty')
+  info=$(flatpak remote-info flathub "$app" --system 2>/dev/null)
+  max_len=$(awk -F: '{print length($1)}' <<<"$info" | sort -nr | head -n1)
+  pad=$((max_len - ${#sum_label}))
+  [[ $pad -lt 0 ]] && pad=0
+
+  [[ -n "$summary" ]] && printf "%*s: %s\n\n" $((pad + ${#sum_label})) "$sum_label" "$summary"
+  echo "$info"
+}
+
+run_flatpak_picker() {
+  local -a fzf_args=(
+    --multi
+    --with-nth=1
+    --preview-window 'down:65%:wrap'
+    --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
+    --preview-label-pos='bottom'
+    --bind 'alt-p:toggle-preview'
+    --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+    --bind 'alt-k:preview-up,alt-j:preview-down'
+    --color 'pointer:green,marker:green'
+  )
+  local -a pkg_names=()
+
+  export -f preview_flatpak
+
+  mapfile -t pkg_names < <(comm -23 \
+    <(flatpak remote-ls flathub --system --columns=application | sort) \
+    <(flatpak list --system --app --columns=application | sort) \
+    | fzf "${fzf_args[@]}" --preview 'bash -c "preview_flatpak {}"')
+
+  if ((${#pkg_names[@]} > 0)); then
+    flatpak install flathub --system -y "${pkg_names[@]}"
+    hk-show-done
+  fi
+}
+
+source_name="pacman"
+
+while (($# > 0)); do
+  case "$1" in
+    --aur)
+      set_source aur || exit 1
+      ;;
+    --flatpak)
+      set_source flatpak || exit 1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+case "$source_name" in
+  pacman)  run_pacman_picker ;;
+  aur)     run_aur_picker ;;
+  flatpak) run_flatpak_picker ;;
+esac

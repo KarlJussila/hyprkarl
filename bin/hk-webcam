@@ -1,0 +1,36 @@
+#!/bin/bash
+# hk-webcam
+# Opens the webcam feed as a mirror in a minimal window
+#
+# Usage:
+#   hk-webcam [--device=/dev/videoN]
+#
+#   --device=   Optional. Path to v4l2 device. Auto-detected if omitted.
+
+DEVICE=""
+
+for arg in "$@"; do
+  case "$arg" in
+    --device=*) DEVICE="${arg#*=}" ;;
+  esac
+done
+
+# Auto-detect first available webcam if no device specified
+if [[ -z $DEVICE ]]; then
+  DEVICE=$(v4l2-ctl --list-devices 2>/dev/null | grep -m1 "^[[:space:]]*/dev/video" | tr -d '\t')
+  if [[ -z $DEVICE ]]; then
+    notify-send "No webcam devices found" -u critical -t 3000
+    exit 1
+  fi
+fi
+
+# Open the webcam feed, flipped horizontally
+ffplay -f v4l2 \
+       -input_format mjpeg \
+       -framerate 30 \
+       -i "$DEVICE" \
+       -vf hflip \
+       -window_title "Mirror" \
+       -noborder \
+       -fflags nobuffer \
+       -loglevel error

@@ -1,0 +1,17 @@
+{
+  "id": "kiwix",
+  "label": "Kiwix",
+  "install_dir": "$HOME/.kiwix",
+  "compose_file": "docker-compose.yml",
+  "hosts_entry": "127.0.0.1 kiwix.local",
+  "require_traefik_network": true,
+  "install_message": "Kiwix is available at http://kiwix.local (requires Traefik) or http://localhost:8888",
+  "install_warning": "Place ZIM files in $HOME/.kiwix/data to make them available. Kiwix will restart repeatedly until a ZIM file is present.",
+  "remove_warning": "This will stop the Kiwix container and permanently delete all data in $HOME/.kiwix.",
+  "template_files": [
+    "docker-compose.yml:docker-compose.yml"
+  ],
+  "data_dirs": [
+    "data"
+  ]
+}

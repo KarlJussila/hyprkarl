@@ -1,0 +1,45 @@
+#!/bin/bash
+# hk-volume
+# Adjusts and displays volume via mako notification
+#
+# Usage:
+#   hk-volume [raise|lower|mute-toggle]
+#
+#   (none)        Display current volume without changing it.
+#   raise         Raise volume by 5%.
+#   lower         Lower volume by 5%.
+#   toggle        Toggle mute.
+
+ICON_MUTED=$(hk-find-icon "audio-volume-muted-symbolic" status actions)
+ICON_LOW=$(hk-find-icon "audio-volume-low-symbolic" status actions)
+ICON_MEDIUM=$(hk-find-icon "audio-volume-medium-symbolic" status actions)
+ICON_HIGH=$(hk-find-icon "audio-volume-high-symbolic" status actions)
+
+case "${1:-}" in
+    raise)        wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ ;;
+    lower)        wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
+    toggle)       wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+    "")           ;;
+    *)            echo "Unknown action: $1" >&2; exit 1 ;;
+esac
+
+volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}' | awk '{printf "%d", $1 * 100}')
+muted=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -c MUTED)
+
+if (( muted )); then
+    icon="$ICON_MUTED"
+    volume=0
+elif (( volume <= 33 )); then
+    icon="$ICON_LOW"
+elif (( volume <= 66 )); then
+    icon="$ICON_MEDIUM"
+else
+    icon="$ICON_HIGH"
+fi
+
+notify-send \
+    -h string:x-canonical-private-synchronous:volume \
+    -h int:value:"$volume" \
+    -a "osd-volume" \
+    "Volume" "${volume}%" \
+    --icon="$icon"

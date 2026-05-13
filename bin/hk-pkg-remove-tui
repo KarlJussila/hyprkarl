@@ -1,0 +1,78 @@
+#!/bin/bash
+# hk-pkg-remove-tui
+# Interactive package picker for pacman or Flatpak removals.
+#
+# Usage:
+#   hk-pkg-remove-tui [--flatpak]
+
+usage() {
+  cat <<'EOF'
+Usage:
+  hk-pkg-remove-tui [--flatpak]
+EOF
+}
+
+run_package_picker() {
+  local -a fzf_args=(
+    --multi
+    --preview 'yay -Qi {1}'
+    --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select'
+    --preview-label-pos='bottom'
+    --preview-window 'down:65%:wrap'
+    --bind 'alt-p:toggle-preview'
+    --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+    --bind 'alt-k:preview-up,alt-j:preview-down'
+    --color 'pointer:red,marker:red'
+  )
+  local -a pkg_names=()
+
+  mapfile -t pkg_names < <(yay -Qqe | fzf "${fzf_args[@]}")
+
+  if ((${#pkg_names[@]} > 0)); then
+    sudo pacman -Rns --noconfirm "${pkg_names[@]}"
+    hk-show-done
+  fi
+}
+
+run_flatpak_picker() {
+  local -a fzf_args=(
+    --multi
+    --preview 'flatpak info {1} 2>/dev/null'
+    --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
+    --preview-label-pos='bottom'
+    --preview-window 'down:65%:wrap'
+    --bind 'alt-p:toggle-preview'
+    --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+    --bind 'alt-k:preview-up,alt-j:preview-down'
+    --color 'pointer:red,marker:red'
+  )
+  local -a pkg_names=()
+
+  mapfile -t pkg_names < <(flatpak list --app --columns=application | fzf "${fzf_args[@]}")
+
+  if ((${#pkg_names[@]} > 0)); then
+    flatpak uninstall -y --delete-data "${pkg_names[@]}"
+    flatpak uninstall -y --unused
+    hk-show-done
+  fi
+}
+
+case "${1:-}" in
+  "" )
+    run_package_picker
+    ;;
+  --flatpak)
+    if [[ $# -ne 1 ]]; then
+      usage >&2
+      exit 1
+    fi
+    run_flatpak_picker
+    ;;
+  -h|--help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac

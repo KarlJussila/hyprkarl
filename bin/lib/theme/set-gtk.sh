@@ -1,0 +1,17 @@
+#!/bin/bash
+# Change GTK settings to match the current theme.
+
+# Change gnome modes
+if [[ -f ~/.config/hyprkarl/current/theme/light.mode ]]; then
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+else
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+fi
+
+# Change gnome icon theme color
+GNOME_ICONS_THEME=~/.config/hyprkarl/current/theme/icons.theme
+if [[ -f $GNOME_ICONS_THEME ]]; then
+  gsettings set org.gnome.desktop.interface icon-theme "$(<$GNOME_ICONS_THEME)"
+else
+  gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
+fi

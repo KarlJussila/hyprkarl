@@ -1,0 +1,5 @@
+#!/bin/bash
+# hk-shutdown
+# Shut down with hyprshutdown
+
+hyprshutdown -t 'Shutting down...' --post-cmd 'shutdown -P 0'

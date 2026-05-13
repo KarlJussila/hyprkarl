@@ -1,0 +1,6 @@
+#!/bin/bash
+# hk-suspend
+# Make sure hyprlock starts before suspending
+
+hk-lock
+systemctl suspend

@@ -1,0 +1,37 @@
+#!/bin/bash
+# hk-menu-terminal
+# Menu for selecting a default terminal emulator
+#
+# Usage:
+#   hk-menu-terminal [--back <command> [args...]]
+#
+#   --back     Optional command to invoke if the user dismisses the menu.
+#              Also passed to submenus so they can navigate back to this
+#              menu or continue up the call chain. If omitted, dismissing
+#              the menu does nothing.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+hyprkarl_parse_back_args "$@"
+
+ALACRITTY="Ａ Alacritty"
+GHOSTTY=" Ghostty"
+KITTY="󰄛 Kitty"
+FOOT="󰽒 Foot"
+
+CHOICE=$(echo -e "$ALACRITTY\n$GHOSTTY\n$KITTY\n$FOOT" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Default Terminal" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$ALACRITTY") hk-default-terminal alacritty ;;
+    "$GHOSTTY")   hk-default-terminal ghostty ;;
+    "$KITTY")     hk-default-terminal kitty ;;
+    "$FOOT")      hk-default-terminal foot ;;
+    "")           hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+esac

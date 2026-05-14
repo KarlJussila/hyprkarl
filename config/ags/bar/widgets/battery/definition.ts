@@ -6,7 +6,7 @@ import {
   normalizeBatteryIndicatorMetrics,
   normalizeBatteryTooltipConfig,
   normalizeBoolean,
-  normalizeDropdownConfig,
+  normalizeFlyoutConfig,
   normalizeUnitInterval,
   widgetContext,
 } from "../shared/normalize.ts"
@@ -14,7 +14,7 @@ import {
 const batteryDefaults: Omit<NormalizedBatteryWidgetConfig, "kind"> = {
   showPercentage: true,
   lowThreshold: 0.15,
-  dropdown: {
+  flyout: {
     enabled: true,
     align: "center",
     gap: 0,
@@ -53,7 +53,7 @@ export function normalizeBatteryWidgetConfig(
       definition.lowThreshold,
       batteryDefaults.lowThreshold,
     ),
-    dropdown: normalizeDropdownConfig(id, definition.dropdown, batteryDefaults.dropdown),
+    flyout: normalizeFlyoutConfig(id, definition.flyout, batteryDefaults.flyout),
     tooltip: normalizeBatteryTooltipConfig(id, definition.tooltip, batteryDefaults.tooltip),
     indicator: normalizeBatteryIndicatorMetrics(
       id,

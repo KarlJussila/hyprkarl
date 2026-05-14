@@ -13,7 +13,7 @@ Advanced users:
 ## Start Here
 
 - `config/layout.config.ts`: move the bar, reorder widget IDs, and toggle decorative corner curves
-- `config/widgets.config.ts`: change labels, commands, visibility rules, dropdown settings, and other high-level behavior
+- `config/widgets.config.ts`: change labels, commands, visibility rules, flyout settings, and other high-level behavior
 - `theme.scss`: change spacing, radii, typography, borders, and most visual styling through grouped public tokens
 
 ## Quick Examples
@@ -83,7 +83,7 @@ clockCompact: {
   display: {
     horizontal: "%H:%M",
   },
-  dropdown: {
+  flyout: {
     enabled: false,
   },
 },
@@ -118,7 +118,7 @@ clock: {
   display: {
     horizontal: "%a %-I:%M %p",
   },
-  dropdown: {
+  flyout: {
     enabled: false,
   },
 },
@@ -142,7 +142,7 @@ bluetooth: {
 },
 ```
 
-Add an audio widget with a dropdown slider, optional percentage label, and configurable tooltip text:
+Add an audio widget with a flyout slider, optional percentage label, and configurable tooltip text:
 
 ```ts
 audio: {
@@ -236,8 +236,8 @@ audio: {
 That means this is valid:
 
 ```ts
-clockCompact: { kind: "clock", dropdown: { enabled: false } },
-clockFull: { kind: "clock", dropdown: { enabled: true } },
+clockCompact: { kind: "clock", flyout: { enabled: false } },
+clockFull: { kind: "clock", flyout: { enabled: true } },
 ```
 
 Both are `clock` widgets, but they are different instances because their IDs are different.
@@ -253,7 +253,7 @@ The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock
 - `Bar shell`: island radius and border width
 - `Shared controls`: default button padding
 - `Widget tuning`: workspace, tray, and battery spacing
-- `Dropdowns`: dropdown padding and row sizing
+- `Flyouts`: flyout padding and row sizing
 
 Common styling changes:
 
@@ -261,7 +261,7 @@ Common styling changes:
 - rounder islands: raise `$radius`
 - hide only the decorative curve cutouts: set `showCornerCurves: false` in `layout.config.ts`
 - softer separators: change `$border`
-- bigger dropdown rows: raise `$dropdown-row-pad-y`
+- bigger flyout rows: raise `$flyout-row-pad-y`
 - more obvious active workspace: change `$accent`
 
 Theme tokens stay short because `theme.scss` is already a namespace. Rendered CSS classes stay prefixed (`bar-*`, `widget-*`, `is-*`) because they live in the global selector space and act as the public styling hooks for the actual widget tree.
@@ -288,7 +288,7 @@ Each widget folder now has a split responsibility:
 - `WidgetName.tsx`: top-level view component, kept intentionally small
 - helper files: extracted behavior, service integration, and sub-components
 
-Shared internal helpers live in `widgets/shared/`. For example, `DropdownButton.tsx` centralizes dropdown trigger wiring so widgets like clock and battery do not duplicate it.
+Shared internal helpers live in `widgets/shared/`. For example, `FlyoutButton.tsx` centralizes flyout trigger wiring so widgets like clock and battery do not duplicate it.
 
 ## Styling Architecture
 
@@ -307,7 +307,7 @@ Examples of safe styling hooks:
 - `widget-workspace-button`
 - `widget-battery-display`
 - `widget-tray-panel`
-- `dropdown-row`
+- `flyout-row`
 
 Internal helper classes may still exist to support layout math, but styling changes should usually start from the public hooks above.
 

@@ -8,7 +8,7 @@ type Props = {
   onReveal: () => void
 }
 
-export function createDropdownVisibility({
+export function createFlyoutVisibility({
   open,
   revealTrigger,
   revealDuration,
@@ -81,4 +81,3 @@ export function createDropdownVisibility({
     contentRevealed,
   }
 }
-

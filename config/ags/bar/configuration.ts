@@ -9,7 +9,7 @@
 
 export type BarEdge = "top" | "bottom" | "left" | "right"
 export type TrayDirection = "start" | "end"
-export type DropdownAlign = "start" | "center" | "end"
+export type FlyoutAlign = "start" | "center" | "end"
 
 export type BarLayoutConfig = {
   edge: BarEdge
@@ -33,15 +33,15 @@ export type NormalizedCommandConfig = {
   secondary?: string
 }
 
-export type DropdownConfig = {
+export type FlyoutConfig = {
   enabled?: boolean
-  align?: DropdownAlign
+  align?: FlyoutAlign
   gap?: number
 }
 
-export type NormalizedDropdownConfig = {
+export type NormalizedFlyoutConfig = {
   enabled: boolean
-  align: DropdownAlign
+  align: FlyoutAlign
   gap: number
 }
 
@@ -209,7 +209,7 @@ export type TrayWidgetConfig = {
 export type ClockWidgetConfig = {
   kind: "clock"
   display?: ClockDisplayConfig
-  dropdown?: DropdownConfig
+  flyout?: FlyoutConfig
 }
 
 export type CaffeineWidgetConfig = {
@@ -235,7 +235,7 @@ export type AudioWidgetConfig = {
   kind: "audio"
   showPercentage?: boolean
   command?: string
-  dropdown?: DropdownConfig
+  flyout?: FlyoutConfig
   tooltip?: AudioTooltipConfig
   advanced?: {
     slider?: SliderMetrics
@@ -246,7 +246,7 @@ export type BatteryWidgetConfig = {
   kind: "battery"
   showPercentage?: boolean
   lowThreshold?: number
-  dropdown?: DropdownConfig
+  flyout?: FlyoutConfig
   tooltip?: BatteryTooltipConfig
   advanced?: {
     indicator?: BatteryIndicatorMetrics
@@ -297,7 +297,7 @@ export type NormalizedTrayWidgetConfig = {
 export type NormalizedClockWidgetConfig = {
   kind: "clock"
   display: NormalizedClockDisplayConfig
-  dropdown: NormalizedDropdownConfig
+  flyout: NormalizedFlyoutConfig
 }
 
 export type NormalizedCaffeineWidgetConfig = {
@@ -321,7 +321,7 @@ export type NormalizedAudioWidgetConfig = {
   kind: "audio"
   showPercentage: boolean
   command: string
-  dropdown: NormalizedDropdownConfig
+  flyout: NormalizedFlyoutConfig
   tooltip: NormalizedAudioTooltipConfig
   slider: NormalizedSliderMetrics
 }
@@ -330,7 +330,7 @@ export type NormalizedBatteryWidgetConfig = {
   kind: "battery"
   showPercentage: boolean
   lowThreshold: number
-  dropdown: NormalizedDropdownConfig
+  flyout: NormalizedFlyoutConfig
   tooltip: NormalizedBatteryTooltipConfig
   indicator: NormalizedBatteryIndicatorMetrics
 }

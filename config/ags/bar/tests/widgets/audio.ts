@@ -27,7 +27,7 @@ test("normalizes audio widget defaults from minimal config", () => {
   const audio = resolved.widgets.audio as NormalizedAudioWidgetConfig
   assert.equal(audio.showPercentage, true)
   assert.equal(audio.command, "hk-launch-audio")
-  assert.equal(audio.dropdown.enabled, true)
+  assert.equal(audio.flyout.enabled, true)
   assert.equal(audio.tooltip.active, "{device} {percentage}")
   assert.equal(audio.tooltip.unavailable, "Audio unavailable")
   assert.ok(audio.slider.trackLength > 0)
@@ -52,7 +52,7 @@ test("normalizes audio widget overrides", () => {
         kind: "audio",
         showPercentage: false,
         command: "custom-audio-command",
-        dropdown: {
+        flyout: {
           enabled: false,
           align: "end",
           gap: 6,
@@ -80,9 +80,9 @@ test("normalizes audio widget overrides", () => {
   const audio = resolved.widgets.audio as NormalizedAudioWidgetConfig
   assert.equal(audio.showPercentage, false)
   assert.equal(audio.command, "custom-audio-command")
-  assert.equal(audio.dropdown.enabled, false)
-  assert.equal(audio.dropdown.align, "end")
-  assert.equal(audio.dropdown.gap, 6)
+  assert.equal(audio.flyout.enabled, false)
+  assert.equal(audio.flyout.align, "end")
+  assert.equal(audio.flyout.gap, 6)
   assert.equal(audio.tooltip.active, "{percentage}")
   assert.equal(audio.tooltip.muted, "quiet")
   assert.equal(audio.tooltip.unavailable, "Audio unavailable")

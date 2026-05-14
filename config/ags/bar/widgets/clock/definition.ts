@@ -4,7 +4,7 @@ import type {
 } from "../../configuration.ts"
 import {
   normalizeClockDisplay,
-  normalizeDropdownConfig,
+  normalizeFlyoutConfig,
 } from "../shared/normalize.ts"
 
 const clockDefaults: Omit<NormalizedClockWidgetConfig, "kind"> = {
@@ -16,7 +16,7 @@ const clockDefaults: Omit<NormalizedClockWidgetConfig, "kind"> = {
       bottom: "%p",
     },
   },
-  dropdown: {
+  flyout: {
     enabled: true,
     align: "center",
     gap: 0,
@@ -30,7 +30,6 @@ export function normalizeClockWidgetConfig(
   return {
     kind: "clock",
     display: normalizeClockDisplay(id, definition.display, clockDefaults.display),
-    dropdown: normalizeDropdownConfig(id, definition.dropdown, clockDefaults.dropdown),
+    flyout: normalizeFlyoutConfig(id, definition.flyout, clockDefaults.flyout),
   }
 }
-

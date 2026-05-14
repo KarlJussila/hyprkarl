@@ -1,8 +1,8 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { type NormalizedBatteryWidgetConfig } from "../../configuration.ts"
-import { type DropdownPlacement } from "../../layout/placement.ts"
-import DropdownButton from "../shared/DropdownButton.tsx"
-import { createWidgetDropdownName } from "../shared/instanceNames.ts"
+import { type FlyoutPlacement } from "../../layout/placement.ts"
+import FlyoutButton from "../shared/FlyoutButton.tsx"
+import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState } from "./batteryState"
 import { formatBatteryPercentage } from "./batteryStateShared.ts"
@@ -10,7 +10,7 @@ import PowerProfileMenu from "./PowerProfileMenu"
 
 type Props = {
   id: string
-  placement: DropdownPlacement
+  placement: FlyoutPlacement
   monitor: Gdk.Monitor
   config: NormalizedBatteryWidgetConfig
 }
@@ -67,28 +67,28 @@ export default function BatteryWidget({ id, placement, monitor, config }: Props)
       )
 
   return (
-    <DropdownButton
+    <FlyoutButton
       buttonClass={`widget-battery-button orientation-${placement.orientation} is-${placement.orientation}`}
       hexpand={placement.isVertical}
       halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       placement={placement}
       monitor={monitor}
-      dropdownName={createWidgetDropdownName("battery-menu", id, monitor.connector)}
-      dropdown={config.dropdown}
+      flyoutName={createWidgetFlyoutName("battery-menu", id, monitor.connector)}
+      flyout={config.flyout}
       tooltipText={batteryState.tooltipText}
       visible={batteryState.isPresent}
-      renderDropdownContent={(closeDropdown) => (
+      renderFlyoutContent={(closeFlyout) => (
         <PowerProfileMenu
           activeProfile={batteryState.activePowerProfile}
           profiles={batteryState.availablePowerProfiles}
           onSelect={(profileName) => {
             batteryState.setActivePowerProfile(profileName)
-            closeDropdown()
+            closeFlyout()
           }}
         />
       )}
     >
       {batteryContent}
-    </DropdownButton>
+    </FlyoutButton>
   )
 }

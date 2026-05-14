@@ -43,7 +43,7 @@ const widgetDefinitions = {
         bottom: "%p",
       },
     },
-    dropdown: {
+    flyout: {
       enabled: true,
       align: "center",
       gap: 0,
@@ -70,7 +70,7 @@ const widgetDefinitions = {
     kind: "audio",
     showPercentage: false,
     command: "hk-launch-audio",
-    dropdown: {
+    flyout: {
       enabled: true,
       align: "center",
       gap: 0,
@@ -86,7 +86,7 @@ const widgetDefinitions = {
     kind: "battery",
     showPercentage: true,
     lowThreshold: 0.15,
-    dropdown: {
+    flyout: {
       enabled: true,
       align: "center",
       gap: 0,
@@ -102,7 +102,7 @@ const widgetDefinitions = {
     kind: "battery",
     showPercentage: false,
     lowThreshold: 0.15,
-    dropdown: {
+    flyout: {
       enabled: true,
       align: "center",
       gap: 0,

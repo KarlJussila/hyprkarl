@@ -26,9 +26,9 @@ test("normalizes clock widget defaults from minimal config", () => {
     middle: "%M",
     bottom: "%p",
   })
-  assert.equal(clock.dropdown.enabled, true)
-  assert.equal(clock.dropdown.align, "center")
-  assert.equal(clock.dropdown.gap, 0)
+  assert.equal(clock.flyout.enabled, true)
+  assert.equal(clock.flyout.align, "center")
+  assert.equal(clock.flyout.gap, 0)
 })
 
 test("normalizes clock widget overrides", () => {
@@ -45,7 +45,7 @@ test("normalizes clock widget overrides", () => {
     {
       clock: {
         kind: "clock",
-        dropdown: {
+        flyout: {
           enabled: false,
         },
         display: {
@@ -58,7 +58,7 @@ test("normalizes clock widget overrides", () => {
   )
 
   const clock = resolved.widgets.clock as NormalizedClockWidgetConfig
-  assert.equal(clock.dropdown.enabled, false)
+  assert.equal(clock.flyout.enabled, false)
   assert.deepEqual(clock.display.vertical, {
     top: "%H",
     middle: "%M",

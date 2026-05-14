@@ -23,7 +23,7 @@ test("normalizes battery widget defaults from minimal config", () => {
   const battery = resolved.widgets.battery as NormalizedBatteryWidgetConfig
   assert.equal(battery.showPercentage, true)
   assert.equal(battery.lowThreshold, 0.15)
-  assert.equal(battery.dropdown.enabled, true)
+  assert.equal(battery.flyout.enabled, true)
   assert.equal(battery.tooltip.charging, "{power}↑ {time}")
   assert.equal(battery.tooltip.fallback, "{percentage}")
   assert.equal(battery.indicator.terminalHeight, 4)

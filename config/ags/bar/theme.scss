@@ -7,7 +7,7 @@
 // - island shape: $radius / $border-width
 // - button spacing: $button-pad-x / $button-pad-y
 // - glyph buttons: $glyph-pad-y / $workspace-edge-pad
-// - dropdown feel: $dropdown-pad / $dropdown-row-radius
+// - flyout feel: $flyout-pad / $flyout-row-radius
 
 // Core colors
 $text: #{"@theme_fg_color"};
@@ -43,8 +43,8 @@ $battery-gap-x: 4px;
 $battery-gap-y: 2px;
 $battery-font-size: 12px;
 
-// Dropdowns
-$dropdown-pad: 4px;
-$dropdown-row-pad-y: 4px;
-$dropdown-row-pad-x: 8px;
-$dropdown-row-radius: 6px;
+// Flyouts
+$flyout-pad: 4px;
+$flyout-row-pad-y: 4px;
+$flyout-row-pad-x: 8px;
+$flyout-row-radius: 6px;

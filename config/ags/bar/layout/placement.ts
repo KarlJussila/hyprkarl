@@ -2,7 +2,7 @@ import { Astal, Gtk } from "ags/gtk4"
 import { type BarEdge, type TrayDirection } from "../configuration"
 
 export type BarOrientation = "horizontal" | "vertical"
-export type DropdownFlyout = "down" | "up" | "right" | "left"
+export type FlyoutDirection = "down" | "up" | "right" | "left"
 export type IslandSlot = "start" | "center" | "end"
 export type BarWindowMargins = {
   top: number
@@ -40,8 +40,8 @@ export type BarPlacement = {
     margins: BarWindowMargins
     origin: (args: BarWindowOriginArgs) => { x: number; y: number }
   }
-  dropdown: {
-    flyout: DropdownFlyout
+  flyout: {
+    direction: FlyoutDirection
     frameHalign: Gtk.Align
     frameValign: Gtk.Align
     anchorHalign: Gtk.Align
@@ -54,7 +54,7 @@ export type BarPlacement = {
   }
 }
 
-export type DropdownPlacement = Pick<BarPlacement, "edge" | "orientation" | "isVertical" | "window" | "dropdown">
+export type FlyoutPlacement = Pick<BarPlacement, "edge" | "orientation" | "isVertical" | "window" | "flyout">
 export type TrayPlacement = Pick<BarPlacement, "edge" | "orientation" | "isVertical" | "layoutOrientation" | "tray">
 
 export function barOrientation(edge: BarEdge): BarOrientation {
@@ -198,8 +198,8 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
           edge,
           margins,
         }),
-        dropdown: {
-          flyout: "up",
+        flyout: {
+          direction: "up",
           frameHalign: Gtk.Align.START,
           frameValign: Gtk.Align.END,
           anchorHalign: Gtk.Align.START,
@@ -227,8 +227,8 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
           edge,
           margins,
         }),
-        dropdown: {
-          flyout: "right",
+        flyout: {
+          direction: "right",
           frameHalign: Gtk.Align.START,
           frameValign: Gtk.Align.START,
           anchorHalign: Gtk.Align.START,
@@ -253,8 +253,8 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
           edge,
           margins,
         }),
-        dropdown: {
-          flyout: "left",
+        flyout: {
+          direction: "left",
           frameHalign: Gtk.Align.END,
           frameValign: Gtk.Align.START,
           anchorHalign: Gtk.Align.END,
@@ -280,8 +280,8 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
           edge,
           margins,
         }),
-        dropdown: {
-          flyout: "down",
+        flyout: {
+          direction: "down",
           frameHalign: Gtk.Align.START,
           frameValign: Gtk.Align.START,
           anchorHalign: Gtk.Align.START,

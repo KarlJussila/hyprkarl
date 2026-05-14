@@ -3,11 +3,11 @@ import { execAsync } from "ags/process"
 import { Gdk, Gtk } from "ags/gtk4"
 import AstalWp from "gi://AstalWp"
 import { type NormalizedAudioWidgetConfig } from "../../configuration.ts"
-import { type DropdownPlacement } from "../../layout/placement.ts"
-import DropdownButton from "../shared/DropdownButton.tsx"
-import { createWidgetDropdownName } from "../shared/instanceNames.ts"
+import { type FlyoutPlacement } from "../../layout/placement.ts"
+import FlyoutButton from "../shared/FlyoutButton.tsx"
+import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import AudioIndicator from "./AudioIndicator.tsx"
-import AudioSliderDropdown from "./AudioSliderDropdown.tsx"
+import AudioSliderFlyout from "./AudioSliderFlyout.tsx"
 import {
   formatAudioPercentage,
   formatAudioTooltip,
@@ -16,7 +16,7 @@ import {
 
 type Props = {
   id: string
-  placement: DropdownPlacement
+  placement: FlyoutPlacement
   monitor: Gdk.Monitor
   config: NormalizedAudioWidgetConfig
 }
@@ -33,18 +33,18 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
 
   if (!speaker) {
     return (
-      <DropdownButton
+      <FlyoutButton
         buttonClass={`widget-audio-button orientation-${placement.orientation} is-${placement.orientation}`}
         hexpand={placement.isVertical}
         halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
         placement={placement}
         monitor={monitor}
-        dropdownName={createWidgetDropdownName("audio-menu", id, monitor.connector)}
-        dropdown={config.dropdown}
+        flyoutName={createWidgetFlyoutName("audio-menu", id, monitor.connector)}
+        flyout={config.flyout}
         tooltipText={formatUnavailableAudioTooltip(config.tooltip)}
         execPrimary={launchAudio}
         execSecondary={launchAudio}
-        renderDropdownContent={() => <label label="Audio unavailable" />}
+        renderFlyoutContent={() => <label label="Audio unavailable" />}
       >
         <box
           class={`widget-audio-display orientation-${placement.orientation} is-${placement.orientation}`}
@@ -60,7 +60,7 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
             muted={unavailableMuted}
           />
         </box>
-      </DropdownButton>
+      </FlyoutButton>
     )
   }
 
@@ -100,19 +100,19 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
   )
 
   return (
-    <DropdownButton
+    <FlyoutButton
       buttonClass={`widget-audio-button orientation-${placement.orientation} is-${placement.orientation}`}
       hexpand={placement.isVertical}
       halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       placement={placement}
       monitor={monitor}
-      dropdownName={createWidgetDropdownName("audio-menu", id, monitor.connector)}
-      dropdown={config.dropdown}
+      flyoutName={createWidgetFlyoutName("audio-menu", id, monitor.connector)}
+      flyout={config.flyout}
       tooltipText={tooltipText}
       execPrimary={launchAudio}
       execSecondary={launchAudio}
-      renderDropdownContent={() => (
-        <AudioSliderDropdown
+      renderFlyoutContent={() => (
+        <AudioSliderFlyout
           edge={placement.edge}
           volume={volume}
           onChange={(next) => speaker.set_volume(next)}
@@ -121,6 +121,6 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
       )}
     >
       {audioContent}
-    </DropdownButton>
+    </FlyoutButton>
   )
 }

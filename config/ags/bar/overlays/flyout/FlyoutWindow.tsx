@@ -1,21 +1,21 @@
 import { Accessor, createComputed, createEffect, onCleanup } from "ags"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
-import { type DropdownPlacement, placementClasses } from "../../layout/placement"
-import DropdownSurface from "./DropdownSurface"
-import { createDropdownVisibility } from "./dropdownVisibility"
+import { type FlyoutPlacement, placementClasses } from "../../layout/placement"
+import FlyoutSurface from "./FlyoutSurface"
+import { createFlyoutVisibility } from "./flyoutVisibility"
 
-type DropdownCoordinates = {
+type FlyoutCoordinates = {
   x: number
   y: number
 }
 
-export type DropdownWindowProps = {
-  placement: DropdownPlacement
+export type FlyoutWindowProps = {
+  placement: FlyoutPlacement
   name: string
   monitor: Gdk.Monitor
   open: Accessor<boolean>
-  position?: Accessor<DropdownCoordinates>
+  position?: Accessor<FlyoutCoordinates>
   frameSnapClass?: Accessor<string>
   revealTrigger?: Accessor<unknown>
   revealTransition?: "down" | "up" | "right" | "left"
@@ -27,7 +27,7 @@ export type DropdownWindowProps = {
   onFrameReady?: (frame: Gtk.Box) => void
 }
 
-export default function DropdownWindow({
+export default function FlyoutWindow({
   placement,
   name,
   monitor,
@@ -38,11 +38,11 @@ export default function DropdownWindow({
   revealTransition = "down",
   onReveal = () => {},
   onRequestClose,
-  windowClass = "dropdown-window",
-  surfaceClass = "dropdown-surface",
+  windowClass = "flyout-window",
+  surfaceClass = "flyout-surface",
   children,
   onFrameReady = () => {},
-}: DropdownWindowProps) {
+}: FlyoutWindowProps) {
   const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor
   const revealDuration = 180
   const transitionType = revealTransition === "up"
@@ -57,7 +57,7 @@ export default function DropdownWindow({
   const monitorGeometry = monitor.get_geometry()
   const resolvedPosition = createComputed(() => position ? position() : { x: 0, y: 0 })
   const resolvedFrameSnapClass = createComputed(() => frameSnapClass ? frameSnapClass() : "")
-  const { windowVisible, contentRevealed } = createDropdownVisibility({
+  const { windowVisible, contentRevealed } = createFlyoutVisibility({
     open,
     revealTrigger,
     revealDuration,
@@ -66,7 +66,7 @@ export default function DropdownWindow({
 
   const shieldLayer = (
     <box
-      class="dropdown-shield"
+      class="flyout-shield"
       canTarget
       widthRequest={monitorGeometry.width}
       heightRequest={monitorGeometry.height}
@@ -79,7 +79,7 @@ export default function DropdownWindow({
   ) as Gtk.Box
 
   const surface = (
-    <DropdownSurface
+    <FlyoutSurface
       placement={placement}
       frameSnapClass={resolvedFrameSnapClass}
       contentRevealed={contentRevealed}
@@ -89,7 +89,7 @@ export default function DropdownWindow({
       onFrameReady={onFrameReady}
     >
       {children}
-    </DropdownSurface>
+    </FlyoutSurface>
   ) as Gtk.Widget
 
   createEffect(() => {
@@ -97,7 +97,7 @@ export default function DropdownWindow({
     windowLayout?.move(surface, x, y)
   })
 
-  const dropdownWindow = (
+  const flyoutWindow = (
     <window
       name={name}
       class={`${windowClass} ${placementClasses(placement)}`}
@@ -120,12 +120,12 @@ export default function DropdownWindow({
     />
   ) as Astal.Window
 
-  app.add_window(dropdownWindow)
+  app.add_window(flyoutWindow)
 
   onCleanup(() => {
-    dropdownWindow.destroy()
+    flyoutWindow.destroy()
     windowLayout = null
   })
 
-  return dropdownWindow
+  return flyoutWindow
 }

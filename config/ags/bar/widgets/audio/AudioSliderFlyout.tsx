@@ -12,7 +12,7 @@ type Props = {
   metrics: NormalizedSliderMetrics
 }
 
-export default function AudioSliderDropdown({
+export default function AudioSliderFlyout({
   edge,
   volume,
   onChange,

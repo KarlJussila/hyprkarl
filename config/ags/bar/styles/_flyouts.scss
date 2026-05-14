@@ -1,99 +1,99 @@
 @use "../theme" as theme;
 @use "./shared" as shared;
 
-window.dropdown-window {
+window.flyout-window {
   background: transparent;
   font-family: theme.$font-mono;
   font-size: theme.$font-size;
 
-  .dropdown-surface {
+  .flyout-surface {
     @include shared.reset-flat-surface;
   }
 
-  .dropdown-frame {
+  .flyout-frame {
     @include shared.bar-surface;
     border-radius: theme.$radius;
-    padding: theme.$dropdown-pad;
+    padding: theme.$flyout-pad;
     opacity: 0;
     transition: opacity 180ms ease;
   }
 
-  .dropdown-frame.revealed {
+  .flyout-frame.revealed {
     opacity: 1;
   }
 
   &.edge-top {
-    .dropdown-frame.snapped-left {
+    .flyout-frame.snapped-left {
       border-top-left-radius: 0px;
     }
 
-    .dropdown-frame.snapped-right {
+    .flyout-frame.snapped-right {
       border-top-right-radius: 0px;
     }
   }
 
   &.edge-bottom {
-    .dropdown-frame.snapped-left {
+    .flyout-frame.snapped-left {
       border-bottom-left-radius: 0px;
     }
 
-    .dropdown-frame.snapped-right {
+    .flyout-frame.snapped-right {
       border-bottom-right-radius: 0px;
     }
   }
 
   &.edge-left {
-    .dropdown-frame.snapped-top {
+    .flyout-frame.snapped-top {
       border-top-left-radius: 0px;
     }
 
-    .dropdown-frame.snapped-bottom {
+    .flyout-frame.snapped-bottom {
       border-bottom-left-radius: 0px;
     }
   }
 
   &.edge-right {
-    .dropdown-frame.snapped-top {
+    .flyout-frame.snapped-top {
       border-top-right-radius: 0px;
     }
 
-    .dropdown-frame.snapped-bottom {
+    .flyout-frame.snapped-bottom {
       border-bottom-right-radius: 0px;
     }
   }
 
-  .dropdown-body {
+  .flyout-body {
     border-spacing: 0px;
   }
 
-  .dropdown-revealer.edge-top {
+  .flyout-revealer.edge-top {
     margin-top: 1px;
   }
 
-  .dropdown-revealer.edge-bottom {
+  .flyout-revealer.edge-bottom {
     margin-bottom: 1px;
   }
 
-  .dropdown-revealer.edge-left {
+  .flyout-revealer.edge-left {
     margin-left: 1px;
   }
 
-  .dropdown-revealer.edge-right {
+  .flyout-revealer.edge-right {
     margin-right: 1px;
   }
 
-  .dropdown-row {
+  .flyout-row {
     @include shared.reset-flat-button;
-    padding: theme.$dropdown-row-pad-y theme.$dropdown-row-pad-x;
-    border-radius: theme.$dropdown-row-radius;
+    padding: theme.$flyout-row-pad-y theme.$flyout-row-pad-x;
+    border-radius: theme.$flyout-row-radius;
   }
 
-  .dropdown-row:hover,
-  .dropdown-row.active {
+  .flyout-row:hover,
+  .flyout-row.active {
     background-color: theme.$border;
   }
 
-  .dropdown-row.active {
+  .flyout-row.active {
     color: theme.$accent;
   }
 
@@ -111,11 +111,11 @@ window.dropdown-window {
   .bar-slider-thumb { color: theme.$border; }
   .bar-slider-thumb-border { color: theme.$border; }
 
-  .dropdown-row-check {
+  .flyout-row-check {
     opacity: 0.95;
   }
 
-  .dropdown-shield {
+  .flyout-shield {
     background-color: rgba(0, 0, 0, 0.001);
   }
 }

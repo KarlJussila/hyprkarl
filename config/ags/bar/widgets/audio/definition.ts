@@ -5,7 +5,7 @@ import type {
 import {
   normalizeAudioTooltipConfig,
   normalizeBoolean,
-  normalizeDropdownConfig,
+  normalizeFlyoutConfig,
   normalizeRequiredCommand,
   normalizeSliderMetrics,
   widgetContext,
@@ -14,7 +14,7 @@ import {
 const audioDefaults: Omit<NormalizedAudioWidgetConfig, "kind"> = {
   showPercentage: true,
   command: "hk-launch-audio",
-  dropdown: {
+  flyout: {
     enabled: true,
     align: "center",
     gap: 0,
@@ -53,7 +53,7 @@ export function normalizeAudioWidgetConfig(
       definition.command,
       audioDefaults.command,
     ),
-    dropdown: normalizeDropdownConfig(id, definition.dropdown, audioDefaults.dropdown),
+    flyout: normalizeFlyoutConfig(id, definition.flyout, audioDefaults.flyout),
     tooltip: normalizeAudioTooltipConfig(id, definition.tooltip, audioDefaults.tooltip),
     slider: normalizeSliderMetrics(id, definition.advanced?.slider, audioDefaults.slider),
   }

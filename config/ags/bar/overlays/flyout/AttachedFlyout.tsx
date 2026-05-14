@@ -1,35 +1,35 @@
 import { Accessor, createEffect, createState, onCleanup } from "ags"
 import { Gtk } from "ags/gtk4"
 import { Timer, interval } from "ags/time"
-import { type DropdownAlign } from "../../configuration"
-import { type DropdownPlacement } from "../../layout/placement"
-import DropdownWindow, { type DropdownWindowProps } from "./DropdownWindow"
+import { type FlyoutAlign } from "../../configuration"
+import { type FlyoutPlacement } from "../../layout/placement"
+import FlyoutWindow, { type FlyoutWindowProps } from "./FlyoutWindow"
 import {
-  computeDropdownPosition,
+  computeFlyoutPosition,
   measureWidget,
   rootRelativeAnchorBounds,
-} from "./dropdownGeometry"
+} from "./flyoutGeometry"
 
-type Props = Omit<DropdownWindowProps, "position" | "frameSnapClass" | "revealTrigger" | "onReveal" | "onFrameReady"> & {
-  placement: DropdownPlacement
+type Props = Omit<FlyoutWindowProps, "position" | "frameSnapClass" | "revealTrigger" | "onReveal" | "onFrameReady"> & {
+  placement: FlyoutPlacement
   trigger: Accessor<Gtk.Widget | null>
-  align?: DropdownAlign
+  align?: FlyoutAlign
   gap?: number
 }
 
-export default function AttachedDropdown({
+export default function AttachedFlyout({
   placement,
   open,
   trigger,
   monitor,
   align = "center",
   gap = 6,
-  ...dropdown
+  ...flyout
 }: Props) {
   const animationDuration = 220
   const [frameWidget, setFrameWidget] = createState<Gtk.Box | null>(null)
   const [frameSnapClass, setFrameSnapClass] = createState("")
-  const [dropdownPosition, setDropdownPosition] = createState({ x: 0, y: 0 })
+  const [flyoutPosition, setFlyoutPosition] = createState({ x: 0, y: 0 })
   const monitorGeometry = monitor.get_geometry()
   let animationTracker: Timer | null = null
 
@@ -38,7 +38,7 @@ export default function AttachedDropdown({
     animationTracker = null
   }
 
-  function currentDropdownSize() {
+  function currentFlyoutSize() {
     const frame = frameWidget()
     if (!frame) {
       return { width: 0, height: 0 }
@@ -74,23 +74,23 @@ export default function AttachedDropdown({
     })
     if (!rootRelativeBounds) return
 
-    const nextDropdownPosition = computeDropdownPosition({
+    const nextFlyoutPosition = computeFlyoutPosition({
       edge: placement.edge,
       align,
       anchorWidth: rootRelativeBounds.width,
       anchorHeight: rootRelativeBounds.height,
       anchorX: rootOrigin.x + rootRelativeBounds.x,
       anchorY: rootOrigin.y + rootRelativeBounds.y,
-      dropdownSize: currentDropdownSize(),
+      flyoutSize: currentFlyoutSize(),
       gap,
       monitorWidth: monitorGeometry.width,
       monitorHeight: monitorGeometry.height,
     })
 
-    setFrameSnapClass(nextDropdownPosition.edgeClass)
-    setDropdownPosition({
-      x: nextDropdownPosition.x,
-      y: nextDropdownPosition.y,
+    setFrameSnapClass(nextFlyoutPosition.edgeClass)
+    setFlyoutPosition({
+      x: nextFlyoutPosition.x,
+      y: nextFlyoutPosition.y,
     })
   }
 
@@ -100,7 +100,7 @@ export default function AttachedDropdown({
 
     updatePosition()
 
-    // The dropdown's measured size changes while the revealer animates, so we keep
+    // The flyout's measured size changes while the revealer animates, so we keep
     // nudging its position until the animation settles. Otherwise edge-clamped menus
     // visibly "jump" after the first frame.
     animationTracker = interval(16, () => {
@@ -123,15 +123,15 @@ export default function AttachedDropdown({
   })
 
   return (
-    <DropdownWindow
-      {...dropdown}
+    <FlyoutWindow
+      {...flyout}
       placement={placement}
       monitor={monitor}
       open={open}
-      position={dropdownPosition}
+      position={flyoutPosition}
       frameSnapClass={frameSnapClass}
       revealTrigger={trigger}
-      revealTransition={placement.dropdown.flyout}
+      revealTransition={placement.flyout.direction}
       onReveal={updatePosition}
       onFrameReady={setFrameWidget}
     />

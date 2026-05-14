@@ -2,10 +2,10 @@ import { Gdk, Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import GLib from "gi://GLib?version=2.0"
 import { type NormalizedClockWidgetConfig } from "../../configuration.ts"
-import { type DropdownPlacement } from "../../layout/placement.ts"
-import DropdownButton from "../shared/DropdownButton.tsx"
-import { createWidgetDropdownName } from "../shared/instanceNames.ts"
-import CalendarDropdownContent from "./CalendarDropdownContent"
+import { type FlyoutPlacement } from "../../layout/placement.ts"
+import FlyoutButton from "../shared/FlyoutButton.tsx"
+import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
+import CalendarFlyoutContent from "./CalendarFlyoutContent"
 
 function formatTime(time: GLib.DateTime, format: string) {
   return time.format(format) ?? ""
@@ -13,7 +13,7 @@ function formatTime(time: GLib.DateTime, format: string) {
 
 type Props = {
   id: string
-  placement: DropdownPlacement
+  placement: FlyoutPlacement
   monitor: Gdk.Monitor
   config: NormalizedClockWidgetConfig
 }
@@ -44,17 +44,17 @@ export default function ClockWidget({ id, placement, monitor, config }: Props) {
   )
 
   return (
-    <DropdownButton
+    <FlyoutButton
       buttonClass={`widget-clock-button orientation-${placement.orientation} is-${placement.orientation}`}
       hexpand={placement.isVertical}
       halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       placement={placement}
       monitor={monitor}
-      dropdownName={createWidgetDropdownName("calendar-menu", id, monitor.connector)}
-      dropdown={config.dropdown}
-      renderDropdownContent={() => <CalendarDropdownContent currentTime={currentTime} />}
+      flyoutName={createWidgetFlyoutName("calendar-menu", id, monitor.connector)}
+      flyout={config.flyout}
+      renderFlyoutContent={() => <CalendarFlyoutContent currentTime={currentTime} />}
     >
       {placement.isVertical ? verticalClock : horizontalClock}
-    </DropdownButton>
+    </FlyoutButton>
   )
 }

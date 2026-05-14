@@ -11,15 +11,15 @@ import type {
   BatteryIndicatorMetrics,
   BatteryTooltipConfig,
   ClockDisplayConfig,
-  DropdownAlign,
-  DropdownConfig,
+  FlyoutAlign,
+  FlyoutConfig,
   NormalizedAudioTooltipConfig,
   NormalizedBatteryIndicatorMetrics,
   NormalizedBatteryTooltipConfig,
   NormalizedClockDisplayConfig,
   NormalizedSliderMetrics,
   NormalizedCommandConfig,
-  NormalizedDropdownConfig,
+  NormalizedFlyoutConfig,
   NormalizedSwitchMetrics,
   NormalizedTrayRevealConfig,
   NormalizedWorkspaceVisibilityConfig,
@@ -259,10 +259,10 @@ export function normalizeOptionalLayoutWidgetId(context: ValidationContext, valu
   return normalizeLayoutWidgetId(context, value)
 }
 
-export function normalizeDropdownAlign(
+export function normalizeFlyoutAlign(
   context: ValidationContext,
   value: unknown,
-  fallback: DropdownAlign,
+  fallback: FlyoutAlign,
 ) {
   const align = value ?? fallback
   if (align !== "start" && align !== "center" && align !== "end") {
@@ -272,12 +272,12 @@ export function normalizeDropdownAlign(
   return align
 }
 
-export function normalizeDropdownConfig(
+export function normalizeFlyoutConfig(
   id: string,
-  config: DropdownConfig | undefined,
-  defaults: NormalizedDropdownConfig,
-): NormalizedDropdownConfig {
-  const context = widgetContext(id, "dropdown")
+  config: FlyoutConfig | undefined,
+  defaults: NormalizedFlyoutConfig,
+): NormalizedFlyoutConfig {
+  const context = widgetContext(id, "flyout")
   const rawConfig = normalizeObjectConfig(context, config)
 
   return {
@@ -286,7 +286,7 @@ export function normalizeDropdownConfig(
       rawConfig?.enabled,
       defaults.enabled,
     ),
-    align: normalizeDropdownAlign(
+    align: normalizeFlyoutAlign(
       childContext(context, "align"),
       rawConfig?.align,
       defaults.align,

@@ -1,9 +1,9 @@
 import { Accessor, createComputed } from "ags"
 import { Gtk } from "ags/gtk4"
-import { type DropdownPlacement } from "../../layout/placement"
+import { type FlyoutPlacement } from "../../layout/placement"
 
 type Props = {
-  placement: DropdownPlacement
+  placement: FlyoutPlacement
   frameSnapClass: Accessor<string>
   contentRevealed: Accessor<boolean>
   transitionDuration: number
@@ -13,7 +13,7 @@ type Props = {
   onFrameReady: (frame: Gtk.Box) => void
 }
 
-export default function DropdownSurface({
+export default function FlyoutSurface({
   placement,
   frameSnapClass,
   contentRevealed,
@@ -24,7 +24,7 @@ export default function DropdownSurface({
   onFrameReady,
 }: Props) {
   const frameClass = createComputed(() => {
-    const classes = ["dropdown-frame"]
+    const classes = ["flyout-frame"]
 
     if (contentRevealed()) classes.push("revealed")
 
@@ -44,18 +44,18 @@ export default function DropdownSurface({
         class={frameClass}
         hexpand={false}
         vexpand={false}
-        halign={placement.dropdown.frameHalign}
-        valign={placement.dropdown.frameValign}
+        halign={placement.flyout.frameHalign}
+        valign={placement.flyout.frameValign}
         $={onFrameReady}
-      >
+        >
         <revealer
-          class={`dropdown-revealer edge-${placement.edge}`}
+          class={`flyout-revealer edge-${placement.edge}`}
           transitionType={transitionType}
           transitionDuration={transitionDuration}
           revealChild={contentRevealed}
         >
           <box
-            class="dropdown-body"
+            class="flyout-body"
             spacing={2}
             orientation={Gtk.Orientation.VERTICAL}
           >
@@ -66,4 +66,3 @@ export default function DropdownSurface({
     </box>
   ) as Gtk.Box
 }
-

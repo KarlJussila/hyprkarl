@@ -18,7 +18,7 @@ type Props = {
   currentTime: Accessor<GLib.DateTime>
 }
 
-export default function CalendarDropdownContent({ currentTime }: Props) {
+export default function CalendarFlyoutContent({ currentTime }: Props) {
   return (
     <box orientation={Gtk.Orientation.VERTICAL}>
       <label label={currentTime(formatDate)} />
@@ -26,4 +26,3 @@ export default function CalendarDropdownContent({ currentTime }: Props) {
     </box>
   )
 }
-

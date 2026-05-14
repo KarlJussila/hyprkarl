@@ -1,17 +1,17 @@
 import { createState } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
-import type { NormalizedDropdownConfig } from "../../configuration.ts"
-import { type DropdownPlacement } from "../../layout/placement.ts"
-import AttachedDropdown from "../../overlays/dropdown/AttachedDropdown.tsx"
+import type { NormalizedFlyoutConfig } from "../../configuration.ts"
+import { type FlyoutPlacement } from "../../layout/placement.ts"
+import AttachedFlyout from "../../overlays/flyout/AttachedFlyout.tsx"
 import Button from "../../primitives/Button.tsx"
 import { type Accessor } from "ags"
 
 type Props = {
   buttonClass: string
-  placement: DropdownPlacement
+  placement: FlyoutPlacement
   monitor: Gdk.Monitor
-  dropdownName: string
-  dropdown: NormalizedDropdownConfig
+  flyoutName: string
+  flyout: NormalizedFlyoutConfig
   hexpand?: boolean
   halign?: Gtk.Align
   tooltipText?: string | Accessor<string>
@@ -20,15 +20,15 @@ type Props = {
   execSecondary?: () => void
   execMiddle?: () => void
   children?: JSX.Element | Array<JSX.Element>
-  renderDropdownContent: (closeDropdown: () => void) => JSX.Element
+  renderFlyoutContent: (closeFlyout: () => void) => JSX.Element
 }
 
-export default function DropdownButton({
+export default function FlyoutButton({
   buttonClass,
   placement,
   monitor,
-  dropdownName,
-  dropdown,
+  flyoutName,
+  flyout,
   hexpand,
   halign,
   tooltipText,
@@ -37,29 +37,29 @@ export default function DropdownButton({
   execSecondary,
   execMiddle,
   children,
-  renderDropdownContent,
+  renderFlyoutContent,
 }: Props) {
-  const [dropdownOpen, setDropdownOpen] = createState(false)
+  const [flyoutOpen, setFlyoutOpen] = createState(false)
   const [triggerWidget, setTriggerWidget] = createState<Gtk.Widget | null>(null)
-  const closeDropdown = () => setDropdownOpen(false)
+  const closeFlyout = () => setFlyoutOpen(false)
 
-  if (dropdown.enabled) {
-    const mountedDropdown = (
-      <AttachedDropdown
-        name={dropdownName}
+  if (flyout.enabled) {
+    const mountedFlyout = (
+      <AttachedFlyout
+        name={flyoutName}
         placement={placement}
         monitor={monitor}
         trigger={triggerWidget}
-        open={dropdownOpen}
-        onRequestClose={closeDropdown}
-        align={dropdown.align}
-        gap={dropdown.gap}
+        open={flyoutOpen}
+        onRequestClose={closeFlyout}
+        align={flyout.align}
+        gap={flyout.gap}
       >
-        {renderDropdownContent(closeDropdown)}
-      </AttachedDropdown>
+        {renderFlyoutContent(closeFlyout)}
+      </AttachedFlyout>
     )
 
-    void mountedDropdown
+    void mountedFlyout
   }
 
   return (
@@ -71,7 +71,7 @@ export default function DropdownButton({
       visible={visible}
       execSecondary={execSecondary}
       execMiddle={execMiddle}
-      $={dropdown.enabled
+      $={flyout.enabled
         ? (self) => {
             setTriggerWidget(self)
             self.connect("destroy", () => {
@@ -79,8 +79,8 @@ export default function DropdownButton({
             })
           }
         : undefined}
-      execPrimary={dropdown.enabled
-        ? () => setDropdownOpen(!dropdownOpen())
+      execPrimary={flyout.enabled
+        ? () => setFlyoutOpen(!flyoutOpen())
         : execPrimary}
     >
       {children}

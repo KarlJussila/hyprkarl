@@ -142,6 +142,21 @@ bluetooth: {
 },
 ```
 
+Add an audio widget with a dropdown slider, optional percentage label, and configurable tooltip text:
+
+```ts
+audio: {
+  kind: "audio",
+  showPercentage: true,
+  command: "hk-launch-audio",
+  tooltip: {
+    active: "{device} {percentage}",
+    muted: "Muted {device}",
+    unavailable: "Audio unavailable",
+  },
+},
+```
+
 Customize battery tooltip text without touching widget code:
 
 ```ts
@@ -162,6 +177,11 @@ Battery tooltip tokens:
 - `{time}`: remaining charge or discharge time when the service reports it, for example `2:00`
 - `{percentage}`: battery percentage, for example `42%`
 
+Audio tooltip tokens:
+
+- `{device}`: current output description when available, for example `Speakers`
+- `{percentage}`: current volume percentage, for example `42%`
+
 Advanced widget drawing overrides stay nested so the main config surface stays readable:
 
 ```ts
@@ -173,6 +193,27 @@ battery: {
       terminalWidth: 5,
       terminalHeight: 2,
       chargingGlyphFontSize: 10,
+    },
+  },
+},
+```
+
+Audio slider tuning uses the same nested pattern:
+
+```ts
+audio: {
+  kind: "audio",
+  advanced: {
+    slider: {
+      trackLength: 240,
+      trackThickness: 8,
+      trackRadius: 4,
+      fillRadius: 4,
+      borderWidth: 1,
+      thumbWidth: 12,
+      thumbHeight: 12,
+      thumbRadius: 6,
+      thumbVisible: false,
     },
   },
 },
@@ -201,7 +242,7 @@ clockFull: { kind: "clock", dropdown: { enabled: true } },
 
 Both are `clock` widgets, but they are different instances because their IDs are different.
 
-The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock`, `caffeine`, `bluetooth`, `network`, and `battery`.
+The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock`, `caffeine`, `audio`, `bluetooth`, `network`, and `battery`.
 
 ## Styling Guide
 

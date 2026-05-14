@@ -109,6 +109,30 @@ export type NormalizedSwitchMetrics = {
   fontFamily: string
 }
 
+export type SliderMetrics = {
+  trackLength?: number
+  trackThickness?: number
+  trackRadius?: number
+  fillRadius?: number
+  borderWidth?: number
+  thumbWidth?: number
+  thumbHeight?: number
+  thumbRadius?: number
+  thumbVisible?: boolean
+}
+
+export type NormalizedSliderMetrics = {
+  trackLength: number
+  trackThickness: number
+  trackRadius: number
+  fillRadius: number
+  borderWidth: number
+  thumbWidth: number
+  thumbHeight: number
+  thumbRadius: number
+  thumbVisible: boolean
+}
+
 export type BatteryIndicatorMetrics = {
   width?: number
   height?: number
@@ -143,6 +167,18 @@ export type NormalizedBatteryTooltipConfig = {
   discharging: string
   plugged: string
   fallback: string
+}
+
+export type AudioTooltipConfig = {
+  active?: string
+  muted?: string
+  unavailable?: string
+}
+
+export type NormalizedAudioTooltipConfig = {
+  active: string
+  muted: string
+  unavailable: string
 }
 
 export type MenuWidgetConfig = {
@@ -195,6 +231,17 @@ export type BluetoothWidgetConfig = {
   command?: string
 }
 
+export type AudioWidgetConfig = {
+  kind: "audio"
+  showPercentage?: boolean
+  command?: string
+  dropdown?: DropdownConfig
+  tooltip?: AudioTooltipConfig
+  advanced?: {
+    slider?: SliderMetrics
+  }
+}
+
 export type BatteryWidgetConfig = {
   kind: "battery"
   showPercentage?: boolean
@@ -214,6 +261,7 @@ export type WidgetDefinitionByKind = {
   caffeine: CaffeineWidgetConfig
   network: NetworkWidgetConfig
   bluetooth: BluetoothWidgetConfig
+  audio: AudioWidgetConfig
   battery: BatteryWidgetConfig
 }
 
@@ -269,6 +317,15 @@ export type NormalizedBluetoothWidgetConfig = {
   command: string
 }
 
+export type NormalizedAudioWidgetConfig = {
+  kind: "audio"
+  showPercentage: boolean
+  command: string
+  dropdown: NormalizedDropdownConfig
+  tooltip: NormalizedAudioTooltipConfig
+  slider: NormalizedSliderMetrics
+}
+
 export type NormalizedBatteryWidgetConfig = {
   kind: "battery"
   showPercentage: boolean
@@ -286,6 +343,7 @@ export type NormalizedBarWidgetDefinition =
   | NormalizedCaffeineWidgetConfig
   | NormalizedNetworkWidgetConfig
   | NormalizedBluetoothWidgetConfig
+  | NormalizedAudioWidgetConfig
   | NormalizedBatteryWidgetConfig
 
 export type NormalizedWidgetConfigByKind = {
@@ -296,6 +354,7 @@ export type NormalizedWidgetConfigByKind = {
   caffeine: NormalizedCaffeineWidgetConfig
   network: NormalizedNetworkWidgetConfig
   bluetooth: NormalizedBluetoothWidgetConfig
+  audio: NormalizedAudioWidgetConfig
   battery: NormalizedBatteryWidgetConfig
 }
 

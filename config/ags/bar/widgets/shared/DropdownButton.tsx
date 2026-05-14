@@ -16,6 +16,9 @@ type Props = {
   halign?: Gtk.Align
   tooltipText?: string | Accessor<string>
   visible?: boolean | Accessor<boolean>
+  execPrimary?: () => void
+  execSecondary?: () => void
+  execMiddle?: () => void
   children?: JSX.Element | Array<JSX.Element>
   renderDropdownContent: (closeDropdown: () => void) => JSX.Element
 }
@@ -30,6 +33,9 @@ export default function DropdownButton({
   halign,
   tooltipText,
   visible,
+  execPrimary,
+  execSecondary,
+  execMiddle,
   children,
   renderDropdownContent,
 }: Props) {
@@ -63,6 +69,8 @@ export default function DropdownButton({
       halign={halign}
       tooltipText={tooltipText}
       visible={visible}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
       $={dropdown.enabled
         ? (self) => {
             setTriggerWidget(self)
@@ -73,7 +81,7 @@ export default function DropdownButton({
         : undefined}
       execPrimary={dropdown.enabled
         ? () => setDropdownOpen(!dropdownOpen())
-        : undefined}
+        : execPrimary}
     >
       {children}
     </Button>

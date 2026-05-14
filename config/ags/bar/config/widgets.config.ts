@@ -66,6 +66,22 @@ const widgetDefinitions = {
     command: "hk-launch-bluetooth",
   },
 
+  audio: {
+    kind: "audio",
+    showPercentage: false,
+    command: "hk-launch-audio",
+    dropdown: {
+      enabled: true,
+      align: "center",
+      gap: 0,
+    },
+    tooltip: {
+      active: "{device} {percentage}",
+      muted: "Muted {device}",
+      unavailable: "Audio unavailable",
+    },
+  },
+
   battery: {
     kind: "battery",
     showPercentage: true,

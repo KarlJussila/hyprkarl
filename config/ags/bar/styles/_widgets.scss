@@ -58,6 +58,7 @@ window.Bar.bar-shell {
   .widget-menu-button,
   .widget-bluetooth-button,
   .widget-network-button,
+  .widget-audio-button,
   .widget-battery-button,
   .widget-caffeine-switch,
   .widget-tray-toggle > .widget-tray-toggle-button {
@@ -77,6 +78,8 @@ window.Bar.bar-shell {
   .workspace-label,
   .widget-clock-time,
   .widget-clock-meridiem,
+  .widget-audio-percent,
+  .widget-audio-slider-percent,
   .widget-battery-percent {
     font-family: theme.$font-mono;
   }
@@ -87,8 +90,17 @@ window.Bar.bar-shell {
 
   // Clock and battery content
   .widget-clock-display,
+  .widget-audio-display,
   .widget-battery-display {
     margin: 0px;
+  }
+
+  .widget-audio-display.is-horizontal .widget-audio-percent {
+    margin-left: theme.$audio-gap-x;
+  }
+
+  .widget-audio-display.is-vertical .widget-audio-percent {
+    margin-top: theme.$audio-gap-y;
   }
 
   .widget-battery-display.is-horizontal .widget-battery-percent {
@@ -158,6 +170,7 @@ window.Bar.bar-shell {
     .widget-menu-button,
     .widget-bluetooth-button,
     .widget-network-button,
+    .widget-audio-button,
     .widget-clock-button,
     .widget-battery-button,
     .widget-caffeine-switch {
@@ -170,6 +183,7 @@ window.Bar.bar-shell {
     .bar-segment > .widget-menu-button,
     .bar-segment > .widget-bluetooth-button,
     .bar-segment > .widget-network-button,
+    .bar-segment > .widget-audio-button,
     .bar-segment > .widget-battery-button,
     .bar-segment > .workspace-list,
     .bar-segment > .widget-tray {
@@ -192,6 +206,11 @@ window.Bar.bar-shell {
       padding-bottom: theme.$glyph-pad-y;
     }
 
+    .bar-segment > .widget-audio-button {
+      padding-top: theme.$glyph-pad-y;
+      padding-bottom: theme.$glyph-pad-y;
+    }
+
     .bar-segment > .widget-battery-button {
       padding-top: theme.$glyph-pad-y;
       padding-bottom: theme.$glyph-pad-y;
@@ -205,6 +224,7 @@ window.Bar.bar-shell {
     .widget-menu-button,
     .widget-bluetooth-button,
     .widget-network-button,
+    .widget-audio-button,
     .widget-clock-button,
     .widget-battery-button,
     .widget-caffeine-switch,

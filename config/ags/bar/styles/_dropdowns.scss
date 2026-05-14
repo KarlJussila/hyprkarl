@@ -4,6 +4,7 @@
 window.dropdown-window {
   background: transparent;
   font-family: theme.$font-mono;
+  font-size: theme.$font-size;
 
   .dropdown-surface {
     @include shared.reset-flat-surface;
@@ -95,6 +96,20 @@ window.dropdown-window {
   .dropdown-row.active {
     color: theme.$accent;
   }
+
+  .widget-audio-slider-row {
+    min-width: 0px;
+  }
+
+  .widget-audio-volume-slider {
+    min-width: 0px;
+  }
+
+  .bar-slider-track { color: theme.$surface; }
+  .bar-slider-border { color: theme.$border; }
+  .bar-slider-fill { color: theme.$accent; }
+  .bar-slider-thumb { color: theme.$surface; }
+  .bar-slider-thumb-border { color: theme.$border; }
 
   .dropdown-row-check {
     opacity: 0.95;

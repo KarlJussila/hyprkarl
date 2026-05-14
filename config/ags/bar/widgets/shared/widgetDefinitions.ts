@@ -3,6 +3,7 @@ import type {
   WidgetDefinitionByKind,
   WidgetKind,
 } from "../../configuration.ts"
+import { normalizeAudioWidgetConfig } from "../audio/definition.ts"
 import { normalizeBatteryWidgetConfig } from "../battery/definition.ts"
 import { normalizeBluetoothWidgetConfig } from "../bluetooth/definition.ts"
 import { normalizeCaffeineWidgetConfig } from "../caffeine/definition.ts"
@@ -48,6 +49,10 @@ export const widgetDefinitionsByKind = {
   bluetooth: {
     kind: "bluetooth",
     normalize: normalizeBluetoothWidgetConfig,
+  },
+  audio: {
+    kind: "audio",
+    normalize: normalizeAudioWidgetConfig,
   },
   battery: {
     kind: "battery",

@@ -55,7 +55,7 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
           valign={Gtk.Align.CENTER}
         >
           <AudioIndicator
-            orientation={placement.orientation}
+            orientation="horizontal"
             volume={unavailableVolume}
             muted={unavailableMuted}
           />
@@ -84,7 +84,7 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
       valign={Gtk.Align.CENTER}
     >
       <AudioIndicator
-        orientation={placement.orientation}
+        orientation="horizontal"
         volume={volume}
         muted={muted}
       />
@@ -113,6 +113,7 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
       execSecondary={launchAudio}
       renderDropdownContent={() => (
         <AudioSliderDropdown
+          edge={placement.edge}
           volume={volume}
           onChange={(next) => speaker.set_volume(next)}
           metrics={config.slider}

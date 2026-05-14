@@ -38,6 +38,7 @@ window.Bar.bar-shell {
 
   // Single-glyph buttons look cramped without a little top/bottom space.
   .widget-menu-button,
+  .widget-network-button,
   .widget-tray-toggle > .widget-tray-toggle-button {
     padding-top: theme.$glyph-pad-y;
     padding-bottom: theme.$glyph-pad-y;
@@ -134,6 +135,7 @@ window.Bar.bar-shell {
     }
 
     .widget-menu-button,
+    .widget-network-button,
     .widget-clock-button,
     .widget-battery-button,
     .widget-caffeine-switch {
@@ -144,6 +146,7 @@ window.Bar.bar-shell {
     // Keep vertical segments tight, then add back only the spacing that is
     // intentionally part of the widget's visual design.
     .bar-segment > .widget-menu-button,
+    .bar-segment > .widget-network-button,
     .bar-segment > .workspace-list,
     .bar-segment > .widget-tray {
       padding-top: 0px;
@@ -155,12 +158,18 @@ window.Bar.bar-shell {
       padding-bottom: theme.$glyph-pad-y;
     }
 
+    .bar-segment > .widget-network-button {
+      padding-top: theme.$glyph-pad-y;
+      padding-bottom: theme.$glyph-pad-y;
+    }
+
     .bar-segment > .workspace-list {
       padding-top: theme.$workspace-edge-pad;
       padding-bottom: theme.$workspace-edge-pad;
     }
 
     .widget-menu-button,
+    .widget-network-button,
     .widget-clock-button,
     .widget-battery-button,
     .widget-caffeine-switch,

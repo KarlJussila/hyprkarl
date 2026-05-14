@@ -9,7 +9,7 @@ const widgetDefinitions = {
     kind: "menu",
     icon: "",
     commands: {
-      primary: "hyprkarl-menu",
+      primary: "hk-menu",
     },
   },
 
@@ -54,6 +54,11 @@ const widgetDefinitions = {
     kind: "caffeine",
     glyph: "",
     command: "hk-caffeine",
+  },
+
+  network: {
+    kind: "network",
+    command: "hk-launch-wifi",
   },
 
   battery: {

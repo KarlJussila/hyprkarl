@@ -9,6 +9,7 @@ import batteryManifest from "../battery/manifest.tsx"
 import caffeineManifest from "../caffeine/manifest.tsx"
 import clockManifest from "../clock/manifest.tsx"
 import menuManifest from "../menu/manifest.tsx"
+import networkManifest from "../network/manifest.tsx"
 import trayManifest from "../tray/manifest.tsx"
 import workspacesManifest from "../workspaces/manifest.tsx"
 
@@ -30,5 +31,6 @@ export const widgetManifests = {
   tray: trayManifest,
   clock: clockManifest,
   caffeine: caffeineManifest,
+  network: networkManifest,
   battery: batteryManifest,
 } satisfies { [TKind in WidgetKind]: WidgetManifest<TKind> }

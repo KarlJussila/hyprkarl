@@ -11,7 +11,7 @@ import {
 const menuDefaults: Omit<NormalizedMenuWidgetConfig, "kind"> = {
   icon: "",
   commands: {
-    primary: "hyprkarl-menu",
+    primary: "hk-menu",
   },
 }
 

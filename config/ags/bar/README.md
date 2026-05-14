@@ -124,6 +124,15 @@ clock: {
 },
 ```
 
+Add a network launcher widget that follows the current Waybar behavior:
+
+```ts
+network: {
+  kind: "network",
+  command: "hk-launch-wifi",
+},
+```
+
 Advanced widget drawing overrides stay nested so the main config surface stays readable:
 
 ```ts
@@ -160,6 +169,8 @@ clockFull: { kind: "clock", dropdown: { enabled: true } },
 ```
 
 Both are `clock` widgets, but they are different instances because their IDs are different.
+
+The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock`, `caffeine`, `network`, and `battery`.
 
 ## Styling Guide
 

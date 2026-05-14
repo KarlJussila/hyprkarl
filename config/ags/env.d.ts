@@ -26,3 +26,8 @@ declare module "*.css" {
   const content: string
   export default content
 }
+
+declare module "gi://AstalNetwork" {
+  const AstalNetwork: any
+  export default AstalNetwork
+}

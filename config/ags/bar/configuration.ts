@@ -171,6 +171,11 @@ export type CaffeineWidgetConfig = {
   }
 }
 
+export type NetworkWidgetConfig = {
+  kind: "network"
+  command?: string
+}
+
 export type BatteryWidgetConfig = {
   kind: "battery"
   showPercentage?: boolean
@@ -187,6 +192,7 @@ export type WidgetDefinitionByKind = {
   tray: TrayWidgetConfig
   clock: ClockWidgetConfig
   caffeine: CaffeineWidgetConfig
+  network: NetworkWidgetConfig
   battery: BatteryWidgetConfig
 }
 
@@ -232,6 +238,11 @@ export type NormalizedCaffeineWidgetConfig = {
   switch: NormalizedSwitchMetrics
 }
 
+export type NormalizedNetworkWidgetConfig = {
+  kind: "network"
+  command: string
+}
+
 export type NormalizedBatteryWidgetConfig = {
   kind: "battery"
   showPercentage: boolean
@@ -246,6 +257,7 @@ export type NormalizedBarWidgetDefinition =
   | NormalizedTrayWidgetConfig
   | NormalizedClockWidgetConfig
   | NormalizedCaffeineWidgetConfig
+  | NormalizedNetworkWidgetConfig
   | NormalizedBatteryWidgetConfig
 
 export type NormalizedWidgetConfigByKind = {
@@ -254,6 +266,7 @@ export type NormalizedWidgetConfigByKind = {
   tray: NormalizedTrayWidgetConfig
   clock: NormalizedClockWidgetConfig
   caffeine: NormalizedCaffeineWidgetConfig
+  network: NormalizedNetworkWidgetConfig
   battery: NormalizedBatteryWidgetConfig
 }
 

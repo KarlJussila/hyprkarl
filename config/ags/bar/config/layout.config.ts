@@ -20,6 +20,7 @@ const layoutConfig = {
   },
 
   end: [
+    "network",
     "battery",
   ],
 } satisfies BarLayoutConfig

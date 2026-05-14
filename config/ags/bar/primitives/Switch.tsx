@@ -48,11 +48,14 @@ export default function Switch({
   let animationTickId = 0
 
   const ANIMATION_DURATION_US = 140_000
-  const CANVAS_MARGIN = 2
+  const STROKE_INSET_X = Math.max(1, Math.ceil(metrics.borderWidth / 2))
+  const STROKE_INSET_Y = Math.max(1, Math.ceil(metrics.borderWidth / 2))
   const horizontalWidth = Math.ceil(
-    metrics.trackLength + metrics.thumbSize + (CANVAS_MARGIN * 2) - (metrics.thumbPadding * 2),
+    metrics.trackLength + metrics.thumbSize + (STROKE_INSET_X * 2) - (metrics.thumbPadding * 2),
   )
-  const horizontalHeight = Math.ceil(Math.max(metrics.thumbSize, metrics.trackHeight) + CANVAS_MARGIN * 2)
+  const horizontalHeight = Math.ceil(
+    Math.max(metrics.thumbSize, metrics.trackHeight) + (STROKE_INSET_Y * 2),
+  )
   const totalWidth = isVertical ? horizontalHeight : horizontalWidth
   const totalHeight = isVertical ? horizontalWidth : horizontalHeight
   const easeOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
@@ -134,9 +137,13 @@ export default function Switch({
             const borderOn = getColor("switch-border is-active")
             const trackColor = interpolateRGBA(trackOff, trackOn, animationProgress)
             const borderColor = interpolateRGBA(borderOff, borderOn, animationProgress)
-            const thumbX = interpolate(CANVAS_MARGIN, horizontalWidth - metrics.thumbSize - CANVAS_MARGIN, animationProgress)
+            const thumbX = interpolate(
+              STROKE_INSET_X,
+              horizontalWidth - metrics.thumbSize - STROKE_INSET_X,
+              animationProgress,
+            )
             const thumbY = (horizontalHeight - metrics.thumbSize) / 2
-            const trackX = CANVAS_MARGIN + (metrics.thumbSize / 2) - metrics.thumbPadding
+            const trackX = STROKE_INSET_X + (metrics.thumbSize / 2) - metrics.thumbPadding
             const trackY = (horizontalHeight - metrics.trackHeight) / 2
 
             const drawRoundedRect = (x: number, y: number, width: number, height: number, radius: number) => {

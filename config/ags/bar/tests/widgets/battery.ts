@@ -1,6 +1,7 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 import type { NormalizedBatteryWidgetConfig } from "../../configuration.ts"
+import { formatBatteryTooltip } from "../../widgets/battery/batteryTooltip.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
 
 test("normalizes battery widget defaults from minimal config", () => {
@@ -23,6 +24,9 @@ test("normalizes battery widget defaults from minimal config", () => {
   assert.equal(battery.showPercentage, true)
   assert.equal(battery.lowThreshold, 0.15)
   assert.equal(battery.dropdown.enabled, true)
+  assert.equal(battery.tooltip.charging, "{power}↑ {time}")
+  assert.equal(battery.tooltip.fallback, "{percentage}")
+  assert.equal(battery.indicator.terminalHeight, 4)
   assert.equal(battery.indicator.chargingGlyph, "󱐋")
 })
 
@@ -56,6 +60,8 @@ test("normalizes advanced widget appearance overrides behind nested config", () 
         advanced: {
           indicator: {
             width: 20,
+            terminalWidth: 5,
+            terminalHeight: 2,
             chargingGlyphFontSize: 10,
           },
         },
@@ -65,5 +71,127 @@ test("normalizes advanced widget appearance overrides behind nested config", () 
 
   const battery = resolved.widgets.battery as NormalizedBatteryWidgetConfig
   assert.equal(battery.indicator.width, 20)
+  assert.equal(battery.indicator.terminalWidth, 5)
+  assert.equal(battery.indicator.terminalHeight, 2)
   assert.equal(battery.indicator.chargingGlyphFontSize, 10)
+})
+
+test("normalizes battery tooltip format overrides", () => {
+  const resolved = resolveBarConfiguration(
+    {
+      edge: "top",
+      start: ["battery"],
+      center: {
+        start: [],
+        end: [],
+      },
+      end: [],
+    },
+    {
+      battery: {
+        kind: "battery",
+        tooltip: {
+          charging: "{percentage} charging at {power}",
+          fallback: "Battery {percentage}",
+        },
+      },
+    },
+  )
+
+  const battery = resolved.widgets.battery as NormalizedBatteryWidgetConfig
+  assert.equal(battery.tooltip.charging, "{percentage} charging at {power}")
+  assert.equal(battery.tooltip.discharging, "{power}↓ {time}")
+  assert.equal(battery.tooltip.fallback, "Battery {percentage}")
+})
+
+test("formats a waybar-style charging battery tooltip", () => {
+  assert.equal(
+    formatBatteryTooltip({
+      percentage: 0.67,
+      charging: true,
+      energyRate: -45.23,
+      timeToEmpty: 0,
+      timeToFull: 5430,
+      formats: {
+        charging: "{power}↑ {time} {percentage}",
+        discharging: "{power}↓ {time} {percentage}",
+        plugged: "Plugged in {percentage}",
+        fallback: "{percentage}",
+      },
+    }),
+    "45.2W↑ 1:31 67%",
+  )
+})
+
+test("formats a waybar-style discharging battery tooltip", () => {
+  assert.equal(
+    formatBatteryTooltip({
+      percentage: 0.42,
+      charging: false,
+      energyRate: 17.04,
+      timeToEmpty: 7210,
+      timeToFull: 0,
+      formats: {
+        charging: "{power}↑ {time} {percentage}",
+        discharging: "{power}↓ {time} {percentage}",
+        plugged: "Plugged in {percentage}",
+        fallback: "{percentage}",
+      },
+    }),
+    "17.0W↓ 2:00 42%",
+  )
+})
+
+test("falls back cleanly when battery rate is unavailable", () => {
+  assert.equal(
+    formatBatteryTooltip({
+      percentage: 1,
+      charging: true,
+      energyRate: 0,
+      timeToEmpty: 0,
+      timeToFull: 0,
+      formats: {
+        charging: "{power}↑ {time} {percentage}",
+        discharging: "{power}↓ {time} {percentage}",
+        plugged: "Plugged in {percentage}",
+        fallback: "{percentage}",
+      },
+    }),
+    "Plugged in 100%",
+  )
+  assert.equal(
+    formatBatteryTooltip({
+      percentage: 0.58,
+      charging: false,
+      energyRate: 0,
+      timeToEmpty: 0,
+      timeToFull: 0,
+      formats: {
+        charging: "{power}↑ {time} {percentage}",
+        discharging: "{power}↓ {time} {percentage}",
+        plugged: "Plugged in {percentage}",
+        fallback: "{percentage}",
+      },
+    }),
+    "57%",
+  )
+})
+
+test("collapses empty battery tooltip tokens cleanly", () => {
+  assert.equal(
+    formatBatteryTooltip({
+      percentage: 0.51,
+      charging: false,
+      energyRate: 11.6,
+      timeToEmpty: 0,
+      timeToFull: 0,
+      formats: {
+        charging: "{power}↑ {time} {percentage}",
+        discharging: "{power} {time} {percentage}",
+        plugged: "Plugged in {percentage}",
+        fallback: "{percentage}",
+      },
+    }),
+    "11.6W 51%",
+  )
 })

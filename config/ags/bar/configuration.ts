@@ -114,7 +114,7 @@ export type BatteryIndicatorMetrics = {
   height?: number
   borderWidth?: number
   terminalWidth?: number
-  terminalHeightRatio?: number
+  terminalHeight?: number
   chargingGlyph?: string
   chargingGlyphFontSize?: number
   chargingGlyphFontFamily?: string
@@ -125,10 +125,24 @@ export type NormalizedBatteryIndicatorMetrics = {
   height: number
   borderWidth: number
   terminalWidth: number
-  terminalHeightRatio: number
+  terminalHeight: number
   chargingGlyph: string
   chargingGlyphFontSize: number
   chargingGlyphFontFamily: string
+}
+
+export type BatteryTooltipConfig = {
+  charging?: string
+  discharging?: string
+  plugged?: string
+  fallback?: string
+}
+
+export type NormalizedBatteryTooltipConfig = {
+  charging: string
+  discharging: string
+  plugged: string
+  fallback: string
 }
 
 export type MenuWidgetConfig = {
@@ -181,6 +195,7 @@ export type BatteryWidgetConfig = {
   showPercentage?: boolean
   lowThreshold?: number
   dropdown?: DropdownConfig
+  tooltip?: BatteryTooltipConfig
   advanced?: {
     indicator?: BatteryIndicatorMetrics
   }
@@ -248,6 +263,7 @@ export type NormalizedBatteryWidgetConfig = {
   showPercentage: boolean
   lowThreshold: number
   dropdown: NormalizedDropdownConfig
+  tooltip: NormalizedBatteryTooltipConfig
   indicator: NormalizedBatteryIndicatorMetrics
 }
 

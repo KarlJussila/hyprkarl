@@ -4,6 +4,7 @@ import type { NormalizedDropdownConfig } from "../../configuration.ts"
 import { type DropdownPlacement } from "../../layout/placement.ts"
 import AttachedDropdown from "../../overlays/dropdown/AttachedDropdown.tsx"
 import Button from "../../primitives/Button.tsx"
+import { type Accessor } from "ags"
 
 type Props = {
   buttonClass: string
@@ -13,7 +14,8 @@ type Props = {
   dropdown: NormalizedDropdownConfig
   hexpand?: boolean
   halign?: Gtk.Align
-  visible?: boolean
+  tooltipText?: string | Accessor<string>
+  visible?: boolean | Accessor<boolean>
   children?: JSX.Element | Array<JSX.Element>
   renderDropdownContent: (closeDropdown: () => void) => JSX.Element
 }
@@ -26,6 +28,7 @@ export default function DropdownButton({
   dropdown,
   hexpand,
   halign,
+  tooltipText,
   visible,
   children,
   renderDropdownContent,
@@ -58,6 +61,7 @@ export default function DropdownButton({
       class={buttonClass}
       hexpand={hexpand}
       halign={halign}
+      tooltipText={tooltipText}
       visible={visible}
       $={dropdown.enabled
         ? (self) => {

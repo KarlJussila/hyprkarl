@@ -1,6 +1,24 @@
 @use "../theme" as theme;
 @use "./shared" as shared;
 
+tooltip {
+  @include shared.bar-surface;
+  border-radius: theme.$radius;
+  color: theme.$text;
+}
+
+tooltip box {
+  padding: 0px;
+}
+
+tooltip label {
+  color: theme.$text;
+  font-family: theme.$font-mono;
+  font-size: theme.$font-size;
+  padding: 0px;
+  margin: 0px;
+}
+
 window.Bar.bar-shell {
   // Shared controls
   .widget-button {
@@ -39,6 +57,7 @@ window.Bar.bar-shell {
   // Single-glyph buttons look cramped without a little top/bottom space.
   .widget-menu-button,
   .widget-network-button,
+  .widget-battery-button,
   .widget-tray-toggle > .widget-tray-toggle-button {
     padding-top: theme.$glyph-pad-y;
     padding-bottom: theme.$glyph-pad-y;
@@ -147,6 +166,7 @@ window.Bar.bar-shell {
     // intentionally part of the widget's visual design.
     .bar-segment > .widget-menu-button,
     .bar-segment > .widget-network-button,
+    .bar-segment > .widget-battery-button,
     .bar-segment > .workspace-list,
     .bar-segment > .widget-tray {
       padding-top: 0px;
@@ -159,6 +179,11 @@ window.Bar.bar-shell {
     }
 
     .bar-segment > .widget-network-button {
+      padding-top: theme.$glyph-pad-y;
+      padding-bottom: theme.$glyph-pad-y;
+    }
+
+    .bar-segment > .widget-battery-button {
       padding-top: theme.$glyph-pad-y;
       padding-bottom: theme.$glyph-pad-y;
     }

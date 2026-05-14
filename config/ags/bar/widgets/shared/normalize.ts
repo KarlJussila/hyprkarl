@@ -8,10 +8,12 @@ import {
 import type {
   BarEdge,
   BatteryIndicatorMetrics,
+  BatteryTooltipConfig,
   ClockDisplayConfig,
   DropdownAlign,
   DropdownConfig,
   NormalizedBatteryIndicatorMetrics,
+  NormalizedBatteryTooltipConfig,
   NormalizedClockDisplayConfig,
   NormalizedCommandConfig,
   NormalizedDropdownConfig,
@@ -452,10 +454,10 @@ export function normalizeBatteryIndicatorMetrics(
       rawMetrics?.terminalWidth,
       defaults.terminalWidth,
     ),
-    terminalHeightRatio: normalizeUnitInterval(
-      childContext(context, "terminalHeightRatio"),
-      rawMetrics?.terminalHeightRatio,
-      defaults.terminalHeightRatio,
+    terminalHeight: normalizePositiveNumber(
+      childContext(context, "terminalHeight"),
+      rawMetrics?.terminalHeight,
+      defaults.terminalHeight,
     ),
     chargingGlyph: normalizeStringValue(
       childContext(context, "chargingGlyph"),
@@ -471,6 +473,38 @@ export function normalizeBatteryIndicatorMetrics(
       childContext(context, "chargingGlyphFontFamily"),
       rawMetrics?.chargingGlyphFontFamily,
       defaults.chargingGlyphFontFamily,
+    ),
+  }
+}
+
+export function normalizeBatteryTooltipConfig(
+  id: string,
+  tooltip: BatteryTooltipConfig | undefined,
+  defaults: NormalizedBatteryTooltipConfig,
+): NormalizedBatteryTooltipConfig {
+  const context = widgetContext(id, "tooltip")
+  const rawTooltip = normalizeObjectConfig(context, tooltip)
+
+  return {
+    charging: normalizeStringValue(
+      childContext(context, "charging"),
+      rawTooltip?.charging,
+      defaults.charging,
+    ),
+    discharging: normalizeStringValue(
+      childContext(context, "discharging"),
+      rawTooltip?.discharging,
+      defaults.discharging,
+    ),
+    plugged: normalizeStringValue(
+      childContext(context, "plugged"),
+      rawTooltip?.plugged,
+      defaults.plugged,
+    ),
+    fallback: normalizeStringValue(
+      childContext(context, "fallback"),
+      rawTooltip?.fallback,
+      defaults.fallback,
     ),
   }
 }

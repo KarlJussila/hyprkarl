@@ -70,6 +70,12 @@ const widgetDefinitions = {
       align: "center",
       gap: 0,
     },
+    tooltip: {
+      charging: "{power}↑ {time}",
+      discharging: "{power}↓ {time}",
+      plugged: "Plugged in {percentage}",
+      fallback: "{percentage}",
+    },
   },
   batteryCompact: {
     kind: "battery",
@@ -79,6 +85,12 @@ const widgetDefinitions = {
       enabled: true,
       align: "center",
       gap: 0,
+    },
+    tooltip: {
+      charging: "{power}↑ {time}",
+      discharging: "{power}↓ {time}",
+      plugged: "Plugged in {percentage}",
+      fallback: "{percentage}",
     },
   },
 } satisfies BarWidgetDefinitions

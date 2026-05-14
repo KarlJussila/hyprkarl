@@ -4,7 +4,8 @@ import { type DropdownPlacement } from "../../layout/placement.ts"
 import DropdownButton from "../shared/DropdownButton.tsx"
 import { createWidgetDropdownName } from "../shared/instanceNames.ts"
 import BatteryIndicator from "./BatteryIndicator"
-import { createBatteryState, formatBatteryPercentage } from "./batteryState"
+import { createBatteryState } from "./batteryState"
+import { formatBatteryPercentage } from "./batteryStateShared.ts"
 import PowerProfileMenu from "./PowerProfileMenu"
 
 type Props = {
@@ -15,7 +16,7 @@ type Props = {
 }
 
 export default function BatteryWidget({ id, placement, monitor, config }: Props) {
-  const batteryState = createBatteryState()
+  const batteryState = createBatteryState(config.tooltip)
 
   const batteryContent = placement.isVertical
     ? (
@@ -34,12 +35,20 @@ export default function BatteryWidget({ id, placement, monitor, config }: Props)
             metrics={config.indicator}
           />
           {config.showPercentage && (
-            <label class="widget-battery-percent" label={batteryState.percentage(formatBatteryPercentage)} />
+            <label
+              class="widget-battery-percent"
+              valign={Gtk.Align.CENTER}
+              label={batteryState.percentage(formatBatteryPercentage)}
+            />
           )}
         </box>
       )
     : (
-        <box class="widget-battery-display orientation-horizontal is-horizontal" spacing={0}>
+        <box
+          class="widget-battery-display orientation-horizontal is-horizontal"
+          spacing={0}
+          valign={Gtk.Align.CENTER}
+        >
           <BatteryIndicator
             orientation={placement.orientation}
             level={batteryState.percentage}
@@ -48,7 +57,11 @@ export default function BatteryWidget({ id, placement, monitor, config }: Props)
             metrics={config.indicator}
           />
           {config.showPercentage && (
-            <label class="widget-battery-percent" label={batteryState.percentage(formatBatteryPercentage)} />
+            <label
+              class="widget-battery-percent"
+              valign={Gtk.Align.CENTER}
+              label={batteryState.percentage(formatBatteryPercentage)}
+            />
           )}
         </box>
       )
@@ -62,6 +75,7 @@ export default function BatteryWidget({ id, placement, monitor, config }: Props)
       monitor={monitor}
       dropdownName={createWidgetDropdownName("battery-menu", id, monitor.connector)}
       dropdown={config.dropdown}
+      tooltipText={batteryState.tooltipText}
       visible={batteryState.isPresent}
       renderDropdownContent={(closeDropdown) => (
         <PowerProfileMenu

@@ -26,10 +26,11 @@ export default function BatteryIndicator({
   lowThreshold,
   metrics,
 }: Props) {
-  const CANVAS_MARGIN = 2
+  const CANVAS_OFFSET_X = 0
+  const CANVAS_OFFSET_Y = 1
   const isVertical = orientation === "vertical"
-  const horizontalWidth = metrics.width + (metrics.terminalWidth * 2) + (CANVAS_MARGIN * 2)
-  const horizontalHeight = metrics.height + (CANVAS_MARGIN * 2)
+  const horizontalWidth = metrics.width + (metrics.terminalWidth * 2) + (CANVAS_OFFSET_X * 2)
+  const horizontalHeight = metrics.height + (CANVAS_OFFSET_Y * 2)
   const totalWidth = isVertical ? horizontalHeight : horizontalWidth
   const totalHeight = isVertical ? horizontalWidth : horizontalHeight
 
@@ -79,12 +80,9 @@ export default function BatteryIndicator({
             : isCharging
               ? chargingColor
               : fillColor
-          const bodyX = CANVAS_MARGIN + metrics.terminalWidth
-          const bodyY = CANVAS_MARGIN
-          const tipHeight = Math.max(
-            metrics.borderWidth + 1,
-            Math.floor(metrics.height * metrics.terminalHeightRatio),
-          )
+          const bodyX = CANVAS_OFFSET_X + metrics.terminalWidth
+          const bodyY = CANVAS_OFFSET_Y
+          const tipHeight = Math.max(1, metrics.terminalHeight)
           const tipX = bodyX + metrics.width
           const tipY = bodyY + Math.floor((metrics.height - tipHeight) / 2)
           const innerInset = metrics.borderWidth

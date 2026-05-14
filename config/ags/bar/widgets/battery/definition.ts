@@ -4,6 +4,7 @@ import type {
 } from "../../configuration.ts"
 import {
   normalizeBatteryIndicatorMetrics,
+  normalizeBatteryTooltipConfig,
   normalizeBoolean,
   normalizeDropdownConfig,
   normalizeUnitInterval,
@@ -18,14 +19,20 @@ const batteryDefaults: Omit<NormalizedBatteryWidgetConfig, "kind"> = {
     align: "center",
     gap: 0,
   },
+  tooltip: {
+    charging: "{power}↑ {time}",
+    discharging: "{power}↓ {time}",
+    plugged: "Plugged in {percentage}",
+    fallback: "{percentage}",
+  },
   indicator: {
-    width: 16,
-    height: 10,
-    borderWidth: 2,
-    terminalWidth: 3,
-    terminalHeightRatio: 0.4,
+    width: 14,
+    height: 8,
+    borderWidth: 1,
+    terminalWidth: 2,
+    terminalHeight: 4,
     chargingGlyph: "󱐋",
-    chargingGlyphFontSize: 8,
+    chargingGlyphFontSize: 6,
     chargingGlyphFontFamily: "JetBrains Mono Nerd Font Propo",
   },
 }
@@ -47,6 +54,7 @@ export function normalizeBatteryWidgetConfig(
       batteryDefaults.lowThreshold,
     ),
     dropdown: normalizeDropdownConfig(id, definition.dropdown, batteryDefaults.dropdown),
+    tooltip: normalizeBatteryTooltipConfig(id, definition.tooltip, batteryDefaults.tooltip),
     indicator: normalizeBatteryIndicatorMetrics(
       id,
       definition.advanced?.indicator,
@@ -54,4 +62,3 @@ export function normalizeBatteryWidgetConfig(
     ),
   }
 }
-

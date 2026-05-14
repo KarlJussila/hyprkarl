@@ -1,4 +1,4 @@
-import { createComputed } from "ags"
+import { createComputed, createEffect } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 import { timeout } from "ags/time"
 import { CommonButtonProps } from "./shared"
@@ -18,6 +18,7 @@ export default function Button({
   execMiddle,
   halign = Gtk.Align.CENTER,
   hexpand = true,
+  tooltipText,
   visible,
   children,
 }: Props) {
@@ -31,13 +32,25 @@ export default function Button({
     ? `widget-button ${className}`.trim()
     : createComputed(() => `widget-button ${className()}`.trim())
 
+  const setupButton = (button: Gtk.Button) => {
+    if (typeof tooltipText === "string") {
+      button.set_tooltip_text(tooltipText)
+    } else if (tooltipText) {
+      createEffect(() => {
+        button.set_tooltip_text(tooltipText())
+      })
+    }
+
+    setup?.(button)
+  }
+
   const button = (
     <button
       class={resolvedClassName}
       hexpand={hexpand}
       halign={halign}
       visible={visible}
-      $={setup}
+      $={setupButton}
     >
       {execPrimary && (
         <Gtk.GestureClick

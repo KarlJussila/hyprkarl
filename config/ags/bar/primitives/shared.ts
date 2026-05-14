@@ -7,6 +7,7 @@ export type CommonButtonProps<TWidget extends Gtk.Widget> = {
   $?: (widget: TWidget) => void
   class?: string | Accessor<string>
   hexpand?: boolean
+  tooltipText?: string | Accessor<string>
   visible?: boolean | Accessor<boolean>
   children?: ButtonChildren
 }

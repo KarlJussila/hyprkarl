@@ -133,6 +133,26 @@ network: {
 },
 ```
 
+Customize battery tooltip text without touching widget code:
+
+```ts
+battery: {
+  kind: "battery",
+  tooltip: {
+    charging: "{percentage} charging at {power}",
+    discharging: "{power} remaining draw {percentage}",
+    plugged: "On AC {percentage}",
+    fallback: "Battery {percentage}",
+  },
+},
+```
+
+Battery tooltip tokens:
+
+- `{power}`: current battery draw or charge rate in watts, for example `17.0W`
+- `{time}`: remaining charge or discharge time when the service reports it, for example `2:00`
+- `{percentage}`: battery percentage, for example `42%`
+
 Advanced widget drawing overrides stay nested so the main config surface stays readable:
 
 ```ts
@@ -141,6 +161,8 @@ battery: {
   advanced: {
     indicator: {
       width: 20,
+      terminalWidth: 5,
+      terminalHeight: 2,
       chargingGlyphFontSize: 10,
     },
   },

@@ -20,6 +20,7 @@ const layoutConfig = {
   },
 
   end: [
+    "bluetooth",
     "network",
     "battery",
   ],

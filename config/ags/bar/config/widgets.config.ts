@@ -61,6 +61,11 @@ const widgetDefinitions = {
     command: "hk-launch-wifi",
   },
 
+  bluetooth: {
+    kind: "bluetooth",
+    command: "hk-launch-bluetooth",
+  },
+
   battery: {
     kind: "battery",
     showPercentage: true,

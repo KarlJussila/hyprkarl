@@ -133,6 +133,15 @@ network: {
 },
 ```
 
+Add a Bluetooth launcher widget that follows the current Waybar behavior:
+
+```ts
+bluetooth: {
+  kind: "bluetooth",
+  command: "hk-launch-bluetooth",
+},
+```
+
 Customize battery tooltip text without touching widget code:
 
 ```ts
@@ -192,7 +201,7 @@ clockFull: { kind: "clock", dropdown: { enabled: true } },
 
 Both are `clock` widgets, but they are different instances because their IDs are different.
 
-The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock`, `caffeine`, `network`, and `battery`.
+The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock`, `caffeine`, `bluetooth`, `network`, and `battery`.
 
 ## Styling Guide
 

@@ -31,3 +31,8 @@ declare module "gi://AstalNetwork" {
   const AstalNetwork: any
   export default AstalNetwork
 }
+
+declare module "gi://AstalBluetooth" {
+  const AstalBluetooth: any
+  export default AstalBluetooth
+}

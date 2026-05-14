@@ -190,6 +190,11 @@ export type NetworkWidgetConfig = {
   command?: string
 }
 
+export type BluetoothWidgetConfig = {
+  kind: "bluetooth"
+  command?: string
+}
+
 export type BatteryWidgetConfig = {
   kind: "battery"
   showPercentage?: boolean
@@ -208,6 +213,7 @@ export type WidgetDefinitionByKind = {
   clock: ClockWidgetConfig
   caffeine: CaffeineWidgetConfig
   network: NetworkWidgetConfig
+  bluetooth: BluetoothWidgetConfig
   battery: BatteryWidgetConfig
 }
 
@@ -258,6 +264,11 @@ export type NormalizedNetworkWidgetConfig = {
   command: string
 }
 
+export type NormalizedBluetoothWidgetConfig = {
+  kind: "bluetooth"
+  command: string
+}
+
 export type NormalizedBatteryWidgetConfig = {
   kind: "battery"
   showPercentage: boolean
@@ -274,6 +285,7 @@ export type NormalizedBarWidgetDefinition =
   | NormalizedClockWidgetConfig
   | NormalizedCaffeineWidgetConfig
   | NormalizedNetworkWidgetConfig
+  | NormalizedBluetoothWidgetConfig
   | NormalizedBatteryWidgetConfig
 
 export type NormalizedWidgetConfigByKind = {
@@ -283,6 +295,7 @@ export type NormalizedWidgetConfigByKind = {
   clock: NormalizedClockWidgetConfig
   caffeine: NormalizedCaffeineWidgetConfig
   network: NormalizedNetworkWidgetConfig
+  bluetooth: NormalizedBluetoothWidgetConfig
   battery: NormalizedBatteryWidgetConfig
 }
 

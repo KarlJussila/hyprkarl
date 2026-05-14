@@ -6,6 +6,7 @@ import type {
 } from "../../configuration.ts"
 import { type BarPlacement } from "../../layout/placement.ts"
 import batteryManifest from "../battery/manifest.tsx"
+import bluetoothManifest from "../bluetooth/manifest.tsx"
 import caffeineManifest from "../caffeine/manifest.tsx"
 import clockManifest from "../clock/manifest.tsx"
 import menuManifest from "../menu/manifest.tsx"
@@ -32,5 +33,6 @@ export const widgetManifests = {
   clock: clockManifest,
   caffeine: caffeineManifest,
   network: networkManifest,
+  bluetooth: bluetoothManifest,
   battery: batteryManifest,
 } satisfies { [TKind in WidgetKind]: WidgetManifest<TKind> }

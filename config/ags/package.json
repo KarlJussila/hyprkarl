@@ -13,5 +13,8 @@
   "prettier": {
     "semi": false,
     "tabWidth": 2
+  },
+  "devDependencies": {
+    "@types/node": "^25.7.0"
   }
 }

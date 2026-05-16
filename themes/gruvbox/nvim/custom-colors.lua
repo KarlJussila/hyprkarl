@@ -245,4 +245,3 @@ hl("MiniIndentscopeSymbol", { fg = c.accent_secondary })
 hl("markdownCode", { fg = c.cyan_bright })
 hl("markdownHeadingDelimiter", { fg = c.accent_primary })
 hl("markdownUrl", { fg = c.accent_secondary, underline = true })
-

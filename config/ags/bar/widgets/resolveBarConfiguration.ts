@@ -4,9 +4,12 @@ import {
 import type {
   BarEdge,
   BarLayoutConfig,
-  BarWidgetDefinitions,
   ResolvedBarConfiguration,
 } from "../configuration.ts"
+import type {
+  BarWidgetDefinitions,
+  WidgetKind,
+} from "./widgetTypes.ts"
 import {
   fail,
   isRecord,
@@ -17,7 +20,7 @@ import {
   normalizeOptionalLayoutWidgetId,
   indexContext,
 } from "./shared/normalize.ts"
-import { widgetDefinitionsByKind } from "./shared/widgetDefinitions.ts"
+import { widgetCatalog } from "./catalog.ts"
 
 type LayoutReference = {
   path: string
@@ -66,7 +69,7 @@ function normalizeLayoutConfig(layoutConfig: BarLayoutConfig): ResolvedLayoutCon
   }
 }
 
-function normalizeWidgetDefinition(id: string, definition: unknown) {
+function resolveWidgetDefinition(id: string, definition: unknown) {
   if (!isRecord(definition)) {
     fail({
       sourceFile: BAR_WIDGETS_SOURCE_FILE,
@@ -83,7 +86,7 @@ function normalizeWidgetDefinition(id: string, definition: unknown) {
     }, "must specify a widget kind")
   }
 
-  const widgetDefinition = widgetDefinitionsByKind[definition.kind as keyof typeof widgetDefinitionsByKind]
+  const widgetDefinition = widgetCatalog[definition.kind as keyof typeof widgetCatalog]
   if (!widgetDefinition) {
     fail({
       sourceFile: BAR_WIDGETS_SOURCE_FILE,
@@ -92,7 +95,8 @@ function normalizeWidgetDefinition(id: string, definition: unknown) {
     }, `unknown widget kind "${String(definition.kind)}"`)
   }
 
-  return widgetDefinition.normalize(id, definition as never)
+  const kind = definition.kind as WidgetKind
+  return widgetCatalog[kind].resolve(id, definition as never)
 }
 
 function collectLayoutReferences(layoutConfig: ResolvedLayoutConfig): Array<LayoutReference> {
@@ -122,7 +126,7 @@ function collectLayoutReferences(layoutConfig: ResolvedLayoutConfig): Array<Layo
   ]
 }
 
-export function normalizeBarConfiguration(
+export function resolveBarConfiguration(
   layoutConfig: BarLayoutConfig,
   widgetDefinitions: BarWidgetDefinitions,
 ): ResolvedBarConfiguration {
@@ -139,15 +143,15 @@ export function normalizeBarConfiguration(
     )
   }
 
-  const normalizedWidgets = Object.fromEntries(
+  const resolvedWidgets = Object.fromEntries(
     Object.entries(rawWidgetDefinitions).map(([id, definition]) => [
       id,
-      normalizeWidgetDefinition(id, definition),
+      resolveWidgetDefinition(id, definition),
     ]),
   )
 
   collectLayoutReferences(resolvedLayout).forEach(({ path, widgetId }) => {
-    if (!(widgetId in normalizedWidgets)) {
+    if (!(widgetId in resolvedWidgets)) {
       fail(layoutContext(path), `references unknown widget ID "${widgetId}"`)
     }
   })
@@ -160,6 +164,6 @@ export function normalizeBarConfiguration(
       center: resolvedLayout.center,
       end: resolvedLayout.end,
     },
-    widgets: normalizedWidgets,
+    widgets: resolvedWidgets,
   }
 }

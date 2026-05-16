@@ -2,13 +2,12 @@ import { createBinding, createComputed } from "ags"
 import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
 import AstalBluetooth from "gi://AstalBluetooth"
-import { type NormalizedBluetoothWidgetConfig } from "../../configuration.ts"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 
 type Props = {
   orientation: BarOrientation
-  config: NormalizedBluetoothWidgetConfig
+  command: string
 }
 
 const enabledIcon = ""
@@ -24,7 +23,7 @@ function countConnectedDevices(devices: Array<any>) {
   }).length
 }
 
-export default function BluetoothWidget({ orientation, config }: Props) {
+export default function BluetoothWidget({ orientation, command }: Props) {
   const isVertical = orientation === "vertical"
   const bluetooth = AstalBluetooth.get_default()
   const isPowered = createBinding(bluetooth, "isPowered")
@@ -50,7 +49,7 @@ export default function BluetoothWidget({ orientation, config }: Props) {
       hexpand={isVertical}
       halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       tooltipText={tooltipText}
-      execPrimary={() => execAsync(config.command).catch(() => {})}
+      execPrimary={() => execAsync(command).catch(() => {})}
     >
       <box
         class="widget-bluetooth-content"

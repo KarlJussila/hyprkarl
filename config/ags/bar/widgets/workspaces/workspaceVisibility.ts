@@ -1,5 +1,5 @@
 import AstalHyprland from "gi://AstalHyprland"
-import { type NormalizedWorkspaceVisibilityConfig } from "../../configuration"
+import type { NormalizedWorkspaceVisibilityConfig } from "./types"
 
 export type VisibleWorkspace = {
   id: number
@@ -98,4 +98,3 @@ export function currentVisibleWorkspaces(
     ...occupiedVisibleWorkspaces,
   ].filter(Boolean) as Array<VisibleWorkspace>).sort(compareWorkspaceIds)
 }
-

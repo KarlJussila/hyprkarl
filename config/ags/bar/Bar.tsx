@@ -11,8 +11,8 @@ import type { ResolvedBarConfiguration } from "./configuration"
 import ConfigErrorBar from "./layout/ConfigErrorBar"
 import Island from "./layout/Island"
 import { createBarPlacement, placementClasses } from "./layout/placement"
-import { renderBarWidget } from "./widgets/registry"
-import { normalizeBarConfiguration } from "./widgets/registry.shared"
+import { renderWidgetByKind } from "./widgets/renderWidgetByKind"
+import { resolveBarConfiguration } from "./widgets/resolveBarConfiguration"
 
 function ResolvedBar({
   gdkmonitor,
@@ -31,7 +31,7 @@ function ResolvedBar({
   function renderWidget(widgetId: string) {
     const widgetConfig = resolvedBarConfiguration.widgets[widgetId]
 
-    return renderBarWidget({
+    return renderWidgetByKind({
       id: widgetId,
       config: widgetConfig,
       placement,
@@ -117,7 +117,7 @@ function ResolvedBar({
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   try {
-    const resolvedBarConfiguration = normalizeBarConfiguration(layoutConfig, widgetDefinitions)
+    const resolvedBarConfiguration = resolveBarConfiguration(layoutConfig, widgetDefinitions)
 
     return (
       <ResolvedBar

@@ -1,7 +1,9 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import type { NormalizedWorkspacesWidgetConfig } from "../../configuration.ts"
+import type { ResolvedBarWidgetDefinition } from "../../widgets/widgetTypes.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
+
+type ResolvedWorkspacesWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "workspaces" }>
 
 test("normalizes dynamic workspace defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
@@ -19,7 +21,7 @@ test("normalizes dynamic workspace defaults from minimal config", () => {
     },
   )
 
-  const workspaces = resolved.widgets.workspaces as NormalizedWorkspacesWidgetConfig
+  const workspaces = resolved.widgets.workspaces as ResolvedWorkspacesWidgetConfig
   assert.equal(workspaces.mode, "dynamic")
   if (workspaces.mode !== "dynamic") {
     throw new Error("expected dynamic workspaces config")
@@ -55,7 +57,7 @@ test("normalizes fixed workspaces and widget-specific overrides", () => {
     },
   )
 
-  const workspaces = resolved.widgets.workspaces as NormalizedWorkspacesWidgetConfig
+  const workspaces = resolved.widgets.workspaces as ResolvedWorkspacesWidgetConfig
   assert.equal(workspaces.mode, "fixed")
   if (workspaces.mode !== "fixed") {
     throw new Error("expected fixed workspaces config")

@@ -1,10 +1,10 @@
 import { createState } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
-import type { NormalizedFlyoutConfig } from "../../configuration.ts"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import AttachedFlyout from "../../overlays/flyout/AttachedFlyout.tsx"
 import Button from "../../primitives/Button.tsx"
 import { type Accessor } from "ags"
+import type { NormalizedFlyoutConfig } from "./flyoutTypes.ts"
 
 type Props = {
   buttonClass: string

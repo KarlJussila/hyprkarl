@@ -1,6 +1,6 @@
 import { Accessor, createEffect } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
-import { type NormalizedSliderMetrics } from "../configuration.ts"
+import { type NormalizedSliderMetrics } from "./sliderTypes.ts"
 import { type BarOrientation } from "../layout/placement.ts"
 
 type SliderProps = {

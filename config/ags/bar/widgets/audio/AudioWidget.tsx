@@ -2,32 +2,47 @@ import { createBinding, createComputed, createState } from "ags"
 import { execAsync } from "ags/process"
 import { Gdk, Gtk } from "ags/gtk4"
 import AstalWp from "gi://AstalWp"
-import { type NormalizedAudioWidgetConfig } from "../../configuration.ts"
+import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import FlyoutButton from "../shared/FlyoutButton.tsx"
 import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import AudioIndicator from "./AudioIndicator.tsx"
 import AudioSliderFlyout from "./AudioSliderFlyout.tsx"
+import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
 import {
   formatAudioPercentage,
   formatAudioTooltip,
   formatUnavailableAudioTooltip,
 } from "./audioTooltip.ts"
+import type { NormalizedAudioTooltipConfig } from "./types.ts"
 
 type Props = {
   id: string
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
-  config: NormalizedAudioWidgetConfig
+  showPercentage: boolean
+  command: string
+  flyout: NormalizedFlyoutConfig
+  tooltip: NormalizedAudioTooltipConfig
+  slider: NormalizedSliderMetrics
 }
 
 function readString(value: unknown) {
   return typeof value === "string" ? value.trim() : ""
 }
 
-export default function AudioWidget({ id, placement, monitor, config }: Props) {
+export default function AudioWidget({
+  id,
+  placement,
+  monitor,
+  showPercentage,
+  command,
+  flyout,
+  tooltip,
+  slider,
+}: Props) {
   const speaker = AstalWp.get_default()?.defaultSpeaker ?? null
-  const launchAudio = () => execAsync(config.command).catch(() => {})
+  const launchAudio = () => execAsync(command).catch(() => {})
   const [unavailableVolume] = createState(0)
   const [unavailableMuted] = createState(true)
 
@@ -40,8 +55,8 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
         placement={placement}
         monitor={monitor}
         flyoutName={createWidgetFlyoutName("audio-menu", id, monitor.connector)}
-        flyout={config.flyout}
-        tooltipText={formatUnavailableAudioTooltip(config.tooltip)}
+        flyout={flyout}
+        tooltipText={formatUnavailableAudioTooltip(tooltip)}
         execPrimary={launchAudio}
         execSecondary={launchAudio}
         renderFlyoutContent={() => <label label="Audio unavailable" />}
@@ -71,7 +86,7 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
     muted: muted(),
     volume: volume(),
     device: readString(description()),
-    formats: config.tooltip,
+    formats: tooltip,
   }))
 
   const audioContent = (
@@ -88,7 +103,7 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
         volume={volume}
         muted={muted}
       />
-      {config.showPercentage && (
+      {showPercentage && (
         <label
           class="widget-audio-percent"
           xalign={0.5}
@@ -107,7 +122,7 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
       placement={placement}
       monitor={monitor}
       flyoutName={createWidgetFlyoutName("audio-menu", id, monitor.connector)}
-      flyout={config.flyout}
+      flyout={flyout}
       tooltipText={tooltipText}
       execPrimary={launchAudio}
       execSecondary={launchAudio}
@@ -116,7 +131,7 @@ export default function AudioWidget({ id, placement, monitor, config }: Props) {
           edge={placement.edge}
           volume={volume}
           onChange={(next) => speaker.set_volume(next)}
-          metrics={config.slider}
+          metrics={slider}
         />
       )}
     >

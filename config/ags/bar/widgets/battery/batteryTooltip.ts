@@ -1,4 +1,4 @@
-import type { NormalizedBatteryTooltipConfig } from "../../configuration.ts"
+import type { NormalizedBatteryTooltipConfig } from "./types.ts"
 import { formatBatteryPercentage } from "./batteryStateShared.ts"
 
 function formatPower(powerWatts: number) {

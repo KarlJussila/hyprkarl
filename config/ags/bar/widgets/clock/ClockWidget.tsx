@@ -1,11 +1,12 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import GLib from "gi://GLib?version=2.0"
-import { type NormalizedClockWidgetConfig } from "../../configuration.ts"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import FlyoutButton from "../shared/FlyoutButton.tsx"
 import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import CalendarFlyoutContent from "./CalendarFlyoutContent"
+import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
+import type { NormalizedClockDisplayConfig } from "./types.ts"
 
 function formatTime(time: GLib.DateTime, format: string) {
   return time.format(format) ?? ""
@@ -15,10 +16,11 @@ type Props = {
   id: string
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
-  config: NormalizedClockWidgetConfig
+  display: NormalizedClockDisplayConfig
+  flyout: NormalizedFlyoutConfig
 }
 
-export default function ClockWidget({ id, placement, monitor, config }: Props) {
+export default function ClockWidget({ id, placement, monitor, display, flyout }: Props) {
   const currentTime = createPoll(
     GLib.DateTime.new_now_local(),
     1000,
@@ -26,7 +28,7 @@ export default function ClockWidget({ id, placement, monitor, config }: Props) {
   )
 
   const horizontalClock = (
-    <label label={currentTime((time) => formatTime(time, config.display.horizontal))} />
+    <label label={currentTime((time) => formatTime(time, display.horizontal))} />
   )
 
   const verticalClock = (
@@ -37,9 +39,9 @@ export default function ClockWidget({ id, placement, monitor, config }: Props) {
       hexpand={placement.isVertical}
       halign={Gtk.Align.CENTER}
     >
-      <label class="widget-clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.top))} />
-      <label class="widget-clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.middle))} />
-      <label class="widget-clock-meridiem" xalign={0.5} label={currentTime((time) => formatTime(time, config.display.vertical.bottom))} />
+      <label class="widget-clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.top))} />
+      <label class="widget-clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.middle))} />
+      <label class="widget-clock-meridiem" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.bottom))} />
     </box>
   )
 
@@ -51,7 +53,7 @@ export default function ClockWidget({ id, placement, monitor, config }: Props) {
       placement={placement}
       monitor={monitor}
       flyoutName={createWidgetFlyoutName("calendar-menu", id, monitor.connector)}
-      flyout={config.flyout}
+      flyout={flyout}
       renderFlyoutContent={() => <CalendarFlyoutContent currentTime={currentTime} />}
     >
       {placement.isVertical ? verticalClock : horizontalClock}

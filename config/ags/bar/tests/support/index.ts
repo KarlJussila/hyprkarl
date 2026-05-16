@@ -1,7 +1,8 @@
 import assert from "node:assert/strict"
-import type { BarLayoutConfig, BarWidgetDefinitions } from "../../configuration.ts"
+import type { BarLayoutConfig } from "../../configuration.ts"
 import { BarConfigError } from "../../configError.ts"
-import { normalizeBarConfiguration } from "../../widgets/registry.shared.ts"
+import { resolveBarConfiguration as resolveRuntimeBarConfiguration } from "../../widgets/resolveBarConfiguration.ts"
+import type { BarWidgetDefinitions } from "../../widgets/widgetTypes.ts"
 
 export function expectBarConfigError(callback: () => void): BarConfigError {
   try {
@@ -20,5 +21,5 @@ export function resolveBarConfiguration(
   layout: BarLayoutConfig,
   widgets: BarWidgetDefinitions,
 ) {
-  return normalizeBarConfiguration(layout, widgets)
+  return resolveRuntimeBarConfiguration(layout, widgets)
 }

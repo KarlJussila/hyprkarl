@@ -182,39 +182,35 @@ Audio tooltip tokens:
 - `{device}`: current output description when available, for example `Speakers`
 - `{percentage}`: current volume percentage, for example `42%`
 
-Advanced widget drawing overrides stay nested so the main config surface stays readable:
+Battery indicator overrides live directly on the widget config:
 
 ```ts
 battery: {
   kind: "battery",
-  advanced: {
-    indicator: {
-      width: 20,
-      terminalWidth: 5,
-      terminalHeight: 2,
-      chargingGlyphFontSize: 10,
-    },
+  indicator: {
+    width: 20,
+    terminalWidth: 5,
+    terminalHeight: 2,
+    chargingGlyphFontSize: 10,
   },
 },
 ```
 
-Audio slider tuning uses the same nested pattern:
+Audio slider tuning follows the same flat pattern:
 
 ```ts
 audio: {
   kind: "audio",
-  advanced: {
-    slider: {
-      trackLength: 240,
-      trackThickness: 8,
-      trackRadius: 4,
-      fillRadius: 4,
-      borderWidth: 1,
-      thumbWidth: 12,
-      thumbHeight: 12,
-      thumbRadius: 6,
-      thumbVisible: false,
-    },
+  slider: {
+    trackLength: 240,
+    trackThickness: 8,
+    trackRadius: 4,
+    fillRadius: 4,
+    borderWidth: 1,
+    thumbWidth: 12,
+    thumbHeight: 12,
+    thumbRadius: 6,
+    thumbVisible: false,
   },
 },
 ```
@@ -276,19 +272,22 @@ Theme tokens stay short because `theme.scss` is already a namespace. Rendered CS
 `app.ts` starts the bar and `Bar.tsx` resolves config before rendering per monitor. The configuration pipeline is:
 
 1. `config/layout.config.ts` and `config/widgets.config.ts` export data-only config.
-2. `widgets/registry.shared.ts` validates layout references and normalizes widget definitions.
-3. `widgets/shared/widgetDefinitions.ts` dispatches normalization by widget kind.
-4. Each widget folder owns a `definition.ts` file for defaults and config normalization.
-5. `widgets/registry.tsx` renders normalized widgets through `manifest.tsx` files.
+2. `widgets/resolveBarConfiguration.ts` validates layout references and resolves widget definitions.
+3. `widgets/catalog.ts` is the single widget catalog and dispatches by widget kind.
+4. Each widget folder owns its widget-specific resolve logic and render wiring, while readable widget layout stays local to that widget folder.
+5. `widgets/renderWidgetByKind.tsx` renders resolved widgets through that catalog.
 
-Each widget folder now has a split responsibility:
+Each widget folder should keep the readable layout module separate from denser wiring:
 
-- `definition.ts`: public config shape, defaults, and normalization
-- `manifest.tsx`: render registration for the widget
-- `WidgetName.tsx`: top-level view component, kept intentionally small
-- helper files: extracted behavior, service integration, and sub-components
+- `WidgetName.tsx`: top-level view module, kept intentionally small
+- `widget.tsx`: widget-owned resolve logic and render entry
+- helper files like `types.ts`, `normalize.ts`, service integrations, and sub-components
 
-Shared internal helpers live in `widgets/shared/`. For example, `FlyoutButton.tsx` centralizes flyout trigger wiring so widgets like clock and battery do not duplicate it.
+Each widget usually exports only one public config type from `widget.tsx`: the shape users may write in `widgets.config.ts`. Defaults and validation still resolve that into a stricter runtime shape, but that stricter shape is internal to the widget spec layer instead of being another public type most contributors need to learn.
+
+The intended direction is one minimal central catalog and widget-local `widget.tsx` files instead of scattered shared registries plus thin registration wrappers.
+
+`configuration.ts` now stays bar-wide. Widget-specific types and widget-specific normalizers live with the widget or primitive that owns them. Shared internal helpers live in `widgets/shared/`. For example, `FlyoutButton.tsx` centralizes flyout trigger wiring so widgets like clock and battery do not duplicate it.
 
 ## Styling Architecture
 
@@ -313,7 +312,7 @@ Internal helper classes may still exist to support layout math, but styling chan
 
 ## Contributor Notes
 
-Keep `layout.config.ts`, `widgets.config.ts`, and `theme.scss` friendly to edit. If a new styling knob is likely to matter to many users, expose it as a grouped token in `theme.scss`. If it is too low-level, keep it internal or hide it behind a nested `advanced` section. Prefer explicit `widget-*`, `bar-*`, and `is-*` classes over selectors that depend on GTK child structure.
+Keep `layout.config.ts`, `widgets.config.ts`, and `theme.scss` friendly to edit. If a new styling knob is likely to matter to many users, expose it as a grouped token in `theme.scss`. If it is too low-level, keep it internal instead of complicating the public config shape. Prefer explicit `widget-*`, `bar-*`, and `is-*` classes over selectors that depend on GTK child structure.
 
 ## Troubleshooting
 

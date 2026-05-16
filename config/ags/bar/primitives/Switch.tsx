@@ -3,7 +3,7 @@ import { Gdk, Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import Pango from "gi://Pango"
 import PangoCairo from "gi://PangoCairo"
-import { type NormalizedSwitchMetrics } from "../configuration"
+import { type NormalizedSwitchMetrics } from "./switchTypes"
 import { type BarOrientation } from "../layout/placement"
 
 function interpolate(start: number, end: number, factor: number) {

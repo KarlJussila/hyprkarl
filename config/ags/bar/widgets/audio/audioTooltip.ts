@@ -1,4 +1,4 @@
-import type { NormalizedAudioTooltipConfig } from "../../configuration.ts"
+import type { NormalizedAudioTooltipConfig } from "./types.ts"
 
 function formatAudioPercentage(volume: number) {
   return `${Math.round(Math.max(0, volume) * 100)}%`

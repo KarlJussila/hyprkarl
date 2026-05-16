@@ -1,17 +1,22 @@
 import { createConnection, createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalTray from "gi://AstalTray"
-import { type NormalizedTrayWidgetConfig } from "../../configuration"
 import { type TrayPlacement } from "../../layout/placement"
 import TrayExpander from "./TrayExpander"
 import TrayItems from "./TrayItems"
+import type {
+  NormalizedTrayRevealConfig,
+  TrayDirection,
+} from "./types.ts"
 
 type Props = {
   placement: TrayPlacement
-  config: NormalizedTrayWidgetConfig
+  direction: TrayDirection
+  mirrorTrigger: boolean
+  reveal: NormalizedTrayRevealConfig
 }
 
-export default function TrayWidget({ placement, config }: Props) {
+export default function TrayWidget({ placement, direction, mirrorTrigger, reveal }: Props) {
   const trayService = AstalTray.get_default()
   const trayItems = createConnection(
     [...trayService.items],
@@ -30,24 +35,24 @@ export default function TrayWidget({ placement, config }: Props) {
   const trayPanel = (
     <TrayItems
       placement={placement}
-      direction={config.direction}
+      direction={direction}
       items={trayItems}
       open={trayOpen}
-      revealDurationMs={config.reveal.durationMs}
+      revealDurationMs={reveal.durationMs}
     />
   )
 
   const trayExpander = (
     <TrayExpander
       fill={placement.isVertical}
-      icons={placement.tray.expanderIcons(config.direction, config.mirrorTrigger)}
+      icons={placement.tray.expanderIcons(direction, mirrorTrigger)}
       hasItems={hasTrayItems}
       open={trayOpen}
       onToggle={toggleTray}
     />
   )
 
-  const [startContent, endContent] = config.direction === "start"
+  const [startContent, endContent] = direction === "start"
     ? [trayPanel, trayExpander]
     : [trayExpander, trayPanel]
 

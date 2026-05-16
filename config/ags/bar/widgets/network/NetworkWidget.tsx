@@ -3,13 +3,12 @@ import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
 import AstalNetwork from "gi://AstalNetwork"
-import { type NormalizedNetworkWidgetConfig } from "../../configuration.ts"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 
 type Props = {
   orientation: BarOrientation
-  config: NormalizedNetworkWidgetConfig
+  command: string
 }
 
 type NetworkSnapshot = {
@@ -87,7 +86,7 @@ function snapshotNetworkState(network: any): NetworkSnapshot {
   }
 }
 
-export default function NetworkWidget({ orientation, config }: Props) {
+export default function NetworkWidget({ orientation, command }: Props) {
   const isVertical = orientation === "vertical"
   const network = AstalNetwork.get_default()
   const state = createPoll(
@@ -101,7 +100,7 @@ export default function NetworkWidget({ orientation, config }: Props) {
       class="widget-network-button"
       hexpand={isVertical}
       halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
-      execPrimary={() => execAsync(config.command).catch(() => {})}
+      execPrimary={() => execAsync(command).catch(() => {})}
       $={(button) => {
         createEffect(() => {
           button.set_tooltip_text(state().tooltip)

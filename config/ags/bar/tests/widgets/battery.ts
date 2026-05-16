@@ -1,8 +1,10 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import type { NormalizedBatteryWidgetConfig } from "../../configuration.ts"
 import { formatBatteryTooltip } from "../../widgets/battery/batteryTooltip.ts"
+import type { ResolvedBarWidgetDefinition } from "../../widgets/widgetTypes.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
+
+type ResolvedBatteryWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "battery" }>
 
 test("normalizes battery widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
@@ -20,7 +22,7 @@ test("normalizes battery widget defaults from minimal config", () => {
     },
   )
 
-  const battery = resolved.widgets.battery as NormalizedBatteryWidgetConfig
+  const battery = resolved.widgets.battery as ResolvedBatteryWidgetConfig
   assert.equal(battery.showPercentage, true)
   assert.equal(battery.lowThreshold, 0.15)
   assert.equal(battery.flyout.enabled, true)
@@ -30,7 +32,7 @@ test("normalizes battery widget defaults from minimal config", () => {
   assert.equal(battery.indicator.chargingGlyph, "󱐋")
 })
 
-test("normalizes advanced widget appearance overrides behind nested config", () => {
+test("normalizes flat widget appearance overrides", () => {
   const resolved = resolveBarConfiguration(
     {
       edge: "top",
@@ -45,11 +47,9 @@ test("normalizes advanced widget appearance overrides behind nested config", () 
     {
       caffeine: {
         kind: "caffeine",
-        advanced: {
-          switch: {
-            trackLength: 32,
-            glyphOffsetY: -1,
-          },
+        switch: {
+          trackLength: 32,
+          glyphOffsetY: -1,
         },
       },
       clock: {
@@ -57,19 +57,17 @@ test("normalizes advanced widget appearance overrides behind nested config", () 
       },
       battery: {
         kind: "battery",
-        advanced: {
-          indicator: {
-            width: 20,
-            terminalWidth: 5,
-            terminalHeight: 2,
-            chargingGlyphFontSize: 10,
-          },
+        indicator: {
+          width: 20,
+          terminalWidth: 5,
+          terminalHeight: 2,
+          chargingGlyphFontSize: 10,
         },
       },
     },
   )
 
-  const battery = resolved.widgets.battery as NormalizedBatteryWidgetConfig
+  const battery = resolved.widgets.battery as ResolvedBatteryWidgetConfig
   assert.equal(battery.indicator.width, 20)
   assert.equal(battery.indicator.terminalWidth, 5)
   assert.equal(battery.indicator.terminalHeight, 2)
@@ -98,7 +96,7 @@ test("normalizes battery tooltip format overrides", () => {
     },
   )
 
-  const battery = resolved.widgets.battery as NormalizedBatteryWidgetConfig
+  const battery = resolved.widgets.battery as ResolvedBatteryWidgetConfig
   assert.equal(battery.tooltip.charging, "{percentage} charging at {power}")
   assert.equal(battery.tooltip.discharging, "{power}↓ {time}")
   assert.equal(battery.tooltip.fallback, "Battery {percentage}")

@@ -1,9 +1,9 @@
 import { createBinding, createComputed, type Accessor } from "ags"
 import AstalBattery from "gi://AstalBattery"
 import AstalPowerProfiles from "gi://AstalPowerProfiles"
-import type { NormalizedBatteryTooltipConfig } from "../../configuration.ts"
 import { formatBatteryTooltip } from "./batteryTooltip.ts"
 import { formatBatteryPercentage } from "./batteryStateShared.ts"
+import type { NormalizedBatteryTooltipConfig } from "./types.ts"
 
 export type BatteryState = {
   isPresent: Accessor<boolean>

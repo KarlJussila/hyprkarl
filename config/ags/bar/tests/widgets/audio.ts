@@ -1,12 +1,14 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import type { NormalizedAudioWidgetConfig } from "../../configuration.ts"
 import {
   formatAudioPercentage,
   formatAudioTooltip,
   formatUnavailableAudioTooltip,
 } from "../../widgets/audio/audioTooltip.ts"
+import type { ResolvedBarWidgetDefinition } from "../../widgets/widgetTypes.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
+
+type ResolvedAudioWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "audio" }>
 
 test("normalizes audio widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
@@ -24,7 +26,7 @@ test("normalizes audio widget defaults from minimal config", () => {
     },
   )
 
-  const audio = resolved.widgets.audio as NormalizedAudioWidgetConfig
+  const audio = resolved.widgets.audio as ResolvedAudioWidgetConfig
   assert.equal(audio.showPercentage, true)
   assert.equal(audio.command, "hk-launch-audio")
   assert.equal(audio.flyout.enabled, true)
@@ -61,23 +63,21 @@ test("normalizes audio widget overrides", () => {
           active: "{percentage}",
           muted: "quiet",
         },
-        advanced: {
-          slider: {
-            trackLength: 260,
-            trackThickness: 10,
-            trackRadius: 3,
-            fillRadius: 2,
-            thumbWidth: 14,
-            thumbHeight: 12,
-            thumbRadius: 4,
-            thumbVisible: true,
-          },
+        slider: {
+          trackLength: 260,
+          trackThickness: 10,
+          trackRadius: 3,
+          fillRadius: 2,
+          thumbWidth: 14,
+          thumbHeight: 12,
+          thumbRadius: 4,
+          thumbVisible: true,
         },
       },
     },
   )
 
-  const audio = resolved.widgets.audio as NormalizedAudioWidgetConfig
+  const audio = resolved.widgets.audio as ResolvedAudioWidgetConfig
   assert.equal(audio.showPercentage, false)
   assert.equal(audio.command, "custom-audio-command")
   assert.equal(audio.flyout.enabled, false)

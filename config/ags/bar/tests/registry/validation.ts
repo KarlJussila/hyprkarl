@@ -4,8 +4,9 @@ import {
   BAR_WIDGETS_SOURCE_FILE,
   formatBarConfigError,
 } from "../../configError.ts"
-import type { BarLayoutConfig, BarWidgetDefinitions } from "../../configuration.ts"
+import type { BarLayoutConfig } from "../../configuration.ts"
 import { expectBarConfigError, resolveBarConfiguration } from "../support/index.ts"
+import type { BarWidgetDefinitions } from "../../widgets/widgetTypes.ts"
 
 test("rejects invalid widget option values with widget metadata", () => {
   const layout = {

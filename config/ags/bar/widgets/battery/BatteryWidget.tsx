@@ -1,5 +1,4 @@
 import { Gdk, Gtk } from "ags/gtk4"
-import { type NormalizedBatteryWidgetConfig } from "../../configuration.ts"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import FlyoutButton from "../shared/FlyoutButton.tsx"
 import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
@@ -7,16 +6,34 @@ import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState } from "./batteryState"
 import { formatBatteryPercentage } from "./batteryStateShared.ts"
 import PowerProfileMenu from "./PowerProfileMenu"
+import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
+import type {
+  NormalizedBatteryIndicatorMetrics,
+  NormalizedBatteryTooltipConfig,
+} from "./types.ts"
 
 type Props = {
   id: string
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
-  config: NormalizedBatteryWidgetConfig
+  showPercentage: boolean
+  lowThreshold: number
+  flyout: NormalizedFlyoutConfig
+  tooltip: NormalizedBatteryTooltipConfig
+  indicator: NormalizedBatteryIndicatorMetrics
 }
 
-export default function BatteryWidget({ id, placement, monitor, config }: Props) {
-  const batteryState = createBatteryState(config.tooltip)
+export default function BatteryWidget({
+  id,
+  placement,
+  monitor,
+  showPercentage,
+  lowThreshold,
+  flyout,
+  tooltip,
+  indicator,
+}: Props) {
+  const batteryState = createBatteryState(tooltip)
 
   const batteryContent = placement.isVertical
     ? (
@@ -31,10 +48,10 @@ export default function BatteryWidget({ id, placement, monitor, config }: Props)
             orientation={placement.orientation}
             level={batteryState.percentage}
             charging={batteryState.isCharging}
-            lowThreshold={config.lowThreshold}
-            metrics={config.indicator}
+            lowThreshold={lowThreshold}
+            metrics={indicator}
           />
-          {config.showPercentage && (
+          {showPercentage && (
             <label
               class="widget-battery-percent"
               valign={Gtk.Align.CENTER}
@@ -53,10 +70,10 @@ export default function BatteryWidget({ id, placement, monitor, config }: Props)
             orientation={placement.orientation}
             level={batteryState.percentage}
             charging={batteryState.isCharging}
-            lowThreshold={config.lowThreshold}
-            metrics={config.indicator}
+            lowThreshold={lowThreshold}
+            metrics={indicator}
           />
-          {config.showPercentage && (
+          {showPercentage && (
             <label
               class="widget-battery-percent"
               valign={Gtk.Align.CENTER}
@@ -74,7 +91,7 @@ export default function BatteryWidget({ id, placement, monitor, config }: Props)
       placement={placement}
       monitor={monitor}
       flyoutName={createWidgetFlyoutName("battery-menu", id, monitor.connector)}
-      flyout={config.flyout}
+      flyout={flyout}
       tooltipText={batteryState.tooltipText}
       visible={batteryState.isPresent}
       renderFlyoutContent={(closeFlyout) => (

@@ -1,9 +1,9 @@
 import { Accessor, For, createComputed } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalTray from "gi://AstalTray"
-import { type TrayDirection } from "../../configuration"
 import { type TrayPlacement } from "../../layout/placement"
 import TrayItem from "./TrayItem"
+import type { TrayDirection } from "./types"
 
 type Props = {
   placement: TrayPlacement

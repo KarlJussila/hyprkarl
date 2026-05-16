@@ -2,10 +2,8 @@ import { Accessor, createEffect } from "ags"
 import { Gtk } from "ags/gtk4"
 import Pango from "gi://Pango"
 import PangoCairo from "gi://PangoCairo"
-import {
-  type NormalizedBatteryIndicatorMetrics,
-} from "../../configuration"
 import { type BarOrientation } from "../../layout/placement"
+import type { NormalizedBatteryIndicatorMetrics } from "./types"
 
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value))

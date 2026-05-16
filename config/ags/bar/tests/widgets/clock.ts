@@ -1,7 +1,9 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import type { NormalizedClockWidgetConfig } from "../../configuration.ts"
+import type { ResolvedBarWidgetDefinition } from "../../widgets/widgetTypes.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
+
+type ResolvedClockWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "clock" }>
 
 test("normalizes clock widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
@@ -19,7 +21,7 @@ test("normalizes clock widget defaults from minimal config", () => {
     },
   )
 
-  const clock = resolved.widgets.clock as NormalizedClockWidgetConfig
+  const clock = resolved.widgets.clock as ResolvedClockWidgetConfig
   assert.equal(clock.display.horizontal, "%a %-I:%M %p")
   assert.deepEqual(clock.display.vertical, {
     top: "%I",
@@ -57,7 +59,7 @@ test("normalizes clock widget overrides", () => {
     },
   )
 
-  const clock = resolved.widgets.clock as NormalizedClockWidgetConfig
+  const clock = resolved.widgets.clock as ResolvedClockWidgetConfig
   assert.equal(clock.flyout.enabled, false)
   assert.deepEqual(clock.display.vertical, {
     top: "%H",

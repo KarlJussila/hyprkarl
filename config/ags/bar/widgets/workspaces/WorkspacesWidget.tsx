@@ -1,16 +1,25 @@
 import { createConnection } from "ags"
 import AstalHyprland from "gi://AstalHyprland"
-import { type NormalizedWorkspacesWidgetConfig } from "../../configuration"
 import { type BarOrientation } from "../../layout/placement"
 import WorkspaceList from "./WorkspaceList"
 import { currentVisibleWorkspaces, fixedVisibleWorkspaces } from "./workspaceVisibility"
+import type { NormalizedWorkspaceVisibilityConfig } from "./types"
 
-type Props = {
+type DynamicProps = {
   orientation: BarOrientation
-  config: NormalizedWorkspacesWidgetConfig
+  mode: "dynamic"
+  visibility: NormalizedWorkspaceVisibilityConfig
 }
 
-export default function WorkspacesWidget({ orientation, config }: Props) {
+type FixedProps = {
+  orientation: BarOrientation
+  mode: "fixed"
+  ids: Array<number>
+}
+
+type Props = DynamicProps | FixedProps
+
+export default function WorkspacesWidget({ orientation, ...config }: Props) {
   const hyprland = AstalHyprland.get_default()
 
   const listVisibleWorkspaces = () => config.mode === "fixed"

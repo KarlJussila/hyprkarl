@@ -1,7 +1,9 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import type { NormalizedCaffeineWidgetConfig } from "../../configuration.ts"
+import type { ResolvedBarWidgetDefinition } from "../../widgets/widgetTypes.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
+
+type ResolvedCaffeineWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "caffeine" }>
 
 test("normalizes caffeine widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
@@ -19,7 +21,7 @@ test("normalizes caffeine widget defaults from minimal config", () => {
     },
   )
 
-  const caffeine = resolved.widgets.caffeine as NormalizedCaffeineWidgetConfig
+  const caffeine = resolved.widgets.caffeine as ResolvedCaffeineWidgetConfig
   assert.equal(caffeine.glyph, "")
   assert.equal(caffeine.command, "hk-caffeine")
   assert.equal(caffeine.switch.trackLength, 24)
@@ -39,17 +41,15 @@ test("normalizes caffeine advanced switch overrides", () => {
     {
       caffeine: {
         kind: "caffeine",
-        advanced: {
-          switch: {
-            trackLength: 32,
-            glyphOffsetY: -1,
-          },
+        switch: {
+          trackLength: 32,
+          glyphOffsetY: -1,
         },
       },
     },
   )
 
-  const caffeine = resolved.widgets.caffeine as NormalizedCaffeineWidgetConfig
+  const caffeine = resolved.widgets.caffeine as ResolvedCaffeineWidgetConfig
   assert.equal(caffeine.switch.trackLength, 32)
   assert.equal(caffeine.switch.glyphOffsetY, -1)
 })

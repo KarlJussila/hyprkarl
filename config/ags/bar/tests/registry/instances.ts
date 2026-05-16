@@ -1,11 +1,13 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import type {
-  BarLayoutConfig,
-  BarWidgetDefinitions,
-  NormalizedClockWidgetConfig,
-} from "../../configuration.ts"
+import type { BarLayoutConfig } from "../../configuration.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
+import type {
+  BarWidgetDefinitions,
+  ResolvedBarWidgetDefinition,
+} from "../../widgets/widgetTypes.ts"
+
+type ResolvedClockWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "clock" }>
 
 test("allows multiple widget IDs of the same kind with independent configs", () => {
   const layout = {
@@ -42,8 +44,8 @@ test("allows multiple widget IDs of the same kind with independent configs", () 
   } satisfies BarWidgetDefinitions
 
   const resolved = resolveBarConfiguration(layout, widgets)
-  const compactClock = resolved.widgets.clockCompact as NormalizedClockWidgetConfig
-  const fullClock = resolved.widgets.clockFull as NormalizedClockWidgetConfig
+  const compactClock = resolved.widgets.clockCompact as ResolvedClockWidgetConfig
+  const fullClock = resolved.widgets.clockFull as ResolvedClockWidgetConfig
 
   assert.equal(compactClock.kind, "clock")
   assert.equal(fullClock.kind, "clock")

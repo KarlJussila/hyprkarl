@@ -1,15 +1,16 @@
 import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
-import { type NormalizedMenuWidgetConfig } from "../../configuration"
 import { type BarOrientation } from "../../layout/placement"
 import Button from "../../primitives/Button"
+import type { NormalizedCommandConfig } from "./types.ts"
 
 type Props = {
   orientation: BarOrientation
-  config: NormalizedMenuWidgetConfig
+  icon: string
+  commands: NormalizedCommandConfig
 }
 
-export default function MenuWidget({ orientation, config }: Props) {
+export default function MenuWidget({ orientation, icon, commands }: Props) {
   const isVertical = orientation === "vertical"
 
   return (
@@ -17,9 +18,9 @@ export default function MenuWidget({ orientation, config }: Props) {
       class="widget-menu-button"
       hexpand={isVertical}
       halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
-      execPrimary={() => execAsync(config.commands.primary).catch(() => {})}
-      execSecondary={config.commands.secondary
-        ? () => execAsync(config.commands.secondary!).catch(() => {})
+      execPrimary={() => execAsync(commands.primary).catch(() => {})}
+      execSecondary={commands.secondary
+        ? () => execAsync(commands.secondary!).catch(() => {})
         : undefined}
     >
       <box
@@ -27,7 +28,7 @@ export default function MenuWidget({ orientation, config }: Props) {
         hexpand={isVertical}
         halign={Gtk.Align.CENTER}
       >
-        <label class="widget-menu-glyph" xalign={0.5} label={config.icon} />
+        <label class="widget-menu-glyph" xalign={0.5} label={icon} />
       </box>
     </Button>
   )

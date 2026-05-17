@@ -8,7 +8,7 @@ export PATH=$HYPRKARL_PATH/bin:$PATH
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 
 # Qt theme
-export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_QPA_PLATFORMTHEME=qt6ct
 
 # Set default terminal and editor
 source ~/.config/uwsm/default

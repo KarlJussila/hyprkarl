@@ -17,4 +17,13 @@
   box-shadow: none;
   min-width: 0px;
   min-height: 0px;
+
+  &:focus,
+  &:focus-visible {
+    border-width: 0px;
+    border-color: transparent;
+    outline: none;
+    box-shadow: none;
+    background-image: none;
+  }
 }

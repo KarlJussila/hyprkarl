@@ -13,4 +13,8 @@ stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications 
 git -C ~/.local/share/hyprkarl checkout config/
 git -C ~/.local/share/hyprkarl checkout applications/
 
+# Stow the GTK theme
+mkdir -p $HOME/.local/share/themes
+ln -sT ../hyprkarl/config/hyprkarl/current/theme/gtk-theme ~/.local/share/themes/hyprkarl
+
 hyprctl reload

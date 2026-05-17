@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=hyprkarl
+Comment=Generated GTK theme for the hyprkarl palette
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=hyprkarl
+GtkTheme=hyprkarl
+MetacityTheme=hyprkarl
+IconTheme=Yaru-purple
+ButtonLayout=close,minimize,maximize:menu

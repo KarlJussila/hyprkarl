@@ -119,7 +119,7 @@ Examples:
 - terminal configs import from `current/theme/...`
 - `hyprlock` points at `current/wallpaper`
 
-## When to Run `add-dotfiles.sh`
+## Exposing New Config Files
 
 If you only edit an existing tracked file, the symlink already exists and there
 is nothing else to do.
@@ -127,14 +127,8 @@ is nothing else to do.
 If you add a new file or directory under `config/` or `applications/`, run:
 
 ```bash
-./scripts/add-dotfiles.sh
+hk-update dotfiles
 ```
 
-`add-dotfiles.sh` is the restrained Stow helper. It will not overwrite files in
-the source tree or the destination tree.
-
-Do not re-run `setup-dotfiles.sh` as a normal update step. It is part of the
-initial setup flow and can overwrite existing files.
-
-It can still be useful for refreshing Hyprkarl itself if you have not made your
-own config changes on top of it.
+This re-stows the entire config package, picks up any new files, and removes
+symlinks for files that were deleted.

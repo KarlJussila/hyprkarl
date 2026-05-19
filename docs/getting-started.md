@@ -43,21 +43,10 @@ cd ~/.local/share/hyprkarl
 
 Hyprkarl is edited from `~/.local/share/hyprkarl/`.
 
-The files under `~/.config/` and `~/.local/share/applications/` are usually
-symlinks back into that tree, so the tracked files in Hyprkarl are the source
-of truth.
-
-Two setup scripts matter here:
-
-- `setup-dotfiles.sh`
-  First-install script. It can replace existing live files with symlinks to
-  Hyprkarl.
-- `scripts/add-dotfiles.sh`
-  Safer re-stow script. It creates symlinks for tracked files that are not
-  already exposed in `~/.config/` or `~/.local/share/applications/`.
-
-If you already have a working Hyprkarl setup and only need to expose newly
-added files, use `scripts/add-dotfiles.sh`, not `setup-dotfiles.sh`.
+The files under `~/.config/` and `~/.local/share/applications/` are symlinks
+back into that tree, so the tracked files in Hyprkarl are the source of truth.
+Editing `~/.config/hypr/hyprland.conf` and editing
+`~/.local/share/hyprkarl/config/hypr/hyprland.conf` are the same operation.
 
 ## Editing Hyprkarl
 
@@ -73,46 +62,29 @@ For editing guidance, see:
 
 ## Updating
 
-If you have customized Hyprkarl, update it like a normal git branch and then
-decide which setup steps you actually need to re-run.
-
-Before bringing in upstream changes:
-
-- keep your own changes on a branch
-- commit or stash your work first, especially changes under `config/` and
-  `applications/`
-- fetch upstream changes and review them before merging
-
-Example:
+After initial setup, use `hk-update` to apply changes from upstream. It tracks
+which commit each category was last applied at, so it only acts when something
+has actually changed.
 
 ```bash
 cd ~/.local/share/hyprkarl
 git fetch origin
-git diff --stat HEAD..origin/main
-git merge origin/main
+git merge origin/main   # or rebase onto your personal branch
+hk-update all
 ```
 
-After merging upstream changes:
+`hk-update all` runs dotfiles, packages, and system in sequence. You can also
+run each individually:
 
-- run `setup-packages.sh` if upstream changed package requirements
-- run `setup-system.sh` if upstream changed system-level setup behavior and you
-  want those defaults applied
-- run `scripts/add-dotfiles.sh` if upstream added new tracked files under
-  `config/` or `applications/` and there are no overlapping live files
-- run `setup-dotfiles.sh` if you need to replace overlapping live files with
-  symlinks to Hyprkarl
+```bash
+hk-update dotfiles    # re-stow config files, remove stale symlinks
+hk-update packages    # install new required packages, prompt to remove dropped ones
+hk-update system      # re-run system-level setup
+hk-update check       # preview what would change without doing anything
+```
 
-`setup-all.sh` runs all three setup steps and is the most complete update
-command, but also the most dangerous:
-
-- `setup-packages.sh` can install new packages and remove `wofi` and `dolphin`
-- `setup-system.sh` reapplies Hyprkarl's system defaults
-- `setup-dotfiles.sh` can replace overlapping live files and then resets the
-  tracked `config/` and `applications/` trees to the current git checkout
-
-That last point is the main risk: if you have uncommitted changes under
-`config/` or `applications/` in `~/.local/share/hyprkarl`, `setup-dotfiles.sh`
-can overwrite them. Commit those changes first if you want to keep them.
+See [Updating](updating.md) for the full update workflow, conflict resolution,
+and what to do when things go wrong.
 
 ## Changes That Need a New Session
 

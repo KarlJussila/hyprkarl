@@ -3,6 +3,29 @@
 This page lists the `hk-*` commands you would normally run directly. It
 does not try to document every internal script.
 
+## Update
+
+- `hk-update check`
+  Report what would change across dotfiles, packages, and system without
+  making any changes.
+- `hk-update all [--force|--adopt]`
+  Run dotfiles, packages, and system updates in sequence. `--force` and
+  `--adopt` are passed through to the dotfiles step.
+- `hk-update dotfiles`
+  Re-stow config files and remove stale symlinks. Checks for conflicts first
+  and aborts if any are found.
+- `hk-update dotfiles --force`
+  Re-stow using the adopt-and-checkout flow, overwriting any conflicting files
+  in `~/.config/`. Requires a clean git working tree.
+- `hk-update dotfiles --adopt`
+  Adopt conflicting `~/.config/` files into the repo without overwriting them,
+  then report what differs so you can review and commit or discard.
+- `hk-update packages`
+  Install packages newly added to the required lists, prompt to remove packages
+  that were dropped or added to the removal list.
+- `hk-update system`
+  Re-run `setup-system.sh`.
+
 ## Menus and Launching
 
 - `hk-menu`

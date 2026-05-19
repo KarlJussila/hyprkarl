@@ -7,7 +7,7 @@
 #   hk-update dotfiles
 #   hk-update packages
 #   hk-update system
-#   hk-update all
+#   hk-update all [--force|--adopt]
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 ACTION_DIR="$SCRIPT_DIR/lib/update"
@@ -15,11 +15,13 @@ ACTION_DIR="$SCRIPT_DIR/lib/update"
 usage() {
   cat <<'EOF'
 Usage:
-  hk-update check               Report what would change (no side effects)
-  hk-update dotfiles [--force]  Restow config files and remove stale symlinks
-  hk-update packages            Install new required packages, prompt for dropped ones
-  hk-update system              Re-run system-level setup
-  hk-update all                 Run dotfiles, packages, and system in sequence
+  hk-update check                Report what would change (no side effects)
+  hk-update dotfiles             Restow config files and remove stale symlinks
+  hk-update dotfiles --force     Overwrite conflicting ~/.config files with repo versions
+  hk-update dotfiles --adopt     Adopt conflicting ~/.config files into the repo for review
+  hk-update packages             Install new required packages, prompt for dropped ones
+  hk-update system               Re-run system-level setup
+  hk-update all [--force|--adopt]  Run dotfiles, packages, and system in sequence
 EOF
 }
 
@@ -28,7 +30,14 @@ shift || true
 
 case "$action" in
   all)
-    "$ACTION_DIR/dotfiles.sh" || exit 1
+    dotfiles_flags=()
+    for arg in "$@"; do
+      case "$arg" in
+        --force|--adopt) dotfiles_flags+=("$arg") ;;
+        *) printf 'Unknown option: %s\n' "$arg" >&2; usage >&2; exit 1 ;;
+      esac
+    done
+    "$ACTION_DIR/dotfiles.sh" "${dotfiles_flags[@]}" || exit 1
     "$ACTION_DIR/packages.sh" || exit 1
     "$ACTION_DIR/system.sh"   || exit 1
     exit 0

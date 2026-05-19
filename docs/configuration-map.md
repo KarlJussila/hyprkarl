@@ -11,6 +11,8 @@ would edit.
   Internal shell helpers for `bin/`, kept as `*.sh` files
 - `config/`
   Application config and session behavior
+- `packages/`
+  Package lists read by `setup-packages.sh` and `hk-update packages`
 - `themes/`
   Theme files and per-theme overrides
 - `scripts/`
@@ -34,6 +36,16 @@ would edit.
   Symlink to the current wallpaper
 
 If theme or wallpaper behavior looks wrong, check this directory first.
+
+`config/hyprkarl/update/` holds the last-applied commit per update category:
+
+- `config/hyprkarl/update/dotfiles.commit`
+- `config/hyprkarl/update/packages.commit`
+- `config/hyprkarl/update/system.commit`
+
+These files are machine-local and gitignored. They are written by `hk-update`
+and the setup scripts. Delete one to force `hk-update` to re-run that category
+regardless of whether anything changed.
 
 ## Hyprland
 

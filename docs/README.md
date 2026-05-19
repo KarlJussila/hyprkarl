@@ -8,8 +8,10 @@ repo checked out at `~/.local/share/hyprkarl/`.
 
 ## Start Here
 
-- Read [Getting Started](getting-started.md) for installation, the symlink
-  model, and updating.
+- Read [Getting Started](getting-started.md) for installation and the symlink
+  model.
+- Read [Updating](updating.md) for the update workflow, conflict resolution,
+  and package management.
 - Read [Using Hyprkarl](using-hyprkarl.md) for the standard workflow: menus,
   keybindings, themes, wallpapers, defaults, and utilities.
 - Read [Configuration Map](configuration-map.md) if you need to know where a
@@ -35,6 +37,7 @@ repo checked out at `~/.local/share/hyprkarl/`.
 ## Reference
 
 - [Getting Started](getting-started.md)
+- [Updating](updating.md)
 - [Using Hyprkarl](using-hyprkarl.md)
 - [Configuration Map](configuration-map.md)
 - [Themes](themes.md)

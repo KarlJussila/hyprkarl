@@ -2,11 +2,14 @@
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/state.sh"
+source "$SCRIPT_DIR/stow_helpers.sh"
 
 force=0
+adopt=0
 for arg in "$@"; do
   case "$arg" in
     --force) force=1 ;;
+    --adopt) adopt=1 ;;
     *) printf 'Unknown option: %s\n' "$arg" >&2; exit 1 ;;
   esac
 done
@@ -18,74 +21,42 @@ if [[ "$force" -eq 1 ]]; then
     printf 'Commit your changes first.\n' >&2
     exit 1
   fi
-
   printf 'Restowing config files...\n'
-  stow -D --ignore='@girs' --ignore='node_modules' --no-folding \
-    --dir="$HYPRKARL_PATH" --target="$HOME/.config" config
-  stow --ignore='@girs' --ignore='node_modules' --adopt --no-folding \
-    --dir="$HYPRKARL_PATH" --target="$HOME/.config" config
-  stow --adopt --no-folding \
-    --dir="$HYPRKARL_PATH" --target="$HOME/.local/share/applications" applications
+  stow_adopt_config || exit 1
   git -C "$HYPRKARL_PATH" checkout config/ applications/
+elif [[ "$adopt" -eq 1 ]]; then
+  printf 'Adopting config files...\n'
+  stow_adopt_config || exit 1
 else
-  stow_conflicts() {
-    stow -n -v "$@" 2>&1 | grep '^CONFLICT:'
-  }
-
-  printf 'Checking for conflicts...\n'
-  conflicts=$(
-    stow_conflicts --restow --no-folding --ignore='@girs' --ignore='node_modules' \
-      --dir="$HYPRKARL_PATH" \
-      --target="$HOME/.config" \
-      config
-
-    stow_conflicts --restow --no-folding \
-      --dir="$HYPRKARL_PATH" \
-      --target="$HOME/.local/share/applications" \
-      applications
-
-    mkdir -p "$HOME/.local/share/themes/hyprkarl"
-    stow_conflicts --restow --no-folding \
-      --dir="$HYPRKARL_PATH/config/hyprkarl/current/theme" \
-      --target="$HOME/.local/share/themes/hyprkarl" \
-      gtk-theme
-  )
-
+  conflicts=$(check_config_conflicts)
   if [[ -n "$conflicts" ]]; then
     printf 'Cannot update dotfiles — resolve these conflicts first:\n%s\n' "$conflicts" >&2
     exit 1
   fi
-
   printf 'Restowing config files...\n'
-  stow --restow --no-folding --ignore='@girs' --ignore='node_modules' \
-    --dir="$HYPRKARL_PATH" \
-    --target="$HOME/.config" \
-    config
-
-  stow --restow --no-folding \
-    --dir="$HYPRKARL_PATH" \
-    --target="$HOME/.local/share/applications" \
-    applications
+  stow_restow_config || exit 1
 fi
 
-mkdir -p "$HOME/.local/share/themes/hyprkarl"
-stow --restow --no-folding \
-  --dir="$HYPRKARL_PATH/config/hyprkarl/current/theme" \
-  --target="$HOME/.local/share/themes/hyprkarl" \
-  gtk-theme || exit 1
-
-printf 'Removing stale symlinks...\n'
-while IFS= read -r link; do
-  if [[ ! -e "$link" ]]; then
-    target=$(readlink "$link")
-    if [[ "$target" == *"hyprkarl"* ]]; then
-      rm "$link"
-    fi
-  fi
-done < <(find "$HOME/.config" "$HOME/.local/share/applications" "$HOME/.local/share/themes/hyprkarl" -type l 2>/dev/null)
+remove_stale_symlinks
 
 if pgrep -x Hyprland >/dev/null; then
   hyprctl reload >/dev/null
+fi
+
+if [[ "$adopt" -eq 1 ]]; then
+  adopted=$(git -C "$HYPRKARL_PATH" diff --name-only HEAD -- config/ applications/)
+  if [[ -n "$adopted" ]]; then
+    printf 'These files were adopted from ~/.config/ and differ from the repo:\n'
+    printf '%s\n' "$adopted" | sed 's/^/  /'
+    printf '\nReview changes: git -C "%s" diff config/ applications/\n' "$HYPRKARL_PATH"
+    printf 'To keep your versions: git -C "%s" add/commit as needed\n' "$HYPRKARL_PATH"
+    printf 'To discard: git -C "%s" checkout config/ applications/\n' "$HYPRKARL_PATH"
+    printf 'Then re-run: hk-update dotfiles\n'
+  else
+    printf 'No conflicts found — all files already matched the repo.\n'
+    update_write_commit dotfiles
+  fi
+  exit 0
 fi
 
 update_write_commit dotfiles

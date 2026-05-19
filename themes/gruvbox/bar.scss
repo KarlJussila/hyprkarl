@@ -1,0 +1,49 @@
+// Edit this file for most visual changes to the bar.
+// Tokens live in one Sass module, so keep names short and semantic.
+
+// Common edits first:
+// - font: $font-ui / $font-size
+// - island shape: $radius / $border-width
+// - button spacing: $button-pad-x / $button-pad-y
+// - glyph buttons: $glyph-pad-y / $workspace-edge-pad
+// - flyout feel: $flyout-pad / $flyout-row-radius
+
+// Core colors
+$text: #a9b665;
+$surface: #282828;
+$accent: #d8a657;
+$border: #524942;
+$error: #ea6962;
+$battery-low: #e78a4e;
+
+// Typography
+$font-ui: "JetBrains Mono Nerd Font Propo";
+$font-mono: "JetBrains Mono Nerd Font";
+$font-size: 12px;
+
+// Bar shell
+$radius: 8px;
+$border-width: 2px;
+
+// Shared controls
+$button-pad-x: 8px;
+$button-pad-y: 4px;
+
+// Widget tuning
+// Extra top/bottom breathing room for single-glyph controls like menu and tray.
+$glyph-pad-y: 2px;
+$workspace-edge-pad: 6px;
+$workspace-pad-x: 0px;
+$tray-item-pad-y: 4px;
+$tray-item-pad-x: 4px;
+$audio-gap-x: 4px;
+$audio-gap-y: 2px;
+$battery-gap-x: 4px;
+$battery-gap-y: 2px;
+$battery-font-size: 12px;
+
+// Flyouts
+$flyout-pad: 4px;
+$flyout-row-pad-y: 4px;
+$flyout-row-pad-x: 8px;
+$flyout-row-radius: 6px;

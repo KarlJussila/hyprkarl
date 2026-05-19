@@ -5,7 +5,7 @@ import { resolveBarConfiguration } from "../support/index.ts"
 import type {
   BarWidgetDefinitions,
   ResolvedBarWidgetDefinition,
-} from "../../widgets/widgetTypes.ts"
+} from "../../widgets/catalog.ts"
 
 type ResolvedClockWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "clock" }>
 

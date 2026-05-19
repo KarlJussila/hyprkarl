@@ -1,4 +1,4 @@
-import type { ResolvedBarWidgetDefinition } from "./widgets/widgetTypes.ts"
+import type { ResolvedBarWidgetDefinition } from "./widgets/catalog.ts"
 
 /**
  * Shared bar configuration types.

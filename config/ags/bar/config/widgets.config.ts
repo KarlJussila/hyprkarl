@@ -1,4 +1,4 @@
-import type { BarWidgetDefinitions } from "../widgets/widgetTypes"
+import type { BarWidgetDefinitions } from "../widgets/catalog"
 
 // Edit this file to change widget behavior without touching rendering code.
 // Keep this file focused on high-level behavior and content, not low-level drawing metrics.

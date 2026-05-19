@@ -7,37 +7,24 @@ import {
   normalizeBoolean,
   normalizeIntegerList,
   normalizeObjectConfig,
-  widgetContext,
+  type ValidationContext,
 } from "../shared/normalize.ts"
 
 export function normalizeVisibility(
-  id: string,
+  ctx: ValidationContext,
   visibility: WorkspaceVisibilityConfig | undefined,
   defaults: NormalizedWorkspaceVisibilityConfig,
 ): NormalizedWorkspaceVisibilityConfig {
-  const context = widgetContext(id, "visibility")
-  const rawVisibility = normalizeObjectConfig(context, visibility)
+  const rawVisibility = normalizeObjectConfig(ctx, visibility) as WorkspaceVisibilityConfig | undefined
 
   return {
     alwaysShow: normalizeIntegerList(
-      childContext(context, "alwaysShow"),
+      childContext(ctx, "alwaysShow"),
       rawVisibility?.alwaysShow ?? defaults.alwaysShow,
       true,
     ),
-    includeFocused: normalizeBoolean(
-      childContext(context, "includeFocused"),
-      rawVisibility?.includeFocused,
-      defaults.includeFocused,
-    ),
-    includeOccupied: normalizeBoolean(
-      childContext(context, "includeOccupied"),
-      rawVisibility?.includeOccupied,
-      defaults.includeOccupied,
-    ),
-    excludeSpecial: normalizeBoolean(
-      childContext(context, "excludeSpecial"),
-      rawVisibility?.excludeSpecial,
-      defaults.excludeSpecial,
-    ),
+    includeFocused: normalizeBoolean(childContext(ctx, "includeFocused"), rawVisibility?.includeFocused, defaults.includeFocused),
+    includeOccupied: normalizeBoolean(childContext(ctx, "includeOccupied"), rawVisibility?.includeOccupied, defaults.includeOccupied),
+    excludeSpecial: normalizeBoolean(childContext(ctx, "excludeSpecial"), rawVisibility?.excludeSpecial, defaults.excludeSpecial),
   }
 }

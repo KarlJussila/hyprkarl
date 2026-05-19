@@ -9,46 +9,31 @@ import {
   normalizeBoolean,
   normalizeNonNegativeNumber,
   normalizeObjectConfig,
-  widgetContext,
   type ValidationContext,
 } from "./normalize.ts"
 
 export function normalizeFlyoutAlign(
   context: ValidationContext,
-  value: unknown,
+  value: FlyoutAlign | undefined,
   fallback: FlyoutAlign,
-) {
+): FlyoutAlign {
   const align = value ?? fallback
   if (align !== "start" && align !== "center" && align !== "end") {
     fail(context, 'must be "start", "center", or "end"')
   }
-
   return align
 }
 
 export function normalizeFlyoutConfig(
-  id: string,
+  ctx: ValidationContext,
   config: FlyoutConfig | undefined,
   defaults: NormalizedFlyoutConfig,
 ): NormalizedFlyoutConfig {
-  const context = widgetContext(id, "flyout")
-  const rawConfig = normalizeObjectConfig(context, config)
+  const rawConfig = normalizeObjectConfig(ctx, config) as FlyoutConfig | undefined
 
   return {
-    enabled: normalizeBoolean(
-      childContext(context, "enabled"),
-      rawConfig?.enabled,
-      defaults.enabled,
-    ),
-    align: normalizeFlyoutAlign(
-      childContext(context, "align"),
-      rawConfig?.align,
-      defaults.align,
-    ),
-    gap: normalizeNonNegativeNumber(
-      childContext(context, "gap"),
-      rawConfig?.gap,
-      defaults.gap,
-    ),
+    enabled: normalizeBoolean(childContext(ctx, "enabled"), rawConfig?.enabled, defaults.enabled),
+    align: normalizeFlyoutAlign(childContext(ctx, "align"), rawConfig?.align, defaults.align),
+    gap: normalizeNonNegativeNumber(childContext(ctx, "gap"), rawConfig?.gap, defaults.gap),
   }
 }

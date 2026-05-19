@@ -67,118 +67,91 @@ export function normalizeObjectConfig(context: ValidationContext, value: unknown
 
 export function normalizeStringValue(
   context: ValidationContext,
-  value: unknown,
+  value: string | undefined,
   fallback: string,
-) {
-  if (value === undefined) {
-    return fallback
-  }
-
-  if (typeof value !== "string") {
-    fail(context, "must be a string")
-  }
-
+): string {
+  if (value === undefined) return fallback
   return value
 }
 
 export function normalizeOptionalCommand(
   context: ValidationContext,
-  value: unknown,
+  value: string | undefined,
   fallback?: string,
-) {
-  if (value === undefined) {
-    return fallback
-  }
-
-  if (typeof value !== "string" || value.trim().length === 0) {
+): string | undefined {
+  if (value === undefined) return fallback
+  if (value.trim().length === 0) {
     fail(context, "must be a non-empty command")
   }
-
   return value
 }
 
 export function normalizeRequiredCommand(
   context: ValidationContext,
-  value: unknown,
+  value: string | undefined,
   fallback: string,
-) {
+): string {
   const command = value ?? fallback
-  if (typeof command !== "string" || command.trim().length === 0) {
+  if (command.trim().length === 0) {
     fail(context, "must be a non-empty command")
   }
-
   return command
 }
 
 export function normalizeBoolean(
   context: ValidationContext,
-  value: unknown,
+  value: boolean | undefined,
   fallback: boolean,
-) {
-  if (value === undefined) {
-    return fallback
-  }
-
-  if (typeof value !== "boolean") {
-    fail(context, "must be true or false")
-  }
-
+): boolean {
+  if (value === undefined) return fallback
   return value
-}
-
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value)
 }
 
 export function normalizePositiveNumber(
   context: ValidationContext,
-  value: unknown,
+  value: number | undefined,
   fallback: number,
-) {
+): number {
   if (value === undefined) return fallback
-  if (!isFiniteNumber(value) || value <= 0) {
+  if (!Number.isFinite(value) || value <= 0) {
     fail(context, "must be a positive number")
   }
-
   return value
 }
 
 export function normalizeNonNegativeNumber(
   context: ValidationContext,
-  value: unknown,
+  value: number | undefined,
   fallback: number,
-) {
+): number {
   if (value === undefined) return fallback
-  if (!isFiniteNumber(value) || value < 0) {
+  if (!Number.isFinite(value) || value < 0) {
     fail(context, "must be zero or greater")
   }
-
   return value
 }
 
 export function normalizeFiniteNumber(
   context: ValidationContext,
-  value: unknown,
+  value: number | undefined,
   fallback: number,
-) {
+): number {
   if (value === undefined) return fallback
-  if (!isFiniteNumber(value)) {
+  if (!Number.isFinite(value)) {
     fail(context, "must be a finite number")
   }
-
   return value
 }
 
 export function normalizeUnitInterval(
   context: ValidationContext,
-  value: unknown,
+  value: number | undefined,
   fallback: number,
-) {
+): number {
   if (value === undefined) return fallback
-  if (!isFiniteNumber(value) || value < 0 || value > 1) {
+  if (!Number.isFinite(value) || value < 0 || value > 1) {
     fail(context, "must be between 0 and 1")
   }
-
   return value
 }
 

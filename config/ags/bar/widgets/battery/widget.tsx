@@ -1,36 +1,13 @@
-import {
-  createWidgetSpec,
-  type WidgetConfig,
-} from "../shared/widgetSpec.tsx"
-import {
-  normalizeBoolean,
-  normalizeUnitInterval,
-  widgetContext,
-} from "../shared/normalize.ts"
+import { createWidgetSpec } from "../shared/widgetSpec.tsx"
+import { normalizeBoolean, normalizeUnitInterval } from "../shared/normalize.ts"
 import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
+import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
+import { normalizeBatteryIndicatorMetrics, normalizeBatteryTooltipConfig } from "./normalize.ts"
 import type {
-  FlyoutConfig,
-  NormalizedFlyoutConfig,
-} from "../shared/flyoutTypes.ts"
-import {
-  normalizeBatteryIndicatorMetrics,
-  normalizeBatteryTooltipConfig,
-} from "./normalize.ts"
-import type {
-  BatteryIndicatorMetrics,
-  BatteryTooltipConfig,
   NormalizedBatteryIndicatorMetrics,
   NormalizedBatteryTooltipConfig,
 } from "./types.ts"
 import BatteryWidget from "./BatteryWidget.tsx"
-
-export type BatteryWidgetConfig = WidgetConfig<"battery", {
-  showPercentage?: boolean
-  lowThreshold?: number
-  flyout?: FlyoutConfig
-  tooltip?: BatteryTooltipConfig
-  indicator?: BatteryIndicatorMetrics
-}>
 
 const batteryDefaults = {
   showPercentage: true,
@@ -67,31 +44,12 @@ const batteryDefaults = {
 export default createWidgetSpec({
   kind: "battery",
   defaults: batteryDefaults,
-  resolve(
-    id: string,
-    definition: BatteryWidgetConfig,
-    defaults,
-  ) {
-    return {
-      kind: "battery",
-      showPercentage: normalizeBoolean(
-        widgetContext(id, "showPercentage"),
-        definition.showPercentage,
-        defaults.showPercentage,
-      ),
-      lowThreshold: normalizeUnitInterval(
-        widgetContext(id, "lowThreshold"),
-        definition.lowThreshold,
-        defaults.lowThreshold,
-      ),
-      flyout: normalizeFlyoutConfig(id, definition.flyout, defaults.flyout),
-      tooltip: normalizeBatteryTooltipConfig(id, definition.tooltip, defaults.tooltip),
-      indicator: normalizeBatteryIndicatorMetrics(
-        id,
-        definition.indicator,
-        defaults.indicator,
-      ),
-    }
+  schema: {
+    showPercentage: normalizeBoolean,
+    lowThreshold: normalizeUnitInterval,
+    flyout: normalizeFlyoutConfig,
+    tooltip: normalizeBatteryTooltipConfig,
+    indicator: normalizeBatteryIndicatorMetrics,
   },
   render: ({ id, config, placement, monitor }) => (
     <BatteryWidget

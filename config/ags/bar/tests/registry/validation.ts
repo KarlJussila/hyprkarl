@@ -6,7 +6,7 @@ import {
 } from "../../configError.ts"
 import type { BarLayoutConfig } from "../../configuration.ts"
 import { expectBarConfigError, resolveBarConfiguration } from "../support/index.ts"
-import type { BarWidgetDefinitions } from "../../widgets/widgetTypes.ts"
+import type { BarWidgetDefinitions } from "../../widgets/catalog.ts"
 
 test("rejects invalid widget option values with widget metadata", () => {
   const layout = {

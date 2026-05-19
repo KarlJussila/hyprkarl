@@ -7,27 +7,18 @@ import {
   normalizeObjectConfig,
   normalizeOptionalCommand,
   normalizeRequiredCommand,
-  widgetContext,
+  type ValidationContext,
 } from "../shared/normalize.ts"
 
 export function normalizeCommands(
-  id: string,
+  ctx: ValidationContext,
   commands: CommandConfig | undefined,
   defaults: NormalizedCommandConfig,
 ): NormalizedCommandConfig {
-  const context = widgetContext(id, "commands")
-  const rawCommands = normalizeObjectConfig(context, commands)
+  const rawCommands = normalizeObjectConfig(ctx, commands) as CommandConfig | undefined
 
   return {
-    primary: normalizeRequiredCommand(
-      childContext(context, "primary"),
-      rawCommands?.primary,
-      defaults.primary,
-    ),
-    secondary: normalizeOptionalCommand(
-      childContext(context, "secondary"),
-      rawCommands?.secondary,
-      defaults.secondary,
-    ),
+    primary: normalizeRequiredCommand(childContext(ctx, "primary"), rawCommands?.primary, defaults.primary),
+    secondary: normalizeOptionalCommand(childContext(ctx, "secondary"), rawCommands?.secondary, defaults.secondary),
   }
 }

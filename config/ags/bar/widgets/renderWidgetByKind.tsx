@@ -1,8 +1,9 @@
-import { type WidgetRenderArgs, widgetCatalog } from "./catalog.ts"
-import type {
-  ResolvedBarWidgetDefinition,
-  WidgetKind,
-} from "./widgetTypes.ts"
+import {
+  type ResolvedBarWidgetDefinition,
+  type WidgetKind,
+  type WidgetRenderArgs,
+  widgetCatalog,
+} from "./catalog.ts"
 
 export function renderWidgetByKind(args: WidgetRenderArgs<ResolvedBarWidgetDefinition>) {
   const kind = args.config.kind as WidgetKind

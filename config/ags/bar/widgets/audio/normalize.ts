@@ -11,89 +11,39 @@ import {
   normalizeObjectConfig,
   normalizePositiveNumber,
   normalizeStringValue,
-  widgetContext,
+  type ValidationContext,
 } from "../shared/normalize.ts"
 
 export function normalizeSliderMetrics(
-  id: string,
+  ctx: ValidationContext,
   metrics: SliderMetrics | undefined,
   defaults: NormalizedSliderMetrics,
 ): NormalizedSliderMetrics {
-  const context = widgetContext(id, "slider")
-  const rawMetrics = normalizeObjectConfig(context, metrics)
+  const rawMetrics = normalizeObjectConfig(ctx, metrics) as SliderMetrics | undefined
 
   return {
-    trackLength: normalizePositiveNumber(
-      childContext(context, "trackLength"),
-      rawMetrics?.trackLength,
-      defaults.trackLength,
-    ),
-    trackThickness: normalizePositiveNumber(
-      childContext(context, "trackThickness"),
-      rawMetrics?.trackThickness,
-      defaults.trackThickness,
-    ),
-    trackRadius: normalizeNonNegativeNumber(
-      childContext(context, "trackRadius"),
-      rawMetrics?.trackRadius,
-      defaults.trackRadius,
-    ),
-    fillRadius: normalizeNonNegativeNumber(
-      childContext(context, "fillRadius"),
-      rawMetrics?.fillRadius,
-      defaults.fillRadius,
-    ),
-    borderWidth: normalizeNonNegativeNumber(
-      childContext(context, "borderWidth"),
-      rawMetrics?.borderWidth,
-      defaults.borderWidth,
-    ),
-    thumbWidth: normalizePositiveNumber(
-      childContext(context, "thumbWidth"),
-      rawMetrics?.thumbWidth,
-      defaults.thumbWidth,
-    ),
-    thumbHeight: normalizePositiveNumber(
-      childContext(context, "thumbHeight"),
-      rawMetrics?.thumbHeight,
-      defaults.thumbHeight,
-    ),
-    thumbRadius: normalizeNonNegativeNumber(
-      childContext(context, "thumbRadius"),
-      rawMetrics?.thumbRadius,
-      defaults.thumbRadius,
-    ),
-    thumbVisible: normalizeBoolean(
-      childContext(context, "thumbVisible"),
-      rawMetrics?.thumbVisible,
-      defaults.thumbVisible,
-    ),
+    trackLength: normalizePositiveNumber(childContext(ctx, "trackLength"), rawMetrics?.trackLength, defaults.trackLength),
+    trackThickness: normalizePositiveNumber(childContext(ctx, "trackThickness"), rawMetrics?.trackThickness, defaults.trackThickness),
+    trackRadius: normalizeNonNegativeNumber(childContext(ctx, "trackRadius"), rawMetrics?.trackRadius, defaults.trackRadius),
+    fillRadius: normalizeNonNegativeNumber(childContext(ctx, "fillRadius"), rawMetrics?.fillRadius, defaults.fillRadius),
+    borderWidth: normalizeNonNegativeNumber(childContext(ctx, "borderWidth"), rawMetrics?.borderWidth, defaults.borderWidth),
+    thumbWidth: normalizePositiveNumber(childContext(ctx, "thumbWidth"), rawMetrics?.thumbWidth, defaults.thumbWidth),
+    thumbHeight: normalizePositiveNumber(childContext(ctx, "thumbHeight"), rawMetrics?.thumbHeight, defaults.thumbHeight),
+    thumbRadius: normalizeNonNegativeNumber(childContext(ctx, "thumbRadius"), rawMetrics?.thumbRadius, defaults.thumbRadius),
+    thumbVisible: normalizeBoolean(childContext(ctx, "thumbVisible"), rawMetrics?.thumbVisible, defaults.thumbVisible),
   }
 }
 
 export function normalizeAudioTooltipConfig(
-  id: string,
+  ctx: ValidationContext,
   tooltip: AudioTooltipConfig | undefined,
   defaults: NormalizedAudioTooltipConfig,
 ): NormalizedAudioTooltipConfig {
-  const context = widgetContext(id, "tooltip")
-  const rawTooltip = normalizeObjectConfig(context, tooltip)
+  const rawTooltip = normalizeObjectConfig(ctx, tooltip) as AudioTooltipConfig | undefined
 
   return {
-    active: normalizeStringValue(
-      childContext(context, "active"),
-      rawTooltip?.active,
-      defaults.active,
-    ),
-    muted: normalizeStringValue(
-      childContext(context, "muted"),
-      rawTooltip?.muted,
-      defaults.muted,
-    ),
-    unavailable: normalizeStringValue(
-      childContext(context, "unavailable"),
-      rawTooltip?.unavailable,
-      defaults.unavailable,
-    ),
+    active: normalizeStringValue(childContext(ctx, "active"), rawTooltip?.active, defaults.active),
+    muted: normalizeStringValue(childContext(ctx, "muted"), rawTooltip?.muted, defaults.muted),
+    unavailable: normalizeStringValue(childContext(ctx, "unavailable"), rawTooltip?.unavailable, defaults.unavailable),
   }
 }

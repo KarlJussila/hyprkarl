@@ -82,7 +82,7 @@ export default createWidgetSpec({
       kind: "workspaces",
       mode: "dynamic",
       visibility: normalizeVisibility(
-        id,
+        widgetContext(id, "visibility"),
         definition.visibility,
         defaults.visibility,
       ),

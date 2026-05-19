@@ -1,23 +1,9 @@
-import {
-  createWidgetSpec,
-  type WidgetConfig,
-} from "../shared/widgetSpec.tsx"
+import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
+import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
 import { normalizeClockDisplay } from "./normalize.ts"
-import type {
-  FlyoutConfig,
-  NormalizedFlyoutConfig,
-} from "../shared/flyoutTypes.ts"
-import type {
-  ClockDisplayConfig,
-  NormalizedClockDisplayConfig,
-} from "./types.ts"
+import type { NormalizedClockDisplayConfig } from "./types.ts"
 import ClockWidget from "./ClockWidget.tsx"
-
-export type ClockWidgetConfig = WidgetConfig<"clock", {
-  display?: ClockDisplayConfig
-  flyout?: FlyoutConfig
-}>
 
 const clockDefaults = {
   display: {
@@ -41,16 +27,9 @@ const clockDefaults = {
 export default createWidgetSpec({
   kind: "clock",
   defaults: clockDefaults,
-  resolve(
-    id: string,
-    definition: ClockWidgetConfig,
-    defaults,
-  ) {
-    return {
-      kind: "clock",
-      display: normalizeClockDisplay(id, definition.display, defaults.display),
-      flyout: normalizeFlyoutConfig(id, definition.flyout, defaults.flyout),
-    }
+  schema: {
+    display: normalizeClockDisplay,
+    flyout: normalizeFlyoutConfig,
   },
   render: ({ id, config, placement, monitor }) => (
     <ClockWidget

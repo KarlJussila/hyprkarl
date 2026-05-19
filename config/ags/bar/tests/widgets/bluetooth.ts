@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import type { ResolvedBarWidgetDefinition } from "../../widgets/widgetTypes.ts"
+import type { ResolvedBarWidgetDefinition } from "../../widgets/catalog.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
 
 type ResolvedBluetoothWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "bluetooth" }>

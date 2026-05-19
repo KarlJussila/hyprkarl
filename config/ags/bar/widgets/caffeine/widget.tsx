@@ -1,25 +1,11 @@
 import type { NormalizedSwitchMetrics } from "../../primitives/switchTypes.ts"
-import {
-  createWidgetSpec,
-  type WidgetConfig,
-} from "../shared/widgetSpec.tsx"
-import {
-  normalizeRequiredCommand,
-  normalizeStringValue,
-  widgetContext,
-} from "../shared/normalize.ts"
+import { createWidgetSpec } from "../shared/widgetSpec.tsx"
+import { normalizeRequiredCommand, normalizeStringValue } from "../shared/normalize.ts"
 import { normalizeSwitchMetrics } from "./normalize.ts"
-import type { SwitchMetrics } from "./types.ts"
 import CaffeineWidget from "./CaffeineWidget.tsx"
 
-export type CaffeineWidgetConfig = WidgetConfig<"caffeine", {
-  glyph?: string
-  command?: string
-  switch?: SwitchMetrics
-}>
-
 const caffeineDefaults = {
-  glyph: "",
+  glyph: "",
   command: "hk-caffeine",
   switch: {
     thumbSize: 16,
@@ -41,29 +27,10 @@ const caffeineDefaults = {
 export default createWidgetSpec({
   kind: "caffeine",
   defaults: caffeineDefaults,
-  resolve(
-    id: string,
-    definition: CaffeineWidgetConfig,
-    defaults,
-  ) {
-    return {
-      kind: "caffeine",
-      glyph: normalizeStringValue(
-        widgetContext(id, "glyph"),
-        definition.glyph,
-        defaults.glyph,
-      ),
-      command: normalizeRequiredCommand(
-        widgetContext(id, "command"),
-        definition.command,
-        defaults.command,
-      ),
-      switch: normalizeSwitchMetrics(
-        id,
-        definition.switch,
-        defaults.switch,
-      ),
-    }
+  schema: {
+    glyph: normalizeStringValue,
+    command: normalizeRequiredCommand,
+    switch: normalizeSwitchMetrics,
   },
   render: ({ config, placement }) => (
     <CaffeineWidget

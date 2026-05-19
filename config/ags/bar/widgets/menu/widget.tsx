@@ -1,25 +1,11 @@
-import {
-  createWidgetSpec,
-  type WidgetConfig,
-} from "../shared/widgetSpec.tsx"
-import {
-  normalizeStringValue,
-  widgetContext,
-} from "../shared/normalize.ts"
+import { createWidgetSpec } from "../shared/widgetSpec.tsx"
+import { normalizeStringValue } from "../shared/normalize.ts"
 import { normalizeCommands } from "./normalize.ts"
-import type {
-  CommandConfig,
-  NormalizedCommandConfig,
-} from "./types.ts"
+import type { NormalizedCommandConfig } from "./types.ts"
 import MenuWidget from "./MenuWidget.tsx"
 
-export type MenuWidgetConfig = WidgetConfig<"menu", {
-  icon?: string
-  commands?: CommandConfig
-}>
-
 const menuDefaults = {
-  icon: "",
+  icon: "",
   commands: {
     primary: "hk-menu",
   },
@@ -31,20 +17,9 @@ const menuDefaults = {
 export default createWidgetSpec({
   kind: "menu",
   defaults: menuDefaults,
-  resolve(
-    id: string,
-    definition: MenuWidgetConfig,
-    defaults,
-  ) {
-    return {
-      kind: "menu",
-      icon: normalizeStringValue(
-        widgetContext(id, "icon"),
-        definition.icon,
-        defaults.icon,
-      ),
-      commands: normalizeCommands(id, definition.commands, defaults.commands),
-    }
+  schema: {
+    icon: normalizeStringValue,
+    commands: normalizeCommands,
   },
   render: ({ config, placement }) => (
     <MenuWidget

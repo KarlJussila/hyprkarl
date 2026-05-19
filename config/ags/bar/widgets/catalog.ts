@@ -1,8 +1,3 @@
-import type {
-  CatalogWidgetSpec,
-  ResolvedBarWidgetDefinition,
-  WidgetKind,
-} from "./widgetTypes.ts"
 import audioSpec from "./audio/widget.tsx"
 import batterySpec from "./battery/widget.tsx"
 import bluetoothSpec from "./bluetooth/widget.tsx"
@@ -24,7 +19,25 @@ export const widgetCatalog = {
   bluetooth: bluetoothSpec,
   audio: audioSpec,
   battery: batterySpec,
-} satisfies { [TKind in WidgetKind]: CatalogWidgetSpec<TKind> }
+}
+
+export type WidgetSpecByKind = typeof widgetCatalog
+export type WidgetKind = keyof WidgetSpecByKind
+
+export type WidgetDefinitionByKind = {
+  [TKind in WidgetKind]: Parameters<WidgetSpecByKind[TKind]["resolve"]>[1]
+}
+
+export type BarWidgetDefinition = WidgetDefinitionByKind[WidgetKind]
+export type BarWidgetDefinitions = Record<string, BarWidgetDefinition>
+
+export type ResolvedWidgetConfigByKind = {
+  [TKind in WidgetKind]: ReturnType<WidgetSpecByKind[TKind]["resolve"]>
+}
+
+export type ResolvedBarWidgetDefinition = ResolvedWidgetConfigByKind[WidgetKind]
+
+export type CatalogWidgetSpec<TKind extends WidgetKind = WidgetKind> =
+  WidgetSpecByKind[TKind]
 
 export type { WidgetRenderArgs }
-export type { ResolvedBarWidgetDefinition }

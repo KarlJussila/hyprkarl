@@ -1,27 +1,11 @@
-import {
-  createWidgetSpec,
-  type WidgetConfig,
-} from "../shared/widgetSpec.tsx"
-import {
-  normalizeBoolean,
-  widgetContext,
-} from "../shared/normalize.ts"
-import {
-  normalizeRevealConfig,
-  normalizeTrayDirection,
-} from "./normalize.ts"
+import { createWidgetSpec } from "../shared/widgetSpec.tsx"
+import { normalizeBoolean } from "../shared/normalize.ts"
+import { normalizeRevealConfig, normalizeTrayDirection } from "./normalize.ts"
 import type {
   NormalizedTrayRevealConfig,
   TrayDirection,
-  TrayRevealConfig,
 } from "./types.ts"
 import TrayWidget from "./TrayWidget.tsx"
-
-export type TrayWidgetConfig = WidgetConfig<"tray", {
-  direction?: TrayDirection
-  mirrorTrigger?: boolean
-  reveal?: TrayRevealConfig
-}>
 
 const trayDefaults = {
   direction: "start",
@@ -38,25 +22,10 @@ const trayDefaults = {
 export default createWidgetSpec({
   kind: "tray",
   defaults: trayDefaults,
-  resolve(
-    id: string,
-    definition: TrayWidgetConfig,
-    defaults,
-  ) {
-    return {
-      kind: "tray",
-      direction: normalizeTrayDirection(
-        id,
-        definition.direction,
-        defaults.direction,
-      ),
-      mirrorTrigger: normalizeBoolean(
-        widgetContext(id, "mirrorTrigger"),
-        definition.mirrorTrigger,
-        defaults.mirrorTrigger,
-      ),
-      reveal: normalizeRevealConfig(id, definition.reveal, defaults.reveal),
-    }
+  schema: {
+    direction: normalizeTrayDirection,
+    mirrorTrigger: normalizeBoolean,
+    reveal: normalizeRevealConfig,
   },
   render: ({ config, placement }) => (
     <TrayWidget

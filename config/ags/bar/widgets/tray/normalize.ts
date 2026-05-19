@@ -8,35 +8,29 @@ import {
   fail,
   normalizeObjectConfig,
   normalizePositiveNumber,
-  widgetContext,
+  type ValidationContext,
 } from "../shared/normalize.ts"
 
 export function normalizeTrayDirection(
-  id: string,
-  value: unknown,
+  ctx: ValidationContext,
+  value: TrayDirection | undefined,
   fallback: TrayDirection,
 ): TrayDirection {
   const direction = value ?? fallback
   if (direction !== "start" && direction !== "end") {
-    fail(widgetContext(id, "direction"), 'must be "start" or "end"')
+    fail(ctx, 'must be "start" or "end"')
   }
-
   return direction
 }
 
 export function normalizeRevealConfig(
-  id: string,
+  ctx: ValidationContext,
   reveal: TrayRevealConfig | undefined,
   defaults: NormalizedTrayRevealConfig,
 ): NormalizedTrayRevealConfig {
-  const context = widgetContext(id, "reveal")
-  const rawReveal = normalizeObjectConfig(context, reveal)
+  const rawReveal = normalizeObjectConfig(ctx, reveal) as TrayRevealConfig | undefined
 
   return {
-    durationMs: normalizePositiveNumber(
-      childContext(context, "durationMs"),
-      rawReveal?.durationMs,
-      defaults.durationMs,
-    ),
+    durationMs: normalizePositiveNumber(childContext(ctx, "durationMs"), rawReveal?.durationMs, defaults.durationMs),
   }
 }

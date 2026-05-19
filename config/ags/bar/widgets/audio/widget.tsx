@@ -1,36 +1,11 @@
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
-import {
-  createWidgetSpec,
-  type WidgetConfig,
-} from "../shared/widgetSpec.tsx"
-import {
-  normalizeBoolean,
-  normalizeRequiredCommand,
-  widgetContext,
-} from "../shared/normalize.ts"
+import { createWidgetSpec } from "../shared/widgetSpec.tsx"
+import { normalizeBoolean, normalizeRequiredCommand } from "../shared/normalize.ts"
 import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
-import {
-  normalizeAudioTooltipConfig,
-  normalizeSliderMetrics,
-} from "./normalize.ts"
-import type {
-  FlyoutConfig,
-  NormalizedFlyoutConfig,
-} from "../shared/flyoutTypes.ts"
-import type {
-  AudioTooltipConfig,
-  NormalizedAudioTooltipConfig,
-  SliderMetrics,
-} from "./types.ts"
+import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
+import { normalizeAudioTooltipConfig, normalizeSliderMetrics } from "./normalize.ts"
+import type { NormalizedAudioTooltipConfig } from "./types.ts"
 import AudioWidget from "./AudioWidget.tsx"
-
-export type AudioWidgetConfig = WidgetConfig<"audio", {
-  showPercentage?: boolean
-  command?: string
-  flyout?: FlyoutConfig
-  tooltip?: AudioTooltipConfig
-  slider?: SliderMetrics
-}>
 
 const audioDefaults = {
   showPercentage: true,
@@ -67,27 +42,12 @@ const audioDefaults = {
 export default createWidgetSpec({
   kind: "audio",
   defaults: audioDefaults,
-  resolve(
-    id: string,
-    definition: AudioWidgetConfig,
-    defaults,
-  ) {
-    return {
-      kind: "audio",
-      showPercentage: normalizeBoolean(
-        widgetContext(id, "showPercentage"),
-        definition.showPercentage,
-        defaults.showPercentage,
-      ),
-      command: normalizeRequiredCommand(
-        widgetContext(id, "command"),
-        definition.command,
-        defaults.command,
-      ),
-      flyout: normalizeFlyoutConfig(id, definition.flyout, defaults.flyout),
-      tooltip: normalizeAudioTooltipConfig(id, definition.tooltip, defaults.tooltip),
-      slider: normalizeSliderMetrics(id, definition.slider, defaults.slider),
-    }
+  schema: {
+    showPercentage: normalizeBoolean,
+    command: normalizeRequiredCommand,
+    flyout: normalizeFlyoutConfig,
+    tooltip: normalizeAudioTooltipConfig,
+    slider: normalizeSliderMetrics,
   },
   render: ({ id, config, placement, monitor }) => (
     <AudioWidget

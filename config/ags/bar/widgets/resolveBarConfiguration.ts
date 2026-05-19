@@ -9,7 +9,7 @@ import type {
 import type {
   BarWidgetDefinitions,
   WidgetKind,
-} from "./widgetTypes.ts"
+} from "./catalog.ts"
 import {
   fail,
   isRecord,

@@ -1,42 +1,16 @@
-import {
-  createWidgetSpec,
-  type WidgetConfig,
-} from "../shared/widgetSpec.tsx"
-import {
-  normalizeRequiredCommand,
-  widgetContext,
-} from "../shared/normalize.ts"
+import { createWidgetSpec } from "../shared/widgetSpec.tsx"
+import { normalizeRequiredCommand } from "../shared/normalize.ts"
 import NetworkWidget from "./NetworkWidget.tsx"
-
-export type NetworkWidgetConfig = WidgetConfig<"network", {
-  command?: string
-}>
-
-const networkDefaults = {
-  command: "hk-launch-wifi",
-}
 
 export default createWidgetSpec({
   kind: "network",
-  defaults: networkDefaults,
-  resolve(
-    id: string,
-    definition: NetworkWidgetConfig,
-    defaults,
-  ) {
-    return {
-      kind: "network",
-      command: normalizeRequiredCommand(
-        widgetContext(id, "command"),
-        definition.command,
-        defaults.command,
-      ),
-    }
+  defaults: {
+    command: "hk-launch-wifi",
+  },
+  schema: {
+    command: normalizeRequiredCommand,
   },
   render: ({ config, placement }) => (
-    <NetworkWidget
-      orientation={placement.orientation}
-      command={config.command}
-    />
+    <NetworkWidget orientation={placement.orientation} command={config.command} />
   ),
 })

@@ -7,7 +7,7 @@ import {
 } from "../../configError.ts"
 import type { BarLayoutConfig } from "../../configuration.ts"
 import { expectBarConfigError, resolveBarConfiguration } from "../support/index.ts"
-import type { BarWidgetDefinitions } from "../../widgets/widgetTypes.ts"
+import type { BarWidgetDefinitions } from "../../widgets/catalog.ts"
 
 test("layout defaults decorative corner curves to enabled", () => {
   const resolved = resolveBarConfiguration(

@@ -5,7 +5,7 @@ import {
   formatAudioTooltip,
   formatUnavailableAudioTooltip,
 } from "../../widgets/audio/audioTooltip.ts"
-import type { ResolvedBarWidgetDefinition } from "../../widgets/widgetTypes.ts"
+import type { ResolvedBarWidgetDefinition } from "../../widgets/catalog.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
 
 type ResolvedAudioWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "audio" }>

@@ -4,66 +4,25 @@
 # NOTE: It also removes some packages that are replaced with alternatives.
 # Use yay consistently for AUR-backed installs and queries.
 
-# Install packages
-sudo pacman -S --needed --noconfirm \
-  waybar \
-  hyprpaper \
-  hyprlock \
-  hypridle \
-  hyprsunset \
-  mako \
-  hyprpolkitagent \
-  brightnessctl \
-  curl \
-  ffmpeg \
-  fzf \
-  imagemagick \
-  jq \
-  nautilus \
-  playerctl \
-  rofi \
-  hyprshot \
-  hyprpicker \
-  satty \
-  stow \
-  neovim \
-  vscodium \
-  bluetui \
-  wiremix \
-  yazi \
-  ttf-jetbrains-mono-nerd \
-  ttf-iosevka-nerd \
-  xdg-desktop-portal-gtk \
-  mpv \
-  imv \
-  flatpak \
-  gum \
-  localsend \
-  yay-bin \
-  foot \
-  gpu-screen-recorder \
-  perl-image-exiftool \
-  v4l-utils \
-  wl-clipboard \
-  xkbcommon-tools \
-  ghostty \
-  kvantum \
-  kvantum-qt5 \
-  qt6ct \
-  qt5ct \
-  7zip \
-  resvg \
-  rofi-calc
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-yay -S --needed --noconfirm \
-  xdg-terminal-exec \
-  hyprshutdown \
-  wifitui-bin \
-  yaru-icon-theme \
-  dragon-drop \
-  xdg-desktop-portal-termfilechooser-hunkyburrito-git
+read_pkgs() {
+  grep -v '^[[:space:]]*#' "$1" | grep -v '^[[:space:]]*$' | sed 's/[[:space:]]*#.*//'
+}
+
+# Install packages
+mapfile -t pacman_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/pacman.txt")
+sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
+
+mapfile -t aur_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/aur.txt")
+yay -S --needed --noconfirm "${aur_pkgs[@]}"
 
 # Remove packages
-sudo pacman -Rns --noconfirm \
-  wofi \
-  dolphin
+mapfile -t remove_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/remove.txt")
+if [[ ${#remove_pkgs[@]} -gt 0 ]]; then
+  sudo pacman -Rns --noconfirm "${remove_pkgs[@]}"
+fi
+
+# Record installed commit for update tracking
+mkdir -p "$SCRIPT_DIR/config/hyprkarl/update"
+git -C "$SCRIPT_DIR" rev-parse HEAD > "$SCRIPT_DIR/config/hyprkarl/update/packages.commit"

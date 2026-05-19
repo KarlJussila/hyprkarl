@@ -1,0 +1,6 @@
+dragon-drop
+hyprshutdown
+wifitui
+xdg-desktop-portal-termfilechooser-hunkyburrito-git
+xdg-terminal-exec
+yaru-icon-theme

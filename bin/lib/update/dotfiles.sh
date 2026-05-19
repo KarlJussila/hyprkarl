@@ -68,6 +68,9 @@ else
     applications
 fi
 
+if [[ "$force" -eq 1 ]]; then
+  rm -rf "$HOME/.local/share/themes/hyprkarl"
+fi
 mkdir -p "$HOME/.local/share/themes/hyprkarl"
 stow --restow --no-folding \
   --dir="$HYPRKARL_PATH/config/hyprkarl/current/theme" \

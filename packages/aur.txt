@@ -1,0 +1,13 @@
+dragon-drop
+hyprshutdown
+libastal-battery-git
+libastal-bluetooth-git
+libastal-hyprland-git
+libastal-network-git
+libastal-powerprofiles-git
+libastal-tray-git
+libastal-wireplumber-git
+wifitui
+xdg-desktop-portal-termfilechooser-hunkyburrito-git
+xdg-terminal-exec
+yaru-icon-theme

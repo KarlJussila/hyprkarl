@@ -1,6 +1,13 @@
 @use "../theme" as theme;
 @use "./shared" as shared;
 
+// ── Padding reset ─────────────────────────────────────────────────────────
+window.Bar.bar-shell > centerbox.bar-layout-root,
+window.Bar.bar-config-error > .bar-config-error-layout {
+  padding: 0px;
+}
+// ─────────────────────────────────────────────────────────────────────────
+
 window.Bar.bar-shell {
   background: transparent;
   color: theme.$text;
@@ -12,8 +19,6 @@ window.Bar.bar-shell {
   }
 
   > centerbox.bar-layout-root {
-    padding: 0px;
-
     .bar-island,
     .bar-island-balance-content,
     .widget-tray-item-list {
@@ -139,8 +144,6 @@ window.Bar.bar-shell {
 
 window.Bar.bar-config-error {
   > .bar-config-error-layout {
-    padding: 0px;
-
     > .config-error-surface {
       @include shared.bar-surface;
       border-color: theme.$error;

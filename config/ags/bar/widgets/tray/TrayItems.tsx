@@ -32,7 +32,7 @@ export default function TrayItems({ placement, direction, items, open, revealDur
       revealChild={open}
     >
       <box
-        class={`widget-tray-item-list widget-group orientation-${placement.orientation} is-${placement.orientation}`}
+        class={`widget-tray-item-list widget-group is-${placement.orientation}`}
         spacing={0}
         overflow={Gtk.Overflow.HIDDEN}
         orientation={placement.layoutOrientation}

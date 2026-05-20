@@ -1,30 +1,29 @@
 @use "../theme" as theme;
 @use "./shared" as shared;
 
+// ── Padding reset ─────────────────────────────────────────────────────────
+tooltip box,
+tooltip label {
+  padding: 0px;
+}
+// ─────────────────────────────────────────────────────────────────────────
+
 tooltip {
   @include shared.bar-surface;
   border-radius: theme.$radius;
   color: theme.$text;
 }
 
-tooltip box {
-  padding: 0px;
-}
-
 tooltip label {
   color: theme.$text;
   font-family: theme.$font-mono;
   font-size: theme.$font-size;
-  padding: 0px;
   margin: 0px;
 }
 
 window.Bar.bar-shell {
-  // Shared controls
   .widget-button {
     @include shared.reset-flat-button;
-    padding-left: theme.$widget-padding-horizontal;
-    padding-right: theme.$widget-padding-horizontal;
   }
 
   .bar-segment > .widget-button,
@@ -38,18 +37,9 @@ window.Bar.bar-shell {
 
   .widget-group {
     border-spacing: 0px;
-    padding: 0px;
-  }
-
-  .widget-group-item {
-    @include shared.reset-flat-surface;
   }
 
   // Workspace widget
-  .widget-workspace-button {
-    padding: 0px;
-  }
-
   .workspace-list.is-horizontal {
     padding-left: theme.$workspace-gap-outer;
     padding-right: theme.$workspace-gap-outer;
@@ -61,18 +51,6 @@ window.Bar.bar-shell {
 
   .workspace-list.is-vertical .widget-workspace-button:not(:last-child) {
     margin-bottom: theme.$workspace-gap-inner;
-  }
-
-  // Single-glyph buttons get a little top/bottom breathing room.
-  .widget-glyph-button {
-    padding-top: theme.$glyph-pad-y;
-    padding-bottom: theme.$glyph-pad-y;
-  }
-
-  // Tray toggle shares the same rhythm
-  .widget-tray-toggle > .widget-tray-toggle-button {
-    padding-top: theme.$glyph-pad-y;
-    padding-bottom: theme.$glyph-pad-y;
   }
 
   .widget-workspace-button.is-active {
@@ -121,11 +99,6 @@ window.Bar.bar-shell {
     @include shared.reset-flat-surface;
   }
 
-  .widget-tray-toggle > .widget-tray-toggle-button {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-
   .widget-tray-item > button {
     @include shared.reset-flat-button;
     border-spacing: 0px;
@@ -157,34 +130,38 @@ window.Bar.bar-shell {
   .switch-track.is-active { color: theme.$accent; }
   .switch-border.is-active { color: theme.$accent; }
 
-  // Vertical overrides
+  // Horizontal layout
+  > centerbox.bar-layout-root.is-horizontal {
+    .bar-segment > .widget-button,
+    .bar-segment > .widget-switch-button {
+      padding-left: theme.$widget-padding-horizontal;
+      padding-right: theme.$widget-padding-horizontal;
+    }
+
+    .widget-glyph-button {
+      padding-top: theme.$glyph-pad-y;
+      padding-bottom: theme.$glyph-pad-y;
+    }
+
+    .widget-tray-toggle > .widget-tray-toggle-button {
+      padding-top: theme.$glyph-pad-y;
+      padding-bottom: theme.$glyph-pad-y;
+    }
+  }
+
+  // Vertical layout
   > centerbox.bar-layout-root.is-vertical {
     label,
     image {
       margin-top: 0px;
       margin-bottom: 0px;
-      padding-top: 0px;
-      padding-bottom: 0px;
     }
 
     .bar-segment > .widget-button,
     .bar-segment > .widget-switch-button,
     .bar-segment > .widget-group {
-      padding-left: 0px;
-      padding-right: 0px;
       padding-top: theme.$widget-padding-vertical;
       padding-bottom: theme.$widget-padding-vertical;
-    }
-
-    .widget-glyph-button,
-    .widget-clock-button {
-      padding-left: 0px;
-      padding-right: 0px;
-    }
-
-    .bar-segment > .widget-tray {
-      padding-top: 0px;
-      padding-bottom: 0px;
     }
 
     .bar-segment > .workspace-list {
@@ -192,24 +169,6 @@ window.Bar.bar-shell {
       padding-bottom: theme.$workspace-gap-outer;
     }
 
-    .widget-tray-toggle,
-    .widget-tray-panel,
-    .widget-tray-item-list,
-    .widget-tray-item,
-    .widget-tray-toggle > .widget-tray-toggle-button {
-      padding-left: 0px;
-      padding-right: 0px;
-    }
-
-    .widget-tray-toggle,
-    .widget-tray-panel,
-    .widget-tray-item-list,
-    .widget-tray-item {
-      padding-top: 0px;
-      padding-bottom: 0px;
-    }
-
-    // Restore tray item list outer gap after the zero-out above.
     .widget-tray-item-list.is-vertical {
       padding-top: theme.$tray-gap-outer;
       padding-bottom: theme.$tray-gap-outer;

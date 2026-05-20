@@ -58,11 +58,11 @@ export default function TrayWidget({ placement, direction, mirrorTrigger, reveal
 
   return (
     <box
-      class={`widget-tray widget-group orientation-${placement.orientation} is-${placement.orientation}`}
+      class={`widget-tray is-${placement.orientation}`}
       hexpand={placement.isVertical}
       halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       vexpand={!placement.isVertical}
-      valign={!placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      valign={Gtk.Align.FILL}
       orientation={placement.layoutOrientation}
     >
       {startContent}

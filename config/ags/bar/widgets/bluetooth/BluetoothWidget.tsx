@@ -45,7 +45,7 @@ export default function BluetoothWidget({ orientation, command }: Props) {
 
   return (
     <Button
-      class="widget-bluetooth-button"
+      class="widget-bluetooth-button widget-glyph-button"
       orientation={orientation}
       tooltipText={tooltipText}
       execPrimary={() => execAsync(command).catch(() => {})}

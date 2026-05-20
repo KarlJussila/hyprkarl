@@ -4,8 +4,10 @@
 // Common edits first:
 // - font: $font-ui / $font-size
 // - island shape: $radius / $border-width
-// - button spacing: $button-pad-x / $button-pad-y
-// - glyph buttons: $glyph-pad-y / $workspace-edge-pad
+// - glyph buttons: $glyph-pad-y
+// - workspace spacing: $workspace-gap-outer / $workspace-gap-inner
+// - tray spacing: $tray-gap-outer / $tray-gap-inner
+// - readout labels (audio/battery/cpu %): $readout-font-size
 // - flyout feel: $flyout-pad / $flyout-row-radius
 
 // Core colors
@@ -25,24 +27,18 @@ $font-size: 12px;
 $radius: 8px;
 $border-width: 2px;
 
-// Shared controls
-$button-pad-x: 8px;
-$button-pad-y: 4px;
-
 // Widget tuning
+$widget-padding-horizontal: 8px;
+$widget-padding-vertical: 0px;
 // Extra top/bottom breathing room for single-glyph controls like menu and tray.
 $glyph-pad-y: 2px;
-$workspace-edge-pad: 6px;
-$workspace-pad-x: 0px;
-$tray-item-pad-y: 4px;
-$tray-item-pad-x: 4px;
-$audio-gap-x: 4px;
-$audio-gap-y: 2px;
-$battery-gap-x: 4px;
-$battery-gap-y: 2px;
-$battery-font-size: 12px;
-$cpu-gap-x: 4px;
-$cpu-gap-y: 2px;
+$workspace-gap-outer: 6px;
+$workspace-gap-inner: 0px;
+$tray-gap-outer: 3px;
+$tray-gap-inner: 6px;
+$icon-gap-x: 4px;
+$icon-gap-y: 2px;
+$readout-font-size: 12px;
 
 // Flyouts
 $flyout-pad: 4px;

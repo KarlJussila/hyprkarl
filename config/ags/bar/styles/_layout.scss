@@ -147,13 +147,6 @@ window.Bar.bar-config-error {
       border-radius: theme.$radius;
     }
 
-    > .config-error-surface.is-horizontal {
-      padding: 0px theme.$button-pad-x;
-    }
-
-    > .config-error-surface.is-vertical {
-      padding: theme.$button-pad-y 0px;
-    }
   }
 
   .bar-config-error-title {

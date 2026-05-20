@@ -12,6 +12,8 @@ const SPEAKER_END_X = 9.2
 const MUTE_SLASH_END_X = 11.8
 const STROKE_PADDING = 1.2
 
+const MAX_WIDTH = resolveWidth(4, true)
+
 function clamp(value: number, min = 0, max = 1.25) {
   return Math.min(max, Math.max(min, value))
 }
@@ -36,16 +38,15 @@ function resolveWidth(waveCount: number, isMuted: boolean) {
 export default function AudioIndicator({ volume, muted }: Props) {
   return (
     <drawingarea
-      contentWidth={resolveWidth(4, true)}
+      contentWidth={MAX_WIDTH}
       contentHeight={HEIGHT}
       class="widget-audio-indicator"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
       $={(self) => {
         createEffect(() => {
-          const isMuted = muted()
-          const waveCount = isMuted ? 0 : countVisibleWaves(volume())
-          self.set_content_width(resolveWidth(waveCount, isMuted))
+          muted()
+          volume()
           self.queue_draw()
         })
 
@@ -55,7 +56,9 @@ export default function AudioIndicator({ volume, muted }: Props) {
           const isMuted = muted()
           const waveCount = isMuted ? 0 : countVisibleWaves(volume())
           const centerY = HEIGHT / 2
+          const offset = (MAX_WIDTH - resolveWidth(waveCount, isMuted)) / 2
 
+          context.translate(offset, 0)
           context.setSourceRGBA(color.red, color.green, color.blue, color.alpha)
           context.setLineWidth(1.4)
           context.setLineCap(1)

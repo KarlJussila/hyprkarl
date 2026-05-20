@@ -1,5 +1,6 @@
 import { createPoll } from "ags/time"
 import { readFile } from "ags/file"
+import { execAsync } from "ags/process"
 
 type CpuSample = { idle: number; total: number }
 type CpuSamples = { aggregate: CpuSample; cores: CpuSample[] }
@@ -33,10 +34,28 @@ function computeUsage(curr: CpuSample, prev: CpuSample): number {
   return totalDelta > 0 ? Math.max(0, Math.min(1, 1 - idleDelta / totalDelta)) : 0
 }
 
+function parseCpuTemp(jsonStr: string): number | null {
+  try {
+    const data = JSON.parse(jsonStr) as Record<string, unknown>
+    const cpuKey = Object.keys(data).find((k) => k.startsWith("k10temp") || k.startsWith("coretemp"))
+    if (!cpuKey) return null
+    const device = data[cpuKey] as Record<string, unknown>
+    for (const sensor of Object.values(device)) {
+      if (typeof sensor !== "object" || sensor === null) continue
+      for (const [key, val] of Object.entries(sensor as Record<string, unknown>)) {
+        if (/^temp\d+_input$/.test(key) && typeof val === "number") return val
+      }
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 export function createCpuState(intervalMs: number) {
   const initialSamples = readAllCpuSamples()
 
-  const state = createPoll<CpuPollState>(
+  const usageState = createPoll<CpuPollState>(
     { usage: 0, coreUsages: initialSamples.cores.map(() => 0), prevSamples: initialSamples },
     intervalMs,
     (prev) => {
@@ -49,8 +68,17 @@ export function createCpuState(intervalMs: number) {
     },
   )
 
+  const tempState = createPoll<number | null>(null, intervalMs, async () => {
+    try {
+      return parseCpuTemp(await execAsync("sensors -j"))
+    } catch {
+      return null
+    }
+  })
+
   return {
-    usage: state((s) => s.usage),
-    coreUsages: state((s) => s.coreUsages),
+    usage: usageState((s) => s.usage),
+    coreUsages: usageState((s) => s.coreUsages),
+    temp: tempState,
   }
 }

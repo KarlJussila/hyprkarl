@@ -15,7 +15,7 @@ export default function MenuWidget({ orientation, icon, commands }: Props) {
 
   return (
     <Button
-      class="widget-menu-button"
+      class="widget-menu-button widget-glyph-button"
       orientation={orientation}
       execPrimary={() => execAsync(commands.primary).catch(() => {})}
       execSecondary={commands.secondary

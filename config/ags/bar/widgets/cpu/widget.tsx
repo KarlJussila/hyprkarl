@@ -1,12 +1,12 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeBoolean, normalizePositiveNumber, normalizeStringValue, normalizeUnitInterval } from "../shared/normalize.ts"
+import { normalizePositiveNumber, normalizeStringValue } from "../shared/normalize.ts"
 import CpuWidget from "./CpuWidget.tsx"
 
 const cpuDefaults = {
-  icon: "󰘚",
-  showPercentage: false,
+  icon: "󰍛",
+  format: "",
+  tooltip: "CPU: {usage}%\n{cores}",
   interval: 2000,
-  warningThreshold: 0.75,
 }
 
 export default createWidgetSpec({
@@ -14,16 +14,16 @@ export default createWidgetSpec({
   defaults: cpuDefaults,
   schema: {
     icon: normalizeStringValue,
-    showPercentage: normalizeBoolean,
+    format: normalizeStringValue,
+    tooltip: normalizeStringValue,
     interval: normalizePositiveNumber,
-    warningThreshold: normalizeUnitInterval,
   },
   render: ({ config, placement }) => (
     <CpuWidget
       orientation={placement.orientation}
       icon={config.icon}
-      showPercentage={config.showPercentage}
-      warningThreshold={config.warningThreshold}
+      format={config.format}
+      tooltip={config.tooltip}
       interval={config.interval}
     />
   ),

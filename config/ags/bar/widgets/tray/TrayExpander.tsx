@@ -1,9 +1,10 @@
 import { Accessor, createComputed } from "ags"
 import { Gtk } from "ags/gtk4"
+import { type BarOrientation } from "../../layout/placement"
 import Button from "../../primitives/Button"
 
 type Props = {
-  fill?: boolean
+  orientation: BarOrientation
   icons: {
     collapsed: string
     expanded: string
@@ -14,12 +15,13 @@ type Props = {
 }
 
 export default function TrayExpander({
-  fill = false,
+  orientation,
   icons,
   hasItems,
   open,
   onToggle,
 }: Props) {
+  const isVertical = orientation === "vertical"
   const triggerIcon = createComputed(() => open() ? icons.expanded : icons.collapsed)
   const buttonStateClass = hasItems((itemsAvailable) =>
     `widget-tray-toggle-button${itemsAvailable ? "" : " is-empty"}`,
@@ -28,18 +30,17 @@ export default function TrayExpander({
   return (
     <box
       class="widget-tray-toggle widget-group-item"
-      hexpand={fill}
-      halign={fill ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      hexpand={isVertical}
+      halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
     >
       <Button
         class={buttonStateClass}
-        hexpand={fill}
-        halign={fill ? Gtk.Align.FILL : Gtk.Align.CENTER}
+        orientation={orientation}
         execPrimary={onToggle}
       >
         <box
           class="widget-tray-toggle-content"
-          hexpand={fill}
+          hexpand={isVertical}
           halign={Gtk.Align.CENTER}
         >
           <image class="widget-tray-toggle-icon" iconName={triggerIcon} pixelSize={14} />

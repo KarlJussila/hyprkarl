@@ -17,7 +17,7 @@ export default function CaffeineWidget({ orientation, glyph, command, switchMetr
 
   return (
     <Switch
-      class={`widget-caffeine-switch orientation-${orientation} is-${orientation}`}
+      class={`widget-caffeine-switch widget-glyph-button orientation-${orientation} is-${orientation}`}
       hexpand={isVertical}
       halign={Gtk.Align.FILL}
       orientation={orientation}

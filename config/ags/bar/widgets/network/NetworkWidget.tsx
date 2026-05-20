@@ -94,7 +94,7 @@ export default function NetworkWidget({ orientation, command }: Props) {
 
   return (
     <Button
-      class="widget-network-button"
+      class="widget-network-button widget-glyph-button"
       orientation={orientation}
       execPrimary={() => execAsync(command).catch(() => {})}
       tooltipText={state((s) => s.tooltip)}

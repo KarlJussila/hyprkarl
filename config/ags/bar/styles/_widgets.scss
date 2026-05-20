@@ -23,7 +23,8 @@ window.Bar.bar-shell {
   // Shared controls
   .widget-button {
     @include shared.reset-flat-button;
-    padding: 0px theme.$button-pad-x;
+    padding-left: theme.$widget-padding-horizontal;
+    padding-right: theme.$widget-padding-horizontal;
   }
 
   .bar-segment > .widget-button,
@@ -46,22 +47,29 @@ window.Bar.bar-shell {
 
   // Workspace widget
   .widget-workspace-button {
-    padding: 0px theme.$workspace-pad-x;
+    padding: 0px;
   }
 
   .workspace-list.is-horizontal {
-    padding-left: theme.$workspace-edge-pad;
-    padding-right: theme.$workspace-edge-pad;
+    padding-left: theme.$workspace-gap-outer;
+    padding-right: theme.$workspace-gap-outer;
   }
 
-  // Single-glyph buttons look cramped without a little top/bottom space.
-  .widget-menu-button,
-  .widget-bluetooth-button,
-  .widget-network-button,
-  .widget-audio-button,
-  .widget-battery-button,
-  .widget-cpu-button,
-  .widget-caffeine-switch,
+  .workspace-list.is-horizontal .widget-workspace-button:not(:last-child) {
+    margin-right: theme.$workspace-gap-inner;
+  }
+
+  .workspace-list.is-vertical .widget-workspace-button:not(:last-child) {
+    margin-bottom: theme.$workspace-gap-inner;
+  }
+
+  // Single-glyph buttons get a little top/bottom breathing room.
+  .widget-glyph-button {
+    padding-top: theme.$glyph-pad-y;
+    padding-bottom: theme.$glyph-pad-y;
+  }
+
+  // Tray toggle shares the same rhythm
   .widget-tray-toggle > .widget-tray-toggle-button {
     padding-top: theme.$glyph-pad-y;
     padding-bottom: theme.$glyph-pad-y;
@@ -86,11 +94,13 @@ window.Bar.bar-shell {
     font-family: theme.$font-mono;
   }
 
-  .widget-battery-percent {
-    font-size: theme.$battery-font-size;
+  .widget-audio-percent,
+  .widget-battery-percent,
+  .widget-cpu-percent {
+    font-size: theme.$readout-font-size;
   }
 
-  // Clock, battery, and cpu content
+  // Icon + percent display boxes
   .widget-clock-display,
   .widget-audio-display,
   .widget-battery-display,
@@ -98,33 +108,9 @@ window.Bar.bar-shell {
     margin: 0px;
   }
 
-  .widget-audio-display.is-horizontal .widget-audio-percent {
-    margin-left: theme.$audio-gap-x;
-  }
-
-  .widget-audio-display.is-vertical .widget-audio-percent {
-    margin-top: theme.$audio-gap-y;
-  }
-
-  .widget-battery-display.is-horizontal .widget-battery-percent {
-    margin-left: theme.$battery-gap-x;
-  }
-
-  .widget-battery-display.is-vertical .widget-battery-percent {
-    margin-top: theme.$battery-gap-y;
-  }
-
-  .widget-cpu-display.is-horizontal .widget-cpu-percent {
-    margin-left: theme.$cpu-gap-x;
-  }
-
-  .widget-cpu-display.is-vertical .widget-cpu-percent {
-    margin-top: theme.$cpu-gap-y;
-  }
-
-  .widget-cpu-display.is-high {
-    color: theme.$error;
-  }
+  @include shared.icon-display-gap(".widget-audio-display", ".widget-audio-percent");
+  @include shared.icon-display-gap(".widget-battery-display", ".widget-battery-percent");
+  @include shared.icon-display-gap(".widget-cpu-display", ".widget-cpu-percent");
 
   // Tray widget
   .widget-tray,
@@ -142,9 +128,17 @@ window.Bar.bar-shell {
 
   .widget-tray-item > button {
     @include shared.reset-flat-button;
-    padding: theme.$tray-item-pad-y theme.$tray-item-pad-x;
     border-spacing: 0px;
     box-shadow: none;
+  }
+
+  .widget-tray-item-list.is-horizontal {
+    padding-left: theme.$tray-gap-outer;
+    padding-right: theme.$tray-gap-outer;
+  }
+
+  .widget-tray-item-list.is-horizontal > .widget-tray-item:not(:last-child) {
+    margin-right: theme.$tray-gap-inner;
   }
 
   // Custom-drawn battery colors
@@ -176,81 +170,28 @@ window.Bar.bar-shell {
     .bar-segment > .widget-button,
     .bar-segment > .widget-switch-button,
     .bar-segment > .widget-group {
-      padding-top: theme.$button-pad-y;
-      padding-bottom: theme.$button-pad-y;
+      padding-left: 0px;
+      padding-right: 0px;
+      padding-top: theme.$widget-padding-vertical;
+      padding-bottom: theme.$widget-padding-vertical;
+    }
+
+    .widget-glyph-button,
+    .widget-clock-button {
       padding-left: 0px;
       padding-right: 0px;
     }
 
-    .widget-menu-button,
-    .widget-bluetooth-button,
-    .widget-network-button,
-    .widget-audio-button,
-    .widget-clock-button,
-    .widget-battery-button,
-    .widget-cpu-button,
-    .widget-caffeine-switch {
-      padding-top: theme.$button-pad-y;
-      padding-bottom: theme.$button-pad-y;
-    }
-
-    // Keep vertical segments tight, then add back only the spacing that is
-    // intentionally part of the widget's visual design.
-    .bar-segment > .widget-menu-button,
-    .bar-segment > .widget-bluetooth-button,
-    .bar-segment > .widget-network-button,
-    .bar-segment > .widget-audio-button,
-    .bar-segment > .widget-battery-button,
-    .bar-segment > .widget-cpu-button,
-    .bar-segment > .workspace-list,
     .bar-segment > .widget-tray {
       padding-top: 0px;
       padding-bottom: 0px;
     }
 
-    .bar-segment > .widget-menu-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
-    }
-
-    .bar-segment > .widget-bluetooth-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
-    }
-
-    .bar-segment > .widget-network-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
-    }
-
-    .bar-segment > .widget-audio-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
-    }
-
-    .bar-segment > .widget-battery-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
-    }
-
-    .bar-segment > .widget-cpu-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
-    }
-
     .bar-segment > .workspace-list {
-      padding-top: theme.$workspace-edge-pad;
-      padding-bottom: theme.$workspace-edge-pad;
+      padding-top: theme.$workspace-gap-outer;
+      padding-bottom: theme.$workspace-gap-outer;
     }
 
-    .widget-menu-button,
-    .widget-bluetooth-button,
-    .widget-network-button,
-    .widget-audio-button,
-    .widget-clock-button,
-    .widget-battery-button,
-    .widget-cpu-button,
-    .widget-caffeine-switch,
     .widget-tray-toggle,
     .widget-tray-panel,
     .widget-tray-item-list,
@@ -263,10 +204,19 @@ window.Bar.bar-shell {
     .widget-tray-toggle,
     .widget-tray-panel,
     .widget-tray-item-list,
-    .widget-tray-item,
-    .widget-tray-toggle > .widget-tray-toggle-button {
+    .widget-tray-item {
       padding-top: 0px;
       padding-bottom: 0px;
+    }
+
+    // Restore tray item list outer gap after the zero-out above.
+    .widget-tray-item-list.is-vertical {
+      padding-top: theme.$tray-gap-outer;
+      padding-bottom: theme.$tray-gap-outer;
+    }
+
+    .widget-tray-item-list.is-vertical > .widget-tray-item:not(:last-child) {
+      margin-bottom: theme.$tray-gap-inner;
     }
 
     .widget-tray-toggle > .widget-tray-toggle-button {

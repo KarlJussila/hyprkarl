@@ -3,61 +3,72 @@ import { Gtk } from "ags/gtk4"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 import { createCpuState } from "./cpuState.ts"
+import { substituteTokens } from "../shared/template.ts"
 
 type Props = {
   orientation: BarOrientation
   icon: string
-  showPercentage: boolean
-  warningThreshold: number
+  format: string
+  tooltip: string
   interval: number
 }
 
-export default function CpuWidget({ orientation, icon, showPercentage, warningThreshold, interval }: Props) {
+export default function CpuWidget({ orientation, icon, format, tooltip, interval }: Props) {
   const cpu = createCpuState(interval)
-  const [percentVisible, setPercentVisible] = createState(showPercentage)
+  const [labelVisible, setLabelVisible] = createState(false)
 
-  const displayClass = cpu.usage((u) =>
-    `widget-cpu-display orientation-${orientation} is-${orientation}${u >= warningThreshold ? " is-high" : ""}`,
-  )
-  const percentLabel = cpu.usage((u) => `${Math.round(u * 100)}%`)
   const tooltipText = createComputed(() => {
-    const header = `CPU ${Math.round(cpu.usage() * 100)}%`
-    const cores = cpu.coreUsages()
-    if (cores.length === 0) return header
-    const coreLines = cores.map((u, i) => `Core ${i}: ${Math.round(u * 100)}%`)
-    return [header, ...coreLines].join("\n")
+    const tempVal = cpu.temp()
+    const coreLines = cpu.coreUsages().map((u, i) => `Core ${i}: ${Math.round(u * 100)}%`)
+    return substituteTokens(tooltip, {
+      usage: String(Math.round(cpu.usage() * 100)),
+      temp: tempVal !== null ? String(Math.round(tempVal)) : undefined,
+      cores: coreLines.join("\n"),
+    })
   })
 
   const isVertical = orientation === "vertical"
 
+  const labelText = format
+    ? createComputed(() => {
+        const tempVal = cpu.temp()
+        return substituteTokens(format, {
+          usage: String(Math.round(cpu.usage() * 100)),
+          temp: tempVal !== null ? String(Math.round(tempVal)) : undefined,
+        })
+      })
+    : null
+
   return (
     <Button
-      class="widget-cpu-button"
+      class="widget-cpu-button widget-glyph-button"
       orientation={orientation}
       tooltipText={tooltipText}
-      execPrimary={() => setPercentVisible(!percentVisible())}
+      execPrimary={labelText ? () => setLabelVisible(!labelVisible()) : undefined}
     >
       <box
-        class={displayClass}
+        class={`widget-cpu-display is-${orientation}`}
         orientation={isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
         spacing={0}
         halign={Gtk.Align.CENTER}
         valign={Gtk.Align.CENTER}
       >
         <label class="widget-cpu-icon" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} label={icon} />
-        <revealer
-          transitionType={isVertical ? Gtk.RevealerTransitionType.SLIDE_DOWN : Gtk.RevealerTransitionType.SLIDE_RIGHT}
-          transitionDuration={200}
-          revealChild={percentVisible}
-        >
-          <label
-            class="widget-cpu-percent"
-            halign={Gtk.Align.CENTER}
-            valign={Gtk.Align.CENTER}
-            xalign={0.5}
-            label={percentLabel}
-          />
-        </revealer>
+        {labelText && (
+          <revealer
+            transitionType={isVertical ? Gtk.RevealerTransitionType.SLIDE_DOWN : Gtk.RevealerTransitionType.SLIDE_RIGHT}
+            transitionDuration={200}
+            revealChild={labelVisible}
+          >
+            <label
+              class="widget-cpu-percent"
+              halign={Gtk.Align.CENTER}
+              valign={Gtk.Align.CENTER}
+              xalign={0.5}
+              label={labelText}
+            />
+          </revealer>
+        )}
       </box>
     </Button>
   )

@@ -7,7 +7,7 @@ import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import AudioIndicator from "./AudioIndicator.tsx"
 import AudioSliderFlyout from "./AudioSliderFlyout.tsx"
-import { formatAudioPercentage } from "./audioTooltip.ts"
+import { formatReadoutPercent } from "../shared/formatters.ts"
 import { createAudioState } from "./audioState.ts"
 import type { NormalizedAudioTooltipConfig } from "./types.ts"
 
@@ -38,7 +38,7 @@ export default function AudioWidget({
 
   return (
     <FlyoutButton
-      widgetClass="widget-audio-button"
+      widgetClass="widget-audio-button widget-glyph-button"
       placement={placement}
       monitor={monitor}
       flyoutName={flyoutName}
@@ -58,7 +58,7 @@ export default function AudioWidget({
         : <label label="Audio unavailable" />}
     >
       <box
-        class={`widget-audio-display orientation-${placement.orientation} is-${placement.orientation}`}
+        class={`widget-audio-display is-${placement.orientation}`}
         orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
         spacing={0}
         halign={Gtk.Align.CENTER}
@@ -70,7 +70,8 @@ export default function AudioWidget({
             class="widget-audio-percent"
             xalign={0.5}
             valign={Gtk.Align.CENTER}
-            label={audioState.volume(formatAudioPercentage)}
+            widthChars={3}
+            label={audioState.volume(formatReadoutPercent)}
           />
         )}
       </box>

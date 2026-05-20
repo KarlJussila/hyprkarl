@@ -12,8 +12,14 @@
   background-color: transparent;
 }
 
+@mixin icon-display-gap($display, $percent) {
+  #{$display}.is-horizontal #{$percent} { margin-left: theme.$icon-gap-x; }
+  #{$display}.is-vertical   #{$percent} { margin-top: theme.$icon-gap-y; }
+}
+
 @mixin reset-flat-button {
   @include reset-flat-surface;
+  padding: 0px;
   box-shadow: none;
   min-width: 0px;
   min-height: 0px;

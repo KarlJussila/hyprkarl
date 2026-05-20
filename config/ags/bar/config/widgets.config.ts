@@ -61,6 +61,8 @@ const widgetDefinitions = {
 
   cpu: {
     kind: "cpu",
+    format: "{temp}°",
+    tooltip: "CPU: {usage}%\n{cores}"
   },
 
   network: {

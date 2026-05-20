@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { type BarEdge } from "../../configuration.ts"
 import Slider from "../../primitives/Slider.tsx"
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
-import { formatAudioPercentage } from "./audioTooltip.ts"
+import { formatReadoutPercent } from "../shared/formatters.ts"
 
 type Props = {
   edge: BarEdge
@@ -26,7 +26,8 @@ export default function AudioSliderFlyout({
       class="widget-audio-slider-percent"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
-      label={volume(formatAudioPercentage)}
+      widthChars={3}
+      label={volume(formatReadoutPercent)}
     />
   )
   const slider = (

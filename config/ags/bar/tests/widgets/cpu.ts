@@ -12,10 +12,9 @@ test("normalizes cpu widget defaults from minimal config", () => {
   )
 
   const cpu = resolved.widgets.cpu as ResolvedCpuWidgetConfig
-  assert.equal(cpu.icon, "󰘚")
-  assert.equal(cpu.showPercentage, false)
+  assert.equal(cpu.icon, "󰍛")
+  assert.equal(cpu.format, "")
   assert.equal(cpu.interval, 2000)
-  assert.equal(cpu.warningThreshold, 0.75)
 })
 
 test("normalizes cpu widget config overrides", () => {
@@ -25,18 +24,16 @@ test("normalizes cpu widget config overrides", () => {
       cpu: {
         kind: "cpu",
         icon: "󰻠",
-        showPercentage: false,
+        format: "{usage}",
         interval: 1000,
-        warningThreshold: 0.9,
       },
     },
   )
 
   const cpu = resolved.widgets.cpu as ResolvedCpuWidgetConfig
   assert.equal(cpu.icon, "󰻠")
-  assert.equal(cpu.showPercentage, false)
+  assert.equal(cpu.format, "{usage}")
   assert.equal(cpu.interval, 1000)
-  assert.equal(cpu.warningThreshold, 0.9)
 })
 
 test("rejects a non-positive interval", () => {
@@ -45,17 +42,6 @@ test("rejects a non-positive interval", () => {
       resolveBarConfiguration(
         { edge: "top", start: ["cpu"], center: { start: [], end: [] }, end: [] },
         { cpu: { kind: "cpu", interval: 0 } },
-      ),
-    { name: "BarConfigError" },
-  )
-})
-
-test("rejects a warningThreshold outside 0-1", () => {
-  assert.throws(
-    () =>
-      resolveBarConfiguration(
-        { edge: "top", start: ["cpu"], center: { start: [], end: [] }, end: [] },
-        { cpu: { kind: "cpu", warningThreshold: 1.5 } },
       ),
     { name: "BarConfigError" },
   )

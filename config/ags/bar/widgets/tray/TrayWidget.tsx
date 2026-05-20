@@ -44,7 +44,7 @@ export default function TrayWidget({ placement, direction, mirrorTrigger, reveal
 
   const trayExpander = (
     <TrayExpander
-      fill={placement.isVertical}
+      orientation={placement.orientation}
       icons={placement.tray.expanderIcons(direction, mirrorTrigger)}
       hasItems={hasTrayItems}
       open={trayOpen}
@@ -59,7 +59,10 @@ export default function TrayWidget({ placement, direction, mirrorTrigger, reveal
   return (
     <box
       class={`widget-tray widget-group orientation-${placement.orientation} is-${placement.orientation}`}
-      halign={Gtk.Align.CENTER}
+      hexpand={placement.isVertical}
+      halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      vexpand={!placement.isVertical}
+      valign={!placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       orientation={placement.layoutOrientation}
     >
       {startContent}

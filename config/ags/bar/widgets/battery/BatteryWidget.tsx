@@ -4,7 +4,7 @@ import FlyoutButton from "../shared/FlyoutButton.tsx"
 import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState } from "./batteryState"
-import { formatBatteryPercentage } from "./batteryStateShared.ts"
+import { formatReadoutPercent } from "../shared/formatters.ts"
 import PowerProfileMenu from "./PowerProfileMenu"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import type {
@@ -37,7 +37,7 @@ export default function BatteryWidget({
 
   const batteryContent = (
     <box
-      class={`widget-battery-display orientation-${placement.orientation} is-${placement.orientation}`}
+      class={`widget-battery-display is-${placement.orientation}`}
       orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
       spacing={0}
       halign={Gtk.Align.CENTER}
@@ -54,7 +54,7 @@ export default function BatteryWidget({
         <label
           class="widget-battery-percent"
           valign={Gtk.Align.CENTER}
-          label={batteryState.percentage(formatBatteryPercentage)}
+          label={batteryState.percentage(formatReadoutPercent)}
         />
       )}
     </box>
@@ -62,7 +62,7 @@ export default function BatteryWidget({
 
   return (
     <FlyoutButton
-      widgetClass="widget-battery-button"
+      widgetClass="widget-battery-button widget-glyph-button"
       placement={placement}
       monitor={monitor}
       flyoutName={createWidgetFlyoutName("battery-menu", id, monitor.connector)}

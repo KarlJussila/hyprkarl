@@ -60,6 +60,7 @@ window.Bar.bar-shell {
   .widget-network-button,
   .widget-audio-button,
   .widget-battery-button,
+  .widget-cpu-button,
   .widget-caffeine-switch,
   .widget-tray-toggle > .widget-tray-toggle-button {
     padding-top: theme.$glyph-pad-y;
@@ -80,7 +81,8 @@ window.Bar.bar-shell {
   .widget-clock-meridiem,
   .widget-audio-percent,
   .widget-audio-slider-percent,
-  .widget-battery-percent {
+  .widget-battery-percent,
+  .widget-cpu-percent {
     font-family: theme.$font-mono;
   }
 
@@ -88,10 +90,11 @@ window.Bar.bar-shell {
     font-size: theme.$battery-font-size;
   }
 
-  // Clock and battery content
+  // Clock, battery, and cpu content
   .widget-clock-display,
   .widget-audio-display,
-  .widget-battery-display {
+  .widget-battery-display,
+  .widget-cpu-display {
     margin: 0px;
   }
 
@@ -109,6 +112,18 @@ window.Bar.bar-shell {
 
   .widget-battery-display.is-vertical .widget-battery-percent {
     margin-top: theme.$battery-gap-y;
+  }
+
+  .widget-cpu-display.is-horizontal .widget-cpu-percent {
+    margin-left: theme.$cpu-gap-x;
+  }
+
+  .widget-cpu-display.is-vertical .widget-cpu-percent {
+    margin-top: theme.$cpu-gap-y;
+  }
+
+  .widget-cpu-display.is-high {
+    color: theme.$error;
   }
 
   // Tray widget
@@ -173,6 +188,7 @@ window.Bar.bar-shell {
     .widget-audio-button,
     .widget-clock-button,
     .widget-battery-button,
+    .widget-cpu-button,
     .widget-caffeine-switch {
       padding-top: theme.$button-pad-y;
       padding-bottom: theme.$button-pad-y;
@@ -185,6 +201,7 @@ window.Bar.bar-shell {
     .bar-segment > .widget-network-button,
     .bar-segment > .widget-audio-button,
     .bar-segment > .widget-battery-button,
+    .bar-segment > .widget-cpu-button,
     .bar-segment > .workspace-list,
     .bar-segment > .widget-tray {
       padding-top: 0px;
@@ -216,6 +233,11 @@ window.Bar.bar-shell {
       padding-bottom: theme.$glyph-pad-y;
     }
 
+    .bar-segment > .widget-cpu-button {
+      padding-top: theme.$glyph-pad-y;
+      padding-bottom: theme.$glyph-pad-y;
+    }
+
     .bar-segment > .workspace-list {
       padding-top: theme.$workspace-edge-pad;
       padding-bottom: theme.$workspace-edge-pad;
@@ -227,6 +249,7 @@ window.Bar.bar-shell {
     .widget-audio-button,
     .widget-clock-button,
     .widget-battery-button,
+    .widget-cpu-button,
     .widget-caffeine-switch,
     .widget-tray-toggle,
     .widget-tray-panel,

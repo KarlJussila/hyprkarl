@@ -40,8 +40,6 @@ export default function FlyoutButton({
   const closeFlyout = () => setFlyoutOpen(false)
 
   const buttonClass = `${widgetClass} orientation-${placement.orientation} is-${placement.orientation}`
-  const hexpand = placement.isVertical
-  const halign = placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER
 
   if (flyout.enabled) {
     const mountedFlyout = (
@@ -65,8 +63,7 @@ export default function FlyoutButton({
   return (
     <Button
       class={buttonClass}
-      hexpand={hexpand}
-      halign={halign}
+      orientation={placement.orientation}
       tooltipText={tooltipText}
       visible={visible}
       execSecondary={execSecondary}
@@ -74,9 +71,7 @@ export default function FlyoutButton({
       $={flyout.enabled
         ? (self) => {
             setTriggerWidget(self)
-            self.connect("destroy", () => {
-              setTriggerWidget(null)
-            })
+            self.connect("destroy", () => setTriggerWidget(null))
           }
         : undefined}
       execPrimary={flyout.enabled

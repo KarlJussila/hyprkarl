@@ -16,8 +16,7 @@ export default function MenuWidget({ orientation, icon, commands }: Props) {
   return (
     <Button
       class="widget-menu-button"
-      hexpand={isVertical}
-      halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      orientation={orientation}
       execPrimary={() => execAsync(commands.primary).catch(() => {})}
       execSecondary={commands.secondary
         ? () => execAsync(commands.secondary!).catch(() => {})

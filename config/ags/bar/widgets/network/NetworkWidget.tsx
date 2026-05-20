@@ -95,8 +95,7 @@ export default function NetworkWidget({ orientation, command }: Props) {
   return (
     <Button
       class="widget-network-button"
-      hexpand={isVertical}
-      halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      orientation={orientation}
       execPrimary={() => execAsync(command).catch(() => {})}
       tooltipText={state((s) => s.tooltip)}
     >

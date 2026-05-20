@@ -59,6 +59,10 @@ const widgetDefinitions = {
     }
   },
 
+  cpu: {
+    kind: "cpu",
+  },
+
   network: {
     kind: "network",
     command: "hk-launch-wifi",

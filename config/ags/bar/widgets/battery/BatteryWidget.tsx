@@ -40,9 +40,8 @@ export default function BatteryWidget({
       class={`widget-battery-display orientation-${placement.orientation} is-${placement.orientation}`}
       orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
       spacing={0}
-      hexpand={placement.isVertical}
-      halign={placement.isVertical ? Gtk.Align.CENTER : Gtk.Align.FILL}
-      valign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      halign={Gtk.Align.CENTER}
+      valign={Gtk.Align.CENTER}
     >
       <BatteryIndicator
         orientation={placement.orientation}

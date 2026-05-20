@@ -12,14 +12,14 @@ type Props = {
 }
 
 export default function CaffeineWidget({ orientation, glyph, command, switchMetrics }: Props) {
-  const isVertical = orientation === "vertical"
   const caffeineController = getCaffeineController()
+  const isVertical = orientation === "vertical"
 
   return (
     <Switch
       class={`widget-caffeine-switch orientation-${orientation} is-${orientation}`}
       hexpand={isVertical}
-      halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      halign={Gtk.Align.FILL}
       orientation={orientation}
       glyph={glyph}
       metrics={switchMetrics}

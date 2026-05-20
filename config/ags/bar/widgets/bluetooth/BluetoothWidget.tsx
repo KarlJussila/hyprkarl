@@ -46,8 +46,7 @@ export default function BluetoothWidget({ orientation, command }: Props) {
   return (
     <Button
       class="widget-bluetooth-button"
-      hexpand={isVertical}
-      halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      orientation={orientation}
       tooltipText={tooltipText}
       execPrimary={() => execAsync(command).catch(() => {})}
     >

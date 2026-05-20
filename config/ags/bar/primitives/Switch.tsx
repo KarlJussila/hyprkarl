@@ -88,7 +88,7 @@ export default function Switch({
       class={`widget-button widget-switch-button ${className}`.trim()}
       hexpand={hexpand}
       halign={halign}
-      valign={Gtk.Align.CENTER}
+      valign={Gtk.Align.FILL}
       vexpand={false}
       onClicked={() => onToggle?.(!active())}
     >

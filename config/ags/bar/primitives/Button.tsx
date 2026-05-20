@@ -1,26 +1,26 @@
 import { createComputed, createEffect } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 import { timeout, type Timer } from "ags/time"
+import { type BarOrientation } from "../layout/placement.ts"
 import { CommonButtonProps } from "./shared"
 
 type Props = CommonButtonProps<Gtk.Button> & {
+  orientation: BarOrientation
   execPrimary?: () => void
   execSecondary?: () => void
   execMiddle?: () => void
-  halign?: Gtk.Align
 }
 
 export default function Button({
   $: setup,
   class: className = "",
-  execPrimary,
-  execSecondary,
-  execMiddle,
-  halign = Gtk.Align.CENTER,
-  hexpand = true,
+  orientation,
   tooltipText,
   visible,
   children,
+  execPrimary,
+  execSecondary,
+  execMiddle,
 }: Props) {
   let pressTimer: Timer | null = null
 
@@ -39,6 +39,7 @@ export default function Button({
     : createComputed(() => `widget-button ${className()}`.trim())
 
   const setupButton = (button: Gtk.Button) => {
+    button.valign = Gtk.Align.FILL
     if (typeof tooltipText === "string") {
       button.set_tooltip_text(tooltipText)
     } else if (tooltipText) {
@@ -46,15 +47,14 @@ export default function Button({
         button.set_tooltip_text(tooltipText())
       })
     }
-
     setup?.(button)
   }
 
   const button = (
     <button
       class={resolvedClassName}
-      hexpand={hexpand}
-      halign={halign}
+      hexpand={orientation === "vertical"}
+      halign={Gtk.Align.FILL}
       visible={visible}
       $={setupButton}
     >

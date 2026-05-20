@@ -61,7 +61,6 @@ export default function AudioWidget({
         class={`widget-audio-display orientation-${placement.orientation} is-${placement.orientation}`}
         orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
         spacing={0}
-        hexpand={placement.isVertical}
         halign={Gtk.Align.CENTER}
         valign={Gtk.Align.CENTER}
       >

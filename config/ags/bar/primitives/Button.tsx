@@ -1,6 +1,6 @@
 import { createComputed, createEffect } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
-import { timeout } from "ags/time"
+import { timeout, type Timer } from "ags/time"
 import { CommonButtonProps } from "./shared"
 
 type Props = CommonButtonProps<Gtk.Button> & {
@@ -22,10 +22,16 @@ export default function Button({
   visible,
   children,
 }: Props) {
+  let pressTimer: Timer | null = null
+
   function press(button: Gtk.Button, action: () => void) {
     action()
     button.add_css_class("is-pressed")
-    timeout(120, () => button.remove_css_class("is-pressed"))
+    pressTimer?.cancel()
+    pressTimer = timeout(120, () => {
+      button.remove_css_class("is-pressed")
+      pressTimer = null
+    })
   }
 
   const resolvedClassName = typeof className === "string"

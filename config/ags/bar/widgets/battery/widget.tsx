@@ -1,7 +1,7 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import { normalizeBoolean, normalizeUnitInterval } from "../shared/normalize.ts"
 import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
-import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
+import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import { normalizeBatteryIndicatorMetrics, normalizeBatteryTooltipConfig } from "./normalize.ts"
 import type {
   NormalizedBatteryIndicatorMetrics,

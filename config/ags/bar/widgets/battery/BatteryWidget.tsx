@@ -6,7 +6,7 @@ import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState } from "./batteryState"
 import { formatBatteryPercentage } from "./batteryStateShared.ts"
 import PowerProfileMenu from "./PowerProfileMenu"
-import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
+import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import type {
   NormalizedBatteryIndicatorMetrics,
   NormalizedBatteryTooltipConfig,
@@ -35,59 +35,35 @@ export default function BatteryWidget({
 }: Props) {
   const batteryState = createBatteryState(tooltip)
 
-  const batteryContent = placement.isVertical
-    ? (
-        <box
-          class="widget-battery-display orientation-vertical is-vertical"
-          orientation={Gtk.Orientation.VERTICAL}
-          spacing={0}
-          hexpand={placement.isVertical}
-          halign={Gtk.Align.CENTER}
-        >
-          <BatteryIndicator
-            orientation={placement.orientation}
-            level={batteryState.percentage}
-            charging={batteryState.isCharging}
-            lowThreshold={lowThreshold}
-            metrics={indicator}
-          />
-          {showPercentage && (
-            <label
-              class="widget-battery-percent"
-              valign={Gtk.Align.CENTER}
-              label={batteryState.percentage(formatBatteryPercentage)}
-            />
-          )}
-        </box>
-      )
-    : (
-        <box
-          class="widget-battery-display orientation-horizontal is-horizontal"
-          spacing={0}
+  const batteryContent = (
+    <box
+      class={`widget-battery-display orientation-${placement.orientation} is-${placement.orientation}`}
+      orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
+      spacing={0}
+      hexpand={placement.isVertical}
+      halign={placement.isVertical ? Gtk.Align.CENTER : Gtk.Align.FILL}
+      valign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+    >
+      <BatteryIndicator
+        orientation={placement.orientation}
+        level={batteryState.percentage}
+        charging={batteryState.isCharging}
+        lowThreshold={lowThreshold}
+        metrics={indicator}
+      />
+      {showPercentage && (
+        <label
+          class="widget-battery-percent"
           valign={Gtk.Align.CENTER}
-        >
-          <BatteryIndicator
-            orientation={placement.orientation}
-            level={batteryState.percentage}
-            charging={batteryState.isCharging}
-            lowThreshold={lowThreshold}
-            metrics={indicator}
-          />
-          {showPercentage && (
-            <label
-              class="widget-battery-percent"
-              valign={Gtk.Align.CENTER}
-              label={batteryState.percentage(formatBatteryPercentage)}
-            />
-          )}
-        </box>
-      )
+          label={batteryState.percentage(formatBatteryPercentage)}
+        />
+      )}
+    </box>
+  )
 
   return (
     <FlyoutButton
-      buttonClass={`widget-battery-button orientation-${placement.orientation} is-${placement.orientation}`}
-      hexpand={placement.isVertical}
-      halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      widgetClass="widget-battery-button"
       placement={placement}
       monitor={monitor}
       flyoutName={createWidgetFlyoutName("battery-menu", id, monitor.connector)}

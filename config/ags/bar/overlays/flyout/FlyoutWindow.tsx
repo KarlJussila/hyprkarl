@@ -1,30 +1,38 @@
 import { Accessor, createComputed, createEffect, onCleanup } from "ags"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
+import { type BarEdge } from "../../configuration"
 import { type FlyoutPlacement, placementClasses } from "../../layout/placement"
-import FlyoutSurface from "./FlyoutSurface"
+import { type FlyoutMargins } from "./flyoutGeometry"
 import { createFlyoutVisibility } from "./flyoutVisibility"
-
-type FlyoutCoordinates = {
-  x: number
-  y: number
-}
 
 export type FlyoutWindowProps = {
   placement: FlyoutPlacement
   name: string
   monitor: Gdk.Monitor
   open: Accessor<boolean>
-  position?: Accessor<FlyoutCoordinates>
-  frameSnapClass?: Accessor<string>
+  margins?: Accessor<FlyoutMargins>
   revealTrigger?: Accessor<unknown>
   revealTransition?: "down" | "up" | "right" | "left"
   onReveal?: () => void
   onRequestClose?: () => void
   windowClass?: string
-  surfaceClass?: string
   children?: JSX.Element | Array<JSX.Element>
-  onFrameReady?: (frame: Gtk.Box) => void
+  onBodyReady?: (body: Gtk.Box) => void
+}
+
+const revealTransitionTypes: Record<string, Gtk.RevealerTransitionType> = {
+  up: Gtk.RevealerTransitionType.SLIDE_UP,
+  right: Gtk.RevealerTransitionType.SLIDE_RIGHT,
+  left: Gtk.RevealerTransitionType.SLIDE_LEFT,
+  down: Gtk.RevealerTransitionType.SLIDE_DOWN,
+}
+
+function applyEdgeMargins(surface: Gtk.Widget, edge: BarEdge, nearEdge: number, crossAxis: number) {
+  surface.set_margin_top(edge === "top" ? nearEdge : (edge === "left" || edge === "right") ? crossAxis : 0)
+  surface.set_margin_bottom(edge === "bottom" ? nearEdge : 0)
+  surface.set_margin_start(edge === "left" ? nearEdge : (edge === "top" || edge === "bottom") ? crossAxis : 0)
+  surface.set_margin_end(edge === "right" ? nearEdge : 0)
 }
 
 export default function FlyoutWindow({
@@ -32,36 +40,33 @@ export default function FlyoutWindow({
   name,
   monitor,
   open,
-  position,
-  frameSnapClass,
+  margins,
   revealTrigger = open,
   revealTransition = "down",
   onReveal = () => {},
   onRequestClose,
   windowClass = "flyout-window",
-  surfaceClass = "flyout-surface",
   children,
-  onFrameReady = () => {},
+  onBodyReady = () => {},
 }: FlyoutWindowProps) {
   const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor
   const revealDuration = 180
-  const transitionType = revealTransition === "up"
-    ? Gtk.RevealerTransitionType.SLIDE_UP
-    : revealTransition === "right"
-      ? Gtk.RevealerTransitionType.SLIDE_RIGHT
-      : revealTransition === "left"
-        ? Gtk.RevealerTransitionType.SLIDE_LEFT
-        : Gtk.RevealerTransitionType.SLIDE_DOWN
+  const transitionType = revealTransitionTypes[revealTransition] ?? Gtk.RevealerTransitionType.SLIDE_DOWN
 
-  let windowLayout: Gtk.Fixed | null = null
   const monitorGeometry = monitor.get_geometry()
-  const resolvedPosition = createComputed(() => position ? position() : { x: 0, y: 0 })
-  const resolvedFrameSnapClass = createComputed(() => frameSnapClass ? frameSnapClass() : "")
   const { windowVisible, contentRevealed } = createFlyoutVisibility({
     open,
     revealTrigger,
     revealDuration,
     onReveal,
+  })
+
+  const revealerClass = createComputed(() => {
+    const classes = ["flyout-surface", "flyout-revealer", `edge-${placement.edge}`]
+    if (contentRevealed()) classes.push("revealed")
+    const snapClass = margins ? margins().edgeClass : ""
+    if (snapClass) classes.push(snapClass)
+    return classes.join(" ")
   })
 
   const shieldLayer = (
@@ -79,23 +84,33 @@ export default function FlyoutWindow({
   ) as Gtk.Box
 
   const surface = (
-    <FlyoutSurface
-      placement={placement}
-      frameSnapClass={resolvedFrameSnapClass}
-      contentRevealed={contentRevealed}
-      transitionDuration={revealDuration}
+    <revealer
+      class={revealerClass}
+      hexpand={false}
+      vexpand={false}
+      halign={placement.flyout.halign}
+      valign={placement.flyout.valign}
       transitionType={transitionType}
-      surfaceClass={surfaceClass}
-      onFrameReady={onFrameReady}
+      transitionDuration={revealDuration}
+      revealChild={contentRevealed}
     >
-      {children}
-    </FlyoutSurface>
+      <box
+        class="flyout-body"
+        spacing={2}
+        orientation={Gtk.Orientation.VERTICAL}
+        $={onBodyReady}
+      >
+        {children}
+      </box>
+    </revealer>
   ) as Gtk.Widget
 
-  createEffect(() => {
-    const { x, y } = resolvedPosition()
-    windowLayout?.move(surface, x, y)
-  })
+  if (margins) {
+    createEffect(() => {
+      const { nearEdge, crossAxis } = margins()
+      applyEdgeMargins(surface, placement.edge, nearEdge, crossAxis)
+    })
+  }
 
   const flyoutWindow = (
     <window
@@ -112,10 +127,10 @@ export default function FlyoutWindow({
       resizable={false}
       hideOnClose
       $={(self) => {
-        windowLayout = new Gtk.Fixed()
-        windowLayout.put(shieldLayer, 0, 0)
-        windowLayout.put(surface, 0, 0)
-        self.set_child(windowLayout)
+        const overlay = new Gtk.Overlay()
+        overlay.set_child(shieldLayer)
+        overlay.add_overlay(surface)
+        self.set_child(overlay)
       }}
     />
   ) as Astal.Window
@@ -124,7 +139,6 @@ export default function FlyoutWindow({
 
   onCleanup(() => {
     flyoutWindow.destroy()
-    windowLayout = null
   })
 
   return flyoutWindow

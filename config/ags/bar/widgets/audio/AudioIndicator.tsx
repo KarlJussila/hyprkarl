@@ -1,14 +1,12 @@
 import { Accessor, createEffect } from "ags"
 import { Gtk } from "ags/gtk4"
-import { type BarOrientation } from "../../layout/placement.ts"
 
 type Props = {
-  orientation: BarOrientation
   volume: Accessor<number>
   muted: Accessor<boolean>
 }
 
-const HORIZONTAL_HEIGHT = 14
+const HEIGHT = 14
 const WAVE_RADII = [3.0, 4.8, 6.6, 8.4]
 const SPEAKER_END_X = 9.2
 const MUTE_SLASH_END_X = 11.8
@@ -19,34 +17,27 @@ function clamp(value: number, min = 0, max = 1.25) {
 }
 
 function countVisibleWaves(volume: number) {
-  const clampedVolume = clamp(volume)
-
-  if (clampedVolume <= 0) return 0
-  if (clampedVolume <= 0.25) return 1
-  if (clampedVolume <= 0.5) return 2
-  if (clampedVolume <= 0.75) return 3
+  const clamped = clamp(volume)
+  if (clamped <= 0) return 0
+  if (clamped <= 0.25) return 1
+  if (clamped <= 0.5) return 2
+  if (clamped <= 0.75) return 3
   return 4
 }
 
-function resolveHorizontalWidth(waveCount: number, isMuted: boolean) {
+function resolveWidth(waveCount: number, isMuted: boolean) {
   const waveEndX = waveCount > 0
     ? 7.4 + WAVE_RADII[waveCount - 1] + STROKE_PADDING
     : SPEAKER_END_X
 
-  const maxEndX = isMuted
-    ? Math.max(waveEndX, MUTE_SLASH_END_X)
-    : waveEndX
-
-  return Math.ceil(maxEndX)
+  return Math.ceil(isMuted ? Math.max(waveEndX, MUTE_SLASH_END_X) : waveEndX)
 }
 
-export default function AudioIndicator({ orientation, volume, muted }: Props) {
-  const isVertical = orientation === "vertical"
-
+export default function AudioIndicator({ volume, muted }: Props) {
   return (
     <drawingarea
-      contentWidth={isVertical ? HORIZONTAL_HEIGHT : resolveHorizontalWidth(4, true)}
-      contentHeight={isVertical ? resolveHorizontalWidth(4, true) : HORIZONTAL_HEIGHT}
+      contentWidth={resolveWidth(4, true)}
+      contentHeight={HEIGHT}
       class="widget-audio-indicator"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
@@ -54,25 +45,16 @@ export default function AudioIndicator({ orientation, volume, muted }: Props) {
         createEffect(() => {
           const isMuted = muted()
           const waveCount = isMuted ? 0 : countVisibleWaves(volume())
-          const horizontalWidth = resolveHorizontalWidth(waveCount, isMuted)
-
-          self.set_content_width(isVertical ? HORIZONTAL_HEIGHT : horizontalWidth)
-          self.set_content_height(isVertical ? horizontalWidth : HORIZONTAL_HEIGHT)
+          self.set_content_width(resolveWidth(waveCount, isMuted))
           self.queue_draw()
         })
 
-        self.set_draw_func((area, context, _drawWidth, drawHeight) => {
+        self.set_draw_func((area, context) => {
           const style = area.get_style_context()
           const color = style.get_color()
           const isMuted = muted()
           const waveCount = isMuted ? 0 : countVisibleWaves(volume())
-          const centerY = HORIZONTAL_HEIGHT / 2
-
-          if (isVertical) {
-            context.save()
-            context.translate(0, drawHeight)
-            context.rotate(-Math.PI / 2)
-          }
+          const centerY = HEIGHT / 2
 
           context.setSourceRGBA(color.red, color.green, color.blue, color.alpha)
           context.setLineWidth(1.4)
@@ -99,10 +81,6 @@ export default function AudioIndicator({ orientation, volume, muted }: Props) {
             context.moveTo(3.0, centerY - 5.2)
             context.lineTo(11.0, centerY + 5.2)
             context.stroke()
-          }
-
-          if (isVertical) {
-            context.restore()
           }
         })
       }}

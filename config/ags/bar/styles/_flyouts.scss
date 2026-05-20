@@ -10,76 +10,37 @@ window.flyout-window {
     @include shared.reset-flat-surface;
   }
 
-  .flyout-frame {
+  .flyout-body {
     @include shared.bar-surface;
     border-radius: theme.$radius;
+    border-spacing: 0px;
     padding: theme.$flyout-pad;
     opacity: 0;
     transition: opacity 180ms ease;
   }
 
-  .flyout-frame.revealed {
+  .flyout-revealer.revealed .flyout-body {
     opacity: 1;
   }
 
   &.edge-top {
-    .flyout-frame.snapped-left {
-      border-top-left-radius: 0px;
-    }
-
-    .flyout-frame.snapped-right {
-      border-top-right-radius: 0px;
-    }
+    .flyout-revealer.snapped-left .flyout-body  { border-top-left-radius: 0px; }
+    .flyout-revealer.snapped-right .flyout-body { border-top-right-radius: 0px; }
   }
 
   &.edge-bottom {
-    .flyout-frame.snapped-left {
-      border-bottom-left-radius: 0px;
-    }
-
-    .flyout-frame.snapped-right {
-      border-bottom-right-radius: 0px;
-    }
+    .flyout-revealer.snapped-left .flyout-body  { border-bottom-left-radius: 0px; }
+    .flyout-revealer.snapped-right .flyout-body { border-bottom-right-radius: 0px; }
   }
 
   &.edge-left {
-    .flyout-frame.snapped-top {
-      border-top-left-radius: 0px;
-    }
-
-    .flyout-frame.snapped-bottom {
-      border-bottom-left-radius: 0px;
-    }
+    .flyout-revealer.snapped-top .flyout-body    { border-top-left-radius: 0px; }
+    .flyout-revealer.snapped-bottom .flyout-body { border-bottom-left-radius: 0px; }
   }
 
   &.edge-right {
-    .flyout-frame.snapped-top {
-      border-top-right-radius: 0px;
-    }
-
-    .flyout-frame.snapped-bottom {
-      border-bottom-right-radius: 0px;
-    }
-  }
-
-  .flyout-body {
-    border-spacing: 0px;
-  }
-
-  .flyout-revealer.edge-top {
-    margin-top: 1px;
-  }
-
-  .flyout-revealer.edge-bottom {
-    margin-bottom: 1px;
-  }
-
-  .flyout-revealer.edge-left {
-    margin-left: 1px;
-  }
-
-  .flyout-revealer.edge-right {
-    margin-right: 1px;
+    .flyout-revealer.snapped-top .flyout-body    { border-top-right-radius: 0px; }
+    .flyout-revealer.snapped-bottom .flyout-body { border-bottom-right-radius: 0px; }
   }
 
   .flyout-row {

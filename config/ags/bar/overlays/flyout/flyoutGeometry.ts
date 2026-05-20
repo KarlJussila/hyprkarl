@@ -1,8 +1,9 @@
 import { Gtk } from "ags/gtk4"
-import { type BarEdge, type FlyoutAlign } from "../../configuration"
+import { type BarEdge } from "../../configuration"
+import { type FlyoutAlign } from "./flyoutTypes"
 
 export type FlyoutSize = { width: number; height: number }
-export type FlyoutPosition = { x: number; y: number; edgeClass: string }
+export type FlyoutMargins = { nearEdge: number; crossAxis: number; edgeClass: string }
 export type WidgetBounds = { x: number; y: number; width: number; height: number }
 
 export function measureWidget(widget: Gtk.Widget | null): FlyoutSize {
@@ -83,43 +84,28 @@ function alignFlyoutY({
   }
 }
 
-function frameSnapClass({
+function edgeSnapClass({
   edge,
   gap,
-  x,
-  y,
-  maxX,
-  maxY,
+  crossAxis,
+  maxCrossAxis,
 }: {
   edge: BarEdge
   gap: number
-  x: number
-  y: number
-  maxX: number
-  maxY: number
+  crossAxis: number
+  maxCrossAxis: number
 }) {
   if (gap > 0) return ""
 
-  if ((edge === "top" || edge === "bottom") && x === 0) {
-    return "snapped-left"
-  }
-
-  if ((edge === "top" || edge === "bottom") && x === maxX) {
-    return "snapped-right"
-  }
-
-  if ((edge === "left" || edge === "right") && y === 0) {
-    return "snapped-top"
-  }
-
-  if ((edge === "left" || edge === "right") && y === maxY) {
-    return "snapped-bottom"
-  }
+  if ((edge === "top" || edge === "bottom") && crossAxis === 0) return "snapped-left"
+  if ((edge === "top" || edge === "bottom") && crossAxis === maxCrossAxis) return "snapped-right"
+  if ((edge === "left" || edge === "right") && crossAxis === 0) return "snapped-top"
+  if ((edge === "left" || edge === "right") && crossAxis === maxCrossAxis) return "snapped-bottom"
 
   return ""
 }
 
-export function computeFlyoutPosition({
+export function computeFlyoutMargins({
   edge,
   align,
   anchorWidth,
@@ -142,35 +128,30 @@ export function computeFlyoutPosition({
   monitorWidth: number
   monitorHeight: number
 }) {
-  const unclampedX = edge === "left"
-    ? anchorX + anchorWidth + gap
-    : edge === "right"
-      ? anchorX - flyoutSize.width - gap
-      : alignFlyoutX({
-          align,
-          anchorX,
-          anchorWidth,
-          flyoutWidth: flyoutSize.width,
-        })
-  const unclampedY = edge === "top"
-    ? anchorY + anchorHeight + gap
-    : edge === "bottom"
-      ? anchorY - flyoutSize.height - gap
-      : alignFlyoutY({
-          align,
-          anchorY,
-          anchorHeight,
-          flyoutHeight: flyoutSize.height,
-        })
+  // Distance from the bar edge to the flyout's near side — no flyout size needed.
+  const nearEdge = Math.round(
+    edge === "top" ? anchorY + anchorHeight + gap
+    : edge === "bottom" ? monitorHeight - anchorY + gap
+    : edge === "left" ? anchorX + anchorWidth + gap
+    : monitorWidth - anchorX + gap,
+  )
 
-  const maxX = Math.max(0, monitorWidth - flyoutSize.width)
-  const maxY = Math.max(0, monitorHeight - flyoutSize.height)
-  const x = Math.round(Math.max(0, Math.min(unclampedX, maxX)))
-  const y = Math.round(Math.max(0, Math.min(unclampedY, maxY)))
+  // Position along the bar — flyout cross-size needed only for edge clamping.
+  const isHorizontalBar = edge === "top" || edge === "bottom"
+
+  const rawCrossAxis = isHorizontalBar
+    ? alignFlyoutX({ align, anchorX, anchorWidth, flyoutWidth: flyoutSize.width })
+    : alignFlyoutY({ align, anchorY, anchorHeight, flyoutHeight: flyoutSize.height })
+
+  const maxCrossAxis = isHorizontalBar
+    ? Math.max(0, monitorWidth - flyoutSize.width)
+    : Math.max(0, monitorHeight - flyoutSize.height)
+
+  const crossAxis = Math.round(Math.max(0, Math.min(rawCrossAxis, maxCrossAxis)))
 
   return {
-    x,
-    y,
-    edgeClass: frameSnapClass({ edge, gap, x, y, maxX, maxY }),
-  } satisfies FlyoutPosition
+    nearEdge,
+    crossAxis,
+    edgeClass: edgeSnapClass({ edge, gap, crossAxis, maxCrossAxis }),
+  } satisfies FlyoutMargins
 }

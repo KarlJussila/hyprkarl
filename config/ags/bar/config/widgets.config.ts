@@ -54,6 +54,9 @@ const widgetDefinitions = {
     kind: "caffeine",
     glyph: "",
     command: "hk-caffeine",
+    switch: {
+      glyphOffsetX: 1
+    }
   },
 
   network: {

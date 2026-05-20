@@ -15,9 +15,7 @@ type Props = {
 
 export default function TrayItems({ placement, direction, items, open, revealDurationMs }: Props) {
   const panelClass = open((isOpen) =>
-    isOpen
-      ? "widget-tray-panel widget-group-item is-open"
-      : "widget-tray-panel widget-group-item",
+    `widget-tray-panel widget-group-item${isOpen ? " is-open" : ""}`,
   )
   const transitionType = placement.tray.revealTransition[direction]
   const revealerClass = createComputed(() =>

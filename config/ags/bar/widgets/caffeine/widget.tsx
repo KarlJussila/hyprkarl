@@ -5,7 +5,7 @@ import { normalizeSwitchMetrics } from "./normalize.ts"
 import CaffeineWidget from "./CaffeineWidget.tsx"
 
 const caffeineDefaults = {
-  glyph: "",
+  glyph: "",
   command: "hk-caffeine",
   switch: {
     thumbSize: 16,

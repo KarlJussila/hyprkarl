@@ -41,3 +41,8 @@ declare module "gi://AstalWp" {
   const AstalWp: any
   export default AstalWp
 }
+
+declare module "gi://AstalPowerProfiles" {
+  const AstalPowerProfiles: any
+  export default AstalPowerProfiles
+}

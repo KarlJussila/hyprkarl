@@ -4,16 +4,14 @@ import { type FlyoutPlacement } from "../../layout/placement.ts"
 import AttachedFlyout from "../../overlays/flyout/AttachedFlyout.tsx"
 import Button from "../../primitives/Button.tsx"
 import { type Accessor } from "ags"
-import type { NormalizedFlyoutConfig } from "./flyoutTypes.ts"
+import type { NormalizedFlyoutConfig } from "../overlays/flyout/flyoutTypes.ts"
 
 type Props = {
-  buttonClass: string
+  widgetClass: string
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
   flyoutName: string
   flyout: NormalizedFlyoutConfig
-  hexpand?: boolean
-  halign?: Gtk.Align
   tooltipText?: string | Accessor<string>
   visible?: boolean | Accessor<boolean>
   execPrimary?: () => void
@@ -24,13 +22,11 @@ type Props = {
 }
 
 export default function FlyoutButton({
-  buttonClass,
+  widgetClass,
   placement,
   monitor,
   flyoutName,
   flyout,
-  hexpand,
-  halign,
   tooltipText,
   visible,
   execPrimary,
@@ -42,6 +38,10 @@ export default function FlyoutButton({
   const [flyoutOpen, setFlyoutOpen] = createState(false)
   const [triggerWidget, setTriggerWidget] = createState<Gtk.Widget | null>(null)
   const closeFlyout = () => setFlyoutOpen(false)
+
+  const buttonClass = `${widgetClass} orientation-${placement.orientation} is-${placement.orientation}`
+  const hexpand = placement.isVertical
+  const halign = placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER
 
   if (flyout.enabled) {
     const mountedFlyout = (

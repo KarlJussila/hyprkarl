@@ -5,7 +5,7 @@ import { type FlyoutPlacement } from "../../layout/placement.ts"
 import FlyoutButton from "../shared/FlyoutButton.tsx"
 import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import CalendarFlyoutContent from "./CalendarFlyoutContent"
-import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
+import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import type { NormalizedClockDisplayConfig } from "./types.ts"
 
 function formatTime(time: GLib.DateTime, format: string) {
@@ -47,9 +47,7 @@ export default function ClockWidget({ id, placement, monitor, display, flyout }:
 
   return (
     <FlyoutButton
-      buttonClass={`widget-clock-button orientation-${placement.orientation} is-${placement.orientation}`}
-      hexpand={placement.isVertical}
-      halign={placement.isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      widgetClass="widget-clock-button"
       placement={placement}
       monitor={monitor}
       flyoutName={createWidgetFlyoutName("calendar-menu", id, monitor.connector)}

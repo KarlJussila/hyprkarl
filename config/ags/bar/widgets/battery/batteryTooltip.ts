@@ -1,3 +1,4 @@
+import { substituteTokens } from "../shared/template.ts"
 import type { NormalizedBatteryTooltipConfig } from "./types.ts"
 import { formatBatteryPercentage } from "./batteryStateShared.ts"
 
@@ -36,7 +37,7 @@ export function formatBatteryTooltip({
   const duration = formatSeconds(charging ? timeToFull : timeToEmpty)
 
   if (power > 0) {
-    return renderBatteryTooltipFormat(
+    return substituteTokens(
       charging ? formats.charging : formats.discharging,
       {
         power: formatPower(power),
@@ -47,28 +48,12 @@ export function formatBatteryTooltip({
   }
 
   if (charging) {
-    return renderBatteryTooltipFormat(formats.plugged, {
+    return substituteTokens(formats.plugged, {
       percentage: percent,
     })
   }
 
-  return renderBatteryTooltipFormat(formats.fallback, {
+  return substituteTokens(formats.fallback, {
     percentage: percent,
   })
-}
-
-function renderBatteryTooltipFormat(
-  format: string,
-  replacements: Record<string, string | undefined>,
-) {
-  const rendered = Object.entries(replacements).reduce(
-    (result, [token, value]) => result.replaceAll(`{${token}}`, value ?? ""),
-    format,
-  )
-
-  return rendered
-    .split("\n")
-    .map((line) => line.replace(/\s+/g, " ").trim())
-    .join("\n")
-    .trim()
 }

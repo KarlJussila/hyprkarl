@@ -22,7 +22,7 @@ export default function TrayExpander({
 }: Props) {
   const triggerIcon = createComputed(() => open() ? icons.expanded : icons.collapsed)
   const buttonStateClass = hasItems((itemsAvailable) =>
-    itemsAvailable ? "widget-tray-toggle-button" : "widget-tray-toggle-button is-empty",
+    `widget-tray-toggle-button${itemsAvailable ? "" : " is-empty"}`,
   )
 
   return (

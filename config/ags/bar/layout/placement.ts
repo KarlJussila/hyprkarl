@@ -43,8 +43,8 @@ export type BarPlacement = {
   }
   flyout: {
     direction: FlyoutDirection
-    frameHalign: Gtk.Align
-    frameValign: Gtk.Align
+    halign: Gtk.Align
+    valign: Gtk.Align
     anchorHalign: Gtk.Align
     anchorValign: Gtk.Align
   }
@@ -201,8 +201,8 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
         }),
         flyout: {
           direction: "up",
-          frameHalign: Gtk.Align.START,
-          frameValign: Gtk.Align.END,
+          halign: Gtk.Align.START,
+          valign: Gtk.Align.END,
           anchorHalign: Gtk.Align.START,
           anchorValign: Gtk.Align.END,
         },
@@ -230,8 +230,8 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
         }),
         flyout: {
           direction: "right",
-          frameHalign: Gtk.Align.START,
-          frameValign: Gtk.Align.START,
+          halign: Gtk.Align.START,
+          valign: Gtk.Align.START,
           anchorHalign: Gtk.Align.START,
           anchorValign: Gtk.Align.START,
         },
@@ -256,8 +256,8 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
         }),
         flyout: {
           direction: "left",
-          frameHalign: Gtk.Align.END,
-          frameValign: Gtk.Align.START,
+          halign: Gtk.Align.END,
+          valign: Gtk.Align.START,
           anchorHalign: Gtk.Align.END,
           anchorValign: Gtk.Align.START,
         },
@@ -283,8 +283,8 @@ export function createBarPlacement(edge: BarEdge, margins = createBarWindowMargi
         }),
         flyout: {
           direction: "down",
-          frameHalign: Gtk.Align.START,
-          frameValign: Gtk.Align.START,
+          halign: Gtk.Align.START,
+          valign: Gtk.Align.START,
           anchorHalign: Gtk.Align.START,
           anchorValign: Gtk.Align.START,
         },

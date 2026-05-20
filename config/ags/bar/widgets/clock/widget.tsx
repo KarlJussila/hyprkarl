@@ -1,6 +1,6 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
-import type { NormalizedFlyoutConfig } from "../shared/flyoutTypes.ts"
+import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import { normalizeClockDisplay } from "./normalize.ts"
 import type { NormalizedClockDisplayConfig } from "./types.ts"
 import ClockWidget from "./ClockWidget.tsx"

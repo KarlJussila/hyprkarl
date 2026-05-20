@@ -2,7 +2,7 @@ import type {
   FlyoutAlign,
   FlyoutConfig,
   NormalizedFlyoutConfig,
-} from "./flyoutTypes.ts"
+} from "../overlays/flyout/flyoutTypes.ts"
 import {
   childContext,
   fail,

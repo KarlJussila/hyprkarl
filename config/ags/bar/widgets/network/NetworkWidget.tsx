@@ -1,10 +1,10 @@
-import { createEffect } from "ags"
 import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
 import AstalNetwork from "gi://AstalNetwork"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
+import { readString } from "../shared/read.ts"
 
 type Props = {
   orientation: BarOrientation
@@ -20,16 +20,12 @@ const wifiIcons = ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
 const ethernetIcon = "󰀂"
 const disconnectedIcon = "󰤮"
 
-function readString(value: unknown) {
-  return typeof value === "string" ? value : ""
-}
-
 function readNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : 0
 }
 
 function formatWifiTooltip(wifi: any) {
-  const ssid = readString(wifi?.ssid).trim()
+  const ssid = readString(wifi?.ssid)
   const frequency = readNumber(wifi?.frequency)
   if (ssid.length === 0) {
     return "Wi-Fi connected"
@@ -73,7 +69,8 @@ function snapshotNetworkState(network: any): NetworkSnapshot {
     }
   }
 
-  if (readString(wired?.iconName).length > 0 && readString(wired?.iconName) !== "network-wired-disconnected-symbolic") {
+  const wiredIconName = readString(wired?.iconName)
+  if (wiredIconName.length > 0 && wiredIconName !== "network-wired-disconnected-symbolic") {
     return {
       icon: ethernetIcon,
       tooltip: "Ethernet connected",
@@ -101,11 +98,7 @@ export default function NetworkWidget({ orientation, command }: Props) {
       hexpand={isVertical}
       halign={isVertical ? Gtk.Align.FILL : Gtk.Align.CENTER}
       execPrimary={() => execAsync(command).catch(() => {})}
-      $={(button) => {
-        createEffect(() => {
-          button.set_tooltip_text(state().tooltip)
-        })
-      }}
+      tooltipText={state((s) => s.tooltip)}
     >
       <box
         class="widget-network-content"

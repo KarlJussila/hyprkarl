@@ -33,15 +33,15 @@ export default function ClockWidget({ id, placement, monitor, display, flyout }:
 
   const verticalClock = (
     <box
-      class="widget-clock-display orientation-vertical is-vertical"
+      class="widget-clock-display widget-icon-display is-vertical"
       orientation={Gtk.Orientation.VERTICAL}
       spacing={0}
       hexpand={placement.isVertical}
       halign={Gtk.Align.CENTER}
     >
-      <label class="widget-clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.top))} />
-      <label class="widget-clock-time" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.middle))} />
-      <label class="widget-clock-meridiem" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.bottom))} />
+      <label class="widget-clock-time widget-readout" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.top))} />
+      <label class="widget-clock-time widget-readout" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.middle))} />
+      <label class="widget-clock-meridiem widget-readout" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.bottom))} />
     </box>
   )
 

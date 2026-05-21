@@ -25,8 +25,6 @@ function workspaceButtonClass({
     const classes = [
       "widget-workspace-button",
       "widget-group-item",
-      `orientation-${orientation}`,
-      `is-${orientation}`,
     ]
     if (empty) classes.push("is-empty")
     if (active) classes.push("is-active")
@@ -59,17 +57,17 @@ export default function WorkspaceButton({
         halign={Gtk.Align.CENTER}
       >
         <label
-          class="workspace-bracket"
+          class="workspace-bracket widget-readout"
           label="["
           opacity={isActive((active) => active ? 1 : 0)}
         />
         <label
-          class="workspace-label"
+          class="workspace-label widget-readout"
           xalign={0.5}
           label={`${id}`}
         />
         <label
-          class="workspace-bracket"
+          class="workspace-bracket widget-readout"
           label="]"
           opacity={isActive((active) => active ? 1 : 0)}
         />

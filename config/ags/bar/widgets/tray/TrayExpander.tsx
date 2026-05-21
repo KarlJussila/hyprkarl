@@ -24,7 +24,7 @@ export default function TrayExpander({
   const isVertical = orientation === "vertical"
   const triggerIcon = createComputed(() => open() ? icons.expanded : icons.collapsed)
   const buttonStateClass = hasItems((itemsAvailable) =>
-    `widget-tray-toggle-button${itemsAvailable ? "" : " is-empty"}`,
+    `widget-tray-toggle-button widget-glyph-button${itemsAvailable ? "" : " is-empty"}`,
   )
 
   return (

@@ -23,7 +23,7 @@ export default function AudioSliderFlyout({
   const percentFirst = edge === "bottom" || edge === "right"
   const percentageLabel = (
     <label
-      class="widget-audio-slider-percent"
+      class="widget-audio-slider-percent widget-readout"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
       widthChars={3}

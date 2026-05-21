@@ -39,7 +39,7 @@ export default function FlyoutButton({
   const [triggerWidget, setTriggerWidget] = createState<Gtk.Widget | null>(null)
   const closeFlyout = () => setFlyoutOpen(false)
 
-  const buttonClass = `${widgetClass} orientation-${placement.orientation} is-${placement.orientation}`
+  const buttonClass = `${widgetClass} is-${placement.orientation}`
 
   if (flyout.enabled) {
     const mountedFlyout = (

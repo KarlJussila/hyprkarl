@@ -47,7 +47,7 @@ export default function CpuWidget({ orientation, icon, format, tooltip, interval
       execPrimary={labelText ? () => setLabelVisible(!labelVisible()) : undefined}
     >
       <box
-        class={`widget-cpu-display is-${orientation}`}
+        class={`widget-cpu-display widget-icon-display is-${orientation}`}
         orientation={isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
         spacing={0}
         halign={Gtk.Align.CENTER}
@@ -61,7 +61,7 @@ export default function CpuWidget({ orientation, icon, format, tooltip, interval
             revealChild={labelVisible}
           >
             <label
-              class="widget-cpu-percent"
+              class="widget-cpu-percent widget-readout widget-readout-percent"
               halign={Gtk.Align.CENTER}
               valign={Gtk.Align.CENTER}
               xalign={0.5}

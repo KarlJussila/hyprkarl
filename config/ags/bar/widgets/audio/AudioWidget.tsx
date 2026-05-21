@@ -58,7 +58,7 @@ export default function AudioWidget({
         : <label label="Audio unavailable" />}
     >
       <box
-        class={`widget-audio-display is-${placement.orientation}`}
+        class={`widget-audio-display widget-icon-display is-${placement.orientation}`}
         orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
         spacing={0}
         halign={Gtk.Align.CENTER}
@@ -67,7 +67,7 @@ export default function AudioWidget({
         <AudioIndicator volume={audioState.volume} muted={audioState.muted} />
         {showPercentage && (
           <label
-            class="widget-audio-percent"
+            class="widget-audio-percent widget-readout widget-readout-percent"
             xalign={0.5}
             valign={Gtk.Align.CENTER}
             widthChars={3}

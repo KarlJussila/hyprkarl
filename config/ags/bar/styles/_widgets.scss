@@ -1,13 +1,6 @@
 @use "../theme" as theme;
 @use "./shared" as shared;
 
-// ── Padding reset ─────────────────────────────────────────────────────────
-tooltip box,
-tooltip label {
-  padding: 0px;
-}
-// ─────────────────────────────────────────────────────────────────────────
-
 tooltip {
   @include shared.bar-surface;
   border-radius: theme.$radius;
@@ -27,7 +20,7 @@ window.Bar.bar-shell {
   }
 
   .bar-segment > .widget-button,
-  .bar-segment > .widget-group {
+  .bar-segment > .workspace-list {
     @include shared.reset-flat-surface;
   }
 
@@ -35,8 +28,14 @@ window.Bar.bar-shell {
     background-color: theme.$border;
   }
 
-  .widget-group {
-    border-spacing: 0px;
+  // Readout labels (mono font)
+  .widget-readout {
+    font-family: theme.$font-mono;
+  }
+
+  // Percent readout labels inside display boxes
+  .widget-readout-percent {
+    font-size: theme.$readout-font-size;
   }
 
   // Workspace widget
@@ -61,34 +60,13 @@ window.Bar.bar-shell {
     opacity: 0.55;
   }
 
-  .workspace-bracket,
-  .workspace-label,
-  .widget-clock-time,
-  .widget-clock-meridiem,
-  .widget-audio-percent,
-  .widget-audio-slider-percent,
-  .widget-battery-percent,
-  .widget-cpu-percent {
-    font-family: theme.$font-mono;
-  }
-
-  .widget-audio-percent,
-  .widget-battery-percent,
-  .widget-cpu-percent {
-    font-size: theme.$readout-font-size;
-  }
-
   // Icon + percent display boxes
-  .widget-clock-display,
-  .widget-audio-display,
-  .widget-battery-display,
-  .widget-cpu-display {
+  .widget-icon-display {
     margin: 0px;
   }
 
-  @include shared.icon-display-gap(".widget-audio-display", ".widget-audio-percent");
-  @include shared.icon-display-gap(".widget-battery-display", ".widget-battery-percent");
-  @include shared.icon-display-gap(".widget-cpu-display", ".widget-cpu-percent");
+  .widget-icon-display.is-horizontal .widget-readout-percent { margin-left: theme.$icon-gap-horizontal; }
+  .widget-icon-display.is-vertical   .widget-readout-percent { margin-top: theme.$icon-gap-vertical; }
 
   // Tray widget
   .widget-tray,
@@ -137,16 +115,6 @@ window.Bar.bar-shell {
       padding-left: theme.$widget-padding-horizontal;
       padding-right: theme.$widget-padding-horizontal;
     }
-
-    .widget-glyph-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
-    }
-
-    .widget-tray-toggle > .widget-tray-toggle-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
-    }
   }
 
   // Vertical layout
@@ -159,10 +127,11 @@ window.Bar.bar-shell {
 
     .bar-segment > .widget-button,
     .bar-segment > .widget-switch-button,
-    .bar-segment > .widget-group {
+    .bar-segment > .workspace-list {
       padding-top: theme.$widget-padding-vertical;
       padding-bottom: theme.$widget-padding-vertical;
     }
+
 
     .bar-segment > .workspace-list {
       padding-top: theme.$workspace-gap-outer;
@@ -176,11 +145,6 @@ window.Bar.bar-shell {
 
     .widget-tray-item-list.is-vertical > .widget-tray-item:not(:last-child) {
       margin-bottom: theme.$tray-gap-inner;
-    }
-
-    .widget-tray-toggle > .widget-tray-toggle-button {
-      padding-top: theme.$glyph-pad-y;
-      padding-bottom: theme.$glyph-pad-y;
     }
   }
 }

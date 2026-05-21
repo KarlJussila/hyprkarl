@@ -1,13 +1,6 @@
 @use "../theme" as theme;
 @use "./shared" as shared;
 
-// ── Padding reset ─────────────────────────────────────────────────────────
-window.Bar.bar-shell > centerbox.bar-layout-root,
-window.Bar.bar-config-error > .bar-config-error-layout {
-  padding: 0px;
-}
-// ─────────────────────────────────────────────────────────────────────────
-
 window.Bar.bar-shell {
   background: transparent;
   color: theme.$text;

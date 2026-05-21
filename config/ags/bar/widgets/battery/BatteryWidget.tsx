@@ -37,7 +37,7 @@ export default function BatteryWidget({
 
   const batteryContent = (
     <box
-      class={`widget-battery-display is-${placement.orientation}`}
+      class={`widget-battery-display widget-icon-display is-${placement.orientation}`}
       orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
       spacing={0}
       halign={Gtk.Align.CENTER}
@@ -52,7 +52,7 @@ export default function BatteryWidget({
       />
       {showPercentage && (
         <label
-          class="widget-battery-percent"
+          class="widget-battery-percent widget-readout widget-readout-percent"
           valign={Gtk.Align.CENTER}
           label={batteryState.percentage(formatReadoutPercent)}
         />

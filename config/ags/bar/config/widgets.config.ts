@@ -65,6 +65,18 @@ const widgetDefinitions = {
     tooltip: "CPU: {usage}%\n{cores}"
   },
 
+  ram: {
+    kind: "ram",
+    icon: "",
+    format: "{ram}%",
+    formatAlt: "{ram_used}/{ram_total} | {swap_used}/{swap_total}",
+    formatVertical: "{ram}%",
+    formatVerticalAlt: "{ram_used}\n{swap_used}",
+    decimals: 0,
+    tooltip: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
+    interval: 2000,
+  },
+
   network: {
     kind: "network",
     command: "hk-launch-wifi",

@@ -1,18 +1,18 @@
 import { Accessor, createEffect } from "ags"
 import { Gtk } from "ags/gtk4"
+import { fontScaleFactor } from "../shared/drawScale.ts"
 
 type Props = {
   volume: Accessor<number>
   muted: Accessor<boolean>
 }
 
-const HEIGHT = 14
-const WAVE_RADII = [3.0, 4.8, 6.6, 8.4]
-const SPEAKER_END_X = 9.2
-const MUTE_SLASH_END_X = 11.8
-const STROKE_PADDING = 1.2
-
-const MAX_WIDTH = resolveWidth(4, true)
+const BASE_HEIGHT = 14
+const BASE_WAVE_RADII = [3.0, 4.8, 6.6, 8.4]
+const BASE_STROKE_PADDING = 1.2
+const BASE_SPEAKER_END_X = 9.2
+const BASE_MUTE_SLASH_END_X = 11.8
+const BASE_LINE_WIDTH = 1.4
 
 function clamp(value: number, min = 0, max = 1.25) {
   return Math.min(max, Math.max(min, value))
@@ -27,23 +27,32 @@ function countVisibleWaves(volume: number) {
   return 4
 }
 
-function resolveWidth(waveCount: number, isMuted: boolean) {
+function resolveWidth(waveCount: number, isMuted: boolean, s: number) {
   const waveEndX = waveCount > 0
-    ? 7.4 + WAVE_RADII[waveCount - 1] + STROKE_PADDING
-    : SPEAKER_END_X
+    ? (7.4 + BASE_WAVE_RADII[waveCount - 1] + BASE_STROKE_PADDING) * s
+    : BASE_SPEAKER_END_X * s
+  return Math.ceil(isMuted ? Math.max(waveEndX, BASE_MUTE_SLASH_END_X * s) : waveEndX)
+}
 
-  return Math.ceil(isMuted ? Math.max(waveEndX, MUTE_SLASH_END_X) : waveEndX)
+function maxWidth(s: number) {
+  return resolveWidth(4, true, s)
 }
 
 export default function AudioIndicator({ volume, muted }: Props) {
   return (
     <drawingarea
-      contentWidth={MAX_WIDTH}
-      contentHeight={HEIGHT}
+      contentWidth={maxWidth(1)}
+      contentHeight={BASE_HEIGHT}
       class="widget-audio-indicator"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
       $={(self) => {
+        self.connect("realize", () => {
+          const s = fontScaleFactor(self)
+          self.set_content_width(maxWidth(s))
+          self.set_content_height(Math.ceil(BASE_HEIGHT * s))
+        })
+
         createEffect(() => {
           muted()
           volume()
@@ -51,38 +60,41 @@ export default function AudioIndicator({ volume, muted }: Props) {
         })
 
         self.set_draw_func((area, context) => {
+          const s = fontScaleFactor(area)
+          const h = BASE_HEIGHT * s
           const style = area.get_style_context()
           const color = style.get_color()
           const isMuted = muted()
           const waveCount = isMuted ? 0 : countVisibleWaves(volume())
-          const centerY = HEIGHT / 2
-          const offset = (MAX_WIDTH - resolveWidth(waveCount, isMuted)) / 2
+          const centerY = h / 2
+          const mw = maxWidth(s)
+          const offset = (mw - resolveWidth(waveCount, isMuted, s)) / 2
 
           context.translate(offset, 0)
           context.setSourceRGBA(color.red, color.green, color.blue, color.alpha)
-          context.setLineWidth(1.4)
+          context.setLineWidth(BASE_LINE_WIDTH * s)
           context.setLineCap(1)
           context.setLineJoin(1)
 
-          context.moveTo(1.5, centerY - 2)
-          context.lineTo(4.5, centerY - 2)
-          context.lineTo(8.5, centerY - 5)
-          context.lineTo(8.5, centerY + 5)
-          context.lineTo(4.5, centerY + 2)
-          context.lineTo(1.5, centerY + 2)
+          context.moveTo(1.5 * s, centerY - 2 * s)
+          context.lineTo(4.5 * s, centerY - 2 * s)
+          context.lineTo(8.5 * s, centerY - 5 * s)
+          context.lineTo(8.5 * s, centerY + 5 * s)
+          context.lineTo(4.5 * s, centerY + 2 * s)
+          context.lineTo(1.5 * s, centerY + 2 * s)
           context.closePath()
           context.stroke()
 
-          WAVE_RADII.slice(0, waveCount).forEach((radius) => {
+          BASE_WAVE_RADII.slice(0, waveCount).forEach((radius) => {
             context.newPath()
-            context.arc(7.4, centerY, radius, -0.78, 0.78)
+            context.arc(7.4 * s, centerY, radius * s, -0.78, 0.78)
             context.stroke()
           })
 
           if (isMuted) {
             context.newPath()
-            context.moveTo(3.0, centerY - 5.2)
-            context.lineTo(11.0, centerY + 5.2)
+            context.moveTo(3.0 * s, centerY - 5.2 * s)
+            context.lineTo(11.0 * s, centerY + 5.2 * s)
             context.stroke()
           }
         })

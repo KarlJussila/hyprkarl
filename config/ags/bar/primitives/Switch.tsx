@@ -5,6 +5,7 @@ import Pango from "gi://Pango"
 import PangoCairo from "gi://PangoCairo"
 import { type NormalizedSwitchMetrics } from "./switchTypes"
 import { type BarOrientation } from "../layout/placement"
+import { fontScaleFactor } from "../widgets/shared/drawScale.ts"
 
 function interpolate(start: number, end: number, factor: number) {
   return start + (end - start) * factor
@@ -30,6 +31,7 @@ type SwitchProps = {
   metrics: NormalizedSwitchMetrics
 }
 
+// metrics values are base pixel dimensions at font-size 12px; they scale with font size.
 export default function Switch({
   class: className = "",
   hexpand = false,
@@ -43,22 +45,34 @@ export default function Switch({
   const isVertical = orientation === "vertical"
   let drawingArea!: Gtk.DrawingArea
   let pangoLayout: Pango.Layout | null = null
+  let lastScale = -1
 
   let animationProgress = active() ? 1 : 0
   let animationTickId = 0
 
   const ANIMATION_DURATION_US = 140_000
-  const STROKE_INSET_X = Math.max(1, Math.ceil(metrics.borderWidth / 2))
-  const STROKE_INSET_Y = Math.max(1, Math.ceil(metrics.borderWidth / 2))
-  const horizontalWidth = Math.ceil(
-    metrics.trackLength + metrics.thumbSize + (STROKE_INSET_X * 2) - (metrics.thumbPadding * 2),
-  )
-  const horizontalHeight = Math.ceil(
-    Math.max(metrics.thumbSize, metrics.trackHeight) + (STROKE_INSET_Y * 2),
-  )
-  const totalWidth = isVertical ? horizontalHeight : horizontalWidth
-  const totalHeight = isVertical ? horizontalWidth : horizontalHeight
   const easeOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+
+  function contentSize(s: number) {
+    const strokeInsetX = Math.max(s, Math.ceil(metrics.borderWidth * s / 2))
+    const strokeInsetY = Math.max(s, Math.ceil(metrics.borderWidth * s / 2))
+    const horizontalWidth = Math.ceil(
+      (metrics.trackLength + metrics.thumbSize) * s + strokeInsetX * 2 - metrics.thumbPadding * s * 2,
+    )
+    const horizontalHeight = Math.ceil(
+      Math.max(metrics.thumbSize, metrics.trackHeight) * s + strokeInsetY * 2,
+    )
+    return {
+      totalWidth: isVertical ? horizontalHeight : horizontalWidth,
+      totalHeight: isVertical ? horizontalWidth : horizontalHeight,
+      horizontalWidth,
+      horizontalHeight,
+      strokeInsetX,
+      strokeInsetY,
+    }
+  }
+
+  const { totalWidth, totalHeight } = contentSize(1)
 
   function runAnimation(target: number) {
     if (!drawingArea) return
@@ -102,6 +116,12 @@ export default function Switch({
         $={(self) => {
           drawingArea = self
 
+          self.connect("realize", () => {
+            const { totalWidth: w, totalHeight: h } = contentSize(fontScaleFactor(self))
+            self.set_content_width(w)
+            self.set_content_height(h)
+          })
+
           createEffect(() => {
             if (active()) {
               self.add_css_class("active")
@@ -114,6 +134,14 @@ export default function Switch({
 
           self.set_draw_func((area, context, _drawWidth, drawHeight) => {
             const style = area.get_style_context()
+            const s = fontScaleFactor(area)
+
+            if (s !== lastScale) {
+              lastScale = s
+              pangoLayout = null
+            }
+
+            const { horizontalWidth, horizontalHeight, strokeInsetX, strokeInsetY } = contentSize(s)
 
             // Custom-drawn widgets still read colors from CSS so theme.scss remains
             // the single place to adjust the bar's appearance.
@@ -138,13 +166,13 @@ export default function Switch({
             const trackColor = interpolateRGBA(trackOff, trackOn, animationProgress)
             const borderColor = interpolateRGBA(borderOff, borderOn, animationProgress)
             const thumbX = interpolate(
-              STROKE_INSET_X,
-              horizontalWidth - metrics.thumbSize - STROKE_INSET_X,
+              strokeInsetX,
+              horizontalWidth - metrics.thumbSize * s - strokeInsetX,
               animationProgress,
             )
-            const thumbY = (horizontalHeight - metrics.thumbSize) / 2
-            const trackX = STROKE_INSET_X + (metrics.thumbSize / 2) - metrics.thumbPadding
-            const trackY = (horizontalHeight - metrics.trackHeight) / 2
+            const thumbY = (horizontalHeight - metrics.thumbSize * s) / 2
+            const trackX = strokeInsetX + (metrics.thumbSize * s / 2) - metrics.thumbPadding * s
+            const trackY = (horizontalHeight - metrics.trackHeight * s) / 2
 
             const drawRoundedRect = (x: number, y: number, width: number, height: number, radius: number) => {
               context.newPath()
@@ -167,21 +195,21 @@ export default function Switch({
             }
 
             context.setSourceRGBA(trackColor.red, trackColor.green, trackColor.blue, trackColor.alpha)
-            drawRoundedRect(trackX, trackY, metrics.trackLength, metrics.trackHeight, metrics.trackHeight / 2)
+            drawRoundedRect(trackX, trackY, metrics.trackLength * s, metrics.trackHeight * s, metrics.trackHeight * s / 2)
             context.fillPreserve()
 
             if (metrics.borderWidth > 0) {
               context.setSourceRGBA(borderColor.red, borderColor.green, borderColor.blue, borderColor.alpha)
-              context.setLineWidth(metrics.borderWidth)
+              context.setLineWidth(metrics.borderWidth * s)
               context.stroke()
             }
 
             context.setSourceRGBA(bg.red, bg.green, bg.blue, bg.alpha)
-            drawRoundedRect(thumbX, thumbY, metrics.thumbSize, metrics.thumbSize, metrics.thumbSize / 2)
+            drawRoundedRect(thumbX, thumbY, metrics.thumbSize * s, metrics.thumbSize * s, metrics.thumbSize * s / 2)
             context.fillPreserve()
 
             if (metrics.borderWidth > 0) {
-              context.setLineWidth(metrics.borderWidth)
+              context.setLineWidth(metrics.borderWidth * s)
               context.setSourceRGBA(borderColor.red, borderColor.green, borderColor.blue, borderColor.alpha)
               context.stroke()
             }
@@ -195,23 +223,23 @@ export default function Switch({
                 pangoLayout = PangoCairo.create_layout(context)
                 pangoLayout.set_text(glyph, -1)
                 pangoLayout.set_font_description(
-                  Pango.FontDescription.from_string(`${metrics.fontFamily} ${metrics.fontSize}`),
+                  Pango.FontDescription.from_string(`${metrics.fontFamily} ${metrics.fontSize * s}`),
                 )
                 pangoLayout.set_alignment(Pango.Alignment.CENTER)
-                pangoLayout.set_width(metrics.thumbSize * Pango.SCALE)
+                pangoLayout.set_width(Math.ceil(metrics.thumbSize * s) * Pango.SCALE)
               }
 
               const [, logicalRect] = pangoLayout.get_pixel_extents()
               const glyphMetrics = logicalRect || { x: 0, y: 0, width: 0, height: 0 }
-              const glyphCenterX = thumbX + (metrics.thumbSize / 2)
-              const glyphCenterY = thumbY + (metrics.thumbSize / 2)
+              const glyphCenterX = thumbX + (metrics.thumbSize * s / 2)
+              const glyphCenterY = thumbY + (metrics.thumbSize * s / 2)
               const drawX = isVertical ? glyphCenterY : glyphCenterX
               const drawY = isVertical ? drawHeight - glyphCenterX : glyphCenterY
 
               context.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha)
               context.moveTo(
-                drawX - (glyphMetrics.width / 2) - glyphMetrics.x + metrics.glyphOffsetX,
-                drawY - (glyphMetrics.height / 2) - glyphMetrics.y + metrics.glyphOffsetY,
+                drawX - (glyphMetrics.width / 2) - glyphMetrics.x + metrics.glyphOffsetX * s,
+                drawY - (glyphMetrics.height / 2) - glyphMetrics.y + metrics.glyphOffsetY * s,
               )
               PangoCairo.show_layout(context, pangoLayout)
             }

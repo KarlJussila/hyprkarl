@@ -4,6 +4,7 @@ import Pango from "gi://Pango"
 import PangoCairo from "gi://PangoCairo"
 import { type BarOrientation } from "../../layout/placement"
 import type { NormalizedBatteryIndicatorMetrics } from "./types"
+import { fontScaleFactor } from "../shared/drawScale.ts"
 
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value))
@@ -17,6 +18,7 @@ type Props = {
   metrics: NormalizedBatteryIndicatorMetrics
 }
 
+// metrics values are base pixel dimensions at font-size 12px; they scale with font size.
 export default function BatteryIndicator({
   orientation,
   level,
@@ -24,13 +26,19 @@ export default function BatteryIndicator({
   lowThreshold,
   metrics,
 }: Props) {
-  const CANVAS_OFFSET_X = 0
-  const CANVAS_OFFSET_Y = 1
+  const BASE_CANVAS_OFFSET_Y = 1
   const isVertical = orientation === "vertical"
-  const horizontalWidth = metrics.width + (metrics.terminalWidth * 2) + (CANVAS_OFFSET_X * 2)
-  const horizontalHeight = metrics.height + (CANVAS_OFFSET_Y * 2)
-  const totalWidth = isVertical ? horizontalHeight : horizontalWidth
-  const totalHeight = isVertical ? horizontalWidth : horizontalHeight
+
+  function contentSize(s: number) {
+    const w = Math.ceil((metrics.width + metrics.terminalWidth * 2) * s)
+    const h = Math.ceil((metrics.height + BASE_CANVAS_OFFSET_Y * 2) * s)
+    return {
+      totalWidth: isVertical ? h : w,
+      totalHeight: isVertical ? w : h,
+    }
+  }
+
+  const { totalWidth, totalHeight } = contentSize(1)
 
   return (
     <drawingarea
@@ -41,6 +49,14 @@ export default function BatteryIndicator({
       valign={Gtk.Align.CENTER}
       $={(self) => {
         let pangoLayout: Pango.Layout | null = null
+        let lastScale = -1
+
+        self.connect("realize", () => {
+          const s = fontScaleFactor(self)
+          const { totalWidth: w, totalHeight: h } = contentSize(s)
+          self.set_content_width(w)
+          self.set_content_height(h)
+        })
 
         createEffect(() => {
           level()
@@ -50,9 +66,13 @@ export default function BatteryIndicator({
 
         self.set_draw_func((area, context, _width, drawHeight) => {
           const style = area.get_style_context()
+          const s = fontScaleFactor(area)
 
-          // Battery visuals are drawn manually, but the colors still come from CSS so
-          // theme.scss remains the high-level appearance entrypoint for the whole bar.
+          if (s !== lastScale) {
+            lastScale = s
+            pangoLayout = null
+          }
+
           const getColor = (classString: string) => {
             style.save()
 
@@ -78,16 +98,16 @@ export default function BatteryIndicator({
             : isCharging
               ? chargingColor
               : fillColor
-          const bodyX = CANVAS_OFFSET_X + metrics.terminalWidth
-          const bodyY = CANVAS_OFFSET_Y
-          const tipHeight = Math.max(1, metrics.terminalHeight)
-          const tipX = bodyX + metrics.width
-          const tipY = bodyY + Math.floor((metrics.height - tipHeight) / 2)
-          const innerInset = metrics.borderWidth
-          const innerWidth = Math.max(0, metrics.width - (innerInset * 2))
-          const innerHeight = Math.max(0, metrics.height - (innerInset * 2))
+          const bodyX = metrics.terminalWidth * s
+          const bodyY = BASE_CANVAS_OFFSET_Y * s
+          const tipHeight = Math.max(s, metrics.terminalHeight * s)
+          const tipX = bodyX + metrics.width * s
+          const tipY = bodyY + Math.floor((metrics.height * s - tipHeight) / 2)
+          const innerInset = metrics.borderWidth * s
+          const innerWidth = Math.max(0, metrics.width * s - innerInset * 2)
+          const innerHeight = Math.max(0, metrics.height * s - innerInset * 2)
           const rawFillWidth = innerWidth * clampedLevel
-          const minFillWidth = clampedLevel > 0 ? Math.max(1, metrics.borderWidth) : 0
+          const minFillWidth = clampedLevel > 0 ? Math.max(s, metrics.borderWidth * s) : 0
           const fillWidth = Math.min(innerWidth, Math.max(minFillWidth, rawFillWidth))
 
           const drawRoundedRect = (x: number, y: number, width: number, height: number, radius: number) => {
@@ -107,7 +127,7 @@ export default function BatteryIndicator({
 
           if (bodyColor.alpha > 0.01) {
             context.setSourceRGBA(bodyColor.red, bodyColor.green, bodyColor.blue, bodyColor.alpha)
-            drawRoundedRect(bodyX, bodyY, metrics.width, metrics.height, 0)
+            drawRoundedRect(bodyX, bodyY, metrics.width * s, metrics.height * s, 0)
             context.fill()
           }
 
@@ -118,22 +138,16 @@ export default function BatteryIndicator({
               currentFillColor.blue,
               currentFillColor.alpha,
             )
-            drawRoundedRect(
-              bodyX + innerInset,
-              bodyY + innerInset,
-              fillWidth,
-              innerHeight,
-              0,
-            )
+            drawRoundedRect(bodyX + innerInset, bodyY + innerInset, fillWidth, innerHeight, 0)
             context.fill()
           }
 
           context.setSourceRGBA(borderColor.red, borderColor.green, borderColor.blue, borderColor.alpha)
-          context.setLineWidth(metrics.borderWidth)
-          drawRoundedRect(bodyX, bodyY, metrics.width, metrics.height, 0)
+          context.setLineWidth(metrics.borderWidth * s)
+          drawRoundedRect(bodyX, bodyY, metrics.width * s, metrics.height * s, 0)
           context.stroke()
 
-          context.rectangle(tipX, tipY, metrics.terminalWidth, tipHeight)
+          context.rectangle(tipX, tipY, metrics.terminalWidth * s, tipHeight)
           context.fill()
 
           if (isVertical) {
@@ -145,7 +159,7 @@ export default function BatteryIndicator({
               pangoLayout = PangoCairo.create_layout(context)
               pangoLayout.set_font_description(
                 Pango.FontDescription.from_string(
-                  `${metrics.chargingGlyphFontFamily} ${metrics.chargingGlyphFontSize}`,
+                  `${metrics.chargingGlyphFontFamily} ${metrics.chargingGlyphFontSize * s}`,
                 ),
               )
             }
@@ -154,8 +168,8 @@ export default function BatteryIndicator({
 
             const [, logicalRect] = pangoLayout.get_pixel_extents()
             const glyphMetrics = logicalRect || { x: 0, y: 0, width: 0, height: 0 }
-            const glyphCenterX = bodyX + (metrics.width / 2)
-            const glyphCenterY = bodyY + (metrics.height / 2)
+            const glyphCenterX = bodyX + (metrics.width * s / 2)
+            const glyphCenterY = bodyY + (metrics.height * s / 2)
             const drawX = isVertical ? glyphCenterY : glyphCenterX
             const drawY = isVertical ? drawHeight - glyphCenterX : glyphCenterY
 

@@ -5,17 +5,16 @@
   border: theme.$border-width solid theme.$border;
 }
 
-@mixin reset-flat-surface {
+@mixin reset-surface {
   margin: 0px;
   border-radius: 0px;
   border-width: 0px;
   background-color: transparent;
 }
 
-@mixin reset-flat-button {
-  @include reset-flat-surface;
+@mixin reset-button {
+  @include reset-surface;
   padding: 0px;
-  box-shadow: none;
   min-width: 0px;
   min-height: 0px;
 

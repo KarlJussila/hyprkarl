@@ -15,12 +15,12 @@ $font-mono: "JetBrains Mono Nerd Font";
 $font-size: 12px;
 
 // Bar shell
-$radius: 8px;
+$border-radius: 8px;
 $border-width: 2px;
 
 // Widget tuning
-$widget-padding-horizontal: 8px;
-$widget-padding-vertical: 4px;
+$widget-padding-horizontal: 1px 8px;
+$widget-padding-vertical: 4px 1px;
 $workspace-gap-outer: 6px;
 $workspace-gap-inner: 2px;
 $tray-gap-outer: 8px;
@@ -31,6 +31,6 @@ $readout-font-size: 12px;
 
 // Flyouts
 $flyout-pad: 4px;
-$flyout-row-pad-y: 4px;
-$flyout-row-pad-x: 8px;
-$flyout-row-radius: 6px;
+$flyout-border-radius: 6px;
+$flyout-row-pad: 4px 8px;
+$flyout-row-border-radius: 3px;

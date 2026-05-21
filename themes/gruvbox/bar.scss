@@ -1,14 +1,6 @@
 // Edit this file for most visual changes to the bar.
 // Tokens live in one Sass module, so keep names short and semantic.
 
-// Common edits first:
-// - font: $font-ui / $font-size
-// - island shape: $radius / $border-width
-// - workspace spacing: $workspace-gap-outer / $workspace-gap-inner
-// - tray spacing: $tray-gap-outer / $tray-gap-inner
-// - readout labels (audio/battery/cpu %): $readout-font-size
-// - flyout feel: $flyout-pad / $flyout-row-radius
-
 // Core colors
 $text: #a9b665;
 $surface: #282828;
@@ -23,15 +15,15 @@ $font-mono: "JetBrains Mono Nerd Font";
 $font-size: 12px;
 
 // Bar shell
-$radius: 8px;
+$border-radius: 8px;
 $border-width: 2px;
 
 // Widget tuning
-$widget-padding-horizontal: 8px;
-$widget-padding-vertical: 0px;
+$widget-padding-horizontal: 1px 8px;
+$widget-padding-vertical: 4px 1px;
 $workspace-gap-outer: 6px;
-$workspace-gap-inner: 0px;
-$tray-gap-outer: 3px;
+$workspace-gap-inner: 2px;
+$tray-gap-outer: 8px;
 $tray-gap-inner: 6px;
 $icon-gap-horizontal: 4px;
 $icon-gap-vertical: 2px;
@@ -39,6 +31,6 @@ $readout-font-size: 12px;
 
 // Flyouts
 $flyout-pad: 4px;
-$flyout-row-pad-y: 4px;
-$flyout-row-pad-x: 8px;
-$flyout-row-radius: 6px;
+$flyout-border-radius: 6px;
+$flyout-row-pad: 4px 8px;
+$flyout-row-border-radius: 3px;

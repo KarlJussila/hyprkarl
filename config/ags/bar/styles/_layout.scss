@@ -46,12 +46,12 @@ window.Bar.bar-shell {
     }
 
     .bar-segment.segment-edge-rounded-start {
-      border-bottom-left-radius: theme.$radius;
+      border-bottom-left-radius: theme.$border-radius;
       border-left-width: theme.$border-width;
     }
 
     .bar-segment.segment-edge-rounded-end {
-      border-bottom-right-radius: theme.$radius;
+      border-bottom-right-radius: theme.$border-radius;
       border-right-width: theme.$border-width;
     }
 
@@ -70,12 +70,12 @@ window.Bar.bar-shell {
     }
 
     .bar-segment.segment-edge-rounded-start {
-      border-top-left-radius: theme.$radius;
+      border-top-left-radius: theme.$border-radius;
       border-left-width: theme.$border-width;
     }
 
     .bar-segment.segment-edge-rounded-end {
-      border-top-right-radius: theme.$radius;
+      border-top-right-radius: theme.$border-radius;
       border-right-width: theme.$border-width;
     }
 
@@ -94,12 +94,12 @@ window.Bar.bar-shell {
     }
 
     .bar-segment.segment-edge-rounded-start {
-      border-top-right-radius: theme.$radius;
+      border-top-right-radius: theme.$border-radius;
       border-top-width: theme.$border-width;
     }
 
     .bar-segment.segment-edge-rounded-end {
-      border-bottom-right-radius: theme.$radius;
+      border-bottom-right-radius: theme.$border-radius;
     }
 
     .bar-segment.segment-edge-screen-start {
@@ -117,12 +117,12 @@ window.Bar.bar-shell {
     }
 
     .bar-segment.segment-edge-rounded-start {
-      border-top-left-radius: theme.$radius;
+      border-top-left-radius: theme.$border-radius;
       border-top-width: theme.$border-width;
     }
 
     .bar-segment.segment-edge-rounded-end {
-      border-bottom-left-radius: theme.$radius;
+      border-bottom-left-radius: theme.$border-radius;
     }
 
     .bar-segment.segment-edge-screen-start {
@@ -140,7 +140,7 @@ window.Bar.bar-config-error {
     > .config-error-surface {
       @include shared.bar-surface;
       border-color: theme.$error;
-      border-radius: theme.$radius;
+      border-radius: theme.$border-radius;
     }
 
   }

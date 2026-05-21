@@ -5,24 +5,19 @@ window.flyout-window {
   background: transparent;
   font-family: theme.$font-mono;
   font-size: theme.$font-size;
+  color: theme.$text;
 
   .flyout-surface {
-    @include shared.reset-flat-surface;
+    @include shared.reset-surface;
   }
 
   .flyout-body {
     @include shared.bar-surface;
-    border-radius: theme.$radius;
-    border-spacing: 0px;
+    border-radius: theme.$flyout-border-radius;
     padding: theme.$flyout-pad;
-    opacity: 0;
-    transition: opacity 180ms ease;
   }
 
-  .flyout-revealer.revealed .flyout-body {
-    opacity: 1;
-  }
-
+  // Sharpen bar-side corner if it is at the edge of the screen
   &.edge-top {
     .flyout-revealer.snapped-left .flyout-body  { border-top-left-radius: 0px; }
     .flyout-revealer.snapped-right .flyout-body { border-top-right-radius: 0px; }
@@ -44,9 +39,9 @@ window.flyout-window {
   }
 
   .flyout-row {
-    @include shared.reset-flat-button;
-    padding: theme.$flyout-row-pad-y theme.$flyout-row-pad-x;
-    border-radius: theme.$flyout-row-radius;
+    @include shared.reset-button;
+    padding: theme.$flyout-row-pad;
+    border-radius: theme.$flyout-row-border-radius;
   }
 
   .flyout-row:hover,
@@ -58,25 +53,9 @@ window.flyout-window {
     color: theme.$accent;
   }
 
-  .widget-audio-slider-row {
-    min-width: 0px;
-  }
-
-  .widget-audio-volume-slider {
-    min-width: 0px;
-  }
-
   .bar-slider-track { color: theme.$surface; }
   .bar-slider-border { color: theme.$border; }
   .bar-slider-fill { color: theme.$accent; }
   .bar-slider-thumb { color: theme.$border; }
   .bar-slider-thumb-border { color: theme.$border; }
-
-  .flyout-row-check {
-    opacity: 0.95;
-  }
-
-  .flyout-shield {
-    background-color: rgba(0, 0, 0, 0.001);
-  }
 }

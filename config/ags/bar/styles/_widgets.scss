@@ -3,7 +3,7 @@
 
 tooltip {
   @include shared.bar-surface;
-  border-radius: theme.$radius;
+  border-radius: theme.$border-radius;
   color: theme.$text;
 }
 
@@ -14,40 +14,57 @@ tooltip label {
   margin: 0px;
 }
 
+button {
+  @include shared.reset-button;
+}
+
 window.Bar.bar-shell {
-  .widget-button {
-    @include shared.reset-flat-button;
+
+  // Horizontal layout
+  > centerbox.bar-layout-root.is-horizontal {
+    .bar-segment > .widget-button,
+    .bar-segment > .widget-switch-button {
+      padding: theme.$widget-padding-horizontal;
+    }
   }
 
-  .bar-segment > .widget-button,
-  .bar-segment > .workspace-list {
-    @include shared.reset-flat-surface;
+  // Vertical layout
+  > centerbox.bar-layout-root.is-vertical {
+
+    .bar-segment > .widget-button,
+    .bar-segment > .widget-switch-button {
+      padding: theme.$widget-padding-vertical;
+    }
+
   }
 
+  // Button click
   .widget-button.is-pressed {
     background-color: theme.$border;
   }
 
-  // Readout labels (mono font)
-  .widget-readout {
-    font-family: theme.$font-mono;
-  }
-
-  // Percent readout labels inside display boxes
+  // Percentages, temps, etc. that might get wider than other text
   .widget-readout-percent {
     font-size: theme.$readout-font-size;
   }
+
+  // Gap between icon/indicator and readout text
+  .widget-icon-display.is-horizontal .widget-readout-percent { margin-left: theme.$icon-gap-horizontal; }
+  .widget-icon-display.is-vertical   .widget-readout-percent { margin-top: theme.$icon-gap-vertical; }
 
   // Workspace widget
   .workspace-list.is-horizontal {
     padding-left: theme.$workspace-gap-outer;
     padding-right: theme.$workspace-gap-outer;
   }
+  .workspace-list.is-vertical {
+    padding-top: theme.$workspace-gap-outer;
+    padding-bottom: theme.$workspace-gap-outer;
+  }
 
   .workspace-list.is-horizontal .widget-workspace-button:not(:last-child) {
     margin-right: theme.$workspace-gap-inner;
   }
-
   .workspace-list.is-vertical .widget-workspace-button:not(:last-child) {
     margin-bottom: theme.$workspace-gap-inner;
   }
@@ -60,36 +77,21 @@ window.Bar.bar-shell {
     opacity: 0.55;
   }
 
-  // Icon + percent display boxes
-  .widget-icon-display {
-    margin: 0px;
-  }
-
-  .widget-icon-display.is-horizontal .widget-readout-percent { margin-left: theme.$icon-gap-horizontal; }
-  .widget-icon-display.is-vertical   .widget-readout-percent { margin-top: theme.$icon-gap-vertical; }
-
   // Tray widget
-  .widget-tray,
-  .widget-tray-toggle,
-  .widget-tray-panel,
-  .widget-tray-item-list,
-  .widget-tray-item {
-    @include shared.reset-flat-surface;
-  }
-
-  .widget-tray-item > button {
-    @include shared.reset-flat-button;
-    border-spacing: 0px;
-    box-shadow: none;
-  }
-
   .widget-tray-item-list.is-horizontal {
     padding-left: theme.$tray-gap-outer;
     padding-right: theme.$tray-gap-outer;
   }
+  .widget-tray-item-list.is-vertical {
+    padding-top: theme.$tray-gap-outer;
+    padding-bottom: theme.$tray-gap-outer;
+  }
 
   .widget-tray-item-list.is-horizontal > .widget-tray-item:not(:last-child) {
     margin-right: theme.$tray-gap-inner;
+  }
+  .widget-tray-item-list.is-vertical > .widget-tray-item:not(:last-child) {
+    margin-bottom: theme.$tray-gap-inner;
   }
 
   // Custom-drawn battery colors
@@ -108,43 +110,4 @@ window.Bar.bar-shell {
   .switch-track.is-active { color: theme.$accent; }
   .switch-border.is-active { color: theme.$accent; }
 
-  // Horizontal layout
-  > centerbox.bar-layout-root.is-horizontal {
-    .bar-segment > .widget-button,
-    .bar-segment > .widget-switch-button {
-      padding-left: theme.$widget-padding-horizontal;
-      padding-right: theme.$widget-padding-horizontal;
-    }
-  }
-
-  // Vertical layout
-  > centerbox.bar-layout-root.is-vertical {
-    label,
-    image {
-      margin-top: 0px;
-      margin-bottom: 0px;
-    }
-
-    .bar-segment > .widget-button,
-    .bar-segment > .widget-switch-button,
-    .bar-segment > .workspace-list {
-      padding-top: theme.$widget-padding-vertical;
-      padding-bottom: theme.$widget-padding-vertical;
-    }
-
-
-    .bar-segment > .workspace-list {
-      padding-top: theme.$workspace-gap-outer;
-      padding-bottom: theme.$workspace-gap-outer;
-    }
-
-    .widget-tray-item-list.is-vertical {
-      padding-top: theme.$tray-gap-outer;
-      padding-bottom: theme.$tray-gap-outer;
-    }
-
-    .widget-tray-item-list.is-vertical > .widget-tray-item:not(:last-child) {
-      margin-bottom: theme.$tray-gap-inner;
-    }
-  }
 }

@@ -1,3 +1,4 @@
+import { createComputed, createState } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import GLib from "gi://GLib?version=2.0"
@@ -6,44 +7,34 @@ import FlyoutButton from "../shared/FlyoutButton.tsx"
 import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import CalendarFlyoutContent from "./CalendarFlyoutContent"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
-import type { NormalizedClockDisplayConfig } from "./types.ts"
-
-function formatTime(time: GLib.DateTime, format: string) {
-  return time.format(format) ?? ""
-}
 
 type Props = {
   id: string
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
-  display: NormalizedClockDisplayConfig
+  format: string
+  formatAlt: string
+  formatVertical: string
+  formatVerticalAlt: string
   flyout: NormalizedFlyoutConfig
 }
 
-export default function ClockWidget({ id, placement, monitor, display, flyout }: Props) {
+export default function ClockWidget({ id, placement, monitor, format, formatAlt, formatVertical, formatVerticalAlt, flyout }: Props) {
   const currentTime = createPoll(
     GLib.DateTime.new_now_local(),
     1000,
     () => GLib.DateTime.new_now_local(),
   )
+  const [useAlt, setUseAlt] = createState(false)
 
-  const horizontalClock = (
-    <label label={currentTime((time) => formatTime(time, display.horizontal))} />
-  )
+  const primaryFormat = placement.isVertical && formatVertical ? formatVertical : format
+  const altFormat = placement.isVertical && formatVerticalAlt ? formatVerticalAlt : formatAlt
+  const hasAlt = altFormat.length > 0
 
-  const verticalClock = (
-    <box
-      class="widget-clock-display widget-icon-display is-vertical"
-      orientation={Gtk.Orientation.VERTICAL}
-      spacing={0}
-      hexpand={placement.isVertical}
-      halign={Gtk.Align.CENTER}
-    >
-      <label class="widget-clock-time widget-readout" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.top))} />
-      <label class="widget-clock-time widget-readout" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.middle))} />
-      <label class="widget-clock-meridiem widget-readout" xalign={0.5} label={currentTime((time) => formatTime(time, display.vertical.bottom))} />
-    </box>
-  )
+  const labelText = createComputed(() => {
+    const fmt = hasAlt && useAlt() ? altFormat : primaryFormat
+    return currentTime().format(fmt) ?? ""
+  })
 
   return (
     <FlyoutButton
@@ -52,9 +43,18 @@ export default function ClockWidget({ id, placement, monitor, display, flyout }:
       monitor={monitor}
       flyoutName={createWidgetFlyoutName("calendar-menu", id, monitor.connector)}
       flyout={flyout}
+      execSecondary={hasAlt ? () => setUseAlt(!useAlt()) : undefined}
       renderFlyoutContent={() => <CalendarFlyoutContent currentTime={currentTime} />}
     >
-      {placement.isVertical ? verticalClock : horizontalClock}
+      <label
+        class={`widget-clock-time widget-readout is-${placement.orientation}`}
+        halign={Gtk.Align.CENTER}
+        valign={Gtk.Align.CENTER}
+        hexpand={placement.isVertical}
+        justify={Gtk.Justification.CENTER}
+        xalign={0.5}
+        label={labelText}
+      />
     </FlyoutButton>
   )
 }

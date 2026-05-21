@@ -35,14 +35,10 @@ const widgetDefinitions = {
 
   clock: {
     kind: "clock",
-    display: {
-      horizontal: "%a %-I:%M %p",
-      vertical: {
-        top: "%I",
-        middle: "%M",
-        bottom: "%p",
-      },
-    },
+    format: "%a %-I:%M %p",
+    formatAlt: "%a %-I:%M:%S %p",
+    formatVertical: "%I\n%M\n%p",
+    formatVerticalAlt: "%I\n%M\n%S\n%p",
     flyout: {
       enabled: true,
       align: "center",
@@ -62,6 +58,8 @@ const widgetDefinitions = {
   cpu: {
     kind: "cpu",
     format: "{temp}°",
+    formatAlt: "{temp}° | {usage}%",
+    formatVerticalAlt: "{usage}%",
     tooltip: "CPU: {usage}%\n{cores}"
   },
 

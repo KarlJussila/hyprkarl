@@ -14,6 +14,9 @@ test("normalizes cpu widget defaults from minimal config", () => {
   const cpu = resolved.widgets.cpu as ResolvedCpuWidgetConfig
   assert.equal(cpu.icon, "󰍛")
   assert.equal(cpu.format, "")
+  assert.equal(cpu.formatAlt, "")
+  assert.equal(cpu.formatVertical, "")
+  assert.equal(cpu.formatVerticalAlt, "")
   assert.equal(cpu.interval, 2000)
 })
 
@@ -24,7 +27,10 @@ test("normalizes cpu widget config overrides", () => {
       cpu: {
         kind: "cpu",
         icon: "󰻠",
-        format: "{usage}",
+        format: "{usage}%",
+        formatAlt: "{temp}°",
+        formatVertical: "{usage}%",
+        formatVerticalAlt: "{temp}°",
         interval: 1000,
       },
     },
@@ -32,7 +38,10 @@ test("normalizes cpu widget config overrides", () => {
 
   const cpu = resolved.widgets.cpu as ResolvedCpuWidgetConfig
   assert.equal(cpu.icon, "󰻠")
-  assert.equal(cpu.format, "{usage}")
+  assert.equal(cpu.format, "{usage}%")
+  assert.equal(cpu.formatAlt, "{temp}°")
+  assert.equal(cpu.formatVertical, "{usage}%")
+  assert.equal(cpu.formatVerticalAlt, "{temp}°")
   assert.equal(cpu.interval, 1000)
 })
 

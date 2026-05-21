@@ -9,13 +9,22 @@ type Props = {
   orientation: BarOrientation
   icon: string
   format: string
+  formatAlt: string
+  formatVertical: string
+  formatVerticalAlt: string
   tooltip: string
   interval: number
 }
 
-export default function CpuWidget({ orientation, icon, format, tooltip, interval }: Props) {
+export default function CpuWidget({ orientation, icon, format, formatAlt, formatVertical, formatVerticalAlt, tooltip, interval }: Props) {
   const cpu = createCpuState(interval)
   const [labelVisible, setLabelVisible] = createState(false)
+  const [useAlt, setUseAlt] = createState(false)
+
+  const isVertical = orientation === "vertical"
+  const primaryFormat = isVertical && formatVertical ? formatVertical : format
+  const altFormat = isVertical && formatVerticalAlt ? formatVerticalAlt : formatAlt
+  const hasAlt = altFormat.length > 0
 
   const tooltipText = createComputed(() => {
     const tempVal = cpu.temp()
@@ -27,15 +36,18 @@ export default function CpuWidget({ orientation, icon, format, tooltip, interval
     })
   })
 
-  const isVertical = orientation === "vertical"
+  function buildSubstitutions() {
+    const tempVal = cpu.temp()
+    return {
+      usage: String(Math.round(cpu.usage() * 100)),
+      temp: tempVal !== null ? String(Math.round(tempVal)) : undefined,
+    }
+  }
 
-  const labelText = format
+  const labelText = primaryFormat
     ? createComputed(() => {
-        const tempVal = cpu.temp()
-        return substituteTokens(format, {
-          usage: String(Math.round(cpu.usage() * 100)),
-          temp: tempVal !== null ? String(Math.round(tempVal)) : undefined,
-        })
+        const fmt = hasAlt && useAlt() ? altFormat : primaryFormat
+        return substituteTokens(fmt, buildSubstitutions())
       })
     : null
 
@@ -45,6 +57,7 @@ export default function CpuWidget({ orientation, icon, format, tooltip, interval
       orientation={orientation}
       tooltipText={tooltipText}
       execPrimary={labelText ? () => setLabelVisible(!labelVisible()) : undefined}
+      execSecondary={hasAlt ? () => setUseAlt(!useAlt()) : undefined}
     >
       <box
         class={`widget-cpu-display widget-icon-display is-${orientation}`}

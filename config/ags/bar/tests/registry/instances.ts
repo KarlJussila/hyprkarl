@@ -24,18 +24,14 @@ test("allows multiple widget IDs of the same kind with independent configs", () 
   const widgets = {
     clockCompact: {
       kind: "clock",
-      display: {
-        horizontal: "%H:%M",
-      },
+      format: "%H:%M",
       flyout: {
         enabled: false,
       },
     },
     clockFull: {
       kind: "clock",
-      display: {
-        horizontal: "%a %-I:%M %p",
-      },
+      format: "%a %-I:%M %p",
       flyout: {
         enabled: true,
         align: "end",
@@ -49,8 +45,8 @@ test("allows multiple widget IDs of the same kind with independent configs", () 
 
   assert.equal(compactClock.kind, "clock")
   assert.equal(fullClock.kind, "clock")
-  assert.equal(compactClock.display.horizontal, "%H:%M")
-  assert.equal(fullClock.display.horizontal, "%a %-I:%M %p")
+  assert.equal(compactClock.format, "%H:%M")
+  assert.equal(fullClock.format, "%a %-I:%M %p")
   assert.equal(compactClock.flyout.enabled, false)
   assert.equal(fullClock.flyout.enabled, true)
   assert.equal(fullClock.flyout.align, "end")

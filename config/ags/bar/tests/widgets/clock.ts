@@ -7,27 +7,15 @@ type ResolvedClockWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "c
 
 test("normalizes clock widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
-    {
-      edge: "top",
-      start: ["clock"],
-      center: {
-        start: [],
-        end: [],
-      },
-      end: [],
-    },
-    {
-      clock: { kind: "clock" },
-    },
+    { edge: "top", start: ["clock"], center: { start: [], end: [] }, end: [] },
+    { clock: { kind: "clock" } },
   )
 
   const clock = resolved.widgets.clock as ResolvedClockWidgetConfig
-  assert.equal(clock.display.horizontal, "%a %-I:%M %p")
-  assert.deepEqual(clock.display.vertical, {
-    top: "%I",
-    middle: "%M",
-    bottom: "%p",
-  })
+  assert.equal(clock.format, "%a %-I:%M %p")
+  assert.equal(clock.formatAlt, "")
+  assert.equal(clock.formatVertical, "%I\n%M\n%p")
+  assert.equal(clock.formatVerticalAlt, "")
   assert.equal(clock.flyout.enabled, true)
   assert.equal(clock.flyout.align, "center")
   assert.equal(clock.flyout.gap, 0)
@@ -35,35 +23,19 @@ test("normalizes clock widget defaults from minimal config", () => {
 
 test("normalizes clock widget overrides", () => {
   const resolved = resolveBarConfiguration(
-    {
-      edge: "left",
-      start: ["clock"],
-      center: {
-        start: [],
-        end: [],
-      },
-      end: [],
-    },
+    { edge: "left", start: ["clock"], center: { start: [], end: [] }, end: [] },
     {
       clock: {
         kind: "clock",
-        flyout: {
-          enabled: false,
-        },
-        display: {
-          vertical: {
-            top: "%H",
-          },
-        },
+        format: "%H:%M",
+        formatVertical: "%H\n%M",
+        flyout: { enabled: false },
       },
     },
   )
 
   const clock = resolved.widgets.clock as ResolvedClockWidgetConfig
+  assert.equal(clock.format, "%H:%M")
+  assert.equal(clock.formatVertical, "%H\n%M")
   assert.equal(clock.flyout.enabled, false)
-  assert.deepEqual(clock.display.vertical, {
-    top: "%H",
-    middle: "%M",
-    bottom: "%p",
-  })
 })

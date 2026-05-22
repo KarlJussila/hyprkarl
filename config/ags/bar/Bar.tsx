@@ -20,11 +20,14 @@ import type { BarEdge } from "./configuration"
 import { renderWidgetByKind } from "./widgets/renderWidgetByKind"
 import { resolveBarConfiguration } from "./widgets/resolveBarConfiguration"
 
-const barSlideTransition: Record<BarEdge, Gtk.RevealerTransitionType> = {
-  top:    Gtk.RevealerTransitionType.SLIDE_DOWN,
-  bottom: Gtk.RevealerTransitionType.SLIDE_UP,
-  left:   Gtk.RevealerTransitionType.SLIDE_RIGHT,
-  right:  Gtk.RevealerTransitionType.SLIDE_LEFT,
+const easeInOut = (t: number) =>
+  t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
+
+const edgeMargin: Record<BarEdge, { get: (w: Astal.Window) => number; set: (w: Astal.Window, v: number) => void }> = {
+  top:    { get: (w) => w.marginTop,    set: (w, v) => { w.marginTop    = v } },
+  bottom: { get: (w) => w.marginBottom, set: (w, v) => { w.marginBottom = v } },
+  left:   { get: (w) => w.marginLeft,   set: (w, v) => { w.marginLeft   = v } },
+  right:  { get: (w) => w.marginRight,  set: (w, v) => { w.marginRight  = v } },
 }
 
 function ResolvedBar({
@@ -80,6 +83,7 @@ function ResolvedBar({
         application={app}
         $={(self: Astal.Window) => {
           const motion = new Gtk.EventControllerMotion()
+          motion.connect("enter", () => controller.onPointerEnter())
           motion.connect("leave", () => controller.onPointerLeaveBar())
           self.add_controller(motion)
 
@@ -91,73 +95,98 @@ function ResolvedBar({
             }
             self.set_exclusivity(excl)
           })
+
+          const getMargin = () => edgeMargin[placement.edge].get(self)
+          const setMargin = (v: number) => edgeMargin[placement.edge].set(self, v)
+          const getBarSize = () => placement.isVertical ? self.get_width() : self.get_height()
+
+          let tickId = 0
+          let animFrom = 0
+          let animTo = 0
+          let animStartTime = 0
+
+          const startAnimation = (to: number) => {
+            if (tickId === 0 && getMargin() === to) return
+            if (tickId) self.remove_tick_callback(tickId)
+            animFrom = getMargin()
+            animTo = to
+            animStartTime = 0
+
+            tickId = self.add_tick_callback((_: Gtk.Widget, clock: Gdk.FrameClock) => {
+              const now = clock.get_frame_time() / 1000
+              if (animStartTime === 0) animStartTime = now
+              const t = Math.min((now - animStartTime) / REVEAL_DURATION, 1)
+              setMargin(animFrom + (animTo - animFrom) * easeInOut(t))
+              if (t >= 1) { tickId = 0; return false }
+              return true
+            })
+          }
+
+          createEffect(() => {
+            if (controller.contentRevealed()) {
+              startAnimation(0)
+            } else {
+              startAnimation(-Math.max(getBarSize(), 1))
+            }
+          })
+
+          onCleanup(() => { if (tickId) self.remove_tick_callback(tickId) })
         }}
       >
-        <revealer
-          revealChild={controller.contentRevealed}
-          transitionType={barSlideTransition[placement.edge]}
-          transitionDuration={REVEAL_DURATION}
-          $={(self: Gtk.Revealer) => {
-            self.connect("notify::child-revealed", () => {
-              if (!self.childRevealed) controller.onRevealAnimationComplete()
-            })
-          }}
+      <centerbox
+        cssName="centerbox"
+        class={`bar-layout bar-layout-root ${placementClasses(placement)}`}
+        orientation={placement.layoutOrientation}
+      >
+        <Island
+          $type="start"
+          $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
+          class="bar-island-start"
+          placement={placement}
+          showCornerCurves={resolvedBarConfiguration.showCornerCurves}
+          side="start"
+          halign={placement.island.start.halign}
+          valign={placement.island.start.valign}
+          hexpand={placement.island.start.hexpand}
+          vexpand={placement.island.start.vexpand}
         >
-          <centerbox
-            cssName="centerbox"
-            class={`bar-layout bar-layout-root ${placementClasses(placement)}`}
-            orientation={placement.layoutOrientation}
-          >
-            <Island
-              $type="start"
-              $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
-              class="bar-island-start"
-              placement={placement}
-              showCornerCurves={resolvedBarConfiguration.showCornerCurves}
-              side="start"
-              halign={placement.island.start.halign}
-              valign={placement.island.start.valign}
-              hexpand={placement.island.start.hexpand}
-              vexpand={placement.island.start.vexpand}
-            >
-              {startWidgets}
-            </Island>
+          {startWidgets}
+        </Island>
 
-            {hasCenterIsland && (
-              <Island
-                $type="center"
-                $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
-                class="bar-island-main"
-                cssName="box"
-                placement={placement}
-                showCornerCurves={resolvedBarConfiguration.showCornerCurves}
-                halign={placement.island.center.halign}
-                valign={placement.island.center.valign}
-                hexpand={placement.island.center.hexpand}
-                vexpand={placement.island.center.vexpand}
-                start={centerStartWidgets}
-                anchor={centerAnchor ?? undefined}
-                end={centerEndWidgets}
-              />
-            )}
+        {hasCenterIsland && (
+          <Island
+            $type="center"
+            $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
+            class="bar-island-main"
+            cssName="box"
+            placement={placement}
+            showCornerCurves={resolvedBarConfiguration.showCornerCurves}
+            halign={placement.island.center.halign}
+            valign={placement.island.center.valign}
+            hexpand={placement.island.center.hexpand}
+            vexpand={placement.island.center.vexpand}
+            start={centerStartWidgets}
+            anchor={centerAnchor ?? undefined}
+            end={centerEndWidgets}
+          />
+        )}
 
-            <Island
-              $type="end"
-              $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
-              class="bar-island-end"
-              placement={placement}
-              showCornerCurves={resolvedBarConfiguration.showCornerCurves}
-              side="end"
-              halign={placement.island.end.halign}
-              valign={placement.island.end.valign}
-              hexpand={placement.island.end.hexpand}
-              vexpand={placement.island.end.vexpand}
-            >
-              {endWidgets}
-            </Island>
-          </centerbox>
-        </revealer>
-      </window>
+        <Island
+          $type="end"
+          $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
+          class="bar-island-end"
+          placement={placement}
+          showCornerCurves={resolvedBarConfiguration.showCornerCurves}
+          side="end"
+          halign={placement.island.end.halign}
+          valign={placement.island.end.valign}
+          hexpand={placement.island.end.hexpand}
+          vexpand={placement.island.end.vexpand}
+        >
+          {endWidgets}
+        </Island>
+      </centerbox>
+    </window>
   )
 }
 

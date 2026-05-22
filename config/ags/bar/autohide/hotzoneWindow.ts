@@ -54,7 +54,7 @@ export function createHotzoneWindow({
   win.set_child(box)
 
   const motion = new Gtk.EventControllerMotion()
-  motion.connect("motion", () => controller.onPointerEnterHotzone())
+  motion.connect("motion", () => controller.onPointerEnter())
   box.add_controller(motion)
 
   createEffect(() => {

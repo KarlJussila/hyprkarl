@@ -4,7 +4,7 @@ import { Astal } from "ags/gtk4"
 import type { Timer } from "ags/time"
 import { timeout } from "ags/time"
 
-export const REVEAL_DURATION = 200
+export const REVEAL_DURATION = 100
 
 export type BarVisibilityStatus = {
   autohide: boolean
@@ -17,8 +17,7 @@ export type BarVisibilityController = {
   contentRevealed: Accessor<boolean>
   exclusivity: Accessor<Astal.Exclusivity>
   onPointerLeaveBar: () => void
-  onPointerEnterHotzone: () => void
-  onRevealAnimationComplete: () => void
+  onPointerEnter: () => void
   setAutohide: (value: boolean) => void
   setExclusive: (value: boolean) => void
   forceShow: () => void
@@ -41,17 +40,20 @@ export function createBarVisibilityController(config: {
   const [contentRevealed, setContentRevealed] = createState(initialRevealed)
 
   let debounceTimer: Timer | null = null
+  let hideTimer: Timer | null = null
 
-  function cancelDebounce() {
+  function cancelTimers() {
     debounceTimer?.cancel()
     debounceTimer = null
+    hideTimer?.cancel()
+    hideTimer = null
   }
 
   createEffect(() => {
     const shouldReveal =
       !forcedHidden() && (!autohideMode() || pointerOver() || config.flyoutOpen())
 
-    cancelDebounce()
+    cancelTimers()
 
     if (shouldReveal) {
       setWindowVisible(true)
@@ -62,13 +64,16 @@ export function createBarVisibilityController(config: {
     if (!windowVisible()) return
 
     debounceTimer = timeout(300, () => {
-      // setContentRevealed(false)
-      setWindowVisible(false)
+      setContentRevealed(false)
       debounceTimer = null
+      hideTimer = timeout(REVEAL_DURATION, () => {
+        setWindowVisible(false)
+        hideTimer = null
+      })
     })
   })
 
-  onCleanup(cancelDebounce)
+  onCleanup(cancelTimers)
 
   const exclusivity = createComputed(() =>
     contentRevealed() && exclusiveMode()
@@ -82,13 +87,7 @@ export function createBarVisibilityController(config: {
     exclusivity,
 
     onPointerLeaveBar: () => setPointerOver(false),
-    onPointerEnterHotzone: () => { if (!pointerOver()) setPointerOver(true) },
-
-    onRevealAnimationComplete() {
-      // if (!contentRevealed()) {
-      //   setWindowVisible(false)
-      // }
-    },
+    onPointerEnter: () => { if (!pointerOver()) setPointerOver(true) },
 
     setAutohide(value: boolean) {
       setForcedHidden(false)

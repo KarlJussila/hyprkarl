@@ -11,21 +11,13 @@ export function measureWidgetWidth(widget: Gtk.Widget) {
   return naturalWidth
 }
 
-export function requestBarWindowRelayout(widget: Gtk.Widget, orientation: BarOrientation) {
-  widget.queue_resize()
-
-  let parent = widget.get_parent()
-  while (parent) {
-    parent.queue_resize()
-    parent = parent.get_parent()
-  }
-
+export function requestBarWindowRelayout(widget: Gtk.Widget) {
   const root = widget.get_root()
   if (root instanceof Gtk.Widget) {
     root.queue_resize()
   }
 
-  if (orientation !== "vertical" || !(root instanceof Astal.Window)) {
+  if (!(root instanceof Astal.Window)) {
     return
   }
 
@@ -34,7 +26,6 @@ export function requestBarWindowRelayout(widget: Gtk.Widget, orientation: BarOri
     return
   }
 
-  // Vertical bars can keep an outdated exclusive width after workspace buttons shrink.
   // Toggling exclusivity forces GTK/Astal to recalculate the reserved screen space.
   root.set_exclusivity(Astal.Exclusivity.IGNORE)
   root.set_exclusivity(currentExclusivity)

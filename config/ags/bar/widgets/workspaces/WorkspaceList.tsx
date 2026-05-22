@@ -40,7 +40,7 @@ export default function WorkspaceList({ orientation, workspaces }: Props) {
             // vertical bar that changes the window's reserved screen width, so we
             // trigger a relayout when the measured content shrinks.
             if (previousMeasuredWidth > 0 && nextMeasuredWidth < previousMeasuredWidth) {
-              requestBarWindowRelayout(self, orientation)
+              requestBarWindowRelayout(self)
             }
 
             previousMeasuredWidth = nextMeasuredWidth

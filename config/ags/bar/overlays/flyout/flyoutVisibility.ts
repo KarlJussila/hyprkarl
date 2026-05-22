@@ -1,5 +1,6 @@
 import { Accessor, createEffect, createState, onCleanup } from "ags"
 import { Timer, timeout } from "ags/time"
+import { acquireFlyoutLock } from "../../autohide/flyoutLock"
 
 type Props = {
   open: Accessor<boolean>
@@ -19,6 +20,7 @@ export function createFlyoutVisibility({
 
   let hideTimer: Timer | null = null
   let revealTimer: Timer | null = null
+  let releaseFlyoutLock: (() => void) | null = null
 
   function clearHideTimer() {
     hideTimer?.cancel()
@@ -61,9 +63,17 @@ export function createFlyoutVisibility({
     clearRevealTimer()
 
     if (isOpen) {
+      if (!releaseFlyoutLock) {
+        releaseFlyoutLock = acquireFlyoutLock()
+      }
       showWindow()
       revealContent()
       return
+    }
+
+    if (releaseFlyoutLock) {
+      releaseFlyoutLock()
+      releaseFlyoutLock = null
     }
 
     if (!windowVisible()) return
@@ -74,6 +84,8 @@ export function createFlyoutVisibility({
   onCleanup(() => {
     clearHideTimer()
     clearRevealTimer()
+    releaseFlyoutLock?.()
+    releaseFlyoutLock = null
   })
 
   return {

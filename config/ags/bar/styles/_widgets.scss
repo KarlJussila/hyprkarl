@@ -21,7 +21,7 @@ button {
 window.Bar.bar-shell {
 
   // Horizontal layout
-  > centerbox.bar-layout-root.is-horizontal {
+  centerbox.bar-layout-root.is-horizontal {
     .bar-segment > .widget-button,
     .bar-segment > .widget-switch-button {
       padding: theme.$widget-padding-horizontal;
@@ -29,7 +29,7 @@ window.Bar.bar-shell {
   }
 
   // Vertical layout
-  > centerbox.bar-layout-root.is-vertical {
+  centerbox.bar-layout-root.is-vertical {
 
     .bar-segment > .widget-button,
     .bar-segment > .widget-switch-button {

@@ -1,6 +1,14 @@
 @use "../theme" as theme;
 @use "./shared" as shared;
 
+window.bar-hotzone-window {
+  background: transparent;
+}
+
+.bar-hotzone-probe {
+  background: #88888801;
+}
+
 window.Bar.bar-shell {
   background: transparent;
   color: theme.$text;
@@ -11,7 +19,7 @@ window.Bar.bar-shell {
     color: theme.$border;
   }
 
-  > centerbox.bar-layout-root {
+  centerbox.bar-layout-root {
     .bar-island,
     .bar-island-balance-content,
     .widget-tray-item-list {
@@ -26,21 +34,21 @@ window.Bar.bar-shell {
     }
   }
 
-  > centerbox.bar-layout-root.is-horizontal {
+  centerbox.bar-layout-root.is-horizontal {
     .widget-tray-panel.is-open + .widget-tray-toggle,
     .widget-tray-toggle + .widget-tray-panel.is-open {
       border-left: theme.$border-width solid theme.$border;
     }
   }
 
-  > centerbox.bar-layout-root.is-vertical {
+  centerbox.bar-layout-root.is-vertical {
     .widget-tray-panel.is-open + .widget-tray-toggle,
     .widget-tray-toggle + .widget-tray-panel.is-open {
       border-top: theme.$border-width solid theme.$border;
     }
   }
 
-  > centerbox.bar-layout-root.edge-top {
+  centerbox.bar-layout-root.edge-top {
     .bar-segment {
       border-width: 0px theme.$border-width theme.$border-width 0px;
     }
@@ -64,7 +72,7 @@ window.Bar.bar-shell {
     }
   }
 
-  > centerbox.bar-layout-root.edge-bottom {
+  centerbox.bar-layout-root.edge-bottom {
     .bar-segment {
       border-width: theme.$border-width theme.$border-width 0px 0px;
     }
@@ -88,7 +96,7 @@ window.Bar.bar-shell {
     }
   }
 
-  > centerbox.bar-layout-root.edge-left {
+  centerbox.bar-layout-root.edge-left {
     .bar-segment {
       border-width: 0px theme.$border-width theme.$border-width 0px;
     }
@@ -111,7 +119,7 @@ window.Bar.bar-shell {
     }
   }
 
-  > centerbox.bar-layout-root.edge-right {
+  centerbox.bar-layout-root.edge-right {
     .bar-segment {
       border-width: 0px 0px theme.$border-width theme.$border-width;
     }

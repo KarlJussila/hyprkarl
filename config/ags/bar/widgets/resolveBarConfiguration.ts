@@ -30,6 +30,8 @@ type LayoutReference = {
 type ResolvedLayoutConfig = ResolvedBarConfiguration["layout"] & {
   edge: BarEdge
   showCornerCurves: boolean
+  autohide: boolean
+  exclusive: boolean
 }
 
 function normalizeLayoutIdList(path: string, value: unknown) {
@@ -52,6 +54,9 @@ function normalizeLayoutConfig(layoutConfig: BarLayoutConfig): ResolvedLayoutCon
     fail(layoutContext("center"), "must be an object")
   }
 
+  const autohide = normalizeBoolean(layoutContext("autohide"), rawLayout.autohide, false)
+  const exclusive = normalizeBoolean(layoutContext("exclusive"), rawLayout.exclusive, !autohide)
+
   return {
     edge: normalizeBarEdge(rawLayout.edge),
     showCornerCurves: normalizeBoolean(
@@ -59,6 +64,8 @@ function normalizeLayoutConfig(layoutConfig: BarLayoutConfig): ResolvedLayoutCon
       rawLayout.showCornerCurves,
       true,
     ),
+    autohide,
+    exclusive,
     start: normalizeLayoutIdList("start", rawLayout.start),
     center: {
       start: normalizeLayoutIdList("center.start", centerLayout.start),
@@ -159,6 +166,8 @@ export function resolveBarConfiguration(
   return {
     edge: resolvedLayout.edge,
     showCornerCurves: resolvedLayout.showCornerCurves,
+    autohide: resolvedLayout.autohide,
+    exclusive: resolvedLayout.exclusive,
     layout: {
       start: resolvedLayout.start,
       center: resolvedLayout.center,

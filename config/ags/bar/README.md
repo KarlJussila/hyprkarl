@@ -5,16 +5,16 @@ This bar is organized around two customization levels:
 Casual users: 
 - Rearrange widgets in `config/layout.config.ts`
 - Change widget behavior in `config/widgets.config.ts`
-- Adjust styling in `theme.scss`
+- Adjust styling in the active theme's `bar.scss`
 Advanced users:
 - Change rendering and runtime logic under `widgets/`, `layout/`, `overlays/`, and `primitives/`
 - Adjust styling in `layout/styles/`
 
 ## Start Here
 
-- `config/layout.config.ts`: move the bar, reorder widget IDs, and toggle decorative corner curves
+- `config/layout.config.ts`: move the bar, reorder widget IDs, toggle decorative corner curves, and configure autohide
 - `config/widgets.config.ts`: change labels, commands, visibility rules, flyout settings, and other high-level behavior
-- `theme.scss`: change spacing, radii, typography, borders, and most visual styling through grouped public tokens
+- `themes/<theme>/bar.scss`: change spacing, radii, typography, borders, and most visual styling through grouped public tokens
 
 ## Quick Examples
 
@@ -32,14 +32,23 @@ center: {
 end: ["tray", "battery"],
 ```
 
+Enable autohide (bar hides after pointer leaves, reveals on hover):
+
+```ts
+autohide: true,
+```
+
+Keep the bar visible but stop reserving screen space:
+
+```ts
+exclusive: false,
+```
+
 Keep the standard rounded corners but hide only the extra curve cutouts:
 
 ```ts
 // layout.config.ts
 showCornerCurves: false
-
-// theme.scss
-$radius: 8px;
 ```
 
 Leave the center island empty:
@@ -80,9 +89,7 @@ Create two different widget instances of the same kind:
 ```ts
 clockCompact: {
   kind: "clock",
-  display: {
-    horizontal: "%H:%M",
-  },
+  format: "%H:%M",
   flyout: {
     enabled: false,
   },
@@ -90,9 +97,7 @@ clockCompact: {
 
 clockFull: {
   kind: "clock",
-  display: {
-    horizontal: "%a %-I:%M %p",
-  },
+  format: "%a %-I:%M %p",
 },
 ```
 
@@ -115,9 +120,7 @@ Change widget behavior:
 ```ts
 clock: {
   kind: "clock",
-  display: {
-    horizontal: "%a %-I:%M %p",
-  },
+  format: "%a %-I:%M %p",
   flyout: {
     enabled: false,
   },
@@ -215,12 +218,110 @@ audio: {
 },
 ```
 
+## CPU Widget
+
+The `cpu` widget shows CPU temperature, usage, and a per-core tooltip. Primary click toggles the label; secondary click switches between primary and alt formats.
+
+```ts
+cpu: {
+  kind: "cpu",
+  format: "{temp}°",
+  formatAlt: "{temp}° | {usage}%",
+  formatVertical: "{temp}°",
+  formatVerticalAlt: "{usage}%",
+  tooltip: "CPU: {usage}%\n{cores}",
+  interval: 2000,
+},
+```
+
+CPU format tokens:
+
+- `{usage}`: overall CPU usage as a whole percent, for example `42`
+- `{temp}`: CPU package temperature in degrees Celsius, for example `55`
+
+CPU tooltip tokens include all format tokens plus:
+
+- `{cores}`: multi-line per-core breakdown, for example `Core 0: 12%\nCore 1: 8%`
+
+Leave `format` empty to show the icon only. Leave `formatAlt` empty to disable the secondary click.
+
+## RAM Widget
+
+The `ram` widget shows RAM and swap usage. Primary click toggles the label; secondary click switches between primary and alt formats.
+
+```ts
+ram: {
+  kind: "ram",
+  icon: "",
+  format: "{ram}%",
+  formatAlt: "{ram_used}/{ram_total} | {swap_used}/{swap_total}",
+  formatVertical: "{ram}%",
+  formatVerticalAlt: "{ram_used}\n{swap_used}",
+  decimals: 0,
+  tooltip: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
+  interval: 2000,
+},
+```
+
+RAM format tokens:
+
+- `{ram}`: RAM usage as a percentage, for example `42`
+- `{ram_used}`: used RAM as a human-readable size, for example `6.1G`
+- `{ram_total}`: total RAM as a human-readable size, for example `16G`
+- `{ram_free}`: free RAM as a human-readable size
+- `{swap}`: swap usage as a percentage
+- `{swap_used}`: used swap as a human-readable size
+- `{swap_total}`: total swap as a human-readable size
+- `{swap_free}`: free swap as a human-readable size
+
+Decimal precision is controlled per format slot. Setting `decimals` changes the base precision and the remaining fields fall back to it:
+
+```ts
+ram: {
+  kind: "ram",
+  decimals: 1,         // base: all slots default to 1
+  decimalsAlt: 2,      // override for the alt format
+  decimalsVertical: 0, // override for vertical
+  // decimalsVerticalAlt defaults to decimalsVertical
+},
+```
+
+## Autohide
+
+Autohide is configured in `layout.config.ts`:
+
+```ts
+autohide: true,   // hide bar when pointer is not over it
+exclusive: true,  // whether the bar reserves screen space when visible
+```
+
+When `autohide` is `true`, the bar hides 300ms after the pointer leaves and reveals when the pointer enters or a flyout opens. The reveal transition takes 100ms and is implemented as a margin offset.
+
+The `exclusive` field is independent of `autohide`. Setting `exclusive: false` keeps the bar visible but stops reserving space at the screen edge.
+
+### Bar CLI
+
+The bar can also be controlled at runtime via `ags msg`:
+
+```bash
+ags msg bar autohide on|off|toggle   # change autohide mode
+ags msg bar exclusive on|off|toggle  # change exclusive mode
+ags msg bar show                     # force bar visible
+ags msg bar hide                     # force bar hidden
+ags msg bar toggle                   # toggle between forced show/hide
+ags msg bar status                   # print JSON: {autohide, exclusive, hidden}
+```
+
+These commands affect all monitors. `bar toggle` forces visibility off if the bar is currently shown and not in autohide mode, otherwise forces it visible.
+
 ## Layout And Instance Model
 
 `layout.config.ts` controls bar-level structure:
 
 - `edge`: which side of the screen the bar attaches to
 - `showCornerCurves`: whether the decorative concave corner cutouts are drawn
+- `autohide`: whether the bar hides when the pointer is not over it
+- `exclusive`: whether the bar reserves space at the screen edge (default true)
 - `start`, `center`, and `end`: which widget IDs appear in each island
 
 `widgets.config.ts` controls widget instances:
@@ -238,34 +339,31 @@ clockFull: { kind: "clock", flyout: { enabled: true } },
 
 Both are `clock` widgets, but they are different instances because their IDs are different.
 
-The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock`, `caffeine`, `audio`, `bluetooth`, `network`, and `battery`.
+The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock`, `caffeine`, `cpu`, `ram`, `audio`, `bluetooth`, `network`, and `battery`.
 
 ## Styling Guide
 
-`theme.scss` is the public styling surface. It is grouped by editing task:
+`themes/<theme>/bar.scss` is the public styling surface. It is grouped by editing task:
 
 - `Core colors`: text, surface, accent, border, error, and low-battery colors
 - `Typography`: main UI font, mono font, and font size
 - `Bar shell`: island radius and border width
-- `Shared controls`: default button padding
-- `Widget tuning`: workspace, tray, and battery spacing
+- `Widget tuning`: workspace, tray, icon, and widget padding spacing
 - `Flyouts`: flyout padding and row sizing
 
 Common styling changes:
 
-- tighter buttons: lower `$button-pad-x`
-- rounder islands: raise `$radius`
+- tighter buttons: lower `$widget-padding-horizontal`
+- rounder islands: raise `$border-radius`
 - hide only the decorative curve cutouts: set `showCornerCurves: false` in `layout.config.ts`
 - softer separators: change `$border`
-- bigger flyout rows: raise `$flyout-row-pad-y`
+- bigger flyout rows: raise `$flyout-row-pad`
 - more obvious active workspace: change `$accent`
 
-Theme tokens stay short because `theme.scss` is already a namespace. Rendered CSS classes stay prefixed (`bar-*`, `widget-*`, `is-*`) because they live in the global selector space and act as the public styling hooks for the actual widget tree.
-
-`showCornerCurves` and `$radius` are intentionally independent:
+`showCornerCurves` and `$border-radius` are intentionally independent:
 
 - `showCornerCurves` controls the extra drawn corner pieces between islands and the screen edge.
-- `$radius` controls the normal rounded segment corners in the bar CSS.
+- `$border-radius` controls the normal rounded segment corners in the bar CSS.
 
 ## Architecture
 
@@ -277,23 +375,31 @@ Theme tokens stay short because `theme.scss` is already a namespace. Rendered CS
 4. Each widget folder owns its widget-specific resolve logic and render wiring, while readable widget layout stays local to that widget folder.
 5. `widgets/renderWidgetByKind.tsx` renders resolved widgets through that catalog.
 
+### Autohide Architecture
+
+When `autohide` is enabled, `Bar.tsx` creates a `BarVisibilityController` per monitor. The controller tracks pointer position, flyout state, and forced show/hide commands. `barCliHandler.ts` registers a single `ags msg` listener and fans commands out to all per-monitor controllers.
+
+A hotzone window sits at the bar edge when the bar is hidden. Pointer entry into the hotzone triggers the reveal.
+
+### Theme-Managed Stylesheet
+
+`bar/theme.scss` is a symlink to the active theme's `bar.scss`. Running `hk-theme set` updates the symlink and restarts AGS if it is running. Per-theme bar styling lives in `themes/<name>/bar.scss`.
+
 Each widget folder should keep the readable layout module separate from denser wiring:
 
 - `WidgetName.tsx`: top-level view module, kept intentionally small
-- `widget.tsx`: widget-owned resolve logic and render entry
-- helper files like `types.ts`, `normalize.ts`, service integrations, and sub-components
+- `widget.tsx`: widget-owned resolve logic and render entry using `createWidgetSpec`
+- helper files like `normalize.ts`, service integrations, and sub-components
 
-Each widget usually exports only one public config type from `widget.tsx`: the shape users may write in `widgets.config.ts`. Defaults and validation still resolve that into a stricter runtime shape, but that stricter shape is internal to the widget spec layer instead of being another public type most contributors need to learn.
+Each widget uses `createWidgetSpec` which generates `resolve()` automatically from a `schema` map of field-name to `FieldNormalizer`. Widget-specific types are inferred from the schema rather than declared in a separate `types.ts`.
 
-The intended direction is one minimal central catalog and widget-local `widget.tsx` files instead of scattered shared registries plus thin registration wrappers.
-
-`configuration.ts` now stays bar-wide. Widget-specific types and widget-specific normalizers live with the widget or primitive that owns them. Shared internal helpers live in `widgets/shared/`. For example, `FlyoutButton.tsx` centralizes flyout trigger wiring so widgets like clock and battery do not duplicate it.
+`configuration.ts` stays bar-wide. Widget-specific types and normalizers live with the widget. Shared internal helpers live in `widgets/shared/`. `FlyoutButton.tsx` centralizes flyout trigger wiring so widgets like clock and battery do not duplicate it.
 
 ## Styling Architecture
 
-The styling system now separates public and internal hooks:
+The styling system separates public and internal hooks:
 
-- Public theme tokens live in `theme.scss`
+- Public theme tokens live in `themes/<theme>/bar.scss`
 - Public widget classes start with `widget-`
 - Public shell/layout classes start with `bar-`
 - State classes use `is-*`, for example `is-active`, `is-open`, and `is-vertical`
@@ -307,15 +413,11 @@ Examples of safe styling hooks:
 - `widget-battery-display`
 - `widget-tray-panel`
 - `flyout-row`
+- `widget-cpu-button`
+- `widget-ram-button`
 
 Internal helper classes may still exist to support layout math, but styling changes should usually start from the public hooks above.
 
 ## Contributor Notes
 
-Keep `layout.config.ts`, `widgets.config.ts`, and `theme.scss` friendly to edit. If a new styling knob is likely to matter to many users, expose it as a grouped token in `theme.scss`. If it is too low-level, keep it internal instead of complicating the public config shape. Prefer explicit `widget-*`, `bar-*`, and `is-*` classes over selectors that depend on GTK child structure.
-
-## Troubleshooting
-
-- Run `npm run check` from the project root (`config/ags` in this repo layout) to run config tests and confirm the bar still bundles.
-- If the bar shows a config error fallback, read the terminal output first. Errors point directly to the bad path in `layout.config.ts` or `widgets.config.ts`.
-- GTK still supplies base colors. `theme.scss` is the main appearance entrypoint for the rest of the bar.
+Keep `layout.config.ts`, `widgets.config.ts`, and `themes/<theme>/bar.scss` friendly to edit. If a new styling knob is likely to matter to many users, expose it as a grouped token in `bar.scss`. If it is too low-level, keep it internal instead of complicating the public config shape. Prefer explicit `widget-*`, `bar-*`, and `is-*` classes over selectors that depend on GTK child structure.

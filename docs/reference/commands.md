@@ -144,6 +144,14 @@ does not try to document every internal script.
 - `hk-docker list`
   Print the supported Docker service ids.
 
+## AGS Bar
+
+- `hk-ags-restart`
+  Gracefully quit AGS, wait for the process to exit, then restart it under
+  uwsm-app.
+- `hk-ags-toggle`
+  Start AGS if it is not running; quit it if it is.
+
 ## Waybar and UI Helpers
 
 - `hk-waybar-restart`

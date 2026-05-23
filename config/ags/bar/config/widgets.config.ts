@@ -35,10 +35,12 @@ const widgetDefinitions = {
 
   clock: {
     kind: "clock",
-    format: "%a %-I:%M %p",
-    formatAlt: "%a %-I:%M:%S %p",
-    formatVertical: "%I\n%M\n%p",
-    formatVerticalAlt: "%I\n%M\n%S\n%p",
+    format: {
+      primary: "%a %-I:%M %p",
+      alt: "%a %-I:%M:%S %p",
+      vertical: "%I\n%M\n%p",
+      verticalAlt: "%I\n%M\n%S\n%p",
+    },
     flyout: {
       enabled: true,
       align: "center",
@@ -57,20 +59,26 @@ const widgetDefinitions = {
 
   cpu: {
     kind: "cpu",
-    format: "{temp}°",
-    formatAlt: "{temp}° | {usage}%",
-    formatVerticalAlt: "{usage}%",
+    format: {
+      primary: "{temp}°",
+      alt: "{temp}° | {usage}%",
+      verticalAlt: "{usage}%",
+    },
     tooltip: "CPU: {usage}%\n{cores}"
   },
 
   ram: {
     kind: "ram",
     icon: "",
-    format: "{ram}%",
-    formatAlt: "{ram_used}/{ram_total} | {swap_used}/{swap_total}",
-    formatVertical: "{ram}%",
-    formatVerticalAlt: "{ram_used}\n{swap_used}",
-    decimals: 0,
+    format: {
+      primary: "{ram}%",
+      alt: "{ram_used}/{ram_total} | {swap_used}/{swap_total}",
+      vertical: "{ram}%",
+      verticalAlt: "{ram_used}\n{swap_used}",
+    },
+    decimals: {
+      primary: 0,
+    },
     tooltip: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
     interval: 5000,
   },

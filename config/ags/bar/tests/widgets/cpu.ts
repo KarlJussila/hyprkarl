@@ -13,11 +13,16 @@ test("normalizes cpu widget defaults from minimal config", () => {
 
   const cpu = resolved.widgets.cpu as ResolvedCpuWidgetConfig
   assert.equal(cpu.icon, "󰍛")
-  assert.equal(cpu.format, "")
-  assert.equal(cpu.formatAlt, "")
-  assert.equal(cpu.formatVertical, "")
-  assert.equal(cpu.formatVerticalAlt, "")
-  assert.equal(cpu.interval, 2000)
+  assert.equal(cpu.format.primary, "")
+  assert.equal(cpu.format.alt, "")
+  assert.equal(cpu.format.vertical, "")
+  assert.equal(cpu.format.verticalAlt, "")
+  assert.equal(cpu.decimals.primary, 0)
+  assert.equal(cpu.decimals.alt, 0)
+  assert.equal(cpu.decimals.vertical, 0)
+  assert.equal(cpu.decimals.verticalAlt, 0)
+  assert.equal(cpu.reveal.durationMs, 200)
+  assert.equal(cpu.interval, 5000)
 })
 
 test("normalizes cpu widget config overrides", () => {
@@ -27,10 +32,7 @@ test("normalizes cpu widget config overrides", () => {
       cpu: {
         kind: "cpu",
         icon: "󰻠",
-        format: "{usage}%",
-        formatAlt: "{temp}°",
-        formatVertical: "{usage}%",
-        formatVerticalAlt: "{temp}°",
+        format: { primary: "{usage}%", alt: "{temp}°", vertical: "{usage}%", verticalAlt: "{temp}°" },
         interval: 1000,
       },
     },
@@ -38,11 +40,24 @@ test("normalizes cpu widget config overrides", () => {
 
   const cpu = resolved.widgets.cpu as ResolvedCpuWidgetConfig
   assert.equal(cpu.icon, "󰻠")
-  assert.equal(cpu.format, "{usage}%")
-  assert.equal(cpu.formatAlt, "{temp}°")
-  assert.equal(cpu.formatVertical, "{usage}%")
-  assert.equal(cpu.formatVerticalAlt, "{temp}°")
+  assert.equal(cpu.format.primary, "{usage}%")
+  assert.equal(cpu.format.alt, "{temp}°")
+  assert.equal(cpu.format.vertical, "{usage}%")
+  assert.equal(cpu.format.verticalAlt, "{temp}°")
   assert.equal(cpu.interval, 1000)
+})
+
+test("decimals cascade to all variants when not overridden", () => {
+  const resolved = resolveBarConfiguration(
+    { edge: "top", start: ["cpu"], center: { start: [], end: [] }, end: [] },
+    { cpu: { kind: "cpu", decimals: { primary: 2 } } },
+  )
+
+  const cpu = resolved.widgets.cpu as ResolvedCpuWidgetConfig
+  assert.equal(cpu.decimals.primary, 2)
+  assert.equal(cpu.decimals.alt, 2)
+  assert.equal(cpu.decimals.vertical, 2)
+  assert.equal(cpu.decimals.verticalAlt, 2)
 })
 
 test("rejects a non-positive interval", () => {

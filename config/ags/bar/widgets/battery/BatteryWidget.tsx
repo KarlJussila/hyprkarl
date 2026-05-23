@@ -1,7 +1,6 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import FlyoutButton from "../shared/FlyoutButton.tsx"
-import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState } from "./batteryState"
 import { formatReadoutPercent } from "../shared/formatters.ts"
@@ -65,7 +64,8 @@ export default function BatteryWidget({
       widgetClass="widget-battery-button widget-glyph-button"
       placement={placement}
       monitor={monitor}
-      flyoutName={createWidgetFlyoutName("battery-menu", id, monitor.connector)}
+      id={id}
+      flyoutLabel="battery-menu"
       flyout={flyout}
       tooltipText={batteryState.tooltipText}
       visible={batteryState.isPresent}

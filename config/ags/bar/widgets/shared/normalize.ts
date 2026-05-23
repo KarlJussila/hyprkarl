@@ -209,3 +209,77 @@ export function normalizeOptionalLayoutWidgetId(context: ValidationContext, valu
 
   return normalizeLayoutWidgetId(context, value)
 }
+
+export type RevealConfig = {
+  durationMs?: number
+}
+
+export type NormalizedRevealConfig = {
+  durationMs: number
+}
+
+export function normalizeRevealConfig(
+  ctx: ValidationContext,
+  reveal: RevealConfig | undefined,
+  defaults: NormalizedRevealConfig,
+): NormalizedRevealConfig {
+  const rawReveal = normalizeObjectConfig(ctx, reveal) as RevealConfig | undefined
+  return {
+    durationMs: normalizePositiveNumber(childContext(ctx, "durationMs"), rawReveal?.durationMs, defaults.durationMs),
+  }
+}
+
+export type FormatConfig = {
+  primary?: string
+  alt?: string
+  vertical?: string
+  verticalAlt?: string
+}
+
+export type NormalizedFormatConfig = {
+  primary: string
+  alt: string
+  vertical: string
+  verticalAlt: string
+}
+
+export function normalizeFormatConfig(
+  ctx: ValidationContext,
+  value: FormatConfig | undefined,
+  defaults: NormalizedFormatConfig,
+): NormalizedFormatConfig {
+  const raw = normalizeObjectConfig(ctx, value) as FormatConfig | undefined
+  return {
+    primary: normalizeStringValue(childContext(ctx, "primary"), raw?.primary, defaults.primary),
+    alt: normalizeStringValue(childContext(ctx, "alt"), raw?.alt, defaults.alt),
+    vertical: normalizeStringValue(childContext(ctx, "vertical"), raw?.vertical, defaults.vertical),
+    verticalAlt: normalizeStringValue(childContext(ctx, "verticalAlt"), raw?.verticalAlt, defaults.verticalAlt),
+  }
+}
+
+export type DecimalsConfig = {
+  primary?: number
+  alt?: number
+  vertical?: number
+  verticalAlt?: number
+}
+
+export type NormalizedDecimalsConfig = {
+  primary: number
+  alt: number
+  vertical: number
+  verticalAlt: number
+}
+
+export function normalizeDecimalsConfig(
+  ctx: ValidationContext,
+  value: DecimalsConfig | undefined,
+  defaults: NormalizedDecimalsConfig,
+): NormalizedDecimalsConfig {
+  const raw = normalizeObjectConfig(ctx, value) as DecimalsConfig | undefined
+  const primary = normalizeNonNegativeNumber(childContext(ctx, "primary"), raw?.primary, defaults.primary)
+  const alt = normalizeNonNegativeNumber(childContext(ctx, "alt"), raw?.alt, primary)
+  const vertical = normalizeNonNegativeNumber(childContext(ctx, "vertical"), raw?.vertical, primary)
+  const verticalAlt = normalizeNonNegativeNumber(childContext(ctx, "verticalAlt"), raw?.verticalAlt, vertical)
+  return { primary, alt, vertical, verticalAlt }
+}

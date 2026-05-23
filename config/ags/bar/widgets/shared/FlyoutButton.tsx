@@ -5,12 +5,14 @@ import AttachedFlyout from "../../overlays/flyout/AttachedFlyout.tsx"
 import Button from "../../primitives/Button.tsx"
 import { type Accessor } from "ags"
 import type { NormalizedFlyoutConfig } from "../overlays/flyout/flyoutTypes.ts"
+import { createWidgetFlyoutName } from "./instanceNames.ts"
 
 type Props = {
   widgetClass: string
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
-  flyoutName: string
+  id: string
+  flyoutLabel: string
   flyout: NormalizedFlyoutConfig
   tooltipText?: string | Accessor<string>
   visible?: boolean | Accessor<boolean>
@@ -25,7 +27,8 @@ export default function FlyoutButton({
   widgetClass,
   placement,
   monitor,
-  flyoutName,
+  id,
+  flyoutLabel,
   flyout,
   tooltipText,
   visible,
@@ -38,6 +41,7 @@ export default function FlyoutButton({
   const [flyoutOpen, setFlyoutOpen] = createState(false)
   const [triggerWidget, setTriggerWidget] = createState<Gtk.Widget | null>(null)
   const closeFlyout = () => setFlyoutOpen(false)
+  const flyoutName = createWidgetFlyoutName(flyoutLabel, id, monitor.connector)
 
   const buttonClass = `${widgetClass} is-${placement.orientation}`
 

@@ -1,15 +1,13 @@
 import type {
-  NormalizedTrayRevealConfig,
   TrayDirection,
-  TrayRevealConfig,
 } from "./types.ts"
 import {
-  childContext,
   fail,
-  normalizeObjectConfig,
-  normalizePositiveNumber,
+  normalizeRevealConfig,
   type ValidationContext,
 } from "../shared/normalize.ts"
+
+export { normalizeRevealConfig }
 
 export function normalizeTrayDirection(
   ctx: ValidationContext,
@@ -21,16 +19,4 @@ export function normalizeTrayDirection(
     fail(ctx, 'must be "start" or "end"')
   }
   return direction
-}
-
-export function normalizeRevealConfig(
-  ctx: ValidationContext,
-  reveal: TrayRevealConfig | undefined,
-  defaults: NormalizedTrayRevealConfig,
-): NormalizedTrayRevealConfig {
-  const rawReveal = normalizeObjectConfig(ctx, reveal) as TrayRevealConfig | undefined
-
-  return {
-    durationMs: normalizePositiveNumber(childContext(ctx, "durationMs"), rawReveal?.durationMs, defaults.durationMs),
-  }
 }

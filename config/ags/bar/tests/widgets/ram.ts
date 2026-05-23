@@ -12,37 +12,38 @@ test("normalizes ram widget defaults from minimal config", () => {
   )
 
   const ram = resolved.widgets.ram as ResolvedRamWidgetConfig
-  assert.equal(ram.decimals, 0)
-  assert.equal(ram.decimalsAlt, 0)
-  assert.equal(ram.decimalsVertical, 0)
-  assert.equal(ram.decimalsVerticalAlt, 0)
-  assert.equal(ram.interval, 2000)
+  assert.equal(ram.decimals.primary, 0)
+  assert.equal(ram.decimals.alt, 0)
+  assert.equal(ram.decimals.vertical, 0)
+  assert.equal(ram.decimals.verticalAlt, 0)
+  assert.equal(ram.reveal.durationMs, 200)
+  assert.equal(ram.interval, 5000)
 })
 
 test("decimals cascade to all variants when not overridden", () => {
   const resolved = resolveBarConfiguration(
     { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
-    { ram: { kind: "ram", decimals: 2 } },
+    { ram: { kind: "ram", decimals: { primary: 2 } } },
   )
 
   const ram = resolved.widgets.ram as ResolvedRamWidgetConfig
-  assert.equal(ram.decimals, 2)
-  assert.equal(ram.decimalsAlt, 2)
-  assert.equal(ram.decimalsVertical, 2)
-  assert.equal(ram.decimalsVerticalAlt, 2)
+  assert.equal(ram.decimals.primary, 2)
+  assert.equal(ram.decimals.alt, 2)
+  assert.equal(ram.decimals.vertical, 2)
+  assert.equal(ram.decimals.verticalAlt, 2)
 })
 
-test("decimalsVerticalAlt falls back to decimalsVertical, not decimalsAlt", () => {
+test("decimals.verticalAlt falls back to decimals.vertical, not decimals.alt", () => {
   const resolved = resolveBarConfiguration(
     { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
-    { ram: { kind: "ram", decimals: 1, decimalsAlt: 2, decimalsVertical: 0 } },
+    { ram: { kind: "ram", decimals: { primary: 1, alt: 2, vertical: 0 } } },
   )
 
   const ram = resolved.widgets.ram as ResolvedRamWidgetConfig
-  assert.equal(ram.decimals, 1)
-  assert.equal(ram.decimalsAlt, 2)
-  assert.equal(ram.decimalsVertical, 0)
-  assert.equal(ram.decimalsVerticalAlt, 0)
+  assert.equal(ram.decimals.primary, 1)
+  assert.equal(ram.decimals.alt, 2)
+  assert.equal(ram.decimals.vertical, 0)
+  assert.equal(ram.decimals.verticalAlt, 0)
 })
 
 test("all decimals variants can be independently overridden", () => {
@@ -51,19 +52,16 @@ test("all decimals variants can be independently overridden", () => {
     {
       ram: {
         kind: "ram",
-        decimals: 0,
-        decimalsAlt: 1,
-        decimalsVertical: 2,
-        decimalsVerticalAlt: 3,
+        decimals: { primary: 0, alt: 1, vertical: 2, verticalAlt: 3 },
       },
     },
   )
 
   const ram = resolved.widgets.ram as ResolvedRamWidgetConfig
-  assert.equal(ram.decimals, 0)
-  assert.equal(ram.decimalsAlt, 1)
-  assert.equal(ram.decimalsVertical, 2)
-  assert.equal(ram.decimalsVerticalAlt, 3)
+  assert.equal(ram.decimals.primary, 0)
+  assert.equal(ram.decimals.alt, 1)
+  assert.equal(ram.decimals.vertical, 2)
+  assert.equal(ram.decimals.verticalAlt, 3)
 })
 
 test("rejects a negative decimals value", () => {
@@ -71,7 +69,7 @@ test("rejects a negative decimals value", () => {
     () =>
       resolveBarConfiguration(
         { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
-        { ram: { kind: "ram", decimals: -1 } },
+        { ram: { kind: "ram", decimals: { primary: -1 } } },
       ),
     { name: "BarConfigError" },
   )

@@ -1,37 +1,54 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import {
+  childContext,
+  normalizeDecimalsConfig,
+  normalizeFormatConfig,
   normalizePositiveNumber,
-  normalizeNonNegativeNumber,
+  normalizeRevealConfig,
   normalizeStringValue,
   widgetContext,
-  childContext,
+  type NormalizedDecimalsConfig,
+  type NormalizedFormatConfig,
+  type NormalizedRevealConfig,
 } from "../shared/normalize.ts"
 import RamWidget from "./RamWidget.tsx"
 
 const ramDefaults = {
   icon: "",
-  format: "{ram}%",
-  formatAlt: "{ram_used}/{ram_total} | {swap_used}/{swap_total}",
-  formatVertical: "{ram}%",
-  formatVerticalAlt: "{ram_used}\n{swap_used}",
-  decimals: 0,
+  format: {
+    primary: "{ram}%",
+    alt: "{ram_used}/{ram_total} | {swap_used}/{swap_total}",
+    vertical: "{ram}%",
+    verticalAlt: "{ram_used}\n{swap_used}",
+  },
+  decimals: {
+    primary: 0,
+    alt: 0,
+    vertical: 0,
+    verticalAlt: 0,
+  },
   tooltip: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
   interval: 5000,
+  reveal: {
+    durationMs: 200,
+  },
+} satisfies {
+  icon: string
+  format: NormalizedFormatConfig
+  decimals: NormalizedDecimalsConfig
+  tooltip: string
+  interval: number
+  reveal: NormalizedRevealConfig
 }
 
 type RawRamConfig = {
   kind: "ram"
   icon?: string
-  format?: string
-  formatAlt?: string
-  formatVertical?: string
-  formatVerticalAlt?: string
-  decimals?: number
-  decimalsAlt?: number
-  decimalsVertical?: number
-  decimalsVerticalAlt?: number
+  format?: { primary?: string; alt?: string; vertical?: string; verticalAlt?: string }
+  decimals?: { primary?: number; alt?: number; vertical?: number; verticalAlt?: number }
   tooltip?: string
   interval?: number
+  reveal?: { durationMs?: number }
 }
 
 export default createWidgetSpec({
@@ -40,31 +57,20 @@ export default createWidgetSpec({
   resolve(id, definition: RawRamConfig, defaults) {
     const ctx = widgetContext(id)
     const icon = normalizeStringValue(childContext(ctx, "icon"), definition.icon, defaults.icon)
-    const format = normalizeStringValue(childContext(ctx, "format"), definition.format, defaults.format)
-    const formatAlt = normalizeStringValue(childContext(ctx, "formatAlt"), definition.formatAlt, defaults.formatAlt)
-    const formatVertical = normalizeStringValue(childContext(ctx, "formatVertical"), definition.formatVertical, defaults.formatVertical)
-    const formatVerticalAlt = normalizeStringValue(childContext(ctx, "formatVerticalAlt"), definition.formatVerticalAlt, defaults.formatVerticalAlt)
+    const format = normalizeFormatConfig(childContext(ctx, "format"), definition.format, defaults.format)
+    const decimals = normalizeDecimalsConfig(childContext(ctx, "decimals"), definition.decimals, defaults.decimals)
     const tooltip = normalizeStringValue(childContext(ctx, "tooltip"), definition.tooltip, defaults.tooltip)
     const interval = normalizePositiveNumber(childContext(ctx, "interval"), definition.interval, defaults.interval)
-
-    const decimals = normalizeNonNegativeNumber(childContext(ctx, "decimals"), definition.decimals, defaults.decimals)
-    const decimalsAlt = normalizeNonNegativeNumber(childContext(ctx, "decimalsAlt"), definition.decimalsAlt, decimals)
-    const decimalsVertical = normalizeNonNegativeNumber(childContext(ctx, "decimalsVertical"), definition.decimalsVertical, decimals)
-    const decimalsVerticalAlt = normalizeNonNegativeNumber(childContext(ctx, "decimalsVerticalAlt"), definition.decimalsVerticalAlt, decimalsVertical)
+    const reveal = normalizeRevealConfig(childContext(ctx, "reveal"), definition.reveal, defaults.reveal)
 
     return {
       kind: "ram" as const,
       icon,
       format,
-      formatAlt,
-      formatVertical,
-      formatVerticalAlt,
       decimals,
-      decimalsAlt,
-      decimalsVertical,
-      decimalsVerticalAlt,
       tooltip,
       interval,
+      reveal,
     }
   },
   render: ({ config, placement }) => (
@@ -72,15 +78,10 @@ export default createWidgetSpec({
       orientation={placement.orientation}
       icon={config.icon}
       format={config.format}
-      formatAlt={config.formatAlt}
-      formatVertical={config.formatVertical}
-      formatVerticalAlt={config.formatVerticalAlt}
       decimals={config.decimals}
-      decimalsAlt={config.decimalsAlt}
-      decimalsVertical={config.decimalsVertical}
-      decimalsVerticalAlt={config.decimalsVerticalAlt}
       tooltip={config.tooltip}
       interval={config.interval}
+      revealDurationMs={config.reveal.durationMs}
     />
   ),
 })

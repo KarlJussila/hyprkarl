@@ -4,29 +4,26 @@ import { timeout, type Timer } from "ags/time"
 import GLib from "gi://GLib?version=2.0"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import FlyoutButton from "../shared/FlyoutButton.tsx"
-import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import CalendarFlyoutContent from "./CalendarFlyoutContent"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
+import type { NormalizedFormatConfig } from "../shared/normalize.ts"
 
 type Props = {
   id: string
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
-  format: string
-  formatAlt: string
-  formatVertical: string
-  formatVerticalAlt: string
+  format: NormalizedFormatConfig
   flyout: NormalizedFlyoutConfig
 }
 
 const HAS_SECONDS = /%[ST]/
 
-export default function ClockWidget({ id, placement, monitor, format, formatAlt, formatVertical, formatVerticalAlt, flyout }: Props) {
+export default function ClockWidget({ id, placement, monitor, format, flyout }: Props) {
   const [currentTime, setCurrentTime] = createState(GLib.DateTime.new_now_local())
   const [useAlt, setUseAlt] = createState(false)
 
-  const primaryFormat = placement.isVertical && formatVertical ? formatVertical : format
-  const altFormat = placement.isVertical && formatVerticalAlt ? formatVerticalAlt : formatAlt
+  const primaryFormat = placement.isVertical && format.vertical ? format.vertical : format.primary
+  const altFormat = placement.isVertical && format.verticalAlt ? format.verticalAlt : format.alt
   const hasAlt = altFormat.length > 0
 
   const activeFormatHasSeconds = createComputed(() =>
@@ -76,7 +73,8 @@ export default function ClockWidget({ id, placement, monitor, format, formatAlt,
       widgetClass="widget-clock-button"
       placement={placement}
       monitor={monitor}
-      flyoutName={createWidgetFlyoutName("calendar-menu", id, monitor.connector)}
+      id={id}
+      flyoutLabel="calendar-menu"
       flyout={flyout}
       execSecondary={hasAlt ? () => setUseAlt(!useAlt()) : undefined}
       renderFlyoutContent={() => <CalendarFlyoutContent currentTime={currentTime} />}

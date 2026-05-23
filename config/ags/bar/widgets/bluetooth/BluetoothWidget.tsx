@@ -4,14 +4,15 @@ import { Gtk } from "ags/gtk4"
 import AstalBluetooth from "gi://AstalBluetooth"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
+import { substituteTokens } from "../shared/template.ts"
+import type { NormalizedBluetoothIcons, NormalizedBluetoothTooltip } from "./normalize.ts"
 
 type Props = {
   orientation: BarOrientation
   command: string
+  icons: NormalizedBluetoothIcons
+  tooltip: NormalizedBluetoothTooltip
 }
-
-const enabledIcon = ""
-const disabledIcon = "󰂲"
 
 function countConnectedDevices(devices: Array<any>) {
   return devices.filter((device) => {
@@ -23,24 +24,18 @@ function countConnectedDevices(devices: Array<any>) {
   }).length
 }
 
-export default function BluetoothWidget({ orientation, command }: Props) {
+export default function BluetoothWidget({ orientation, command, icons, tooltip }: Props) {
   const isVertical = orientation === "vertical"
   const bluetooth = AstalBluetooth.get_default()
   const isPowered = createBinding(bluetooth, "isPowered")
   const isConnected = createBinding(bluetooth, "isConnected")
   const devices = createBinding(bluetooth, "devices")
 
-  const icon = createComputed(() => isPowered() ? enabledIcon : disabledIcon)
+  const icon = createComputed(() => isPowered() ? icons.enabled : icons.disabled)
   const tooltipText = createComputed(() => {
-    if (!isPowered()) {
-      return "Bluetooth off"
-    }
-
-    if (!isConnected()) {
-      return "Bluetooth on"
-    }
-
-    return `Devices connected: ${countConnectedDevices(devices())}`
+    if (!isPowered()) return tooltip.off
+    if (!isConnected()) return tooltip.on
+    return substituteTokens(tooltip.connected, { count: String(countConnectedDevices(devices())) })
   })
 
   return (

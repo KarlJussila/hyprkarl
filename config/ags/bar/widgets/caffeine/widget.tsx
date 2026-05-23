@@ -1,7 +1,8 @@
 import type { NormalizedSwitchMetrics } from "../../primitives/switchTypes.ts"
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import { normalizeRequiredCommand, normalizeStringValue } from "../shared/normalize.ts"
-import { normalizeSwitchMetrics } from "./normalize.ts"
+import { normalizeCaffeineTooltip, normalizeSwitchMetrics } from "./normalize.ts"
+import type { NormalizedCaffeineTooltip } from "./normalize.ts"
 import CaffeineWidget from "./CaffeineWidget.tsx"
 
 const caffeineDefaults = {
@@ -18,10 +19,15 @@ const caffeineDefaults = {
     fontSize: 8,
     fontFamily: "JetBrains Mono Nerd Font Propo",
   },
+  tooltip: {
+    active: "Caffeine: on",
+    inactive: "Caffeine: off",
+  },
 } satisfies {
   glyph: string
   command: string
   switch: NormalizedSwitchMetrics
+  tooltip: NormalizedCaffeineTooltip
 }
 
 export default createWidgetSpec({
@@ -31,6 +37,7 @@ export default createWidgetSpec({
     glyph: normalizeStringValue,
     command: normalizeRequiredCommand,
     switch: normalizeSwitchMetrics,
+    tooltip: normalizeCaffeineTooltip,
   },
   render: ({ config, placement }) => (
     <CaffeineWidget
@@ -38,6 +45,7 @@ export default createWidgetSpec({
       glyph={config.glyph}
       command={config.command}
       switchMetrics={config.switch}
+      tooltip={config.tooltip}
     />
   ),
 })

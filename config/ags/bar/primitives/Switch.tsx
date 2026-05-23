@@ -29,6 +29,7 @@ type SwitchProps = {
   onToggle?: (next: boolean) => void
   glyph: string
   metrics: NormalizedSwitchMetrics
+  tooltipText?: Accessor<string> | string
 }
 
 // metrics values are base pixel dimensions at font-size 12px; they scale with font size.
@@ -41,6 +42,7 @@ export default function Switch({
   onToggle,
   glyph,
   metrics,
+  tooltipText,
 }: SwitchProps) {
   const isVertical = orientation === "vertical"
   let drawingArea!: Gtk.DrawingArea
@@ -105,6 +107,13 @@ export default function Switch({
       valign={Gtk.Align.FILL}
       vexpand={false}
       onClicked={() => onToggle?.(!active())}
+      $={tooltipText ? (self) => {
+        if (typeof tooltipText === "string") {
+          self.set_tooltip_text(tooltipText)
+        } else {
+          createEffect(() => self.set_tooltip_text(tooltipText()))
+        }
+      } : undefined}
     >
       <drawingarea
         contentWidth={totalWidth}

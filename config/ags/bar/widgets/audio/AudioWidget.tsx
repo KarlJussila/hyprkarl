@@ -3,7 +3,6 @@ import { Gdk, Gtk } from "ags/gtk4"
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import FlyoutButton from "../shared/FlyoutButton.tsx"
-import { createWidgetFlyoutName } from "../shared/instanceNames.ts"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import AudioIndicator from "./AudioIndicator.tsx"
 import AudioSliderFlyout from "./AudioSliderFlyout.tsx"
@@ -34,14 +33,14 @@ export default function AudioWidget({
 }: Props) {
   const audioState = createAudioState(tooltip)
   const launchAudio = () => execAsync(command).catch(() => {})
-  const flyoutName = createWidgetFlyoutName("audio-menu", id, monitor.connector)
 
   return (
     <FlyoutButton
       widgetClass="widget-audio-button widget-glyph-button"
       placement={placement}
       monitor={monitor}
-      flyoutName={flyoutName}
+      id={id}
+      flyoutLabel="audio-menu"
       flyout={flyout}
       tooltipText={audioState.tooltipText}
       execPrimary={launchAudio}

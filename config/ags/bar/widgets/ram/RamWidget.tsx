@@ -4,20 +4,16 @@ import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 import { createRamState } from "./ramState.ts"
 import { substituteTokens } from "../shared/template.ts"
+import type { NormalizedDecimalsConfig, NormalizedFormatConfig } from "../shared/normalize.ts"
 
 type Props = {
   orientation: BarOrientation
   icon: string
-  format: string
-  formatAlt: string
-  formatVertical: string
-  formatVerticalAlt: string
-  decimals: number
-  decimalsAlt: number
-  decimalsVertical: number
-  decimalsVerticalAlt: number
+  format: NormalizedFormatConfig
+  decimals: NormalizedDecimalsConfig
   tooltip: string
   interval: number
+  revealDurationMs: number
 }
 
 function formatPercent(fraction: number, decimals: number): string {
@@ -35,25 +31,20 @@ export default function RamWidget({
   orientation,
   icon,
   format,
-  formatAlt,
-  formatVertical,
-  formatVerticalAlt,
   decimals,
-  decimalsAlt,
-  decimalsVertical,
-  decimalsVerticalAlt,
   tooltip,
   interval,
+  revealDurationMs,
 }: Props) {
   const ram = createRamState(interval)
   const [labelVisible, setLabelVisible] = createState(false)
   const [useAlt, setUseAlt] = createState(false)
 
   const isVertical = orientation === "vertical"
-  const primaryFormat = isVertical && formatVertical ? formatVertical : format
-  const altFormat = isVertical && formatVerticalAlt ? formatVerticalAlt : formatAlt
-  const primaryDecimals = Math.round(isVertical ? decimalsVertical : decimals)
-  const altDecimals = Math.round(isVertical ? decimalsVerticalAlt : decimalsAlt)
+  const primaryFormat = isVertical && format.vertical ? format.vertical : format.primary
+  const altFormat = isVertical && format.verticalAlt ? format.verticalAlt : format.alt
+  const primaryDecimals = Math.round(isVertical ? decimals.vertical : decimals.primary)
+  const altDecimals = Math.round(isVertical ? decimals.verticalAlt : decimals.alt)
   const hasAlt = altFormat.length > 0
 
   function buildSubstitutions(d: number) {
@@ -99,7 +90,7 @@ export default function RamWidget({
         {labelText && (
           <revealer
             transitionType={isVertical ? Gtk.RevealerTransitionType.SLIDE_DOWN : Gtk.RevealerTransitionType.SLIDE_RIGHT}
-            transitionDuration={200}
+            transitionDuration={revealDurationMs}
             revealChild={labelVisible}
           >
             <label

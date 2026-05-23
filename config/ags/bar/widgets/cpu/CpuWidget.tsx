@@ -4,50 +4,46 @@ import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 import { createCpuState } from "./cpuState.ts"
 import { substituteTokens } from "../shared/template.ts"
+import type { NormalizedDecimalsConfig, NormalizedFormatConfig } from "../shared/normalize.ts"
 
 type Props = {
   orientation: BarOrientation
   icon: string
-  format: string
-  formatAlt: string
-  formatVertical: string
-  formatVerticalAlt: string
+  format: NormalizedFormatConfig
+  decimals: NormalizedDecimalsConfig
   tooltip: string
   interval: number
+  revealDurationMs: number
 }
 
-export default function CpuWidget({ orientation, icon, format, formatAlt, formatVertical, formatVerticalAlt, tooltip, interval }: Props) {
+export default function CpuWidget({ orientation, icon, format, decimals, tooltip, interval, revealDurationMs }: Props) {
   const cpu = createCpuState(interval)
   const [labelVisible, setLabelVisible] = createState(false)
   const [useAlt, setUseAlt] = createState(false)
 
   const isVertical = orientation === "vertical"
-  const primaryFormat = isVertical && formatVertical ? formatVertical : format
-  const altFormat = isVertical && formatVerticalAlt ? formatVerticalAlt : formatAlt
+  const primaryFormat = isVertical && format.vertical ? format.vertical : format.primary
+  const altFormat = isVertical && format.verticalAlt ? format.verticalAlt : format.alt
+  const primaryDecimals = Math.round(isVertical ? decimals.vertical : decimals.primary)
+  const altDecimals = Math.round(isVertical ? decimals.verticalAlt : decimals.alt)
   const hasAlt = altFormat.length > 0
 
-  const tooltipText = createComputed(() => {
+  function buildSubstitutions(d: number) {
     const tempVal = cpu.temp()
-    const coreLines = cpu.coreUsages().map((u, i) => `Core ${i}: ${Math.round(u * 100)}%`)
-    return substituteTokens(tooltip, {
-      usage: String(Math.round(cpu.usage() * 100)),
-      temp: tempVal !== null ? String(Math.round(tempVal)) : undefined,
-      cores: coreLines.join("\n"),
-    })
-  })
-
-  function buildSubstitutions() {
-    const tempVal = cpu.temp()
+    const coreLines = cpu.coreUsages().map((u, i) => `Core ${i}: ${(u * 100).toFixed(d)}%`)
     return {
-      usage: String(Math.round(cpu.usage() * 100)),
-      temp: tempVal !== null ? String(Math.round(tempVal)) : undefined,
+      usage: (cpu.usage() * 100).toFixed(d),
+      temp: tempVal !== null ? tempVal.toFixed(d) : undefined,
+      cores: coreLines.join("\n"),
     }
   }
 
+  const tooltipText = createComputed(() => substituteTokens(tooltip, buildSubstitutions(primaryDecimals)))
+
   const labelText = primaryFormat
     ? createComputed(() => {
-        const fmt = hasAlt && useAlt() ? altFormat : primaryFormat
-        return substituteTokens(fmt, buildSubstitutions())
+        const [fmt, d] = hasAlt && useAlt() ? [altFormat, altDecimals] : [primaryFormat, primaryDecimals]
+        return substituteTokens(fmt, buildSubstitutions(d))
       })
     : null
 
@@ -70,7 +66,7 @@ export default function CpuWidget({ orientation, icon, format, formatAlt, format
         {labelText && (
           <revealer
             transitionType={isVertical ? Gtk.RevealerTransitionType.SLIDE_DOWN : Gtk.RevealerTransitionType.SLIDE_RIGHT}
-            transitionDuration={200}
+            transitionDuration={revealDurationMs}
             revealChild={labelVisible}
           >
             <label

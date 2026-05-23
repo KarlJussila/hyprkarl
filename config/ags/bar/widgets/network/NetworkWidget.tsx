@@ -5,17 +5,17 @@ import AstalNetwork from "gi://AstalNetwork"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 import { readString } from "../shared/read.ts"
+import { substituteTokens } from "../shared/template.ts"
+import type { NormalizedNetworkIcons, NormalizedNetworkTooltip } from "./normalize.ts"
 
 type Props = {
   orientation: BarOrientation
   command: string
+  icons: NormalizedNetworkIcons
+  tooltip: NormalizedNetworkTooltip
 }
 
-const wifiIcons = ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
-const ethernetIcon = "󰀂"
-const disconnectedIcon = "󰤮"
-
-function selectWifiIcon(strength: number) {
+function selectWifiIcon(strength: number, wifiIcons: [string, string, string, string, string]) {
   if (strength >= 80) return wifiIcons[4]
   if (strength >= 60) return wifiIcons[3]
   if (strength >= 40) return wifiIcons[2]
@@ -23,13 +23,13 @@ function selectWifiIcon(strength: number) {
   return wifiIcons[0]
 }
 
-function formatWifiTooltip(ssid: string, frequency: number): string {
-  if (ssid.length === 0) return "Wi-Fi connected"
-  if (frequency > 0) return `${ssid} (${(frequency / 1000).toFixed(1)} GHz)`
-  return ssid
+function formatWifiTooltip(ssid: string, frequency: number, tooltip: NormalizedNetworkTooltip): string {
+  if (ssid.length === 0) return tooltip.wifiNoSsid
+  if (frequency > 0) return substituteTokens(tooltip.wifi, { ssid, freq: (frequency / 1000).toFixed(1) })
+  return substituteTokens(tooltip.wifiNoFreq, { ssid })
 }
 
-export default function NetworkWidget({ orientation, command }: Props) {
+export default function NetworkWidget({ orientation, command, icons, tooltip }: Props) {
   const isVertical = orientation === "vertical"
   const network = AstalNetwork.get_default()
 
@@ -80,15 +80,15 @@ export default function NetworkWidget({ orientation, command }: Props) {
     const s = networkState()
     const connected = typeof s === "number" && s >= AstalNetwork.State.CONNECTED_LOCAL
 
-    if (!connected) return disconnectedIcon
-    if (p === AstalNetwork.Primary.WIRED) return ethernetIcon
-    if (p === AstalNetwork.Primary.WIFI) return selectWifiIcon(wifiStrength())
+    if (!connected) return icons.disconnected
+    if (p === AstalNetwork.Primary.WIRED) return icons.ethernet
+    if (p === AstalNetwork.Primary.WIFI) return selectWifiIcon(wifiStrength(), icons.wifi)
 
     const wiredIconName = readString(wiredRef()?.iconName)
     if (wiredIconName.length > 0 && wiredIconName !== "network-wired-disconnected-symbolic") {
-      return ethernetIcon
+      return icons.ethernet
     }
-    return disconnectedIcon
+    return icons.disconnected
   })
 
   const tooltipText = createComputed(() => {
@@ -96,15 +96,15 @@ export default function NetworkWidget({ orientation, command }: Props) {
     const s = networkState()
     const connected = typeof s === "number" && s >= AstalNetwork.State.CONNECTED_LOCAL
 
-    if (!connected) return "Disconnected"
-    if (p === AstalNetwork.Primary.WIRED) return "Ethernet connected"
-    if (p === AstalNetwork.Primary.WIFI) return formatWifiTooltip(wifiSsid(), wifiFrequency())
+    if (!connected) return tooltip.disconnected
+    if (p === AstalNetwork.Primary.WIRED) return tooltip.ethernet
+    if (p === AstalNetwork.Primary.WIFI) return formatWifiTooltip(wifiSsid(), wifiFrequency(), tooltip)
 
     const wiredIconName = readString(wiredRef()?.iconName)
     if (wiredIconName.length > 0 && wiredIconName !== "network-wired-disconnected-symbolic") {
-      return "Ethernet connected"
+      return tooltip.ethernet
     }
-    return "Disconnected"
+    return tooltip.disconnected
   })
 
   return (

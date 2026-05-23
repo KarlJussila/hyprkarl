@@ -16,7 +16,7 @@ const ramDefaults = {
   formatVerticalAlt: "{ram_used}\n{swap_used}",
   decimals: 0,
   tooltip: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
-  interval: 2000,
+  interval: 5000,
 }
 
 type RawRamConfig = {

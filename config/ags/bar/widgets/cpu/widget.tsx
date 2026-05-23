@@ -9,7 +9,7 @@ const cpuDefaults = {
   formatVertical: "",
   formatVerticalAlt: "",
   tooltip: "CPU: {usage}%\n{cores}",
-  interval: 2000,
+  interval: 5000,
 }
 
 export default createWidgetSpec({

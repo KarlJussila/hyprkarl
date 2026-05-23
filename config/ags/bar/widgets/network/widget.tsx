@@ -1,6 +1,6 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeRequiredCommand } from "../shared/normalize.ts"
-import { normalizeNetworkIcons, normalizeNetworkTooltip } from "./normalize.ts"
+import { normalizeRequiredCommand, normalizeStringRecord } from "../shared/normalize.ts"
+import { normalizeNetworkIcons } from "./normalize.ts"
 import type { NormalizedNetworkIcons, NormalizedNetworkTooltip } from "./normalize.ts"
 import NetworkWidget from "./NetworkWidget.tsx"
 
@@ -24,7 +24,7 @@ export default createWidgetSpec({
   schema: {
     command: normalizeRequiredCommand,
     icons: normalizeNetworkIcons,
-    tooltip: normalizeNetworkTooltip,
+    tooltip: normalizeStringRecord,
   },
   render: ({ config, placement }) => (
     <NetworkWidget

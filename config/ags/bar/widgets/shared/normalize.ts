@@ -283,3 +283,16 @@ export function normalizeDecimalsConfig(
   const verticalAlt = normalizeNonNegativeNumber(childContext(ctx, "verticalAlt"), raw?.verticalAlt, vertical)
   return { primary, alt, vertical, verticalAlt }
 }
+
+export function normalizeStringRecord<T extends Record<string, string>>(
+  ctx: ValidationContext,
+  value: Partial<T> | undefined,
+  defaults: T,
+): T {
+  const raw = normalizeObjectConfig(ctx, value) as Partial<T> | undefined
+  const result: Record<string, string> = {}
+  for (const key of Object.keys(defaults)) {
+    result[key] = normalizeStringValue(childContext(ctx, key), raw?.[key], defaults[key])
+  }
+  return result as T
+}

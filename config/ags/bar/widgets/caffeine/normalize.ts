@@ -10,26 +10,9 @@ import {
   type ValidationContext,
 } from "../shared/normalize.ts"
 
-export type CaffeineTooltipConfig = {
-  active?: string
-  inactive?: string
-}
-
 export type NormalizedCaffeineTooltip = {
   active: string
   inactive: string
-}
-
-export function normalizeCaffeineTooltip(
-  ctx: ValidationContext,
-  value: CaffeineTooltipConfig | undefined,
-  defaults: NormalizedCaffeineTooltip,
-): NormalizedCaffeineTooltip {
-  const raw = normalizeObjectConfig(ctx, value) as CaffeineTooltipConfig | undefined
-  return {
-    active: normalizeStringValue(childContext(ctx, "active"), raw?.active, defaults.active),
-    inactive: normalizeStringValue(childContext(ctx, "inactive"), raw?.inactive, defaults.inactive),
-  }
 }
 
 export function normalizeSwitchMetrics(

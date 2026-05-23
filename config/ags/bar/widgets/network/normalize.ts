@@ -40,33 +40,10 @@ export function normalizeNetworkIcons(
   }
 }
 
-export type NetworkTooltipConfig = {
-  disconnected?: string
-  ethernet?: string
-  wifi?: string
-  wifiNoFreq?: string
-  wifiNoSsid?: string
-}
-
 export type NormalizedNetworkTooltip = {
   disconnected: string
   ethernet: string
   wifi: string
   wifiNoFreq: string
   wifiNoSsid: string
-}
-
-export function normalizeNetworkTooltip(
-  ctx: ValidationContext,
-  value: NetworkTooltipConfig | undefined,
-  defaults: NormalizedNetworkTooltip,
-): NormalizedNetworkTooltip {
-  const raw = normalizeObjectConfig(ctx, value) as NetworkTooltipConfig | undefined
-  return {
-    disconnected: normalizeStringValue(childContext(ctx, "disconnected"), raw?.disconnected, defaults.disconnected),
-    ethernet: normalizeStringValue(childContext(ctx, "ethernet"), raw?.ethernet, defaults.ethernet),
-    wifi: normalizeStringValue(childContext(ctx, "wifi"), raw?.wifi, defaults.wifi),
-    wifiNoFreq: normalizeStringValue(childContext(ctx, "wifiNoFreq"), raw?.wifiNoFreq, defaults.wifiNoFreq),
-    wifiNoSsid: normalizeStringValue(childContext(ctx, "wifiNoSsid"), raw?.wifiNoSsid, defaults.wifiNoSsid),
-  }
 }

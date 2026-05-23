@@ -1,9 +1,9 @@
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeBoolean, normalizeRequiredCommand } from "../shared/normalize.ts"
+import { normalizeBoolean, normalizeRequiredCommand, normalizeStringRecord } from "../shared/normalize.ts"
 import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
-import { normalizeAudioTooltipConfig, normalizeSliderMetrics } from "./normalize.ts"
+import { normalizeSliderMetrics } from "./normalize.ts"
 import type { NormalizedAudioTooltipConfig } from "./types.ts"
 import AudioWidget from "./AudioWidget.tsx"
 
@@ -46,7 +46,7 @@ export default createWidgetSpec({
     showPercentage: normalizeBoolean,
     command: normalizeRequiredCommand,
     flyout: normalizeFlyoutConfig,
-    tooltip: normalizeAudioTooltipConfig,
+    tooltip: normalizeStringRecord,
     slider: normalizeSliderMetrics,
   },
   render: ({ id, config, placement, monitor }) => (

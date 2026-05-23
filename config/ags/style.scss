@@ -1,0 +1,6 @@
+// AGS entry stylesheet.
+// Most bar styling changes should happen in ./bar/theme.scss.
+
+@use "./bar/styles/layout";
+@use "./bar/styles/widgets";
+@use "./bar/styles/flyouts";

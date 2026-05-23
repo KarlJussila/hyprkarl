@@ -1,0 +1,61 @@
+@use "../theme" as theme;
+@use "./shared" as shared;
+
+window.flyout-window {
+  background: transparent;
+  font-family: theme.$font-mono;
+  font-size: theme.$font-size;
+  color: theme.$text;
+
+  .flyout-surface {
+    @include shared.reset-surface;
+  }
+
+  .flyout-body {
+    @include shared.bar-surface;
+    border-radius: theme.$flyout-border-radius;
+    padding: theme.$flyout-pad;
+  }
+
+  // Sharpen bar-side corner if it is at the edge of the screen
+  &.edge-top {
+    .flyout-revealer.snapped-left .flyout-body  { border-top-left-radius: 0px; }
+    .flyout-revealer.snapped-right .flyout-body { border-top-right-radius: 0px; }
+  }
+
+  &.edge-bottom {
+    .flyout-revealer.snapped-left .flyout-body  { border-bottom-left-radius: 0px; }
+    .flyout-revealer.snapped-right .flyout-body { border-bottom-right-radius: 0px; }
+  }
+
+  &.edge-left {
+    .flyout-revealer.snapped-top .flyout-body    { border-top-left-radius: 0px; }
+    .flyout-revealer.snapped-bottom .flyout-body { border-bottom-left-radius: 0px; }
+  }
+
+  &.edge-right {
+    .flyout-revealer.snapped-top .flyout-body    { border-top-right-radius: 0px; }
+    .flyout-revealer.snapped-bottom .flyout-body { border-bottom-right-radius: 0px; }
+  }
+
+  .flyout-row {
+    @include shared.reset-button;
+    padding: theme.$flyout-row-pad;
+    border-radius: theme.$flyout-row-border-radius;
+  }
+
+  .flyout-row:hover,
+  .flyout-row.active {
+    background-color: theme.$border;
+  }
+
+  .flyout-row.active {
+    color: theme.$accent;
+  }
+
+  .bar-slider-track { color: theme.$surface; }
+  .bar-slider-border { color: theme.$border; }
+  .bar-slider-fill { color: theme.$accent; }
+  .bar-slider-thumb { color: theme.$border; }
+  .bar-slider-thumb-border { color: theme.$border; }
+}

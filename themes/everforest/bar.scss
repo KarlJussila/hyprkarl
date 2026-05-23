@@ -1,0 +1,36 @@
+// Edit this file for most visual changes to the bar.
+// Tokens live in one Sass module, so keep names short and semantic.
+
+// Core colors
+$text: #dbbc7f;
+$surface: #2d353b;
+$accent: #a7c080;
+$border: #4F585E;
+$error: #e67e80;
+$battery-low: #dbbc7f;
+
+// Typography
+$font-ui: "JetBrains Mono Nerd Font Propo";
+$font-mono: "JetBrains Mono Nerd Font";
+$font-size: 12px;
+$readout-font-size: 12px;
+
+// Bar shell
+$border-radius: 8px;
+$border-width: 2px;
+
+// Widget tuning
+$widget-padding-horizontal: 1px 8px;
+$widget-padding-vertical: 4px 1px;
+$workspace-gap-outer: 6px;
+$workspace-gap-inner: 2px;
+$tray-gap-outer: 8px;
+$tray-gap-inner: 6px;
+$icon-gap-horizontal: 4px;
+$icon-gap-vertical: 2px;
+
+// Flyouts
+$flyout-pad: 4px;
+$flyout-border-radius: 6px;
+$flyout-row-pad: 4px 8px;
+$flyout-row-border-radius: 3px;

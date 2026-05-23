@@ -1,0 +1,29 @@
+@use "../theme" as theme;
+
+@mixin bar-surface {
+  background-color: theme.$surface;
+  border: theme.$border-width solid theme.$border;
+}
+
+@mixin reset-surface {
+  margin: 0px;
+  border-radius: 0px;
+  border-width: 0px;
+  background-color: transparent;
+}
+
+@mixin reset-button {
+  @include reset-surface;
+  padding: 0px;
+  min-width: 0px;
+  min-height: 0px;
+
+  &:focus,
+  &:focus-visible {
+    border-width: 0px;
+    border-color: transparent;
+    outline: none;
+    box-shadow: none;
+    background-image: none;
+  }
+}

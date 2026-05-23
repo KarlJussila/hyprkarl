@@ -1,0 +1,164 @@
+@use "../theme" as theme;
+@use "./shared" as shared;
+
+window.bar-hotzone-window {
+  background: transparent;
+}
+
+.bar-hotzone-probe {
+  background: #88888801;
+}
+
+window.Bar.bar-shell {
+  background: transparent;
+  color: theme.$text;
+  font-family: theme.$font-ui;
+  font-size: theme.$font-size;
+
+  .bar-island-curve {
+    color: theme.$border;
+  }
+
+  centerbox.bar-layout-root {
+    .bar-island,
+    .bar-island-balance-content,
+    .widget-tray-item-list {
+      border-spacing: 0px;
+    }
+
+    .bar-segment {
+      margin: 0px;
+      border-radius: 0px;
+      background-color: theme.$surface;
+      border: theme.$border-width solid theme.$border;
+    }
+  }
+
+  centerbox.bar-layout-root.is-horizontal {
+    .widget-tray-panel.is-open + .widget-tray-toggle,
+    .widget-tray-toggle + .widget-tray-panel.is-open {
+      border-left: theme.$border-width solid theme.$border;
+    }
+  }
+
+  centerbox.bar-layout-root.is-vertical {
+    .widget-tray-panel.is-open + .widget-tray-toggle,
+    .widget-tray-toggle + .widget-tray-panel.is-open {
+      border-top: theme.$border-width solid theme.$border;
+    }
+  }
+
+  centerbox.bar-layout-root.edge-top {
+    .bar-segment {
+      border-width: 0px theme.$border-width theme.$border-width 0px;
+    }
+
+    .bar-segment.segment-edge-rounded-start {
+      border-bottom-left-radius: theme.$border-radius;
+      border-left-width: theme.$border-width;
+    }
+
+    .bar-segment.segment-edge-rounded-end {
+      border-bottom-right-radius: theme.$border-radius;
+      border-right-width: theme.$border-width;
+    }
+
+    .bar-segment.segment-edge-screen-start {
+      border-left-width: 0px;
+    }
+
+    .bar-segment.segment-edge-screen-end {
+      border-right-width: 0px;
+    }
+  }
+
+  centerbox.bar-layout-root.edge-bottom {
+    .bar-segment {
+      border-width: theme.$border-width theme.$border-width 0px 0px;
+    }
+
+    .bar-segment.segment-edge-rounded-start {
+      border-top-left-radius: theme.$border-radius;
+      border-left-width: theme.$border-width;
+    }
+
+    .bar-segment.segment-edge-rounded-end {
+      border-top-right-radius: theme.$border-radius;
+      border-right-width: theme.$border-width;
+    }
+
+    .bar-segment.segment-edge-screen-start {
+      border-left-width: 0px;
+    }
+
+    .bar-segment.segment-edge-screen-end {
+      border-right-width: 0px;
+    }
+  }
+
+  centerbox.bar-layout-root.edge-left {
+    .bar-segment {
+      border-width: 0px theme.$border-width theme.$border-width 0px;
+    }
+
+    .bar-segment.segment-edge-rounded-start {
+      border-top-right-radius: theme.$border-radius;
+      border-top-width: theme.$border-width;
+    }
+
+    .bar-segment.segment-edge-rounded-end {
+      border-bottom-right-radius: theme.$border-radius;
+    }
+
+    .bar-segment.segment-edge-screen-start {
+      border-top-width: 0px;
+    }
+
+    .bar-segment.segment-edge-screen-end {
+      border-bottom-width: 0px;
+    }
+  }
+
+  centerbox.bar-layout-root.edge-right {
+    .bar-segment {
+      border-width: 0px 0px theme.$border-width theme.$border-width;
+    }
+
+    .bar-segment.segment-edge-rounded-start {
+      border-top-left-radius: theme.$border-radius;
+      border-top-width: theme.$border-width;
+    }
+
+    .bar-segment.segment-edge-rounded-end {
+      border-bottom-left-radius: theme.$border-radius;
+    }
+
+    .bar-segment.segment-edge-screen-start {
+      border-top-width: 0px;
+    }
+
+    .bar-segment.segment-edge-screen-end {
+      border-bottom-width: 0px;
+    }
+  }
+}
+
+window.Bar.bar-config-error {
+  > .bar-config-error-layout {
+    > .config-error-surface {
+      @include shared.bar-surface;
+      border-color: theme.$error;
+      border-radius: theme.$border-radius;
+    }
+
+  }
+
+  .bar-config-error-title {
+    color: theme.$error;
+    font-family: theme.$font-mono;
+  }
+
+  .bar-config-error-path {
+    font-family: theme.$font-mono;
+  }
+}

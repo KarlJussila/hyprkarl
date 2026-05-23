@@ -13,6 +13,9 @@ stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications 
 git -C ~/.local/share/hyprkarl checkout config/
 git -C ~/.local/share/hyprkarl checkout applications/
 
+# Set up AGS
+ags types -u -d ~/.config/ags
+
 # Stow the GTK theme
 rm -f "$HOME/.local/share/themes/hyprkarl"
 mkdir -p "$HOME/.local/share/themes/hyprkarl"

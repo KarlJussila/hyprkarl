@@ -1,0 +1,9 @@
+#!/bin/bash
+# hk-ags-toggle
+# Toggle ags on/off.
+
+if pgrep -x ags >/dev/null; then
+    ags quit
+else
+    setsid uwsm-app -- ags run >/dev/null 2>&1 &
+fi

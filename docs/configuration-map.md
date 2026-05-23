@@ -117,6 +117,30 @@ For Hyprland syntax and option reference, see the official Hyprland docs:
 The default terminal and editor commands update this file. Changes here require
 a new session.
 
+## AGS Bar
+
+The AGS bar lives under `config/ags/bar/`. The main editing surfaces are:
+
+- `config/ags/bar/config/layout.config.ts`
+  Bar edge, widget order, corner curves, autohide, and exclusive mode
+- `config/ags/bar/config/widgets.config.ts`
+  Widget instances: each key is a widget ID, `kind` picks the implementation
+- `themes/<theme>/bar.scss`
+  Theme-specific bar colors, spacing, radii, and typography
+
+`config/ags/bar/theme.scss` is a symlink managed by `hk-theme set`; it points to the active theme's `bar.scss`. Switching themes with `hk-theme set` updates the symlink and restarts AGS.
+
+The bar can also be controlled at runtime via `ags msg`:
+
+```bash
+ags msg bar autohide on|off|toggle
+ags msg bar exclusive on|off|toggle
+ags msg bar show|hide|toggle
+ags msg bar status
+```
+
+See `config/ags/bar/README.md` for full widget configuration reference.
+
 ## Waybar
 
 Waybar is split across these files:

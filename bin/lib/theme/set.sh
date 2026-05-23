@@ -39,6 +39,9 @@ hk-wallpaper init || hk-wallpaper cycle
 if pgrep -x waybar >/dev/null; then
   hk-waybar-restart
 fi
+if pgrep -x ags >/dev/null; then
+  hk-ags-restart
+fi
 hyprctl reload >/dev/null
 hk-mako-reload
 hk-terminal-reload

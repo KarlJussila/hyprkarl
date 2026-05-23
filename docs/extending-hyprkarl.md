@@ -89,6 +89,38 @@ Put the binding in the file that matches its purpose.
 If the binding needs more than a short command, add a script in `bin/` and bind
 to that.
 
+## Add an AGS Bar Feature
+
+The AGS bar has two casual editing surfaces and one advanced one:
+
+- `config/ags/bar/config/layout.config.ts`: add widget IDs to `start`, `center`,
+  or `end`.
+- `config/ags/bar/config/widgets.config.ts`: add a widget definition keyed by ID;
+  `kind` picks the implementation.
+- `themes/<theme>/bar.scss`: add styling tokens. New styling knobs that affect
+  all themes belong in every `themes/*/bar.scss`.
+
+To add a new widget kind, create a folder under `config/ags/bar/widgets/<name>/`
+with:
+
+- `widget.tsx`: `createWidgetSpec` call with `kind`, `defaults`, `schema`, and
+  `render`.
+- `<Name>Widget.tsx`: top-level view component.
+- `normalize.ts`: field normalizers used as `schema` values (if needed).
+
+Register the new kind in `config/ags/bar/widgets/catalog.ts`.
+
+To control the bar at runtime without editing config:
+
+```bash
+ags msg bar autohide on|off|toggle
+ags msg bar exclusive on|off|toggle
+ags msg bar show|hide|toggle
+ags msg bar status
+```
+
+See `config/ags/bar/README.md` for the full widget reference and styling guide.
+
 ## Add a Waybar Feature
 
 Waybar config is split between shared config, support scripts, and shared

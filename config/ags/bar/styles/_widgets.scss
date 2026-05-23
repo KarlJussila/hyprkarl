@@ -1,0 +1,113 @@
+@use "../theme" as theme;
+@use "./shared" as shared;
+
+tooltip {
+  @include shared.bar-surface;
+  border-radius: theme.$border-radius;
+  color: theme.$text;
+}
+
+tooltip label {
+  color: theme.$text;
+  font-family: theme.$font-mono;
+  font-size: theme.$font-size;
+  margin: 0px;
+}
+
+button {
+  @include shared.reset-button;
+}
+
+window.Bar.bar-shell {
+
+  // Horizontal layout
+  centerbox.bar-layout-root.is-horizontal {
+    .bar-segment > .widget-button,
+    .bar-segment > .widget-switch-button {
+      padding: theme.$widget-padding-horizontal;
+    }
+  }
+
+  // Vertical layout
+  centerbox.bar-layout-root.is-vertical {
+
+    .bar-segment > .widget-button,
+    .bar-segment > .widget-switch-button {
+      padding: theme.$widget-padding-vertical;
+    }
+
+  }
+
+  // Button click
+  .widget-button.is-pressed {
+    background-color: theme.$border;
+  }
+
+  // Percentages, temps, etc. that might get wider than other text
+  .widget-readout-percent {
+    font-size: theme.$readout-font-size;
+  }
+
+  // Gap between icon/indicator and readout text
+  .widget-icon-display.is-horizontal .widget-readout-percent { margin-left: theme.$icon-gap-horizontal; }
+  .widget-icon-display.is-vertical   .widget-readout-percent { margin-top: theme.$icon-gap-vertical; }
+
+  // Workspace widget
+  .workspace-list.is-horizontal {
+    padding-left: theme.$workspace-gap-outer;
+    padding-right: theme.$workspace-gap-outer;
+  }
+  .workspace-list.is-vertical {
+    padding-top: theme.$workspace-gap-outer;
+    padding-bottom: theme.$workspace-gap-outer;
+  }
+
+  .workspace-list.is-horizontal .widget-workspace-button:not(:last-child) {
+    margin-right: theme.$workspace-gap-inner;
+  }
+  .workspace-list.is-vertical .widget-workspace-button:not(:last-child) {
+    margin-bottom: theme.$workspace-gap-inner;
+  }
+
+  .widget-workspace-button.is-active {
+    color: theme.$accent;
+  }
+
+  .widget-workspace-button.is-empty label {
+    opacity: 0.55;
+  }
+
+  // Tray widget
+  .widget-tray-item-list.is-horizontal {
+    padding-left: theme.$tray-gap-outer;
+    padding-right: theme.$tray-gap-outer;
+  }
+  .widget-tray-item-list.is-vertical {
+    padding-top: theme.$tray-gap-outer;
+    padding-bottom: theme.$tray-gap-outer;
+  }
+
+  .widget-tray-item-list.is-horizontal > .widget-tray-item:not(:last-child) {
+    margin-right: theme.$tray-gap-inner;
+  }
+  .widget-tray-item-list.is-vertical > .widget-tray-item:not(:last-child) {
+    margin-bottom: theme.$tray-gap-inner;
+  }
+
+  // Custom-drawn battery colors
+  .battery-indicator-surface { color: theme.$surface; }
+  .battery-indicator-border { color: theme.$text; }
+  .battery-indicator-fill { color: theme.$text; }
+  .battery-indicator-fill.is-low { color: theme.$battery-low; }
+  .battery-indicator-fill.is-charging { color: theme.$text; }
+  .battery-indicator-glyph { color: theme.$accent; }
+
+  // Custom-drawn switch colors
+  .switch-surface { color: theme.$surface; }
+  .switch-glyph { color: theme.$text; }
+  .switch-track { color: theme.$surface; }
+  .switch-border { color: theme.$border; }
+  .switch-track.is-active { color: theme.$accent; }
+  .switch-border.is-active { color: theme.$accent; }
+
+}

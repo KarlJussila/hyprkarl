@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "ags/gtk4",
+    "lib": [
+      "ES2023"
+    ],
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2020",
+    "types": [
+      "node"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "app.ts",
+    "env.d.ts",
+    "bar/**/*.ts",
+    "bar/**/*.tsx",
+    "@girs/*.d.ts",
+    "@girs/@girs/astalbattery-0.1.d.ts",
+    "@girs/@girs/astalhyprland-0.1.d.ts",
+    "@girs/@girs/astalpowerprofiles-0.1.d.ts",
+    "@girs/@girs/astaltray-0.1.d.ts"
+  ]
+}

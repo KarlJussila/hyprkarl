@@ -26,8 +26,9 @@ Hyprkarl:
 - writes `config/hyprkarl/current/theme.name`
 - updates the wallpaper state
 - updates GNOME and QT themes
-- reloads Hyprland, mako, terminals, and `btop`, and restarts Waybar if it is
-  running
+- reloads Hyprland, mako, terminals, and `btop`
+- restarts Waybar if it is running
+- restarts AGS if it is running (picks up the new `bar.scss`)
 
 ## Switch the Active Theme
 
@@ -59,6 +60,8 @@ A full theme in this repo includes:
   Hyprtoolkit styling
 - `waybar.css`
   Waybar colors
+- `bar.scss`
+  AGS bar colors, spacing, radii, and typography
 - `rofi.rasi`
   Rofi styling
 - `mako.ini`
@@ -71,11 +74,18 @@ A full theme in this repo includes:
   `wifitui` colors
 - `yazi.toml`
   Yazi theme settings
-- `kvantum.kvconfig`, `qt5ct/qt5ct.conf`, `qt5ct/style-colors.conf`,
-  `qt6ct/qt6ct.conf`, `qt6ct/style-colors.conf`
-  Qt styling
+- `qt5ct/qt5ct.conf`, `qt5ct/style-colors.conf`
+  Qt5 color palette and widget style settings
+- `qt6ct/qt6ct.conf`, `qt6ct/style-colors.conf`
+  Qt6 color palette and widget style settings
 - `gtk-3.0/settings.ini`, `gtk-4.0/settings.ini`
-  GTK styling
+  GTK settings files (stowed to `~/.config/gtk-{3,4}.0/`); point GTK apps to
+  the theme name and set the dark/light preference
+- `gtk-theme/`
+  The GTK theme bundle stowed to `~/.local/share/themes/hyprkarl/`.
+  Contains `index.theme` (theme metadata) and the GTK3/4 stylesheets under
+  `gtk-3.0/` and `gtk-4.0/` (`gtk.css`, `gtk-dark.css`, and assets).
+  GTK apps read their colors from here.
 - `nvim/colorscheme.lua`, `nvim/custom-colors.lua`
   Neovim colors
 - `wallpapers/`
@@ -86,7 +96,8 @@ Optional theme files:
 - `light.mode`
   Switches GNOME to `prefer-light`. Without it, Hyprkarl uses `prefer-dark`.
 - `icons.theme`
-  Sets the GNOME icon theme name.
+  Single-line file naming the icon theme. Applied via `gsettings` on theme
+  switch and embedded in `gtk-theme/index.theme`.
 - `icons/`
   Theme-local icons used by Hyprkarl helpers and notifications.
 

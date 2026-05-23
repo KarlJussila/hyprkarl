@@ -13,7 +13,7 @@ test("normalizes bluetooth widget defaults from minimal config", () => {
 
   const bluetooth = resolved.widgets.bluetooth as ResolvedBluetoothWidgetConfig
   assert.equal(bluetooth.command, "hk-launch-bluetooth")
-  assert.equal(bluetooth.icons.enabled, "")
+  assert.equal(bluetooth.icons.enabled, "")
   assert.equal(bluetooth.icons.disabled, "󰂲")
   assert.equal(bluetooth.tooltip.off, "Bluetooth off")
   assert.equal(bluetooth.tooltip.on, "Bluetooth on")

@@ -12,7 +12,7 @@ test("normalizes caffeine widget defaults from minimal config", () => {
   )
 
   const caffeine = resolved.widgets.caffeine as ResolvedCaffeineWidgetConfig
-  assert.equal(caffeine.glyph, "")
+  assert.equal(caffeine.glyph, "")
   assert.equal(caffeine.command, "hk-caffeine")
   assert.equal(caffeine.switch.trackLength, 24)
   assert.equal(caffeine.tooltip.active, "Caffeine: on")

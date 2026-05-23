@@ -104,6 +104,7 @@ export function normalizeBoolean(
   fallback: boolean,
 ): boolean {
   if (value === undefined) return fallback
+  if (typeof value !== "boolean") fail(context, "must be true or false")
   return value
 }
 

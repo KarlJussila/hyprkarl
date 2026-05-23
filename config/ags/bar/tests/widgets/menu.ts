@@ -22,7 +22,7 @@ test("normalizes menu widget defaults from minimal config", () => {
   )
 
   const menu = resolved.widgets.menu as ResolvedMenuWidgetConfig
-  assert.equal(menu.icon, "")
+  assert.equal(menu.icon, "")
   assert.equal(menu.commands.primary, "hk-menu")
   assert.equal(menu.commands.secondary, undefined)
 })

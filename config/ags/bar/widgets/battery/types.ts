@@ -21,6 +21,7 @@ export type NormalizedBatteryIndicatorMetrics = {
 }
 
 export type BatteryTooltipConfig = {
+  enabled?: boolean
   charging?: string
   discharging?: string
   plugged?: string
@@ -28,6 +29,7 @@ export type BatteryTooltipConfig = {
 }
 
 export type NormalizedBatteryTooltipConfig = {
+  enabled: boolean
   charging: string
   discharging: string
   plugged: string

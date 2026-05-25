@@ -10,7 +10,7 @@ import type { NormalizedAudioTooltipConfig } from "./types.ts"
 export type AudioState = {
   volume: Accessor<number>
   muted: Accessor<boolean>
-  tooltipText: Accessor<string>
+  tooltipText: Accessor<string> | undefined
   isAvailable: boolean
   setVolume: (v: number) => void
 }
@@ -21,11 +21,11 @@ export function createAudioState(formats: NormalizedAudioTooltipConfig): AudioSt
   if (!speaker) {
     const [volume] = createState(0)
     const [muted] = createState(true)
-    const unavailableTooltip = formatUnavailableAudioTooltip(formats)
+    const unavailableTooltip = formats.enabled ? formatUnavailableAudioTooltip(formats) : undefined
     return {
       volume,
       muted,
-      tooltipText: createComputed(() => unavailableTooltip),
+      tooltipText: unavailableTooltip ? () => unavailableTooltip : undefined,
       isAvailable: false,
       setVolume: () => {},
     }
@@ -38,12 +38,14 @@ export function createAudioState(formats: NormalizedAudioTooltipConfig): AudioSt
   return {
     volume,
     muted,
-    tooltipText: createComputed(() => formatAudioTooltip({
-      muted: muted(),
-      volume: volume(),
-      device: readString(description()),
-      formats,
-    })),
+    tooltipText: formats.enabled
+      ? createComputed(() => formatAudioTooltip({
+          muted: muted(),
+          volume: volume(),
+          device: readString(description()),
+          formats,
+        }))
+      : undefined,
     isAvailable: true,
     setVolume: (v) => { if (volume() !== v) speaker.set_volume(v) },
   }

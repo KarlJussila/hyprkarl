@@ -1,14 +1,14 @@
 import { type BarOrientation } from "../../layout/placement.ts"
 import { createRamState } from "./ramState.ts"
 import PollingMonitorWidget from "../shared/PollingMonitorWidget.tsx"
-import type { NormalizedDecimalsConfig, NormalizedFormatConfig } from "../shared/normalize.ts"
+import type { NormalizedDecimalsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 
 type Props = {
   orientation: BarOrientation
   icon: string
   format: NormalizedFormatConfig
   decimals: NormalizedDecimalsConfig
-  tooltip: string
+  tooltip: NormalizedSimpleTooltipConfig
   interval: number
   revealDurationMs: number
 }

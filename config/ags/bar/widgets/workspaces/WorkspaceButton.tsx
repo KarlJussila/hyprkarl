@@ -3,11 +3,14 @@ import { Gtk } from "ags/gtk4"
 import AstalHyprland from "gi://AstalHyprland"
 import { type BarOrientation } from "../../layout/placement"
 import Button from "../../primitives/Button"
+import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
+import { substituteTokens } from "../shared/template.ts"
 
 type Props = {
   id: number
   orientation: BarOrientation
   isEmpty?: boolean | Accessor<boolean>
+  tooltip: NormalizedSimpleTooltipConfig
 }
 
 function workspaceButtonClass({
@@ -36,6 +39,7 @@ export default function WorkspaceButton({
   id,
   orientation,
   isEmpty = false,
+  tooltip,
 }: Props) {
   const hyprland = AstalHyprland.get_default()
   const focusedWorkspaceId = createBinding(hyprland, "focusedWorkspace")(
@@ -43,11 +47,16 @@ export default function WorkspaceButton({
   )
   const isActive = focusedWorkspaceId((activeId) => activeId === id)
 
+  const tooltipText = tooltip.enabled && tooltip.text
+    ? substituteTokens(tooltip.text, { id: String(id) })
+    : undefined
+
   return (
     <Button
       class={workspaceButtonClass({ isEmpty, isActive, orientation })}
       hexpand={orientation === "vertical"}
       halign={orientation === "vertical" ? Gtk.Align.FILL : Gtk.Align.CENTER}
+      tooltipText={tooltipText}
       execPrimary={() => hyprland.dispatch("workspace", `${id}`)}
     >
       <box

@@ -18,9 +18,9 @@ export default function CaffeineWidget({ orientation, glyph, command, switchMetr
   const caffeineController = getCaffeineController()
   const isVertical = orientation === "vertical"
 
-  const tooltipText = createComputed(() =>
-    caffeineController.active() ? tooltip.active : tooltip.inactive,
-  )
+  const tooltipText = tooltip.enabled
+    ? createComputed(() => caffeineController.active() ? tooltip.active : tooltip.inactive)
+    : undefined
 
   return (
     <Switch

@@ -46,6 +46,9 @@ const widgetDefinitions = {
       align: "center",
       gap: 0,
     },
+    tooltip: {
+      text: "%c"
+    }
   },
 
   caffeine: {
@@ -64,7 +67,9 @@ const widgetDefinitions = {
       alt: "{temp}° | {usage}%",
       verticalAlt: "{usage}%",
     },
-    tooltip: "CPU: {usage}%\n{cores}"
+    tooltip: {
+      text: "CPU: {usage}%\n{cores}",
+    },
   },
 
   ram: {
@@ -79,7 +84,9 @@ const widgetDefinitions = {
     decimals: {
       primary: 0,
     },
-    tooltip: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
+    tooltip: {
+      text: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
+    },
     interval: 5000,
   },
 

@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 import { substituteTokens } from "./template.ts"
-import type { NormalizedDecimalsConfig, NormalizedFormatConfig } from "./normalize.ts"
+import type { NormalizedDecimalsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "./normalize.ts"
 
 type Props = {
   widgetClass: string
@@ -11,7 +11,7 @@ type Props = {
   icon: string
   format: NormalizedFormatConfig
   decimals: NormalizedDecimalsConfig
-  tooltip: string
+  tooltip: NormalizedSimpleTooltipConfig
   revealDurationMs: number
   buildSubstitutions: (decimals: number) => Record<string, string | undefined>
 }
@@ -36,7 +36,9 @@ export default function PollingMonitorWidget({
   const altDecimals = Math.round(isVertical ? decimals.verticalAlt : decimals.alt)
   const hasAlt = altFormat.length > 0
 
-  const tooltipText = createComputed(() => substituteTokens(tooltip, buildSubstitutions(primaryDecimals)))
+  const tooltipText = tooltip.enabled && tooltip.text
+    ? createComputed(() => substituteTokens(tooltip.text, buildSubstitutions(primaryDecimals)))
+    : undefined
 
   const labelText = primaryFormat
     ? createComputed(() => {

@@ -18,6 +18,7 @@ const batteryDefaults = {
     gap: 0,
   },
   tooltip: {
+    enabled: true,
     charging: "{power}↑ {time}",
     discharging: "{power}↓ {time}",
     plugged: "Plugged in {percentage}",

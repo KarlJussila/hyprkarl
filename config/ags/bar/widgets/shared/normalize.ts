@@ -297,3 +297,25 @@ export function normalizeStringRecord<T extends Record<string, string>>(
   }
   return result as T
 }
+
+export type SimpleTooltipConfig = {
+  enabled?: boolean
+  text?: string
+}
+
+export type NormalizedSimpleTooltipConfig = {
+  enabled: boolean
+  text: string
+}
+
+export function normalizeSimpleTooltipConfig(
+  ctx: ValidationContext,
+  config: SimpleTooltipConfig | undefined,
+  defaults: NormalizedSimpleTooltipConfig,
+): NormalizedSimpleTooltipConfig {
+  const raw = normalizeObjectConfig(ctx, config) as SimpleTooltipConfig | undefined
+  return {
+    enabled: normalizeBoolean(childContext(ctx, "enabled"), raw?.enabled, defaults.enabled),
+    text: normalizeStringValue(childContext(ctx, "text"), raw?.text, defaults.text),
+  }
+}

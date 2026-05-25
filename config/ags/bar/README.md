@@ -153,10 +153,20 @@ audio: {
   showPercentage: true,
   command: "hk-launch-audio",
   tooltip: {
+    enabled: true,
     active: "{device} {percentage}",
     muted: "Muted {device}",
     unavailable: "Audio unavailable",
   },
+},
+```
+
+Disable the audio tooltip entirely:
+
+```ts
+audio: {
+  kind: "audio",
+  tooltip: { enabled: false },
 },
 ```
 
@@ -166,6 +176,7 @@ Customize battery tooltip text without touching widget code:
 battery: {
   kind: "battery",
   tooltip: {
+    enabled: true,
     charging: "{percentage} charging at {power}",
     discharging: "{power} remaining draw {percentage}",
     plugged: "On AC {percentage}",
@@ -173,6 +184,8 @@ battery: {
   },
 },
 ```
+
+Set `tooltip: { enabled: false }` to suppress the battery tooltip entirely.
 
 Battery tooltip tokens:
 
@@ -229,7 +242,9 @@ cpu: {
   formatAlt: "{temp}° | {usage}%",
   formatVertical: "{temp}°",
   formatVerticalAlt: "{usage}%",
-  tooltip: "CPU: {usage}%\n{cores}",
+  tooltip: {
+    text: "CPU: {usage}%\n{cores}",
+  },
   interval: 2000,
 },
 ```
@@ -242,6 +257,8 @@ CPU format tokens:
 CPU tooltip tokens include all format tokens plus:
 
 - `{cores}`: multi-line per-core breakdown, for example `Core 0: 12%\nCore 1: 8%`
+
+Set `tooltip: { enabled: false }` to suppress the tooltip entirely.
 
 Leave `format` empty to show the icon only. Leave `formatAlt` empty to disable the secondary click.
 
@@ -258,7 +275,9 @@ ram: {
   formatVertical: "{ram}%",
   formatVerticalAlt: "{ram_used}\n{swap_used}",
   decimals: 0,
-  tooltip: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
+  tooltip: {
+    text: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
+  },
   interval: 2000,
 },
 ```
@@ -274,6 +293,8 @@ RAM format tokens:
 - `{swap_total}`: total swap as a human-readable size
 - `{swap_free}`: free swap as a human-readable size
 
+Set `tooltip: { enabled: false }` to suppress the tooltip entirely.
+
 Decimal precision is controlled per format slot. Setting `decimals` changes the base precision and the remaining fields fall back to it:
 
 ```ts
@@ -285,6 +306,21 @@ ram: {
   // decimalsVerticalAlt defaults to decimalsVertical
 },
 ```
+
+## Clock Tooltip
+
+The clock tooltip accepts a `strftime` format string via `tooltip.text`. When `text` is empty (the default), no tooltip is shown even if `enabled` is true.
+
+```ts
+clock: {
+  kind: "clock",
+  tooltip: {
+    text: "%A, %B %-d",
+  },
+},
+```
+
+This shows the full weekday and date, for example `Monday, May 25`. Any `strftime` format is valid — `%c` for the locale default, `%Y-%m-%d %H:%M:%S` for an ISO-style datetime, and so on. Set `enabled: false` to suppress the tooltip entirely.
 
 ## Autohide
 

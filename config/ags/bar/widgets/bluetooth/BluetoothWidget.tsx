@@ -32,11 +32,13 @@ export default function BluetoothWidget({ orientation, command, icons, tooltip }
   const devices = createBinding(bluetooth, "devices")
 
   const icon = createComputed(() => isPowered() ? icons.enabled : icons.disabled)
-  const tooltipText = createComputed(() => {
-    if (!isPowered()) return tooltip.off
-    if (!isConnected()) return tooltip.on
-    return substituteTokens(tooltip.connected, { count: String(countConnectedDevices(devices())) })
-  })
+  const tooltipText = tooltip.enabled
+    ? createComputed(() => {
+        if (!isPowered()) return tooltip.off
+        if (!isConnected()) return tooltip.on
+        return substituteTokens(tooltip.connected, { count: String(countConnectedDevices(devices())) })
+      })
+    : undefined
 
   return (
     <Button

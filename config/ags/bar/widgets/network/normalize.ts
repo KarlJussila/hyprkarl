@@ -1,6 +1,7 @@
 import {
   childContext,
   fail,
+  normalizeBoolean,
   normalizeObjectConfig,
   normalizeStringValue,
   type ValidationContext,
@@ -40,10 +41,36 @@ export function normalizeNetworkIcons(
   }
 }
 
+export type NetworkTooltipConfig = {
+  enabled?: boolean
+  disconnected?: string
+  ethernet?: string
+  wifi?: string
+  wifiNoFreq?: string
+  wifiNoSsid?: string
+}
+
 export type NormalizedNetworkTooltip = {
+  enabled: boolean
   disconnected: string
   ethernet: string
   wifi: string
   wifiNoFreq: string
   wifiNoSsid: string
+}
+
+export function normalizeNetworkTooltipConfig(
+  ctx: ValidationContext,
+  config: NetworkTooltipConfig | undefined,
+  defaults: NormalizedNetworkTooltip,
+): NormalizedNetworkTooltip {
+  const raw = normalizeObjectConfig(ctx, config) as NetworkTooltipConfig | undefined
+  return {
+    enabled: normalizeBoolean(childContext(ctx, "enabled"), raw?.enabled, defaults.enabled),
+    disconnected: normalizeStringValue(childContext(ctx, "disconnected"), raw?.disconnected, defaults.disconnected),
+    ethernet: normalizeStringValue(childContext(ctx, "ethernet"), raw?.ethernet, defaults.ethernet),
+    wifi: normalizeStringValue(childContext(ctx, "wifi"), raw?.wifi, defaults.wifi),
+    wifiNoFreq: normalizeStringValue(childContext(ctx, "wifiNoFreq"), raw?.wifiNoFreq, defaults.wifiNoFreq),
+    wifiNoSsid: normalizeStringValue(childContext(ctx, "wifiNoSsid"), raw?.wifiNoSsid, defaults.wifiNoSsid),
+  }
 }

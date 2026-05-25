@@ -111,6 +111,7 @@ test("formats a waybar-style charging battery tooltip", () => {
       timeToEmpty: 0,
       timeToFull: 5430,
       formats: {
+        enabled: true,
         charging: "{power}↑ {time} {percentage}",
         discharging: "{power}↓ {time} {percentage}",
         plugged: "Plugged in {percentage}",
@@ -130,6 +131,7 @@ test("formats a waybar-style discharging battery tooltip", () => {
       timeToEmpty: 7210,
       timeToFull: 0,
       formats: {
+        enabled: true,
         charging: "{power}↑ {time} {percentage}",
         discharging: "{power}↓ {time} {percentage}",
         plugged: "Plugged in {percentage}",
@@ -149,6 +151,7 @@ test("falls back cleanly when battery rate is unavailable", () => {
       timeToEmpty: 0,
       timeToFull: 0,
       formats: {
+        enabled: true,
         charging: "{power}↑ {time} {percentage}",
         discharging: "{power}↓ {time} {percentage}",
         plugged: "Plugged in {percentage}",
@@ -165,6 +168,7 @@ test("falls back cleanly when battery rate is unavailable", () => {
       timeToEmpty: 0,
       timeToFull: 0,
       formats: {
+        enabled: true,
         charging: "{power}↑ {time} {percentage}",
         discharging: "{power}↓ {time} {percentage}",
         plugged: "Plugged in {percentage}",

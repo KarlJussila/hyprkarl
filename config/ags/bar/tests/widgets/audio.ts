@@ -103,6 +103,7 @@ test("formats an active audio tooltip", () => {
       volume: 0.42,
       device: "Speakers",
       formats: {
+        enabled: true,
         active: "{device} {percentage}",
         muted: "Muted {device}",
         unavailable: "Audio unavailable",
@@ -119,6 +120,7 @@ test("formats a muted audio tooltip", () => {
       volume: 0.07,
       device: "Headphones",
       formats: {
+        enabled: true,
         active: "{device} {percentage}",
         muted: "Muted {device}",
         unavailable: "Audio unavailable",
@@ -135,6 +137,7 @@ test("collapses empty audio tooltip tokens cleanly", () => {
       volume: 0.07,
       device: "",
       formats: {
+        enabled: true,
         active: "{device} {percentage}",
         muted: "Muted {device}",
         unavailable: "Audio unavailable",
@@ -144,6 +147,7 @@ test("collapses empty audio tooltip tokens cleanly", () => {
   )
   assert.equal(
     formatUnavailableAudioTooltip({
+      enabled: true,
       active: "{device} {percentage}",
       muted: "Muted {device}",
       unavailable: "Audio unavailable",

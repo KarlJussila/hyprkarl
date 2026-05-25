@@ -112,7 +112,7 @@ export default function NetworkWidget({ orientation, command, icons, tooltip }: 
       class="widget-network-button widget-glyph-button"
       orientation={orientation}
       execPrimary={() => execAsync(command).catch(() => {})}
-      tooltipText={tooltipText}
+      tooltipText={tooltip.enabled ? tooltipText : undefined}
     >
       <box
         class="widget-network-content"

@@ -1,6 +1,6 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeRequiredCommand, normalizeStringRecord } from "../shared/normalize.ts"
-import { normalizeNetworkIcons } from "./normalize.ts"
+import { normalizeRequiredCommand } from "../shared/normalize.ts"
+import { normalizeNetworkIcons, normalizeNetworkTooltipConfig } from "./normalize.ts"
 import type { NormalizedNetworkIcons, NormalizedNetworkTooltip } from "./normalize.ts"
 import NetworkWidget from "./NetworkWidget.tsx"
 
@@ -14,6 +14,7 @@ export default createWidgetSpec({
       wifi: ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
     } satisfies NormalizedNetworkIcons,
     tooltip: {
+      enabled: true,
       disconnected: "Disconnected",
       ethernet: "Ethernet connected",
       wifi: "{ssid} ({freq} GHz)",
@@ -24,7 +25,7 @@ export default createWidgetSpec({
   schema: {
     command: normalizeRequiredCommand,
     icons: normalizeNetworkIcons,
-    tooltip: normalizeStringRecord,
+    tooltip: normalizeNetworkTooltipConfig,
   },
   render: ({ config, placement }) => (
     <NetworkWidget

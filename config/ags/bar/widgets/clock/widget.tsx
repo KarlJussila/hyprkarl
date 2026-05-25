@@ -1,6 +1,10 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeFormatConfig } from "../shared/normalize.ts"
-import type { NormalizedFormatConfig } from "../shared/normalize.ts"
+import {
+  normalizeFormatConfig,
+  normalizeSimpleTooltipConfig,
+  type NormalizedFormatConfig,
+  type NormalizedSimpleTooltipConfig,
+} from "../shared/normalize.ts"
 import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import ClockWidget from "./ClockWidget.tsx"
@@ -17,9 +21,14 @@ const clockDefaults = {
     align: "center",
     gap: 0,
   },
+  tooltip: {
+    enabled: true,
+    text: "",
+  },
 } satisfies {
   format: NormalizedFormatConfig
   flyout: NormalizedFlyoutConfig
+  tooltip: NormalizedSimpleTooltipConfig
 }
 
 export default createWidgetSpec({
@@ -28,6 +37,7 @@ export default createWidgetSpec({
   schema: {
     format: normalizeFormatConfig,
     flyout: normalizeFlyoutConfig,
+    tooltip: normalizeSimpleTooltipConfig,
   },
   render: ({ id, config, placement, monitor }) => (
     <ClockWidget
@@ -36,6 +46,7 @@ export default createWidgetSpec({
       monitor={monitor}
       format={config.format}
       flyout={config.flyout}
+      tooltip={config.tooltip}
     />
   ),
 })

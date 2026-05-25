@@ -4,6 +4,7 @@ import AstalTray from "gi://AstalTray"
 import { type TrayPlacement } from "../../layout/placement"
 import TrayExpander from "./TrayExpander"
 import TrayItems from "./TrayItems"
+import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 import type {
   NormalizedTrayRevealConfig,
   TrayDirection,
@@ -14,9 +15,10 @@ type Props = {
   direction: TrayDirection
   mirrorTrigger: boolean
   reveal: NormalizedTrayRevealConfig
+  tooltip: NormalizedSimpleTooltipConfig
 }
 
-export default function TrayWidget({ placement, direction, mirrorTrigger, reveal }: Props) {
+export default function TrayWidget({ placement, direction, mirrorTrigger, reveal, tooltip }: Props) {
   const trayService = AstalTray.get_default()
   const trayItems = createConnection(
     [...trayService.items],
@@ -49,6 +51,7 @@ export default function TrayWidget({ placement, direction, mirrorTrigger, reveal
       hasItems={hasTrayItems}
       open={trayOpen}
       onToggle={toggleTray}
+      tooltip={tooltip}
     />
   )
 

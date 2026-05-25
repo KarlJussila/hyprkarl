@@ -2,6 +2,7 @@ import { Accessor, createComputed } from "ags"
 import { Gtk } from "ags/gtk4"
 import { type BarOrientation } from "../../layout/placement"
 import Button from "../../primitives/Button"
+import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 
 type Props = {
   orientation: BarOrientation
@@ -12,6 +13,7 @@ type Props = {
   hasItems: Accessor<boolean>
   open: Accessor<boolean>
   onToggle: () => void
+  tooltip: NormalizedSimpleTooltipConfig
 }
 
 export default function TrayExpander({
@@ -20,6 +22,7 @@ export default function TrayExpander({
   hasItems,
   open,
   onToggle,
+  tooltip,
 }: Props) {
   const isVertical = orientation === "vertical"
   const triggerIcon = createComputed(() => open() ? icons.expanded : icons.collapsed)
@@ -36,6 +39,7 @@ export default function TrayExpander({
       <Button
         class={buttonStateClass}
         orientation={orientation}
+        tooltipText={tooltip.enabled && tooltip.text ? tooltip.text : undefined}
         execPrimary={onToggle}
       >
         <box

@@ -1,6 +1,10 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import { normalizeRequiredCommand, normalizeStringRecord } from "../shared/normalize.ts"
-import type { NormalizedBluetoothIcons, NormalizedBluetoothTooltip } from "./normalize.ts"
+import {
+  normalizeBluetoothTooltipConfig,
+  type NormalizedBluetoothIcons,
+  type NormalizedBluetoothTooltip,
+} from "./normalize.ts"
 import BluetoothWidget from "./BluetoothWidget.tsx"
 
 export default createWidgetSpec({
@@ -12,6 +16,7 @@ export default createWidgetSpec({
       disabled: "󰂲",
     } satisfies NormalizedBluetoothIcons,
     tooltip: {
+      enabled: true,
       off: "Bluetooth off",
       on: "Bluetooth on",
       connected: "Devices connected: {count}",
@@ -20,7 +25,7 @@ export default createWidgetSpec({
   schema: {
     command: normalizeRequiredCommand,
     icons: normalizeStringRecord,
-    tooltip: normalizeStringRecord,
+    tooltip: normalizeBluetoothTooltipConfig,
   },
   render: ({ config, placement }) => (
     <BluetoothWidget

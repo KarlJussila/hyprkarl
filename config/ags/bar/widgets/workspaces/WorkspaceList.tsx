@@ -4,14 +4,16 @@ import { timeout, type Timer } from "ags/time"
 import { type BarOrientation } from "../../layout/placement"
 import { measureWidgetWidth, requestBarWindowRelayout } from "../../layout/windowSizing"
 import WorkspaceButton from "./WorkspaceButton"
+import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 import type { VisibleWorkspace } from "./workspaceVisibility"
 
 type Props = {
   orientation: BarOrientation
   workspaces: Array<VisibleWorkspace> | Accessor<Array<VisibleWorkspace>>
+  tooltip: NormalizedSimpleTooltipConfig
 }
 
-export default function WorkspaceList({ orientation, workspaces }: Props) {
+export default function WorkspaceList({ orientation, workspaces, tooltip }: Props) {
   const workspaceSignature = Array.isArray(workspaces)
     ? null
     : createComputed(() => workspaces().map((workspace) => `${workspace.id}:${workspace.isEmpty ? "e" : "o"}`).join(","))
@@ -56,7 +58,7 @@ export default function WorkspaceList({ orientation, workspaces }: Props) {
     >
       {Array.isArray(workspaces)
         ? workspaces.map((workspace) => (
-            <WorkspaceButton orientation={orientation} id={workspace.id} isEmpty={workspace.isEmpty} />
+            <WorkspaceButton orientation={orientation} id={workspace.id} isEmpty={workspace.isEmpty} tooltip={tooltip} />
           ))
         : (
             <For each={workspaces}>
@@ -65,6 +67,7 @@ export default function WorkspaceList({ orientation, workspaces }: Props) {
                   orientation={orientation}
                   id={workspace.id}
                   isEmpty={workspace.isEmpty}
+                  tooltip={tooltip}
                 />
               )}
             </For>

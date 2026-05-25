@@ -6,7 +6,7 @@ import { type FlyoutPlacement } from "../../layout/placement.ts"
 import FlyoutButton from "../shared/FlyoutButton.tsx"
 import CalendarFlyoutContent from "./CalendarFlyoutContent"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
-import type { NormalizedFormatConfig } from "../shared/normalize.ts"
+import type { NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 
 type Props = {
   id: string
@@ -14,11 +14,12 @@ type Props = {
   monitor: Gdk.Monitor
   format: NormalizedFormatConfig
   flyout: NormalizedFlyoutConfig
+  tooltip: NormalizedSimpleTooltipConfig
 }
 
 const HAS_SECONDS = /%[ST]/
 
-export default function ClockWidget({ id, placement, monitor, format, flyout }: Props) {
+export default function ClockWidget({ id, placement, monitor, format, flyout, tooltip }: Props) {
   const [currentTime, setCurrentTime] = createState(GLib.DateTime.new_now_local())
   const [useAlt, setUseAlt] = createState(false)
 
@@ -34,6 +35,10 @@ export default function ClockWidget({ id, placement, monitor, format, flyout }: 
     const fmt = hasAlt && useAlt() ? altFormat : primaryFormat
     return currentTime().format(fmt) ?? ""
   })
+
+  const tooltipText = tooltip.enabled && tooltip.text
+    ? createComputed(() => currentTime().format(tooltip.text) ?? "")
+    : undefined
 
   // Self-scheduling timer: 1 s when showing seconds, minute-aligned otherwise.
   // Follows Waybar's approach — fire at the next minute boundary then every 60 s.
@@ -76,6 +81,7 @@ export default function ClockWidget({ id, placement, monitor, format, flyout }: 
       id={id}
       flyoutLabel="calendar-menu"
       flyout={flyout}
+      tooltipText={tooltipText}
       execSecondary={hasAlt ? () => setUseAlt(!useAlt()) : undefined}
       renderFlyoutContent={() => <CalendarFlyoutContent currentTime={currentTime} />}
     >

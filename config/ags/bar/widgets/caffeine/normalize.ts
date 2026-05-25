@@ -2,6 +2,7 @@ import type { NormalizedSwitchMetrics } from "../../primitives/switchTypes.ts"
 import type { SwitchMetrics } from "./types.ts"
 import {
   childContext,
+  normalizeBoolean,
   normalizeFiniteNumber,
   normalizeNonNegativeNumber,
   normalizeObjectConfig,
@@ -10,9 +11,29 @@ import {
   type ValidationContext,
 } from "../shared/normalize.ts"
 
+export type CaffeineTooltipConfig = {
+  enabled?: boolean
+  active?: string
+  inactive?: string
+}
+
 export type NormalizedCaffeineTooltip = {
+  enabled: boolean
   active: string
   inactive: string
+}
+
+export function normalizeCaffeineTooltipConfig(
+  ctx: ValidationContext,
+  config: CaffeineTooltipConfig | undefined,
+  defaults: NormalizedCaffeineTooltip,
+): NormalizedCaffeineTooltip {
+  const raw = normalizeObjectConfig(ctx, config) as CaffeineTooltipConfig | undefined
+  return {
+    enabled: normalizeBoolean(childContext(ctx, "enabled"), raw?.enabled, defaults.enabled),
+    active: normalizeStringValue(childContext(ctx, "active"), raw?.active, defaults.active),
+    inactive: normalizeStringValue(childContext(ctx, "inactive"), raw?.inactive, defaults.inactive),
+  }
 }
 
 export function normalizeSwitchMetrics(

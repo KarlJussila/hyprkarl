@@ -6,6 +6,7 @@ import type {
 } from "./types.ts"
 import {
   childContext,
+  normalizeBoolean,
   normalizeNonNegativeNumber,
   normalizeObjectConfig,
   normalizePositiveNumber,
@@ -40,6 +41,7 @@ export function normalizeBatteryTooltipConfig(
   const rawTooltip = normalizeObjectConfig(ctx, tooltip) as BatteryTooltipConfig | undefined
 
   return {
+    enabled: normalizeBoolean(childContext(ctx, "enabled"), rawTooltip?.enabled, defaults.enabled),
     charging: normalizeStringValue(childContext(ctx, "charging"), rawTooltip?.charging, defaults.charging),
     discharging: normalizeStringValue(childContext(ctx, "discharging"), rawTooltip?.discharging, defaults.discharging),
     plugged: normalizeStringValue(childContext(ctx, "plugged"), rawTooltip?.plugged, defaults.plugged),

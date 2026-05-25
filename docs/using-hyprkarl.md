@@ -71,7 +71,7 @@ When the theme changes, Hyprkarl:
 - updates `config/hyprkarl/current/theme.name`
 - updates the wallpaper state
 - updates GNOME and QT themes
-- reloads Hyprland, mako, terminals, `btop`, and Waybar if it is running
+- reloads Hyprland, mako, terminals, `btop`, and the bar
 
 Some changes may not take effect everywhere immediately, but most of the theme
 switch happens right away.
@@ -169,7 +169,7 @@ Common utility commands include:
 - `hk-nightlight`
 - `hk-caffeine`
 - `hk-playerctl`
-- `hk-waybar-restart`
+- `hk-ags-restart`
 - `hk-audio-restart`
 - `hk-wifi-restart`
 

@@ -102,7 +102,7 @@ test("normalizes battery tooltip format overrides", () => {
   assert.equal(battery.tooltip.fallback, "Battery {percentage}")
 })
 
-test("formats a waybar-style charging battery tooltip", () => {
+test("formats a charging battery tooltip with power and time tokens", () => {
   assert.equal(
     formatBatteryTooltip({
       percentage: 0.67,
@@ -122,7 +122,7 @@ test("formats a waybar-style charging battery tooltip", () => {
   )
 })
 
-test("formats a waybar-style discharging battery tooltip", () => {
+test("formats a discharging battery tooltip with power and time tokens", () => {
   assert.equal(
     formatBatteryTooltip({
       percentage: 0.42,

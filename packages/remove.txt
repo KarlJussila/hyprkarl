@@ -3,3 +3,4 @@ kvantum # No longer needed
 kvantum-qt5 # No longer needed
 wifitui-bin # Replaced with wifitui
 wofi # Replaced with rofi
+waybar # Replaced with AGS bar

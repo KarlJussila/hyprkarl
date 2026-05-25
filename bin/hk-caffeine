@@ -36,5 +36,4 @@ case "${1:-toggle}" in
     *)      echo "Usage: $(basename "$0") [on|off|toggle]" >&2; exit 1 ;;
 esac
 
-pkill -RTMIN+9 waybar
 ags request caffeine-sync

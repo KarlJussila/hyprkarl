@@ -86,30 +86,32 @@ Then inspect:
 - `config/hyprkarl/current/wallpaper`
 - `config/hyprkarl/current/theme/wallpapers/`
 
-## Waybar Broke After an Edit
+## Bar Does Not Start or Looks Wrong
 
 Symptoms:
 
-- Waybar does not start
-- a custom module is blank
-- module layout is wrong
+- the bar does not appear
+- a widget is missing or showing unexpected content
+- styling looks wrong after a theme switch
 
 Cause:
 
-- `config/waybar/config.jsonc` has a JSONC mistake
-- `config/waybar/style.css` has a CSS mistake
-- a script under `scripts/waybar/` is failing
+- a TypeScript error in `config/ags/bar/config/widgets.config.ts` or
+  `config/ags/bar/config/layout.config.ts`
+- a CSS error in the active theme's `bar.scss`
+- AGS is not running
 
 What to do:
 
-- inspect `config/waybar/config.jsonc`
-- inspect `config/waybar/style.css`
-- if a custom module is blank, run its script directly
-- restart Waybar:
+- check the AGS log for errors: `journalctl --user -u app-ags@bar.service -e`
+- restart the bar:
 
 ```bash
-hk-waybar-restart
+hk-ags-restart
 ```
+
+- if a widget config change caused the problem, restore the previous value and
+  restart again
 
 ## Docker Is Not Ready
 
@@ -134,7 +136,7 @@ What to do:
 Symptoms:
 
 - battery notifications do nothing
-- the battery display in Waybar does not work
+- the battery display in the bar does not work
 - brightness commands fail or show no change
 
 Cause:

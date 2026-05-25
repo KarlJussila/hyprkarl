@@ -127,7 +127,7 @@ clock: {
 },
 ```
 
-Add a network launcher widget that follows the current Waybar behavior:
+Add a network launcher widget:
 
 ```ts
 network: {
@@ -136,7 +136,7 @@ network: {
 },
 ```
 
-Add a Bluetooth launcher widget that follows the current Waybar behavior:
+Add a Bluetooth launcher widget:
 
 ```ts
 bluetooth: {

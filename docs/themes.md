@@ -27,8 +27,7 @@ Hyprkarl:
 - updates the wallpaper state
 - updates GNOME and QT themes
 - reloads Hyprland, mako, terminals, and `btop`
-- restarts Waybar if it is running
-- restarts AGS if it is running (picks up the new `bar.scss`)
+- restarts AGS (picks up the new `bar.scss`)
 
 ## Switch the Active Theme
 
@@ -58,8 +57,6 @@ A full theme in this repo includes:
   Lock screen styling
 - `hyprtoolkit.conf`
   Hyprtoolkit styling
-- `waybar.css`
-  Waybar colors
 - `bar.scss`
   AGS bar colors, spacing, radii, and typography
 - `rofi.rasi`

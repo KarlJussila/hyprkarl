@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-waybar-restart
-# Restart waybar
-
-hk-restart-app waybar

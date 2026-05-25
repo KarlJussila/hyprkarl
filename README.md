@@ -58,8 +58,8 @@ The full manual lives under `docs/`.
   Repo layout and main editing surfaces
 - [docs/themes.md](docs/themes.md)
   Theme structure, wallpaper layout, and theme switching
-- [docs/customizing-waybar.md](docs/customizing-waybar.md)
-  Waybar config, styling split, and custom modules
+- [docs/customizing-bar.md](docs/customizing-bar.md)
+  Bar widget layout, styling, and runtime control
 - [docs/extending-hyprkarl.md](docs/extending-hyprkarl.md)
   Adding commands, menus, keybindings, and theme-aware config
 - [docs/troubleshooting.md](docs/troubleshooting.md)
@@ -71,8 +71,8 @@ The full manual lives under `docs/`.
 
 ## Themes
 
-Themes live under `themes/` and control the appearance of Hyprland, Waybar,
-rofi, terminals, mako, hyprlock, and other applications.
+Themes live under `themes/` and control the appearance of Hyprland, the AGS
+bar, rofi, terminals, mako, hyprlock, and other applications.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

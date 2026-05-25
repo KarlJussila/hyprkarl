@@ -121,18 +121,6 @@ ags msg bar status
 
 See `config/ags/bar/README.md` for the full widget reference and styling guide.
 
-## Add a Waybar Feature
-
-Waybar config is split between shared config, support scripts, and shared
-styling:
-
-1. Put module config in `config/waybar/config.jsonc`.
-2. Put support scripts under `scripts/waybar/`.
-3. Put shared styling in `config/waybar/style.css`.
-
-See [Customizing Waybar](customizing-waybar.md) for the Waybar configuration
-guidelines.
-
 ## Add a Theme-Aware Feature
 
 Hyprkarl switches themes by pointing `config/hyprkarl/current/theme` at a theme
@@ -147,7 +135,7 @@ the active theme into place. Use relative symlinks.
 
 Examples:
 
-- Waybar imports `current/theme/waybar.css`
+- the AGS bar symlinks `theme.scss` to `current/theme/bar.scss`
 - terminal configs import from `current/theme/...`
 - `hyprlock` points at `current/wallpaper`
 

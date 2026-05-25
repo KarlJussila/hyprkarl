@@ -141,21 +141,6 @@ ags msg bar status
 
 See `config/ags/bar/README.md` for full widget configuration reference.
 
-## Waybar
-
-Waybar is split across these files:
-
-- `config/waybar/config.jsonc`
-  Module layout and module behavior
-- `config/waybar/style.css`
-  Shared structural CSS
-- `themes/<theme>/waybar.css`
-  Theme-specific Waybar colors
-- `scripts/waybar/`
-  Support scripts for custom modules
-
-`config/waybar/style.css` imports the active theme's `waybar.css`.
-
 ## Themes
 
 Theme files live under `themes/<theme-name>/`.

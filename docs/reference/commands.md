@@ -152,12 +152,8 @@ does not try to document every internal script.
 - `hk-ags-toggle`
   Start AGS if it is not running; quit it if it is.
 
-## Waybar and UI Helpers
+## UI Helpers
 
-- `hk-waybar-restart`
-  Restart Waybar.
-- `hk-waybar-toggle`
-  Toggle Waybar on and off.
 - `hk-mako-reload`
   Reload mako.
 - `hk-terminal-reload`

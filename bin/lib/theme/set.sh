@@ -36,9 +36,6 @@ hk-wallpaper init || hk-wallpaper cycle
 "$SCRIPT_DIR/set-gtk.sh"
 
 # Restart components to apply new theme
-if pgrep -x waybar >/dev/null; then
-  hk-waybar-restart
-fi
 if pgrep -x ags >/dev/null; then
   hk-ags-restart
 fi

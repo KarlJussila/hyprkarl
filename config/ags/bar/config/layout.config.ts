@@ -19,7 +19,9 @@ const layoutConfig = {
     start: [
       "recording",
     ],
-    anchor: "clock",
+    center: [
+      "clock",
+    ],
     end: [
       "caffeine",
     ],

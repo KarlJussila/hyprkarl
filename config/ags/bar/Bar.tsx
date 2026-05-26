@@ -66,12 +66,10 @@ function ResolvedBar({
 
   const startWidgets = resolvedBarConfiguration.layout.start.map(renderWidget)
   const centerStartWidgets = resolvedBarConfiguration.layout.center.start.map(renderWidget)
-  const centerAnchor = resolvedBarConfiguration.layout.center.anchor
-    ? renderWidget(resolvedBarConfiguration.layout.center.anchor)
-    : null
+  const centerWidgets = resolvedBarConfiguration.layout.center.center.map(renderWidget)
   const centerEndWidgets = resolvedBarConfiguration.layout.center.end.map(renderWidget)
   const endWidgets = resolvedBarConfiguration.layout.end.map(renderWidget)
-  const hasCenterIsland = centerAnchor !== null || centerStartWidgets.length > 0 || centerEndWidgets.length > 0
+  const hasCenterIsland = centerWidgets.length > 0 || centerStartWidgets.length > 0 || centerEndWidgets.length > 0
 
   return (
     <window
@@ -166,7 +164,7 @@ function ResolvedBar({
             hexpand={placement.island.center.hexpand}
             vexpand={placement.island.center.vexpand}
             start={centerStartWidgets}
-            anchor={centerAnchor ?? undefined}
+            center={centerWidgets}
             end={centerEndWidgets}
           />
         )}

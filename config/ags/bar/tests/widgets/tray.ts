@@ -12,6 +12,7 @@ test("normalizes tray widget defaults from minimal config", () => {
       start: ["tray"],
       center: {
         start: [],
+        center: [],
         end: [],
       },
       end: [],

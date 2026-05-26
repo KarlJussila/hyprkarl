@@ -12,7 +12,7 @@ const minimalWidgets = {
 const minimalLayout: BarLayoutConfig = {
   edge: "top",
   start: ["menu"],
-  center: { start: [], anchor: "clock", end: [] },
+  center: { start: [], center: ["clock"], end: [] },
   end: [],
 }
 

@@ -41,9 +41,9 @@ function allowVerticalFill(widget: JSX.Element) {
 // the same edge.
 //
 // The center island uses a flat ordered list spanning all three parts
-// (start-slot segments → anchor → end-slot segments) so propagation crosses
-// slot boundaries correctly when adjacent collapsible widgets straddle the
-// anchor/slot seam.
+// (start-slot segments → center-group segments → end-slot segments) so propagation
+// crosses slot boundaries correctly when adjacent collapsible widgets straddle
+// the center-group/slot seam.
 
 const EDGE_CLASSES: IslandEdge[] = [
   "segment-edge-rounded-start",
@@ -82,11 +82,17 @@ function findVisibleSegmentNeighbor(segment: Gtk.Widget, dir: "next" | "prev"): 
 }
 
 // Return the bar-island-center container for any segment inside a center island,
-// whether it is the anchor (direct child) or a slot widget (3 levels deep).
+// whether it is a direct child, inside a center group, or inside a balance slot.
 function getCenterIsland(segment: Gtk.Widget): Gtk.Widget | undefined {
   const parent = segment.get_parent()
   if (!(parent instanceof Gtk.Widget)) return undefined
   if (parent.has_css_class("bar-island-center")) return parent
+  // Center group widget: segment → bar-island-center-group → bar-island-center
+  if (parent.has_css_class("bar-island-center-group")) {
+    const island = parent.get_parent()
+    if (island instanceof Gtk.Widget && island.has_css_class("bar-island-center")) return island
+    return undefined
+  }
   // Slot widget: segment → balance-content → balance-slot → bar-island-center
   const balanceSlot = parent.get_parent()
   if (!(balanceSlot instanceof Gtk.Widget)) return undefined
@@ -115,9 +121,9 @@ function segmentsInBalanceSlot(slot: Gtk.Widget): Gtk.Widget[] {
 type CenterIslandLayout = { segments: Gtk.Widget[]; spacers: Gtk.Widget[] }
 
 // Single pass over centerIsland's direct children that collects:
-//   segments — flat ordered list [startSlot..., anchor?, endSlot...]
+//   segments — flat ordered list [startSlot..., center..., endSlot...]
 //   spacers  — hexpand pusher widgets inside each balance slot
-// Works for both the with-anchor and no-anchor center island layouts.
+// Works for flat (no-pivot), single-pivot, and multi-pivot center island layouts.
 function collectCenterIslandLayout(centerIsland: Gtk.Widget): CenterIslandLayout {
   const segments: Gtk.Widget[] = []
   const spacers: Gtk.Widget[] = []
@@ -125,6 +131,13 @@ function collectCenterIslandLayout(centerIsland: Gtk.Widget): CenterIslandLayout
   while (child instanceof Gtk.Widget) {
     if (child.has_css_class("bar-segment")) {
       segments.push(child)
+    } else if (child.has_css_class("bar-island-center-group")) {
+      // Multi-widget center group: collect segments directly inside it
+      let seg = child.get_first_child()
+      while (seg instanceof Gtk.Widget) {
+        if (seg.has_css_class("bar-segment")) segments.push(seg)
+        seg = seg.get_next_sibling()
+      }
     } else if (child.has_css_class("bar-island-balance-slot")) {
       segments.push(...segmentsInBalanceSlot(child))
       const isStart = child.has_css_class("bar-island-balance-slot-start")
@@ -181,13 +194,50 @@ function reclaimEdgeClasses(to: Gtk.Widget, borrowed: BorrowedClass[]) {
   borrowed.length = 0
 }
 
-// Typed registry for the SizeGroup attached to each center island anchor segment.
-// Island.tsx registers when it creates the anchor; setupSegmentCollapse reads it
-// at realize time to disable balancing when the anchor hides (anchorless mode).
-const anchorSizeGroups = new WeakMap<Gtk.Widget, Gtk.SizeGroup>()
+// Typed registry for the SizeGroup attached to each center island pivot element.
+// Island.tsx registers when it creates the center element; setupSegmentCollapse reads it
+// at realize time to disable balancing when the pivot hides.
+const centerGroupSizeGroups = new WeakMap<Gtk.Widget, Gtk.SizeGroup>()
 
-export function registerAnchorSizeGroup(anchorSegment: Gtk.Widget, sizeGroup: Gtk.SizeGroup): void {
-  anchorSizeGroups.set(anchorSegment, sizeGroup)
+export function registerCenterGroupSizeGroup(centerElement: Gtk.Widget, sizeGroup: Gtk.SizeGroup): void {
+  centerGroupSizeGroups.set(centerElement, sizeGroup)
+}
+
+// Manages the center group container's visibility and SizeGroup state for the
+// multi-widget center case. When all inner segments hide, disables the SizeGroup
+// and hides spacers so the balance slots don't leave dead space. Restores on
+// first re-show.
+export function setupCenterGroupCollapse(
+  container: Gtk.Box,
+  innerSegments: Gtk.Box[],
+  sizeGroup: Gtk.SizeGroup,
+  spacers: Gtk.Widget[],
+) {
+  container.connect("realize", () => {
+    const originalMode = sizeGroup.mode
+    let collapsed = false
+
+    function update() {
+      const allHidden = innerSegments.every(s => !s.visible)
+      if (allHidden === collapsed) return
+      collapsed = allHidden
+      if (allHidden) {
+        container.visible = false
+        sizeGroup.mode = Gtk.SizeGroupMode.NONE
+        for (const s of spacers) s.visible = false
+      } else {
+        container.visible = true
+        sizeGroup.mode = originalMode
+        for (const s of spacers) s.visible = true
+      }
+    }
+
+    for (const seg of innerSegments) {
+      seg.connect("notify::visible", update)
+    }
+
+    update()
+  })
 }
 
 function setupSegmentCollapse(segment: Gtk.Box, child: Gtk.Widget) {
@@ -219,13 +269,13 @@ function setupSegmentCollapse(segment: Gtk.Box, child: Gtk.Widget) {
         }
       }
 
-      // Anchor only: switching to anchorless mode requires disabling the
-      // SizeGroup (so balance slots shrink to content width) and hiding
-      // the spacers (so they stop pushing content inward toward the gap).
-      // Without both, the equal-width constraint leaves dead space between
-      // the corner curve and the remaining visible widgets.
+      // Center pivot only: when the pivot hides, disable the SizeGroup (so
+      // balance slots shrink to content width) and hide the spacers (so they
+      // stop pushing content inward toward the gap). Without both, the
+      // equal-width constraint leaves dead space between the corner curve and
+      // the remaining visible widgets.
       if (segment.get_parent() === centerIsland) {
-        const sizeGroup = anchorSizeGroups.get(segment)
+        const sizeGroup = centerGroupSizeGroups.get(segment)
         const originalMode = sizeGroup?.mode
 
         if (sizeGroup || spacers.length > 0) {
@@ -318,11 +368,13 @@ export function markOuterIslandEdges(widgets: Array<JSX.Element>, side: IslandSi
 
 export function markCenteredIslandEdges(
   startWidgets: Array<JSX.Element>,
-  anchor: JSX.Element,
+  centerWidgets: Array<JSX.Element>,
   endWidgets: Array<JSX.Element>,
 ) {
-  const first = startWidgets[0] ?? anchor
-  const last = endWidgets[endWidgets.length - 1] ?? anchor
+  const firstCenter = centerWidgets[0]
+  const lastCenter = centerWidgets[centerWidgets.length - 1]
+  const first = startWidgets[0] ?? firstCenter
+  const last = endWidgets[endWidgets.length - 1] ?? lastCenter
 
   addClasses(first, ["segment-edge-rounded-start"])
   addClasses(last, ["segment-edge-rounded-end"])

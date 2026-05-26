@@ -12,6 +12,7 @@ test("normalizes dynamic workspace defaults from minimal config", () => {
       start: ["workspaces"],
       center: {
         start: [],
+        center: [],
         end: [],
       },
       end: [],
@@ -40,7 +41,7 @@ test("normalizes fixed workspaces and widget-specific overrides", () => {
       start: ["workspaces"],
       center: {
         start: [],
-        anchor: "clock",
+        center: ["clock"],
         end: [],
       },
       end: [],

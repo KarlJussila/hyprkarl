@@ -15,7 +15,7 @@ test("allows multiple widget IDs of the same kind with independent configs", () 
     start: ["clockCompact"],
     center: {
       start: [],
-      anchor: "clockFull",
+      center: ["clockFull"],
       end: [],
     },
     end: [],

@@ -26,7 +26,7 @@ showCornerCurves: false,
 start: ["menu", "workspaces"],
 center: {
   start: [],
-  anchor: "clock",
+  center: ["clock"],
   end: ["caffeine"],
 },
 end: ["tray", "battery"],
@@ -56,15 +56,17 @@ Leave the center island empty:
 ```ts
 center: {
   start: [],
+  center: [],
   end: [],
 },
 ```
 
-Center a whole island without a dedicated anchor widget:
+Center a group of widgets without a single pivot:
 
 ```ts
 center: {
-  start: ["clock", "caffeine"],
+  start: [],
+  center: ["clock", "caffeine"],
   end: [],
 },
 ```
@@ -79,7 +81,7 @@ Use the same widget instance more than once:
 start: ["clock"],
 center: {
   start: [],
-  anchor: "clock",
+  center: ["clock"],
   end: [],
 },
 ```
@@ -105,7 +107,7 @@ clockFull: {
 start: ["clockCompact"],
 center: {
   start: [],
-  anchor: "clockFull",
+  center: ["clockFull"],
   end: [],
 },
 ```
@@ -377,7 +379,7 @@ These commands affect all monitors. `bar toggle` forces visibility off if the ba
 - `showCornerCurves`: whether the decorative concave corner cutouts are drawn
 - `autohide`: whether the bar hides when the pointer is not over it
 - `exclusive`: whether the bar reserves space at the screen edge (default true)
-- `start`, `center`, and `end`: which widget IDs appear in each island
+- `start`, `center`, and `end`: which widget IDs appear in each island; `center` has its own `start`, `center`, and `end` sub-lists
 
 `widgets.config.ts` controls widget instances:
 

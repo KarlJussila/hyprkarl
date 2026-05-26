@@ -13,6 +13,7 @@ test("normalizes battery widget defaults from minimal config", () => {
       start: ["battery"],
       center: {
         start: [],
+        center: [],
         end: [],
       },
       end: [],
@@ -39,7 +40,7 @@ test("normalizes flat widget appearance overrides", () => {
       start: ["caffeine"],
       center: {
         start: [],
-        anchor: "clock",
+        center: ["clock"],
         end: [],
       },
       end: ["battery"],
@@ -81,6 +82,7 @@ test("normalizes battery tooltip format overrides", () => {
       start: ["battery"],
       center: {
         start: [],
+        center: [],
         end: [],
       },
       end: [],

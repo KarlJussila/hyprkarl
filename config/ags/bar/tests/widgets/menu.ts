@@ -12,6 +12,7 @@ test("normalizes menu widget defaults from minimal config", () => {
       start: ["menu"],
       center: {
         start: [],
+        center: [],
         end: [],
       },
       end: [],

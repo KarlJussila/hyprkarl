@@ -19,7 +19,7 @@ export type BarLayoutConfig = {
   start: Array<string>
   center: {
     start: Array<string>
-    anchor?: string
+    center: Array<string>
     end: Array<string>
   }
   end: Array<string>
@@ -34,7 +34,7 @@ export type ResolvedBarConfiguration = {
     start: Array<string>
     center: {
       start: Array<string>
-      anchor?: string
+      center: Array<string>
       end: Array<string>
     }
     end: Array<string>

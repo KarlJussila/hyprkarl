@@ -17,7 +17,6 @@ import {
   normalizeBarEdge,
   normalizeBoolean,
   normalizeLayoutWidgetId,
-  normalizeOptionalLayoutWidgetId,
   indexContext,
 } from "./shared/normalize.ts"
 import { widgetCatalog } from "./catalog.ts"
@@ -57,6 +56,17 @@ function normalizeLayoutConfig(layoutConfig: BarLayoutConfig): ResolvedLayoutCon
   const autohide = normalizeBoolean(layoutContext("autohide"), rawLayout.autohide, false)
   const exclusive = normalizeBoolean(layoutContext("exclusive"), rawLayout.exclusive, !autohide)
 
+  const centerStart = normalizeLayoutIdList("center.start", centerLayout.start)
+  const centerCenter = normalizeLayoutIdList("center.center", centerLayout.center)
+  const centerEnd = normalizeLayoutIdList("center.end", centerLayout.end)
+
+  if (centerCenter.length === 0 && (centerStart.length > 0 || centerEnd.length > 0)) {
+    fail(
+      layoutContext("center.center"),
+      "center.center must have at least one widget when center.start or center.end are used — put all widgets in center.center for a centered group without a pivot",
+    )
+  }
+
   return {
     edge: normalizeBarEdge(rawLayout.edge),
     showCornerCurves: normalizeBoolean(
@@ -68,9 +78,9 @@ function normalizeLayoutConfig(layoutConfig: BarLayoutConfig): ResolvedLayoutCon
     exclusive,
     start: normalizeLayoutIdList("start", rawLayout.start),
     center: {
-      start: normalizeLayoutIdList("center.start", centerLayout.start),
-      anchor: normalizeOptionalLayoutWidgetId(layoutContext("center.anchor"), centerLayout.anchor),
-      end: normalizeLayoutIdList("center.end", centerLayout.end),
+      start: centerStart,
+      center: centerCenter,
+      end: centerEnd,
     },
     end: normalizeLayoutIdList("end", rawLayout.end),
   }
@@ -116,12 +126,10 @@ function collectLayoutReferences(layoutConfig: ResolvedLayoutConfig): Array<Layo
       path: `center.start[${index}]`,
       widgetId,
     })),
-    ...(layoutConfig.center.anchor
-      ? [{
-          path: "center.anchor",
-          widgetId: layoutConfig.center.anchor,
-        }]
-      : []),
+    ...layoutConfig.center.center.map((widgetId, index) => ({
+      path: `center.center[${index}]`,
+      widgetId,
+    })),
     ...layoutConfig.center.end.map((widgetId, index) => ({
       path: `center.end[${index}]`,
       widgetId,

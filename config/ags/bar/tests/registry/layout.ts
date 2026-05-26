@@ -16,7 +16,7 @@ test("layout defaults decorative corner curves to enabled", () => {
       start: ["menu", "workspaces", "tray"],
       center: {
         start: [],
-        anchor: "clock",
+        center: ["clock"],
         end: ["caffeine"],
       },
       end: ["battery"],
@@ -43,7 +43,7 @@ test("allows layout config to disable decorative corner curves independently", (
       start: ["menu"],
       center: {
         start: [],
-        anchor: "clock",
+        center: ["clock"],
         end: [],
       },
       end: [],
@@ -64,7 +64,7 @@ test("rejects invalid layout-level corner curve toggle values", () => {
     start: ["menu"],
     center: {
       start: [],
-      anchor: "clock",
+      center: ["clock"],
       end: [],
     },
     end: [],
@@ -91,7 +91,7 @@ test("rejects missing widget references in the layout", () => {
       start: ["menu"],
       center: {
         start: [],
-        anchor: "clock",
+        center: ["clock"],
         end: [],
       },
       end: ["battery"],
@@ -118,7 +118,7 @@ test("allows the same widget ID to appear more than once in the layout", () => {
       start: ["menu"],
       center: {
         start: [],
-        anchor: "clock",
+        center: ["clock"],
         end: ["menu"],
       },
       end: [],
@@ -133,13 +133,14 @@ test("allows the same widget ID to appear more than once in the layout", () => {
   assert.deepEqual(resolved.layout.center.end, ["menu"])
 })
 
-test("allows an empty center island without an anchor", () => {
+test("allows an empty center island without any center widgets", () => {
   const resolved = resolveBarConfiguration(
     {
       edge: "top",
       start: ["menu"],
       center: {
         start: [],
+        center: [],
         end: [],
       },
       end: ["battery"],
@@ -150,18 +151,41 @@ test("allows an empty center island without an anchor", () => {
     },
   )
 
-  assert.equal(resolved.layout.center.anchor, undefined)
+  assert.deepEqual(resolved.layout.center.center, [])
   assert.deepEqual(resolved.layout.center.start, [])
   assert.deepEqual(resolved.layout.center.end, [])
 })
 
-test("allows center side widgets without a center anchor", () => {
+test("allows multiple widgets in the center array", () => {
   const resolved = resolveBarConfiguration(
     {
       edge: "top",
       start: ["menu"],
       center: {
+        start: [],
+        center: ["clock", "caffeine"],
+        end: [],
+      },
+      end: [],
+    },
+    {
+      menu: { kind: "menu" },
+      clock: { kind: "clock" },
+      caffeine: { kind: "caffeine" },
+    },
+  )
+
+  assert.deepEqual(resolved.layout.center.center, ["clock", "caffeine"])
+})
+
+test("rejects center.start or center.end widgets without center.center items", () => {
+  const error = expectBarConfigError(() => resolveBarConfiguration(
+    {
+      edge: "top",
+      start: ["menu"],
+      center: {
         start: ["clock"],
+        center: [],
         end: [],
       },
       end: [],
@@ -170,11 +194,10 @@ test("allows center side widgets without a center anchor", () => {
       menu: { kind: "menu" },
       clock: { kind: "clock" },
     },
-  )
+  ))
 
-  assert.equal(resolved.layout.center.anchor, undefined)
-  assert.deepEqual(resolved.layout.center.start, ["clock"])
-  assert.deepEqual(resolved.layout.center.end, [])
+  assert.equal(error.sourceFile, BAR_LAYOUT_SOURCE_FILE)
+  assert.equal(error.path, "center.center")
 })
 
 test("rejects unknown widget kinds at normalization time", () => {
@@ -184,7 +207,7 @@ test("rejects unknown widget kinds at normalization time", () => {
       start: ["mystery"],
       center: {
         start: [],
-        anchor: "clock",
+        center: ["clock"],
         end: [],
       },
       end: [],

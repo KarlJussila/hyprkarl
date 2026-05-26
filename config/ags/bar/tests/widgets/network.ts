@@ -7,7 +7,7 @@ type ResolvedNetworkWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: 
 
 test("normalizes network widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["network"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
     { network: { kind: "network" } },
   )
 
@@ -23,7 +23,7 @@ test("normalizes network widget defaults from minimal config", () => {
 
 test("allows network widgets to override their launch command", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["network"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
     { network: { kind: "network", command: "custom-network-command" } },
   )
 
@@ -33,7 +33,7 @@ test("allows network widgets to override their launch command", () => {
 
 test("allows network widgets to override icons", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["network"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
     {
       network: {
         kind: "network",
@@ -49,7 +49,7 @@ test("allows network widgets to override icons", () => {
 
 test("allows network widgets to override tooltip templates", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["network"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
     {
       network: {
         kind: "network",
@@ -67,7 +67,7 @@ test("rejects wifi icons that are not an array of exactly 5 strings", () => {
   assert.throws(
     () =>
       resolveBarConfiguration(
-        { edge: "top", start: ["network"], center: { start: [], end: [] }, end: [] },
+        { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
         { network: { kind: "network", icons: { wifi: ["a", "b"] as any } } },
       ),
     { name: "BarConfigError" },

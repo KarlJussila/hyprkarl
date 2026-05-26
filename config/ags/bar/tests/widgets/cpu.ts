@@ -7,7 +7,7 @@ type ResolvedCpuWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "cpu
 
 test("normalizes cpu widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["cpu"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["cpu"], center: { start: [], center: [], end: [] }, end: [] },
     { cpu: { kind: "cpu" } },
   )
 
@@ -27,7 +27,7 @@ test("normalizes cpu widget defaults from minimal config", () => {
 
 test("normalizes cpu widget config overrides", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["cpu"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["cpu"], center: { start: [], center: [], end: [] }, end: [] },
     {
       cpu: {
         kind: "cpu",
@@ -49,7 +49,7 @@ test("normalizes cpu widget config overrides", () => {
 
 test("decimals cascade to all variants when not overridden", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["cpu"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["cpu"], center: { start: [], center: [], end: [] }, end: [] },
     { cpu: { kind: "cpu", decimals: { primary: 2 } } },
   )
 
@@ -64,7 +64,7 @@ test("rejects a non-positive interval", () => {
   assert.throws(
     () =>
       resolveBarConfiguration(
-        { edge: "top", start: ["cpu"], center: { start: [], end: [] }, end: [] },
+        { edge: "top", start: ["cpu"], center: { start: [], center: [], end: [] }, end: [] },
         { cpu: { kind: "cpu", interval: 0 } },
       ),
     { name: "BarConfigError" },

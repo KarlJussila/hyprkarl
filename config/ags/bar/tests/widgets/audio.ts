@@ -17,6 +17,7 @@ test("normalizes audio widget defaults from minimal config", () => {
       start: ["audio"],
       center: {
         start: [],
+        center: [],
         end: [],
       },
       end: [],
@@ -45,6 +46,7 @@ test("normalizes audio widget overrides", () => {
       start: ["audio"],
       center: {
         start: [],
+        center: [],
         end: [],
       },
       end: [],

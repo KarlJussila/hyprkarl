@@ -14,6 +14,7 @@ test("rejects invalid widget option values with widget metadata", () => {
     start: ["menu"],
     center: {
       start: [],
+      center: [],
       end: [],
     },
     end: [],

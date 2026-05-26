@@ -8,7 +8,8 @@ import {
   markCenteredIslandEdges,
   markOuterIslandEdges,
   normalizeChildren,
-  registerAnchorSizeGroup,
+  registerCenterGroupSizeGroup,
+  setupCenterGroupCollapse,
   wrapIslandEntries,
   wrapIslandEntry,
 } from "./islandLayout"
@@ -33,7 +34,7 @@ type OuterIslandProps = BaseProps & {
 
 type CenterIslandProps = BaseProps & {
   start?: JSX.Element | Array<JSX.Element>
-  anchor?: JSX.Element
+  center?: Array<JSX.Element>
   end?: JSX.Element | Array<JSX.Element>
   startCorner?: JSX.Element
   endCorner?: JSX.Element
@@ -46,7 +47,7 @@ function islandClassName(className?: string) {
 }
 
 function isCenterIsland(props: IslandProps): props is CenterIslandProps {
-  return "start" in props || "anchor" in props || "end" in props
+  return "start" in props || "center" in props || "end" in props
 }
 
 function createBalancedSide({
@@ -145,7 +146,7 @@ function renderOuterIsland({
 
 function renderCenterIsland({
   start,
-  anchor,
+  center,
   end,
   placement,
   showCornerCurves,
@@ -168,7 +169,7 @@ function renderCenterIsland({
     showCornerCurves ? createCenterEndCornerCurve(placement) : null
   )
 
-  if (!anchor) {
+  if (!center || center.length === 0) {
     const centeredWidgets = [...startWidgets, ...endWidgets]
     markCenteredGroupEdges(centeredWidgets)
 
@@ -195,10 +196,6 @@ function renderCenterIsland({
       ? Gtk.SizeGroupMode.VERTICAL
       : Gtk.SizeGroupMode.HORIZONTAL,
   })
-  const centeredAnchor = wrapIslandEntry(anchor, placement)
-  registerAnchorSizeGroup(centeredAnchor, sideSizeGroup)
-
-  markCenteredIslandEdges(startWidgets, centeredAnchor, endWidgets)
 
   const startSide = createBalancedSide({
     placement,
@@ -216,6 +213,38 @@ function renderCenterIsland({
   sideSizeGroup.add_widget(startSide)
   sideSizeGroup.add_widget(endSide)
 
+  let centeredElement: Gtk.Box
+  let centerSegments: Gtk.Box[]
+
+  if (center.length === 1) {
+    const seg = wrapIslandEntry(center[0], placement)
+    registerCenterGroupSizeGroup(seg, sideSizeGroup)
+    centeredElement = seg
+    centerSegments = [seg]
+  } else {
+    const segs = center.map(w => wrapIslandEntry(w, placement))
+    const groupBox = (
+      <box
+        class="bar-island-center-group"
+        orientation={placement.layoutOrientation}
+      >
+        {segs}
+      </box>
+    ) as Gtk.Box
+    registerCenterGroupSizeGroup(groupBox, sideSizeGroup)
+    centeredElement = groupBox
+    centerSegments = segs
+
+    const spacers: Gtk.Widget[] = []
+    const startSpacer = startSide.get_first_child()
+    const endSpacer = endSide.get_last_child()
+    if (startSpacer instanceof Gtk.Widget && startSpacer.has_css_class("bar-island-balance-spacer")) spacers.push(startSpacer)
+    if (endSpacer instanceof Gtk.Widget && endSpacer.has_css_class("bar-island-balance-spacer")) spacers.push(endSpacer)
+    setupCenterGroupCollapse(groupBox, segs, sideSizeGroup, spacers)
+  }
+
+  markCenteredIslandEdges(startWidgets, centerSegments, endWidgets)
+
   return (
     <box
       class={`${islandClassName(className)} bar-island-center ${placementClasses(placement)}`}
@@ -228,7 +257,7 @@ function renderCenterIsland({
       $={setup}
     >
       {startSide}
-      {centeredAnchor}
+      {centeredElement}
       {endSide}
     </box>
   )

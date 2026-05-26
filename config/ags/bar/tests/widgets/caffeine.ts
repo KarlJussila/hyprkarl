@@ -7,7 +7,7 @@ type ResolvedCaffeineWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind:
 
 test("normalizes caffeine widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["caffeine"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["caffeine"], center: { start: [], center: [], end: [] }, end: [] },
     { caffeine: { kind: "caffeine" } },
   )
 
@@ -21,7 +21,7 @@ test("normalizes caffeine widget defaults from minimal config", () => {
 
 test("normalizes caffeine advanced switch overrides", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["caffeine"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["caffeine"], center: { start: [], center: [], end: [] }, end: [] },
     {
       caffeine: {
         kind: "caffeine",
@@ -40,7 +40,7 @@ test("normalizes caffeine advanced switch overrides", () => {
 
 test("allows caffeine widgets to override tooltip templates", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["caffeine"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["caffeine"], center: { start: [], center: [], end: [] }, end: [] },
     {
       caffeine: {
         kind: "caffeine",

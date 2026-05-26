@@ -7,7 +7,7 @@ type ResolvedBluetoothWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind
 
 test("normalizes bluetooth widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["bluetooth"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["bluetooth"], center: { start: [], center: [], end: [] }, end: [] },
     { bluetooth: { kind: "bluetooth" } },
   )
 
@@ -21,7 +21,7 @@ test("normalizes bluetooth widget defaults from minimal config", () => {
 
 test("allows bluetooth widgets to override their launch command", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["bluetooth"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["bluetooth"], center: { start: [], center: [], end: [] }, end: [] },
     { bluetooth: { kind: "bluetooth", command: "custom-bluetooth-command" } },
   )
 
@@ -31,7 +31,7 @@ test("allows bluetooth widgets to override their launch command", () => {
 
 test("allows bluetooth widgets to override icons", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["bluetooth"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["bluetooth"], center: { start: [], center: [], end: [] }, end: [] },
     {
       bluetooth: {
         kind: "bluetooth",
@@ -47,7 +47,7 @@ test("allows bluetooth widgets to override icons", () => {
 
 test("allows bluetooth widgets to override tooltip templates", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["bluetooth"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["bluetooth"], center: { start: [], center: [], end: [] }, end: [] },
     {
       bluetooth: {
         kind: "bluetooth",

@@ -7,7 +7,7 @@ type ResolvedRamWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "ram
 
 test("normalizes ram widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["ram"], center: { start: [], center: [], end: [] }, end: [] },
     { ram: { kind: "ram" } },
   )
 
@@ -22,7 +22,7 @@ test("normalizes ram widget defaults from minimal config", () => {
 
 test("decimals cascade to all variants when not overridden", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["ram"], center: { start: [], center: [], end: [] }, end: [] },
     { ram: { kind: "ram", decimals: { primary: 2 } } },
   )
 
@@ -35,7 +35,7 @@ test("decimals cascade to all variants when not overridden", () => {
 
 test("decimals.verticalAlt falls back to decimals.vertical, not decimals.alt", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["ram"], center: { start: [], center: [], end: [] }, end: [] },
     { ram: { kind: "ram", decimals: { primary: 1, alt: 2, vertical: 0 } } },
   )
 
@@ -48,7 +48,7 @@ test("decimals.verticalAlt falls back to decimals.vertical, not decimals.alt", (
 
 test("all decimals variants can be independently overridden", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["ram"], center: { start: [], center: [], end: [] }, end: [] },
     {
       ram: {
         kind: "ram",
@@ -68,7 +68,7 @@ test("rejects a negative decimals value", () => {
   assert.throws(
     () =>
       resolveBarConfiguration(
-        { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
+        { edge: "top", start: ["ram"], center: { start: [], center: [], end: [] }, end: [] },
         { ram: { kind: "ram", decimals: { primary: -1 } } },
       ),
     { name: "BarConfigError" },
@@ -79,7 +79,7 @@ test("rejects a non-positive interval", () => {
   assert.throws(
     () =>
       resolveBarConfiguration(
-        { edge: "top", start: ["ram"], center: { start: [], end: [] }, end: [] },
+        { edge: "top", start: ["ram"], center: { start: [], center: [], end: [] }, end: [] },
         { ram: { kind: "ram", interval: 0 } },
       ),
     { name: "BarConfigError" },

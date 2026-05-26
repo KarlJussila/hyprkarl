@@ -7,7 +7,7 @@ type ResolvedClockWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "c
 
 test("normalizes clock widget defaults from minimal config", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "top", start: ["clock"], center: { start: [], end: [] }, end: [] },
+    { edge: "top", start: ["clock"], center: { start: [], center: [], end: [] }, end: [] },
     { clock: { kind: "clock" } },
   )
 
@@ -23,7 +23,7 @@ test("normalizes clock widget defaults from minimal config", () => {
 
 test("normalizes clock widget overrides", () => {
   const resolved = resolveBarConfiguration(
-    { edge: "left", start: ["clock"], center: { start: [], end: [] }, end: [] },
+    { edge: "left", start: ["clock"], center: { start: [], center: [], end: [] }, end: [] },
     {
       clock: {
         kind: "clock",

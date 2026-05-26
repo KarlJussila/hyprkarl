@@ -2,6 +2,8 @@ import { createState } from "ags"
 import app from "ags/gtk4/app"
 import GLib from "gi://GLib?version=2.0"
 
+const decoder = new TextDecoder()
+
 const RUNTIME_DIR = GLib.getenv("XDG_RUNTIME_DIR") ?? "/tmp"
 const PID_FILE = `${RUNTIME_DIR}/hyprkarl/screenrecording.pid`
 
@@ -20,11 +22,14 @@ export function getRecordingController(): RecordingController {
   const [active, setActive] = createState(false)
 
   const syncStatus = () => {
-    const [ok, contents] = GLib.file_get_contents(PID_FILE)
-    if (!ok) { setActive(false); return }
-    const pid = parseInt(new TextDecoder().decode(contents).trim(), 10)
-    if (!Number.isInteger(pid) || pid <= 0) { setActive(false); return }
-    setActive(GLib.file_test(`/proc/${pid}`, GLib.FileTest.EXISTS))
+    try {
+      const [, contents] = GLib.file_get_contents(PID_FILE)
+      const pid = parseInt(decoder.decode(contents).trim(), 10)
+      if (!Number.isInteger(pid) || pid <= 0) { setActive(false); return }
+      setActive(GLib.file_test(`/proc/${pid}`, GLib.FileTest.EXISTS))
+    } catch {
+      setActive(false)
+    }
   }
 
   syncStatus()

@@ -8,6 +8,7 @@ import {
   markCenteredIslandEdges,
   markOuterIslandEdges,
   normalizeChildren,
+  registerAnchorSizeGroup,
   wrapIslandEntries,
   wrapIslandEntry,
 } from "./islandLayout"
@@ -195,6 +196,7 @@ function renderCenterIsland({
       : Gtk.SizeGroupMode.HORIZONTAL,
   })
   const centeredAnchor = wrapIslandEntry(anchor, placement)
+  registerAnchorSizeGroup(centeredAnchor, sideSizeGroup)
 
   markCenteredIslandEdges(startWidgets, centeredAnchor, endWidgets)
 

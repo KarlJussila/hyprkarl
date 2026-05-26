@@ -32,6 +32,18 @@ function allowVerticalFill(widget: JSX.Element) {
 // When a widget sets visible=false on itself, its bar-segment wrapper automatically
 // hides and transfers edge-rounding classes to the adjacent segment so the
 // neighbor renders correctly. Works for any widget in any island position.
+//
+// Edge classes propagate in a fixed direction: *-start classes move toward the
+// next segment (away from the start edge), *-end classes move toward the previous
+// segment. When hiding, we walk past already-hidden segments to find the nearest
+// visible target. The borrowed log records the actual holder so reclaim always
+// finds the right widget, even when multiple collapsible widgets are stacked at
+// the same edge.
+//
+// The center island uses a flat ordered list spanning all three parts
+// (start-slot segments → anchor → end-slot segments) so propagation crosses
+// slot boundaries correctly when adjacent collapsible widgets straddle the
+// anchor/slot seam.
 
 const EDGE_CLASSES: IslandEdge[] = [
   "segment-edge-rounded-start",
@@ -40,107 +52,204 @@ const EDGE_CLASSES: IslandEdge[] = [
   "segment-edge-screen-end",
 ]
 
-function segmentInSlot(slot: Gtk.Widget | null, direction: "first" | "last"): Gtk.Widget | undefined {
-  if (!(slot instanceof Gtk.Widget)) return undefined
+const EDGE_CLASS_PROPAGATION_DIR: Record<IslandEdge, "next" | "prev"> = {
+  "segment-edge-rounded-start": "next",
+  "segment-edge-screen-start": "next",
+  "segment-edge-rounded-end": "prev",
+  "segment-edge-screen-end": "prev",
+}
+
+type BorrowedClass = { cls: IslandEdge; holder: Gtk.Widget }
+
+// Walk direct siblings in one direction, skipping non-segment widgets (e.g. corner curves).
+function nextSegmentSibling(seg: Gtk.Widget, dir: "next" | "prev"): Gtk.Widget | undefined {
+  let sib: Gtk.Widget | null = dir === "next" ? seg.get_next_sibling() : seg.get_prev_sibling()
+  while (sib instanceof Gtk.Widget) {
+    if (sib.has_css_class("bar-segment")) return sib
+    sib = dir === "next" ? sib.get_next_sibling() : sib.get_prev_sibling()
+  }
+  return undefined
+}
+
+// Walk segment siblings in one direction, skipping hidden segments.
+function findVisibleSegmentNeighbor(segment: Gtk.Widget, dir: "next" | "prev"): Gtk.Widget | undefined {
+  let candidate = nextSegmentSibling(segment, dir)
+  while (candidate) {
+    if (candidate.visible) return candidate
+    candidate = nextSegmentSibling(candidate, dir)
+  }
+  return undefined
+}
+
+// Return the bar-island-center container for any segment inside a center island,
+// whether it is the anchor (direct child) or a slot widget (3 levels deep).
+function getCenterIsland(segment: Gtk.Widget): Gtk.Widget | undefined {
+  const parent = segment.get_parent()
+  if (!(parent instanceof Gtk.Widget)) return undefined
+  if (parent.has_css_class("bar-island-center")) return parent
+  // Slot widget: segment → balance-content → balance-slot → bar-island-center
+  const balanceSlot = parent.get_parent()
+  if (!(balanceSlot instanceof Gtk.Widget)) return undefined
+  const island = balanceSlot.get_parent()
+  if (island instanceof Gtk.Widget && island.has_css_class("bar-island-center")) return island
+  return undefined
+}
+
+// Collect all bar-segments from inside a balance-slot in DOM order.
+function segmentsInBalanceSlot(slot: Gtk.Widget): Gtk.Widget[] {
+  const segments: Gtk.Widget[] = []
   let child = slot.get_first_child()
-  while (child) {
-    if (child instanceof Gtk.Widget && child.has_css_class("bar-island-balance-content")) {
-      let seg = direction === "first" ? child.get_first_child() : child.get_last_child()
-      while (seg) {
-        if (seg instanceof Gtk.Widget && seg.has_css_class("bar-segment")) return seg
-        seg = direction === "first" ? seg.get_next_sibling() : seg.get_prev_sibling()
+  while (child instanceof Gtk.Widget) {
+    if (child.has_css_class("bar-island-balance-content")) {
+      let seg = child.get_first_child()
+      while (seg instanceof Gtk.Widget) {
+        if (seg.has_css_class("bar-segment")) segments.push(seg)
+        seg = seg.get_next_sibling()
       }
     }
     child = child.get_next_sibling()
   }
-  return undefined
+  return segments
 }
 
-// For the center start/end and outer island cases: find the nearest bar-segment
-// sibling at the segment level (outer island) or at the balance-slot level (center
-// island), skipping non-segment siblings like corner curves.
-function findSideNeighbor(segment: Gtk.Widget): Gtk.Widget | undefined {
-  const next = segment.get_next_sibling()
-  if (next instanceof Gtk.Widget && next.has_css_class("bar-segment")) return next
+type CenterIslandLayout = { segments: Gtk.Widget[]; spacers: Gtk.Widget[] }
 
-  const prev = segment.get_prev_sibling()
-  if (prev instanceof Gtk.Widget && prev.has_css_class("bar-segment")) return prev
-
-  // Center island: segment is inside bar-island-balance-content > bar-island-balance-slot.
-  // The adjacent segment is a sibling of the balance-slot in bar-island-center.
-  const balanceSlot = segment.get_parent()?.get_parent()
-  if (!(balanceSlot instanceof Gtk.Widget)) return undefined
-
-  const slotNext = balanceSlot.get_next_sibling()
-  if (slotNext instanceof Gtk.Widget && slotNext.has_css_class("bar-segment")) return slotNext
-
-  const slotPrev = balanceSlot.get_prev_sibling()
-  if (slotPrev instanceof Gtk.Widget && slotPrev.has_css_class("bar-segment")) return slotPrev
-
-  return undefined
-}
-
-function transferEdgeClasses(from: Gtk.Widget, to: Gtk.Widget, log: IslandEdge[]) {
-  for (const cls of EDGE_CLASSES) {
-    if (from.has_css_class(cls)) {
-      from.remove_css_class(cls)
-      to.add_css_class(cls)
-      log.push(cls)
+// Single pass over centerIsland's direct children that collects:
+//   segments — flat ordered list [startSlot..., anchor?, endSlot...]
+//   spacers  — hexpand pusher widgets inside each balance slot
+// Works for both the with-anchor and no-anchor center island layouts.
+function collectCenterIslandLayout(centerIsland: Gtk.Widget): CenterIslandLayout {
+  const segments: Gtk.Widget[] = []
+  const spacers: Gtk.Widget[] = []
+  let child = centerIsland.get_first_child()
+  while (child instanceof Gtk.Widget) {
+    if (child.has_css_class("bar-segment")) {
+      segments.push(child)
+    } else if (child.has_css_class("bar-island-balance-slot")) {
+      segments.push(...segmentsInBalanceSlot(child))
+      const isStart = child.has_css_class("bar-island-balance-slot-start")
+      const spacer = isStart ? child.get_first_child() : child.get_last_child()
+      if (spacer instanceof Gtk.Widget && spacer.has_css_class("bar-island-balance-spacer")) {
+        spacers.push(spacer)
+      }
     }
+    child = child.get_next_sibling()
+  }
+  return { segments, spacers }
+}
+
+// Walk a flat segment list in one direction, skipping hidden entries.
+function findVisibleListNeighbor(
+  segment: Gtk.Widget,
+  list: Gtk.Widget[],
+  dir: "next" | "prev",
+): Gtk.Widget | undefined {
+  const idx = list.indexOf(segment)
+  if (idx === -1) return undefined
+  const step = dir === "next" ? 1 : -1
+  for (let i = idx + step; i >= 0 && i < list.length; i += step) {
+    if (list[i].visible) return list[i]
+  }
+  return undefined
+}
+
+// Transfer all edge classes on `from` to the nearest visible neighbor found by
+// `findNeighbor`. Records each transfer in `borrowed` for later reclaim.
+function transferEdgeClasses(
+  from: Gtk.Widget,
+  borrowed: BorrowedClass[],
+  findNeighbor: (segment: Gtk.Widget, dir: "next" | "prev") => Gtk.Widget | undefined,
+) {
+  for (const cls of EDGE_CLASSES) {
+    if (!from.has_css_class(cls)) continue
+    const target = findNeighbor(from, EDGE_CLASS_PROPAGATION_DIR[cls])
+    if (target) {
+      from.remove_css_class(cls)
+      target.add_css_class(cls)
+      borrowed.push({ cls, holder: target })
+    }
+    // No visible neighbor — leave the class on the hiding segment so it
+    // can be reclaimed intact when the segment becomes visible again.
   }
 }
 
-function reclaimEdgeClasses(from: Gtk.Widget, to: Gtk.Widget, log: IslandEdge[]) {
-  for (const cls of log) {
-    from.remove_css_class(cls)
+function reclaimEdgeClasses(to: Gtk.Widget, borrowed: BorrowedClass[]) {
+  for (const { cls, holder } of borrowed) {
+    holder.remove_css_class(cls)
     to.add_css_class(cls)
   }
-  log.length = 0
+  borrowed.length = 0
+}
+
+// Typed registry for the SizeGroup attached to each center island anchor segment.
+// Island.tsx registers when it creates the anchor; setupSegmentCollapse reads it
+// at realize time to disable balancing when the anchor hides (anchorless mode).
+const anchorSizeGroups = new WeakMap<Gtk.Widget, Gtk.SizeGroup>()
+
+export function registerAnchorSizeGroup(anchorSegment: Gtk.Widget, sizeGroup: Gtk.SizeGroup): void {
+  anchorSizeGroups.set(anchorSegment, sizeGroup)
 }
 
 function setupSegmentCollapse(segment: Gtk.Box, child: Gtk.Widget) {
   segment.connect("realize", () => {
-    const segmentParent = segment.get_parent()
-    if (!(segmentParent instanceof Gtk.Widget)) return
-
+    const borrowed: BorrowedClass[] = []
     let hide: () => void
     let show: () => void
 
-    if (segmentParent.has_css_class("bar-island-center")) {
-      // The widget is the center island anchor. Its siblings are balance-slots,
-      // not bar-segments — look inside them for the actual neighbor segments.
-      const startNeighbor = segmentInSlot(segment.get_prev_sibling(), "last")
-      const endNeighbor = segmentInSlot(segment.get_next_sibling(), "first")
+    const centerIsland = getCenterIsland(segment)
 
-      if (!startNeighbor && !endNeighbor) {
-        // Solo anchor: hide the whole island so corner curves don't render alone.
-        hide = () => { segmentParent.visible = false }
-        show = () => { segmentParent.visible = true }
+    if (centerIsland) {
+      const { segments: allSegments, spacers } = collectCenterIslandLayout(centerIsland)
+
+      if (allSegments.length <= 1) {
+        // Only segment in the island: hide the whole container so corner
+        // curves don't render with no visible content.
+        hide = () => { centerIsland.visible = false }
+        show = () => { centerIsland.visible = true }
       } else {
-        const startBorrowed: IslandEdge[] = []
-        const endBorrowed: IslandEdge[] = []
+        const findNeighbor = (seg: Gtk.Widget, dir: "next" | "prev") =>
+          findVisibleListNeighbor(seg, allSegments, dir)
         hide = () => {
-          if (startNeighbor) transferEdgeClasses(segment, startNeighbor, startBorrowed)
-          if (endNeighbor) transferEdgeClasses(segment, endNeighbor, endBorrowed)
+          transferEdgeClasses(segment, borrowed, findNeighbor)
           segment.visible = false
         }
         show = () => {
-          if (startNeighbor) reclaimEdgeClasses(startNeighbor, segment, startBorrowed)
-          if (endNeighbor) reclaimEdgeClasses(endNeighbor, segment, endBorrowed)
+          reclaimEdgeClasses(segment, borrowed)
           segment.visible = true
         }
       }
+
+      // Anchor only: switching to anchorless mode requires disabling the
+      // SizeGroup (so balance slots shrink to content width) and hiding
+      // the spacers (so they stop pushing content inward toward the gap).
+      // Without both, the equal-width constraint leaves dead space between
+      // the corner curve and the remaining visible widgets.
+      if (segment.get_parent() === centerIsland) {
+        const sizeGroup = anchorSizeGroups.get(segment)
+        const originalMode = sizeGroup?.mode
+
+        if (sizeGroup || spacers.length > 0) {
+          const innerHide = hide
+          const innerShow = show
+          hide = () => {
+            innerHide()
+            if (sizeGroup) sizeGroup.mode = Gtk.SizeGroupMode.NONE
+            for (const s of spacers) s.visible = false
+          }
+          show = () => {
+            innerShow()
+            if (sizeGroup && originalMode !== undefined) sizeGroup.mode = originalMode
+            for (const s of spacers) s.visible = true
+          }
+        }
+      }
     } else {
-      // Widget is in center start/end or an outer island. Find the nearest
-      // bar-segment sibling (walking up to balance-slot level for center islands).
-      const neighbor = findSideNeighbor(segment)
-      const borrowed: IslandEdge[] = []
       hide = () => {
-        if (neighbor) transferEdgeClasses(segment, neighbor, borrowed)
+        transferEdgeClasses(segment, borrowed, findVisibleSegmentNeighbor)
         segment.visible = false
       }
       show = () => {
-        if (neighbor) reclaimEdgeClasses(neighbor, segment, borrowed)
+        reclaimEdgeClasses(segment, borrowed)
         segment.visible = true
       }
     }

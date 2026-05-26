@@ -322,6 +322,25 @@ clock: {
 
 This shows the full weekday and date, for example `Monday, May 25`. Any `strftime` format is valid — `%c` for the locale default, `%Y-%m-%d %H:%M:%S` for an ISO-style datetime, and so on. Set `enabled: false` to suppress the tooltip entirely.
 
+## Recording Widget
+
+The `recording` widget is an indicator that appears only while a screen recording is active. It is hidden at all other times and takes no space in the bar. Clicking it stops the recording by running the configured command.
+
+```ts
+recording: {
+  kind: "recording",
+  icon: "󰻂",
+  command: "hk-record-screen --stop-recording",
+  tooltip: {
+    text: "Recording — click to stop",
+  },
+},
+```
+
+The widget receives state updates via `ags request recording-sync`, which `hk-record-screen` calls automatically on start and stop. No polling is involved.
+
+Set `tooltip: { enabled: false }` to suppress the tooltip.
+
 ## Autohide
 
 Autohide is configured in `layout.config.ts`:

@@ -16,7 +16,9 @@ const layoutConfig = {
   ],
 
   center: {
-    start: [],
+    start: [
+      "recording"
+    ],
     anchor: "clock",
     end: [
       "caffeine",

@@ -110,4 +110,7 @@ window.Bar.bar-shell {
   .switch-track.is-active { color: theme.$accent; }
   .switch-border.is-active { color: theme.$accent; }
 
+  // Recording indicator
+  .widget-recording-glyph { color: theme.$error; }
+
 }

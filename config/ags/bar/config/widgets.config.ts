@@ -148,6 +148,9 @@ const widgetDefinitions = {
       fallback: "{percentage}",
     },
   },
+  recording: {
+    kind: "recording",
+  },
 } satisfies BarWidgetDefinitions
 
 export default widgetDefinitions

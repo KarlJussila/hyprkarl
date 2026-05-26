@@ -1,4 +1,5 @@
 import audioSpec from "./audio/widget.tsx"
+import recordingSpec from "./recording/widget.tsx"
 import batterySpec from "./battery/widget.tsx"
 import bluetoothSpec from "./bluetooth/widget.tsx"
 import caffeineSpec from "./caffeine/widget.tsx"
@@ -23,6 +24,7 @@ export const widgetCatalog = {
   bluetooth: bluetoothSpec,
   audio: audioSpec,
   battery: batterySpec,
+  recording: recordingSpec,
 }
 
 export type WidgetSpecByKind = typeof widgetCatalog

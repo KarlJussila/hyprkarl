@@ -1,13 +1,18 @@
 #!/bin/bash
 # Start and stop a screenrecording, which will be saved to ~/Videos by default.
 # Alternative location can be set via HYPRKARL_SCREENRECORD_DIR or XDG_VIDEOS_DIR ENVs.
+#
+# By default uses slurp + the kms backend: click a monitor or drag a region to
+# capture it. Set HYPRKARL_SCREENRECORD_USE_PORTAL=true to use the xdg-desktop-portal
+# backend instead — enables HDR, external-GPU monitors, and window capture, but can
+# fail EGL DMA-BUF modifier import on some configurations.
+#
 # Resolution is capped to 4K for monitors above 4K, native otherwise.
 # Override via --resolution= (e.g. --resolution=1920x1080, --resolution=0x0 for native).
 
-default_videos_dir=$(xdg-user-dir VIDEOS 2>/dev/null)
-[[ -n "$default_videos_dir" ]] || default_videos_dir="$HOME/Videos"
+[[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
 
-OUTPUT_DIR="${HYPRKARL_SCREENRECORD_DIR:-${XDG_VIDEOS_DIR:-$default_videos_dir}}"
+OUTPUT_DIR="${HYPRKARL_SCREENRECORD_DIR:-${XDG_VIDEOS_DIR:-$HOME/Videos}}"
 RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}/hyprkarl"
 PID_FILE="$RUNTIME_DIR/screenrecording.pid"
 RECORDING_FILE="$RUNTIME_DIR/screenrecording.path"
@@ -74,7 +79,6 @@ find_webcam_device() {
 start_webcam_overlay() {
   cleanup_webcam
 
-  # Auto-detect first available webcam if none specified
   if [[ -z $WEBCAM_DEVICE ]]; then
     WEBCAM_DEVICE=$(find_webcam_device)
     if [[ -z $WEBCAM_DEVICE ]]; then
@@ -83,13 +87,9 @@ start_webcam_overlay() {
     fi
   fi
 
-  # Get monitor scale
   local scale=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .scale')
-
-  # Target width (base 360px, scaled to monitor)
   local target_width=$(awk "BEGIN {printf \"%.0f\", 360 * $scale}")
 
-  # Try preferred 16:9 resolutions in order, use first available
   local preferred_resolutions=("640x360" "1280x720" "1920x1080")
   local ffplay_args=(-f v4l2)
   local available_formats=$(v4l2-ctl --list-formats-ext -d "$WEBCAM_DEVICE" 2>/dev/null)
@@ -133,7 +133,80 @@ default_resolution() {
   fi
 }
 
+# Monitor + window rectangles on the focused workspace, in slurp's "X,Y WxH" format.
+get_rectangles() {
+  local monitors_json
+  monitors_json=$(hyprctl monitors -j)
+  local active_workspace
+  active_workspace=$(echo "$monitors_json" | jq -r '.[] | select(.focused == true) | .activeWorkspace.id')
+  echo "$monitors_json" | jq -r --arg ws "$active_workspace" '
+    .[] | select(.activeWorkspace.id == ($ws | tonumber)) |
+    "\(.x),\(.y) \(.width / .scale | floor)x\(.height / .scale | floor)"'
+  hyprctl clients -j | jq -r --arg ws "$active_workspace" '
+    .[] | select(.workspace.id == ($ws | tonumber)) |
+    "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"'
+}
+
+# Echoes "monitor:NAME" when the selection matches a full monitor, otherwise
+# "region:WxH+X+Y". Returns non-zero if the user cancelled.
+select_capture_target() {
+  local rects=$(get_rectangles)
+  hyprpicker -r -z >/dev/null 2>&1 &
+  local picker_pid=$!
+  sleep .1
+  local selection=$(echo "$rects" | slurp 2>/dev/null)
+  kill $picker_pid 2>/dev/null
+
+  [[ $selection =~ ^(-?[0-9]+),(-?[0-9]+)[[:space:]]([0-9]+)x([0-9]+)$ ]] || return 1
+  local sx=${BASH_REMATCH[1]} sy=${BASH_REMATCH[2]}
+  local sw=${BASH_REMATCH[3]} sh=${BASH_REMATCH[4]}
+
+  # A bare click snaps to the rectangle that contains it
+  if ((sw * sh < 20)); then
+    while IFS= read -r rect; do
+      [[ $rect =~ ^(-?[0-9]+),(-?[0-9]+)[[:space:]]([0-9]+)x([0-9]+)$ ]] || continue
+      local rx=${BASH_REMATCH[1]} ry=${BASH_REMATCH[2]}
+      local rw=${BASH_REMATCH[3]} rh=${BASH_REMATCH[4]}
+      if ((sx >= rx && sx < rx + rw && sy >= ry && sy < ry + rh)); then
+        sx=$rx sy=$ry sw=$rw sh=$rh
+        break
+      fi
+    done <<<"$rects"
+  fi
+
+  local monitor=$(hyprctl monitors -j | jq -r --argjson x "$sx" --argjson y "$sy" --argjson w "$sw" --argjson h "$sh" '
+    .[] | select(.x == $x and .y == $y and (.width / .scale | floor) == $w and (.height / .scale | floor) == $h) | .name' | head -1)
+
+  if [[ -n $monitor ]]; then
+    echo "monitor:$monitor"
+    return
+  fi
+
+  echo "region:${sw}x${sh}+${sx}+${sy}"
+}
+
 start_screenrecording() {
+  local capture_args=()
+
+  if [[ ${HYPRKARL_SCREENRECORD_USE_PORTAL:-false} == "true" ]]; then
+    capture_args=(-w portal -s "${RESOLUTION:-$(default_resolution)}")
+  else
+    local target
+    target=$(select_capture_target) || return 1
+
+    case $target in
+    monitor:*)
+      capture_args=(-w "${target#monitor:}" -s "${RESOLUTION:-$(default_resolution)}")
+      ;;
+    region:*)
+      capture_args=(-w "${target#region:}")
+      [[ -n $RESOLUTION ]] && capture_args+=(-s "$RESOLUTION")
+      ;;
+    esac
+  fi
+
+  [[ $WEBCAM == "true" ]] && start_webcam_overlay
+
   local filename="$OUTPUT_DIR/screenrecording-$(date +'%Y-%m-%d_%H-%M-%S').mp4"
   local audio_devices=""
   local audio_args=()
@@ -141,20 +214,16 @@ start_screenrecording() {
   [[ $DESKTOP_AUDIO == "true" ]] && audio_devices+="default_output"
 
   if [[ $MICROPHONE_AUDIO == "true" ]]; then
-    # Merge audio tracks into one - separate tracks only play one at a time in most players
     [[ -n $audio_devices ]] && audio_devices+="|"
     audio_devices+="default_input"
   fi
 
   [[ -n $audio_devices ]] && audio_args+=(-a "$audio_devices" -ac aac)
 
-  local resolution="${RESOLUTION:-$(default_resolution)}"
-
-  gpu-screen-recorder -w portal -k auto -s "$resolution" -f 60 -fm cfr -fallback-cpu-encoding yes -o "$filename" "${audio_args[@]}" &
+  gpu-screen-recorder "${capture_args[@]}" -k auto -f 60 -fm cfr -fallback-cpu-encoding yes -o "$filename" "${audio_args[@]}" &
   local pid=$!
   echo "$pid" >"$PID_FILE"
 
-  # Wait for recording to actually start (file appears after portal selection)
   while kill -0 $pid 2>/dev/null && [[ ! -f $filename ]]; do
     sleep 0.2
   done
@@ -175,7 +244,6 @@ stop_screenrecording() {
 
   kill -SIGINT "$pid" 2>/dev/null || true
 
-  # Wait a maximum of 5 seconds to finish before hard killing
   local count=0
   while kill -0 "$pid" 2>/dev/null && ((count < 50)); do
     sleep 0.1
@@ -189,29 +257,42 @@ stop_screenrecording() {
     kill -9 "$pid" 2>/dev/null || true
     notify-send "Screen recording error" "Recording process had to be force-killed. Video may be corrupted." -u critical -t 5000
   else
-    trim_first_frame
+    finalize_recording
     notify-send "Screen recording saved to $OUTPUT_DIR" -t 2000
   fi
 
   rm -f "$PID_FILE" "$RECORDING_FILE"
 }
 
-trim_first_frame() {
+finalize_recording() {
   local latest
   latest=$(cat "$RECORDING_FILE" 2>/dev/null)
+  [[ -f $latest ]] || return
 
-  if [[ -n $latest && -f $latest ]]; then
-    local trimmed="${latest%.mp4}-trimmed.mp4"
-    if ffmpeg -y -ss 0.1 -i "$latest" -c copy "$trimmed" -loglevel quiet 2>/dev/null; then
-      mv "$trimmed" "$latest"
-    else
-      rm -f "$trimmed"
-    fi
+  # Re-encode only when the first GOP contains discardable warmup packets — stream
+  # copy can't trim those (it rewinds to the keyframe). Clean recordings stay on
+  # the fast stream-copy path.
+  local video_codec=(-c:v copy)
+  if ffprobe -v error -select_streams v:0 -read_intervals %+0.2 -show_entries packet=flags -of csv=p=0 "$latest" 2>/dev/null | grep -q D; then
+    video_codec=(-c:v libx264 -preset veryfast -crf 20)
+  fi
+
+  local args=(-y -ss 0.1 -i "$latest" "${video_codec[@]}")
+  if ffprobe -v error -select_streams a -show_entries stream=codec_type -of csv=p=0 "$latest" 2>/dev/null | grep -q audio; then
+    # Hard-mute the first 400ms to drop the PipeWire capture-open pop, then fade in
+    args+=(-af "volume=enable='lt(t,0.4)':volume=0,afade=t=in:st=0.4:d=0.05,loudnorm=I=-14:TP=-1.5:LRA=11")
+  fi
+
+  local processed="${latest%.mp4}-processed.mp4"
+  if ffmpeg "${args[@]}" "$processed" -loglevel quiet 2>/dev/null; then
+    mv "$processed" "$latest"
+  else
+    rm -f "$processed"
   fi
 }
 
 toggle_screenrecording_indicator() {
-  pkill -RTMIN+8 waybar
+  timeout 5 ags request recording-sync || true
 }
 
 if [[ "$WEBCAM" == "true" ]] && ! command -v v4l2-ctl >/dev/null 2>&1; then
@@ -229,7 +310,5 @@ if screenrecording_active >/dev/null; then
 elif [[ $STOP_RECORDING == "true" ]]; then
   exit 1
 else
-  [[ $WEBCAM == "true" ]] && start_webcam_overlay
-
   start_screenrecording || cleanup_webcam
 fi

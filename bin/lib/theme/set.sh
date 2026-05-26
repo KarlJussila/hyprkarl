@@ -37,7 +37,7 @@ hk-wallpaper init || hk-wallpaper cycle
 
 # Restart components to apply new theme
 if pgrep -x ags >/dev/null; then
-  hk-ags-restart
+  hk-ags restart
 fi
 hyprctl reload >/dev/null
 hk-mako-reload

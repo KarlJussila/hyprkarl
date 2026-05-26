@@ -1,0 +1,46 @@
+#!/bin/bash
+# hk-menu-ags
+# Menu for controlling the AGS bar.
+#
+# Usage:
+#   hk-menu-ags [--back <command> [args...]]
+#
+#   --back     Optional command to invoke if the user dismisses the menu.
+#              If omitted, dismissing the menu does nothing.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/shell.sh"
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+    shift; BACK=("$@")
+fi
+
+STATUS=$(ags request bar status 2>/dev/null)
+
+HIDDEN=$(jq -r '.hidden' <<< "$STATUS")
+AUTOHIDE=$(jq -r '.autohide' <<< "$STATUS")
+EXCLUSIVE=$(jq -r '.exclusive' <<< "$STATUS")
+
+state() {
+    [[ "$1" == "true" ]] && echo "$2" || echo "$3"
+}
+
+TOGGLE_ENTRY="$(state "$HIDDEN" " Hidden" " Visible")"
+AUTOHIDE_ENTRY="$(state "$AUTOHIDE" "󱙝 Autohide" "󱙜 Autohide")"
+EXCLUSIVE_ENTRY="$(state "$EXCLUSIVE" "󱔓 Exclusive" "󱂬 Non-Exclusive")"
+
+CHOICE=$(echo -e "$TOGGLE_ENTRY\n$AUTOHIDE_ENTRY\n$EXCLUSIVE_ENTRY" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "AGS Bar" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$TOGGLE_ENTRY")    hk-ags toggle ;;
+    "$AUTOHIDE_ENTRY")  hk-ags autohide ;;
+    "$EXCLUSIVE_ENTRY") hk-ags exclusive ;;
+    "")                 (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+esac

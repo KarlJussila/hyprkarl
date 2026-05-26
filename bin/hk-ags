@@ -1,0 +1,56 @@
+#!/bin/bash
+# hk-ags
+# Dispatcher for AGS process control and bar requests.
+#
+# Usage:
+#   hk-ags restart                      Gracefully restart the AGS process
+#   hk-ags start                        Start AGS if not running
+#   hk-ags stop                         Quit AGS if running
+#   hk-ags autohide [on|off|toggle]     Control bar autohide
+#   hk-ags exclusive [on|off|toggle]    Control bar exclusive zone
+#   hk-ags show                         Force bar visible
+#   hk-ags hide                         Force bar hidden
+#   hk-ags toggle                       Toggle bar visibility
+#   hk-ags status                       Print bar status JSON
+#   hk-ags request [args...]            Send an arbitrary request to AGS
+
+case "${1:-}" in
+    restart)
+        ags quit
+        timeout 2 bash -c "while pgrep -x ags >/dev/null; do sleep 0.05; done" || pkill -9 -x ags
+        setsid uwsm-app -- ags run >/dev/null 2>&1 &
+        ;;
+
+    start)
+        if pgrep -x ags >/dev/null; then
+            echo "ags is already running" >&2
+            exit 1
+        fi
+        setsid uwsm-app -- ags run >/dev/null 2>&1 &
+        ;;
+
+    stop)
+        if ! pgrep -x ags >/dev/null; then
+            echo "ags is not running" >&2
+            exit 1
+        fi
+        ags quit
+        ;;
+
+    autohide|exclusive)
+        ags request bar "$1" "${2:-toggle}"
+        ;;
+
+    show|hide|toggle|status)
+        ags request bar "$1"
+        ;;
+
+    request)
+        ags request "${@:2}"
+        ;;
+
+    *)
+        echo "Usage: $(basename "$0") <restart|start|stop|autohide|exclusive|show|hide|toggle|status|request> [args...]" >&2
+        exit 1
+        ;;
+esac

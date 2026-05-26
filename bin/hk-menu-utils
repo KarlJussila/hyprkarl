@@ -24,6 +24,7 @@ SELF=("$(basename "$0")")
 CAFFEINE=" Caffeine"
 NIGHTLIGHT=" Nightlight"
 SCREEN_RECORD=" Screen Record"
+AGS=" AGS Bar"
 
 case "$(powerprofilesctl get)" in
     "power-saver")    POWER_PROFILE_ICON="󰌪" ;;
@@ -33,7 +34,7 @@ case "$(powerprofilesctl get)" in
 esac
 POWER_PROFILE="$POWER_PROFILE_ICON Power Profile"
 
-CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE" \
+CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE\n$AGS" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -45,5 +46,6 @@ case "$CHOICE" in
     "$NIGHTLIGHT")    hk-nightlight ;;
     "$SCREEN_RECORD") sleep 0.5 && hk-record-screen ;;
     "$POWER_PROFILE") hk-menu-power-profile --back "${SELF[@]}" ;;
+    "$AGS")          hk-menu-ags --back "${SELF[@]}" ;;
     "")               (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

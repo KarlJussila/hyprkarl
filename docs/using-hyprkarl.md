@@ -83,8 +83,7 @@ See [Themes](themes.md) for the full architecture.
 Each theme has its own `wallpapers/` directory. The current wallpaper is tracked
 through `config/hyprkarl/current/wallpaper`.
 
-The usual way to manage wallpapers is `Hyprkarl Menu -> Config -> Wallpaper` or
-`SUPER + CTRL + SPACE`, but you can also run:
+The usual way to manage wallpapers is `Hyprkarl Menu -> Config -> Wallpaper`, but you can also run:
 
 ```bash
 hk-wallpaper set <filename>
@@ -169,7 +168,7 @@ Common utility commands include:
 - `hk-nightlight`
 - `hk-caffeine`
 - `hk-playerctl`
-- `hk-ags-restart`
+- `hk-ags restart`
 - `hk-audio-restart`
 - `hk-wifi-restart`
 

@@ -20,6 +20,9 @@ how you manage your own system outside this repo.
 - Do not add Bash strict mode.
 - Prefer explicit guard clauses and explicit return-code checks.
 - Print short, direct failure messages close to the failing command.
+- Use `if` blocks for most conditionals, including guard clauses.
+- Reserve `||` for true fallback/escape-hatch one-liners where the inline form is clearly just "bail if this fails".
+- `&&` is fine for quick inline checks or sequenced holds before a command: `pgrep -x ags && hk-ags restart`, `sleep 0.5 && hk-record-screen`.
 
 ## Readability Rules
 

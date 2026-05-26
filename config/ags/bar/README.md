@@ -358,15 +358,15 @@ The `exclusive` field is independent of `autohide`. Setting `exclusive: false` k
 
 ### Bar CLI
 
-The bar can also be controlled at runtime via `ags msg`:
+The bar can also be controlled at runtime via `hk-ags` (or directly via `ags request bar <subcommand>`):
 
 ```bash
-ags msg bar autohide on|off|toggle   # change autohide mode
-ags msg bar exclusive on|off|toggle  # change exclusive mode
-ags msg bar show                     # force bar visible
-ags msg bar hide                     # force bar hidden
-ags msg bar toggle                   # toggle between forced show/hide
-ags msg bar status                   # print JSON: {autohide, exclusive, hidden}
+hk-ags autohide on|off|toggle   # change autohide mode
+hk-ags exclusive on|off|toggle  # change exclusive mode
+hk-ags show                     # force bar visible
+hk-ags hide                     # force bar hidden
+hk-ags toggle                   # toggle between forced show/hide
+hk-ags status                   # print JSON: {autohide, exclusive, hidden}
 ```
 
 These commands affect all monitors. `bar toggle` forces visibility off if the bar is currently shown and not in autohide mode, otherwise forces it visible.

@@ -34,7 +34,7 @@ configured instances.
 To apply changes, run:
 
 ```bash
-hk-ags-restart
+hk-ags restart
 ```
 
 Theme switches already restart the bar.
@@ -44,10 +44,10 @@ Theme switches already restart the bar.
 The bar can also be controlled without restarting:
 
 ```bash
-ags msg bar autohide on|off|toggle   # change autohide mode
-ags msg bar exclusive on|off|toggle  # change exclusive mode
-ags msg bar show|hide|toggle         # force a visibility state
-ags msg bar status                   # print JSON: {autohide, exclusive, hidden}
+hk-ags autohide on|off|toggle   # change autohide mode
+hk-ags exclusive on|off|toggle  # change exclusive mode
+hk-ags show|hide|toggle         # force a visibility state
+hk-ags status                   # print JSON: {autohide, exclusive, hidden}
 ```
 
 ## Full Widget Reference

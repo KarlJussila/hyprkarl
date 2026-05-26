@@ -19,7 +19,7 @@ Cause:
 What to do:
 
 - treat `setup-dotfiles.sh` as a first-install tool
-- use `scripts/add-dotfiles.sh` when you only need to expose new tracked files
+- use `hk-update dotfiles` when you only need to expose new tracked files
 - keep your own changes on a git branch in `~/.local/share/hyprkarl`
 
 ## A Change Did Not Take Effect
@@ -103,11 +103,11 @@ Cause:
 
 What to do:
 
-- check the AGS log for errors: `journalctl --user -u app-ags@bar.service -e`
-- restart the bar:
+- run AGS directly in a terminal to see errors: `ags run`
+- resolve errors and restart the bar:
 
 ```bash
-hk-ags-restart
+hk-ags restart
 ```
 
 - if a widget config change caused the problem, restore the previous value and
@@ -166,16 +166,13 @@ Cause:
 What to do:
 
 ```bash
-./scripts/add-dotfiles.sh
+hk-update dotfiles
 ```
 
 If that fails because the target path already exists, decide whether you want to
-keep that live file or replace it with a symlink to Hyprkarl.
-
-`setup-dotfiles.sh` is the stronger tool, but it has a different risk: it can
-replace overlapping live files, and it resets `config/` and `applications/` in
-`~/.local/share/hyprkarl` to the current git checkout. Commit any changes you
-want to keep under those trees before running it.
+keep that live file or replace it with a symlink to Hyprkarl. Use
+`hk-update dotfiles --adopt` to pull the conflicting file into the repo for
+review, or `hk-update dotfiles --force` to overwrite it with the repo version.
 
 ## Related Docs
 

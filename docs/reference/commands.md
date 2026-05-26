@@ -100,15 +100,15 @@ does not try to document every internal script.
 ## Packages
 
 - `hk-pkg-install-tui`
-  Open an `fzf` package picker for pacman packages.
+  Open an `fzf` package picker to install pacman packages.
 - `hk-pkg-install-tui --aur`
-  Open an `fzf` package picker for AUR packages.
+  Open an `fzf` package picker to install AUR packages.
 - `hk-pkg-install-tui --flatpak`
-  Open an `fzf` package picker for Flatpak apps.
+  Open an `fzf` package picker to install Flatpak apps.
 - `hk-pkg-remove-tui`
-  Open an `fzf` picker for installed packages.
+  Open an `fzf` package picker to uninstall pacman packages.
 - `hk-pkg-remove-tui --flatpak`
-  Open an `fzf` picker for installed Flatpak apps.
+  Open an `fzf` package picker to uninstall Flatpak apps.
 - `hk-pkg install <package>...`
   Install named pacman packages.
 - `hk-pkg install --aur <package>...`
@@ -146,11 +146,31 @@ does not try to document every internal script.
 
 ## AGS Bar
 
-- `hk-ags-restart`
+- `hk-menu-ags`
+  Open the AGS bar control menu. Shows current state for visibility, autohide,
+  and exclusive zone; selecting an item toggles it.
+
+- `hk-ags restart`
   Gracefully quit AGS, wait for the process to exit, then restart it under
   uwsm-app.
-- `hk-ags-toggle`
-  Start AGS if it is not running; quit it if it is.
+- `hk-ags start`
+  Start AGS if it is not running.
+- `hk-ags stop`
+  Quit AGS if it is running.
+- `hk-ags autohide [on|off|toggle]`
+  Control bar autohide behavior. Defaults to `toggle`.
+- `hk-ags exclusive [on|off|toggle]`
+  Control whether the bar reserves an exclusive zone. Defaults to `toggle`.
+- `hk-ags show`
+  Force the bar visible.
+- `hk-ags hide`
+  Force the bar hidden.
+- `hk-ags toggle`
+  Toggle bar visibility.
+- `hk-ags status`
+  Print bar status as JSON (`autohide`, `exclusive`, `hidden`).
+- `hk-ags request [args...]`
+  Send an arbitrary request to the running AGS instance.
 
 ## UI Helpers
 
@@ -165,11 +185,10 @@ does not try to document every internal script.
   Start or stop screen recording. Supports desktop audio, microphone audio,
   webcam overlays, and explicit resolution arguments.
 - `hk-nightlight [on|off|toggle]`
-  Enable, disable, or toggle hyprsunset nightlight (warm color temperature + gamma
-  dimming). Defaults to `toggle`. State is detected from hyprsunset's running
-  arguments; `on`/`off` are idempotent. Applies changes by restarting hyprsunset.
+  Enable, disable, or toggle hyprsunset nightlight (warm color temperature +
+  gamma dimming).
 - `hk-caffeine`
-  Toggle the idle inhibitor.
+  Toggle idle behaviors (hypridle).
 - `hk-playerctl`
   Control media playback and show track notifications.
 - `hk-volume`

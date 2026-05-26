@@ -130,13 +130,13 @@ The AGS bar lives under `config/ags/bar/`. The main editing surfaces are:
 
 `config/ags/bar/theme.scss` is a symlink managed by `hk-theme set`; it points to the active theme's `bar.scss`. Switching themes with `hk-theme set` updates the symlink and restarts AGS.
 
-The bar can also be controlled at runtime via `ags msg`:
+The bar can also be controlled at runtime via `hk-ags`:
 
 ```bash
-ags msg bar autohide on|off|toggle
-ags msg bar exclusive on|off|toggle
-ags msg bar show|hide|toggle
-ags msg bar status
+hk-ags autohide on|off|toggle
+hk-ags exclusive on|off|toggle
+hk-ags show|hide|toggle
+hk-ags status
 ```
 
 See `config/ags/bar/README.md` for full widget configuration reference.

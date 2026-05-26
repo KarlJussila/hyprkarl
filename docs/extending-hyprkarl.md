@@ -56,7 +56,12 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-hyprkarl_parse_back_args "$@"
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+  shift; BACK=("$@")
+fi
+SELF=("$(basename "$0")")
+[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")
 
 FIRST="First action"
 SECOND="Second action"
@@ -71,7 +76,7 @@ CHOICE=$(printf '%s\n' "$FIRST" "$SECOND" \
 case "$CHOICE" in
     "$FIRST")  first-command ;;
     "$SECOND") second-command ;;
-    "")        hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+    "")        (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac
 ```
 
@@ -113,10 +118,10 @@ Register the new kind in `config/ags/bar/widgets/catalog.ts`.
 To control the bar at runtime without editing config:
 
 ```bash
-ags msg bar autohide on|off|toggle
-ags msg bar exclusive on|off|toggle
-ags msg bar show|hide|toggle
-ags msg bar status
+hk-ags autohide on|off|toggle
+hk-ags exclusive on|off|toggle
+hk-ags show|hide|toggle
+hk-ags status
 ```
 
 See `config/ags/bar/README.md` for the full widget reference and styling guide.

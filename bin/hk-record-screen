@@ -230,7 +230,7 @@ start_screenrecording() {
 
   if kill -0 $pid 2>/dev/null; then
     echo "$filename" >"$RECORDING_FILE"
-    toggle_screenrecording_indicator
+    timeout 5 ags request recording-sync || true
     return 0
   fi
 
@@ -250,7 +250,7 @@ stop_screenrecording() {
     count=$((count + 1))
   done
 
-  toggle_screenrecording_indicator
+  timeout 5 ags request recording-sync || true
   cleanup_webcam
 
   if kill -0 "$pid" 2>/dev/null; then
@@ -289,10 +289,6 @@ finalize_recording() {
   else
     rm -f "$processed"
   fi
-}
-
-toggle_screenrecording_indicator() {
-  timeout 5 ags request recording-sync || true
 }
 
 if [[ "$WEBCAM" == "true" ]] && ! command -v v4l2-ctl >/dev/null 2>&1; then

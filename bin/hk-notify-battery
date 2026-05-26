@@ -59,6 +59,6 @@ args=(
 )
 
 [[ -n "$body" ]] && args+=("$body")
-$use_value && args+=(-h "int:value:$level")
+[[ "$use_value" == true ]] && args+=(-h "int:value:$level")
 
 notify-send "${args[@]}"

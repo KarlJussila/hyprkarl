@@ -14,8 +14,12 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-hyprkarl_parse_back_args "$@"
-hyprkarl_build_self_command "$0"
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+  shift; BACK=("$@")
+fi
+SELF=("$(basename "$0")")
+[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
 CAFFEINE=" Caffeine"
 NIGHTLIGHT=" Nightlight"
@@ -39,7 +43,7 @@ CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE" \
 case "$CHOICE" in
     "$CAFFEINE")      hk-caffeine ;;
     "$NIGHTLIGHT")    hk-nightlight ;;
-    "$SCREEN_RECORD") hk-record-screen ;;
-    "$POWER_PROFILE") hk-menu-power-profile --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "")               hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+    "$SCREEN_RECORD") sleep 0.5 && hk-record-screen ;;
+    "$POWER_PROFILE") hk-menu-power-profile --back "${SELF[@]}" ;;
+    "")               (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

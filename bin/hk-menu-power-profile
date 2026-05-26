@@ -12,7 +12,10 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-hyprkarl_parse_back_args "$@"
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+  shift; BACK=("$@")
+fi
 
 CURRENT=$(powerprofilesctl get)
 
@@ -37,5 +40,5 @@ case "$CHOICE" in
     "$POWER_SAVER")   powerprofilesctl set power-saver ;;
     "$BALANCED")      powerprofilesctl set balanced ;;
     "$PERFORMANCE")   powerprofilesctl set performance ;;
-    "")               hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+    "")               (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

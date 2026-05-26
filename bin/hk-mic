@@ -10,9 +10,6 @@
 #   mute      Mute the microphone. No-op if already muted.
 #   unmute    Unmute the microphone. No-op if already unmuted.
 
-ICON_MIC_ACTIVE=$(hk-find-icon "audio-input-microphone-symbolic" status actions devices)
-ICON_MIC_MUTED=$(hk-find-icon "microphone-sensitivity-muted-symbolic" status actions devices)
-
 case "${1:-}" in
     toggle) wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle ;;
     mute)   wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 1 ;;
@@ -21,13 +18,11 @@ case "${1:-}" in
     *)      echo "Usage: $(basename "$0") [toggle|mute|unmute]" >&2; exit 1 ;;
 esac
 
-mic_muted=$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -c MUTED)
-
-if (( mic_muted )); then
-    icon="$ICON_MIC_MUTED"
+if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -q MUTED; then
+    icon=$(hk-find-icon "microphone-sensitivity-muted-symbolic" status actions devices)
     summary="Mic Muted"
 else
-    icon="$ICON_MIC_ACTIVE"
+    icon=$(hk-find-icon "audio-input-microphone-symbolic" status actions devices)
     summary="Mic Active"
 fi
 

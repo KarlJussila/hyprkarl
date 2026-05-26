@@ -44,7 +44,7 @@ case "$action" in
         ;;
 esac
 
-[[ -n "$artist" ]] && body="$artist" || body=""
+body="$artist"
 
 position=$(playerctl position 2>/dev/null)
 length=$(playerctl metadata mpris:length 2>/dev/null)
@@ -58,5 +58,5 @@ notify-send \
     -a "osd-player" \
     -h string:x-canonical-private-synchronous:player \
     -h int:value:"$progress" \
-    "$(echo "$title" | head -c 50)" "$body" \
+    "${title:0:50}" "$body" \
     --icon="$icon"

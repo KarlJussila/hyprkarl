@@ -1,17 +1,6 @@
 #!/bin/bash
-# hk-find-icon
-# Finds an icon file by name, searching the hyprkarl theme icons first,
-# then the current GTK icon theme with fallback to Yaru and hicolor.
-#
-# Usage:
-#   hk-find-icon <icon-name> [category...]
-#
-# Categories are only used when searching system icon themes, and default
-# to "actions" if omitted. Multiple categories are searched in order.
-
-# Examples:
-#   hk-find-icon media-playback-start-symbolic
-#   hk-find-icon audio-volume-high-symbolic status actions
+# hk-find-icon — find an icon by name; checks hyprkarl theme first, then GTK theme → Yaru → hicolor.
+# Categories default to "actions" and are only used for system icon theme lookups.
 
 icon_name="${1:-}"
 [[ -n "$icon_name" ]] || { echo "Usage: hk-find-icon <icon-name> [category...]" >&2; exit 1; }

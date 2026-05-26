@@ -14,8 +14,12 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-hyprkarl_parse_back_args "$@"
-hyprkarl_build_self_command "$0"
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+  shift; BACK=("$@")
+fi
+SELF=("$(basename "$0")")
+[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
 TERMINAL=" Terminal"
 EDITOR=" Editor"
@@ -29,8 +33,8 @@ CHOICE=$(echo -e "$TERMINAL\n$EDITOR\n$SHELL" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$TERMINAL") hk-menu-terminal --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "$EDITOR")   hk-menu-editor --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "$SHELL")    hk-menu-shell --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "")          hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+    "$TERMINAL") hk-menu-terminal --back "${SELF[@]}" ;;
+    "$EDITOR")   hk-menu-editor --back "${SELF[@]}" ;;
+    "$SHELL")    hk-menu-shell --back "${SELF[@]}" ;;
+    "")          (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

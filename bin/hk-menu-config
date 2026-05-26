@@ -14,8 +14,12 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-hyprkarl_parse_back_args "$@"
-hyprkarl_build_self_command "$0"
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+  shift; BACK=("$@")
+fi
+SELF=("$(basename "$0")")
+[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
 THEME=" Theme"
 WALLPAPER=" Wallpaper"
@@ -31,10 +35,10 @@ CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$DEFAULTS\n$TIMEZONE\n$FINGERPRINT" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$THEME")       hk-menu-theme --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "$WALLPAPER")   hk-menu-wallpaper --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "$DEFAULTS")    hk-menu-defaults --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
+    "$THEME")       hk-menu-theme --back "${SELF[@]}" ;;
+    "$WALLPAPER")   hk-menu-wallpaper --back "${SELF[@]}" ;;
+    "$DEFAULTS")    hk-menu-defaults --back "${SELF[@]}" ;;
     "$TIMEZONE")    hyprkarl_open_terminal hk-setup-timezone ;;
-    "$FINGERPRINT") hk-menu-fingerprint --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "")             hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+    "$FINGERPRINT") hk-menu-fingerprint --back "${SELF[@]}" ;;
+    "")             (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

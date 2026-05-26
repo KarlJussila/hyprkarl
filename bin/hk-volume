@@ -10,11 +10,6 @@
 #   lower         Lower volume by 5%.
 #   toggle        Toggle mute.
 
-ICON_MUTED=$(hk-find-icon "audio-volume-muted-symbolic" status actions)
-ICON_LOW=$(hk-find-icon "audio-volume-low-symbolic" status actions)
-ICON_MEDIUM=$(hk-find-icon "audio-volume-medium-symbolic" status actions)
-ICON_HIGH=$(hk-find-icon "audio-volume-high-symbolic" status actions)
-
 case "${1:-}" in
     raise)        wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ ;;
     lower)        wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
@@ -25,17 +20,16 @@ esac
 
 volume_raw=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
 volume=$(awk '{printf "%d", $2 * 100}' <<< "$volume_raw")
-muted=$(grep -c MUTED <<< "$volume_raw")
 
-if (( muted )); then
-    icon="$ICON_MUTED"
+if grep -q MUTED <<< "$volume_raw"; then
+    icon=$(hk-find-icon "audio-volume-muted-symbolic" status actions)
     volume=0
 elif (( volume <= 33 )); then
-    icon="$ICON_LOW"
+    icon=$(hk-find-icon "audio-volume-low-symbolic" status actions)
 elif (( volume <= 66 )); then
-    icon="$ICON_MEDIUM"
+    icon=$(hk-find-icon "audio-volume-medium-symbolic" status actions)
 else
-    icon="$ICON_HIGH"
+    icon=$(hk-find-icon "audio-volume-high-symbolic" status actions)
 fi
 
 notify-send \

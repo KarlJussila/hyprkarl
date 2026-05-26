@@ -14,7 +14,10 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-hyprkarl_parse_back_args "$@"
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+  shift; BACK=("$@")
+fi
 
 CHOICE=$(hk-theme list \
     | rofi -dmenu \
@@ -24,6 +27,6 @@ CHOICE=$(hk-theme list \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "") hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+    "") (( ${#BACK[@]} )) && "${BACK[@]}" ;;
     *)  hk-theme set "$CHOICE" ;;
 esac

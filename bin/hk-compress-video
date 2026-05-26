@@ -28,7 +28,7 @@ CORRECTION_SAFETY_MARGIN=90 # percent to use on second attempt — undershoots t
 DEBUG=${DEBUG:-0}
 
 # Redirect output to /dev/null unless DEBUG is set
-[[ "$DEBUG" -ne 0 ]] && ff_out="/dev/stderr" || ff_out="/dev/null"
+if [[ "$DEBUG" -ne 0 ]]; then ff_out="/dev/stderr"; else ff_out="/dev/null"; fi
 
 # --- Logging ---
 dbg()  { [[ "$DEBUG" -ne 0 ]] && gum log --level debug "$*"; }
@@ -90,7 +90,6 @@ prompt_for_target_size() {
 }
 
 prompt_for_audio_bitrate() {
-    command -v gum >/dev/null 2>&1 || error "gum not found; supply --audio-bitrate as argument."
     local choice
     choice=$(gum choose --header="Select audio quality:" \
         "Off (0)" \
@@ -99,7 +98,13 @@ prompt_for_audio_bitrate() {
         "High (128k)" \
         "Audiophile (192k)")
     [[ -n "$choice" ]] || error "No audio option selected."
-    audio_bitrate_to_reserve=$(echo "$choice" | awk '{print $2}' | tr -d 'k()')
+    case "$choice" in
+        "Off (0)")         audio_bitrate_to_reserve=0 ;;
+        "Low (64k)")       audio_bitrate_to_reserve=64 ;;
+        "Medium (96k)")    audio_bitrate_to_reserve=96 ;;
+        "High (128k)")     audio_bitrate_to_reserve=128 ;;
+        "Audiophile (192k)") audio_bitrate_to_reserve=192 ;;
+    esac
 }
 
 resolve_inputs() {

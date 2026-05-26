@@ -14,8 +14,12 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-hyprkarl_parse_back_args "$@"
-hyprkarl_build_self_command "$0"
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+  shift; BACK=("$@")
+fi
+SELF=("$(basename "$0")")
+[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
 LAUNCH="󱓟 Launch"
 INSTALL=" Install"
@@ -33,10 +37,10 @@ CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$CONFIG\n$POWER" \
 
 case "$CHOICE" in
     "$LAUNCH")    hk-menu-launcher ;;
-    "$INSTALL")   hk-menu-install --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "$UNINSTALL") hk-menu-uninstall --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "$UTILS")     hk-menu-utils --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "$CONFIG")    hk-menu-config --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "$POWER")     hk-menu-power --back "${HYPRKARL_SELF_COMMAND[@]}" ;;
-    "")           hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+    "$INSTALL")   hk-menu-install --back "${SELF[@]}" ;;
+    "$UNINSTALL") hk-menu-uninstall --back "${SELF[@]}" ;;
+    "$UTILS")     hk-menu-utils --back "${SELF[@]}" ;;
+    "$CONFIG")    hk-menu-config --back "${SELF[@]}" ;;
+    "$POWER")     hk-menu-power --back "${SELF[@]}" ;;
+    "")           [[ -n "${BACK[*]}" ]] && "${BACK[@]}" ;;
 esac

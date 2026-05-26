@@ -41,28 +41,21 @@ clean_dict_output() {
   sed -e '/^220 /d' -e '/^250 /d' -e '/^[0-9][0-9][0-9] /d' -e '/^\.$/d'
 }
 
-# Function to extract words from match output
-extract_match_words() {
-  awk '{gsub(/^"|"$/, "", $2); print $2}' | grep -v "^$" | sort -f | uniq -i
-}
-
 # Function to get matching words
 get_matches() {
   local query="$1"
-  
+
   # Return early if query is empty
   [[ -n "$query" ]] || return
-  
+
   # Include the query text as an option
   echo "$query"
-  
-  # Get matches from the dictionary server
+
+  # Get matches from the dictionary server and remove duplicate of query
   local dict_url="dict://dict.org/m:$query:*"
-  local matches
-  matches=$(fetch_from_dict "$dict_url" | clean_dict_output | extract_match_words)
-  
-  # Remove the query if it appears in the matches to avoid duplicates
-  echo "$matches" | grep -v "^$query$"
+  fetch_from_dict "$dict_url" | clean_dict_output \
+    | awk '{gsub(/^"|"$/, "", $2); print $2}' | grep -v "^$" | sort -f | uniq -i \
+    | grep -v "^$query$"
 }
 
 # Function to format moby-thesaurus output
@@ -112,14 +105,9 @@ format_wordnet() {
 
 # Function to format dictionary output based on source
 format_dict_output() {
-  local word="$1"
-  local source="$2"
-  
-  # Remove the "X definitions found" and "From..." lines
-  sed -e '/^[0-9]\+ definition found$/d' -e '/^From /d' | \
-  # Remove lines that only contain a "." character
-  sed -e '/^\.$/d' | \
-  # Format based on source
+  local source="$1"
+
+  sed -e '/^[0-9]\+ definition found$/d' -e '/^From /d' -e '/^\.$/d' | \
   if [[ "$source" == "moby-thesaurus" ]]; then
     format_moby_thesaurus
   else
@@ -150,11 +138,11 @@ dict_preview() {
   fi
   
   # Format the output from the primary source
-  echo "$dict_output" | format_dict_output "$word" "$source"
+  echo "$dict_output" | format_dict_output "$source"
 }
 
 # Export all functions needed by fzf
-export -f dict_preview toggle_source get_matches fetch_from_dict clean_dict_output extract_match_words format_moby_thesaurus format_wordnet format_dict_output
+export -f dict_preview toggle_source get_matches fetch_from_dict clean_dict_output format_moby_thesaurus format_wordnet format_dict_output
 export SOURCE_FILE
 
 fzf_args=(

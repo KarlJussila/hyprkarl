@@ -8,8 +8,6 @@
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 
-ICON_KEYBOARD=$(hk-find-icon "keyboard-brightness-symbolic" status actions)
-
 direction="${1:-up}"
 
 device=$(hyprkarl_find_keyboard_backlight)
@@ -39,4 +37,4 @@ notify-send \
     -h int:value:"$percent" \
     -a "osd-brightness" \
     "Keyboard Brightness" "${percent}%" \
-    --icon="$ICON_KEYBOARD"
+    --icon="$(hk-find-icon "keyboard-brightness-symbolic" status actions)"

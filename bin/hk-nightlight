@@ -25,14 +25,14 @@ enable_nightlight() {
   [ "$CURRENT_TEMP" == "$ON_TEMP" ] && return 0
   hyprctl hyprsunset temperature $ON_TEMP
   hyprctl hyprsunset gamma $ON_GAMMA
-  notify-send "  Nightlight screen temperature"
+  notify-send " Nightlight screen temperature"
 }
 
 disable_nightlight() {
   [ "$CURRENT_TEMP" == "$OFF_TEMP" ] && return 0
   hyprctl hyprsunset temperature $OFF_TEMP
   hyprctl hyprsunset gamma $OFF_GAMMA
-  notify-send "  Daylight screen temperature"
+  notify-send " Daylight screen temperature"
 }
 
 case "${1:-toggle}" in

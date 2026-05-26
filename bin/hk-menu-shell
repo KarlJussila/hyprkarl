@@ -14,7 +14,10 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-hyprkarl_parse_back_args "$@"
+BACK=()
+if [[ "${1:-}" == "--back" ]]; then
+  shift; BACK=("$@")
+fi
 
 FISH=" Fish"
 ZSH="󰰶 Zsh"
@@ -31,5 +34,5 @@ case "$CHOICE" in
     "$FISH") hyprkarl_open_terminal hk-default-shell fish ;;
     "$ZSH")  hyprkarl_open_terminal hk-default-shell zsh ;;
     "$BASH") hyprkarl_open_terminal hk-default-shell bash ;;
-    "")      hyprkarl_run_back "${HYPRKARL_BACK_ARGS[@]}" ;;
+    "")      (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

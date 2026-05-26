@@ -37,7 +37,10 @@ run_pacman_picker() {
   )
   local -a pkg_names=()
 
-  mapfile -t pkg_names < <(pacman -Slq | sort -u | fzf "${fzf_args[@]}")
+  mapfile -t pkg_names < <(comm -23 \
+    <(pacman -Slq | sort -u) \
+    <(pacman -Qq | sort -u) \
+    | fzf "${fzf_args[@]}")
 
   if ((${#pkg_names[@]} > 0)); then
     sudo pacman -S --noconfirm "${pkg_names[@]}"
@@ -61,7 +64,10 @@ run_aur_picker() {
   )
   local -a pkg_names=()
 
-  mapfile -t pkg_names < <(yay -Slqa | fzf "${fzf_args[@]}")
+  mapfile -t pkg_names < <(comm -23 \
+    <(yay -Slqa | sort -u) \
+    <(pacman -Qq | sort -u) \
+    | fzf "${fzf_args[@]}")
 
   if ((${#pkg_names[@]} > 0)); then
     yay -S --noconfirm "${pkg_names[@]}"

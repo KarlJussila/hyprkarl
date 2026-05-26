@@ -28,7 +28,6 @@ at_battery() {
 }
 
 reset_if_charging() {
-    status=$(< "/sys/class/power_supply/$BATTERY/status")
     if [[ "$status" == "Charging" || "$status" == "Full" ]]; then
         rm -f "$FIRED_FILE"
     fi
@@ -42,17 +41,14 @@ while true; do
 
     reset_if_charging
 
-    # Notify at 20%
     if at_battery 20; then
         hk-notify-battery "Battery Low: %p%"
     fi
 
-    # And 10%
     if at_battery 10; then
         hk-notify-battery "Battery Low: %p%"
     fi
 
-    # And at 5% (critical)
     if at_battery 5; then
         hk-notify-battery -c "Battery Low: %p%"
     fi

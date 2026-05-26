@@ -5,8 +5,6 @@
 # Usage:
 #   hk-playerctl <play-pause|next|previous>
 
-icon_theme=$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")
-
 ICON_PLAY=$(hk-find-icon "media-playback-start-symbolic")
 ICON_PAUSE=$(hk-find-icon "media-playback-pause-symbolic")
 ICON_NEXT=$(hk-find-icon "media-skip-forward-symbolic")

@@ -23,8 +23,9 @@ case "${1:-}" in
     *)            echo "Unknown action: $1" >&2; exit 1 ;;
 esac
 
-volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}' | awk '{printf "%d", $1 * 100}')
-muted=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -c MUTED)
+volume_raw=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+volume=$(awk '{printf "%d", $2 * 100}' <<< "$volume_raw")
+muted=$(grep -c MUTED <<< "$volume_raw")
 
 if (( muted )); then
     icon="$ICON_MUTED"

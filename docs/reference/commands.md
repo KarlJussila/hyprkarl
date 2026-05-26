@@ -164,8 +164,10 @@ does not try to document every internal script.
 - `hk-record-screen`
   Start or stop screen recording. Supports desktop audio, microphone audio,
   webcam overlays, and explicit resolution arguments.
-- `hk-nightlight`
-  Toggle Hyprsunset.
+- `hk-nightlight [on|off|toggle]`
+  Enable, disable, or toggle hyprsunset nightlight (warm color temperature + gamma
+  dimming). Defaults to `toggle`. State is detected from hyprsunset's running
+  arguments; `on`/`off` are idempotent. Applies changes by restarting hyprsunset.
 - `hk-caffeine`
   Toggle the idle inhibitor.
 - `hk-playerctl`

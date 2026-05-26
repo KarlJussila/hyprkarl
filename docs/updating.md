@@ -86,6 +86,18 @@ files, it will refuse and tell you to commit first.
 | Writes update commit | Yes                           | Only if no conflicts found              |
 | Use when             | You trust the repo version    | You want to inspect what diverged       |
 
+## Stale Symlink Removal
+
+```bash
+hk-update remove-stale
+```
+
+Removes broken symlinks that point into the hyprkarl repo, then prunes any
+empty directories left behind. Useful after deleting or renaming files in the
+repo when you don't need to restow everything — `hk-update dotfiles` also
+removes stale symlinks as part of its normal run, so use `remove-stale` only
+when you want that cleanup step in isolation.
+
 ## Packages Update
 
 ```bash

@@ -20,6 +20,10 @@ does not try to document every internal script.
 - `hk-update dotfiles --adopt`
   Adopt conflicting `~/.config/` files into the repo without overwriting them,
   then report what differs so you can review and commit or discard.
+- `hk-update remove-stale`
+  Remove stale hyprkarl symlinks and empty directories from `~/.config/` and
+  related directories without restowing. Useful when cleaning up after removing
+  files from the repo.
 - `hk-update packages`
   Install packages newly added to the required lists, prompt to remove packages
   that were dropped or added to the removal list.

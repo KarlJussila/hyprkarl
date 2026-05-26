@@ -62,3 +62,8 @@ remove_stale_symlinks() {
     fi
   done < <(find "$HOME/.config" "$HOME/.local/share/applications" "$HOME/.local/share/themes/hyprkarl" -type l 2>/dev/null)
 }
+
+remove_empty_dirs() {
+  find "$HOME/.config" "$HOME/.local/share/applications" "$HOME/.local/share/themes/hyprkarl" \
+    -mindepth 1 -depth -type d -empty -delete 2>/dev/null
+}

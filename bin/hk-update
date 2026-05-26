@@ -19,6 +19,7 @@ Usage:
   hk-update dotfiles             Restow config files and remove stale symlinks
   hk-update dotfiles --force     Overwrite conflicting ~/.config files with repo versions
   hk-update dotfiles --adopt     Adopt conflicting ~/.config files into the repo for review
+  hk-update remove-stale         Remove stale hyprkarl symlinks and empty directories
   hk-update packages             Install new required packages, prompt for dropped ones
   hk-update system               Re-run system-level setup
   hk-update all [--force|--adopt]  Run dotfiles, packages, and system in sequence
@@ -42,7 +43,7 @@ case "$action" in
     "$ACTION_DIR/system.sh"   || exit 1
     exit 0
     ;;
-  check|dotfiles|packages|system)
+  check|dotfiles|packages|system|remove-stale)
     ;;
   ""|-h|--help|help)
     usage

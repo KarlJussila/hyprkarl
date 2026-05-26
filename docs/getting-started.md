@@ -78,6 +78,7 @@ run each individually:
 
 ```bash
 hk-update dotfiles    # re-stow config files, remove stale symlinks
+hk-update remove-stale  # remove stale symlinks and empty dirs (no restow)
 hk-update packages    # install new required packages, prompt to remove dropped ones
 hk-update system      # re-run system-level setup
 hk-update check       # preview what would change without doing anything

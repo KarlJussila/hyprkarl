@@ -58,7 +58,7 @@ registerHooks({
     // All other .tsx files are view components — tests never call render(), so
     // stub them out entirely.
     let processed
-    if (basename === "widget.tsx" || basename === "widgetSpec.tsx") {
+    if (basename === "widget.tsx" || basename === "widgetSpec.tsx" || basename === "createPollingMonitorWidgetSpec.tsx") {
       processed = stripRenderJsx(source)
     } else {
       processed = "export default null"

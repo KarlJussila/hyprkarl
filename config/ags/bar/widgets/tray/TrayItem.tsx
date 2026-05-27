@@ -1,11 +1,18 @@
 import { createBinding } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalTray from "gi://AstalTray"
-import { connectTrayMenuButton } from "./connectTrayMenuButton"
 
 type Props = {
   fill?: boolean
   item: AstalTray.TrayItem
+}
+
+function connectMenuButton(button: Gtk.MenuButton, item: AstalTray.TrayItem) {
+  button.menuModel = item.menuModel
+  button.insert_action_group("dbusmenu", item.actionGroup)
+  item.connect("notify::action-group", () => {
+    button.insert_action_group("dbusmenu", item.actionGroup)
+  })
 }
 
 export default function TrayItem({ fill = false, item }: Props) {
@@ -15,7 +22,7 @@ export default function TrayItem({ fill = false, item }: Props) {
       hexpand={fill}
       halign={fill ? Gtk.Align.FILL : Gtk.Align.CENTER}
       tooltipMarkup={createBinding(item, "tooltipMarkup")}
-      $={(self) => connectTrayMenuButton(self, item)}
+      $={(self) => connectMenuButton(self, item)}
     >
       <image
         gicon={createBinding(item, "gicon")}

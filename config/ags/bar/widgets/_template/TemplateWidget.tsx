@@ -1,31 +1,30 @@
 import Button from "../../primitives/Button.tsx"
-import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import type { NormalizedClickCommandsConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
-import { getRecordingController } from "./controller.ts"
 
 type Config = {
-  icon: string
+  label: string
+  active: boolean
+  icons: { active: string; inactive: string }
   commands: NormalizedClickCommandsConfig
   tooltip: NormalizedSimpleTooltipConfig
 }
 
-export default function RecordingWidget({ config, placement }: WidgetRenderArgs<Config>) {
-  const { icon, commands, tooltip } = config
-  const controller = getRecordingController()
+export default function TemplateWidget({ config, placement }: WidgetRenderArgs<Config>) {
+  const { label, active, icons, commands, tooltip } = config
   const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({ commands })
 
   return (
     <Button
-      class="widget-recording-button widget-glyph-button"
+      class="widget-template-button widget-glyph-button"
       orientation={placement.orientation}
-      visible={controller.active}
       tooltipText={tooltip.enabled && tooltip.text ? tooltip.text : undefined}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
       execMiddle={execMiddle}
     >
-      <label class="widget-recording-glyph" xalign={0.5} label={icon} />
+      <label class="widget-template-label" label={`${active ? icons.active : icons.inactive} ${label}`} />
     </Button>
   )
 }

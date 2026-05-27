@@ -107,10 +107,7 @@ export default createWidgetSpec({
       tooltip,
     }
   },
-  render: ({ config, placement }) => (
-    <WorkspacesWidget
-      orientation={placement.orientation}
-      {...config}
-    />
+  render: (args) => (
+    <WorkspacesWidget {...args} />
   ),
 })

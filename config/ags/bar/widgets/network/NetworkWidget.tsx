@@ -1,22 +1,29 @@
 import { createBinding, createComputed, createEffect, createState, onCleanup } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalNetwork from "gi://AstalNetwork"
-import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
-import { resolveCommand } from "../shared/resolveCommand.ts"
 import { readString } from "../shared/read.ts"
 import { substituteTokens } from "../shared/template.ts"
+import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import type { NormalizedClickCommandsConfig } from "../shared/normalize.ts"
-import type { NormalizedNetworkIcons, NormalizedNetworkTooltip } from "./normalize.ts"
 
-type Props = {
-  orientation: BarOrientation
+type WifiIcons = [string, string, string, string, string]
+
+type Config = {
   commands: NormalizedClickCommandsConfig
-  icons: NormalizedNetworkIcons
-  tooltip: NormalizedNetworkTooltip
+  icons: { disconnected: string; ethernet: string; wifi: WifiIcons }
+  tooltip: {
+    enabled: boolean
+    disconnected: string
+    ethernet: string
+    wifi: string
+    wifiNoFreq: string
+    wifiNoSsid: string
+  }
 }
 
-function selectWifiIcon(strength: number, wifiIcons: [string, string, string, string, string]) {
+function selectWifiIcon(strength: number, wifiIcons: WifiIcons) {
   if (strength >= 80) return wifiIcons[4]
   if (strength >= 60) return wifiIcons[3]
   if (strength >= 40) return wifiIcons[2]
@@ -24,14 +31,15 @@ function selectWifiIcon(strength: number, wifiIcons: [string, string, string, st
   return wifiIcons[0]
 }
 
-function formatWifiTooltip(ssid: string, frequency: number, tooltip: NormalizedNetworkTooltip): string {
+function formatWifiTooltip(ssid: string, frequency: number, tooltip: Config["tooltip"]): string {
   if (ssid.length === 0) return tooltip.wifiNoSsid
   if (frequency > 0) return substituteTokens(tooltip.wifi, { ssid, freq: (frequency / 1000).toFixed(1) })
   return substituteTokens(tooltip.wifiNoFreq, { ssid })
 }
 
-export default function NetworkWidget({ orientation, commands, icons, tooltip }: Props) {
-  const isVertical = orientation === "vertical"
+export default function NetworkWidget({ config, placement }: WidgetRenderArgs<Config>) {
+  const { commands, icons, tooltip } = config
+  const isVertical = placement.orientation === "vertical"
   const network = AstalNetwork.get_default()
 
   const primary = createBinding(network, "primary")
@@ -106,14 +114,12 @@ export default function NetworkWidget({ orientation, commands, icons, tooltip }:
     return tooltip.disconnected
   })
 
-  const execPrimary = resolveCommand(commands.primary, undefined)
-  const execSecondary = resolveCommand(commands.secondary, undefined)
-  const execMiddle = resolveCommand(commands.tertiary, undefined)
+  const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({ commands })
 
   return (
     <Button
       class="widget-network-button widget-glyph-button"
-      orientation={orientation}
+      orientation={placement.orientation}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
       execMiddle={execMiddle}

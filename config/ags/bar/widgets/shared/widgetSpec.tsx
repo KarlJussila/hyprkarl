@@ -1,12 +1,8 @@
 import { Gdk } from "ags/gtk4"
 import { type BarPlacement } from "../../layout/placement.ts"
-import { widgetContext, type ValidationContext } from "./normalize.ts"
+import { widgetContext, type FieldNormalizer } from "./normalize.ts"
 
-export type FieldNormalizer<TRaw, TResolved = TRaw> = (
-  ctx: ValidationContext,
-  val: TRaw | undefined,
-  fallback: TResolved,
-) => TResolved
+export type { FieldNormalizer }
 
 export type WidgetConfig<TKind extends string, TProps extends object = Record<string, never>> = {
   kind: TKind
@@ -27,13 +23,15 @@ export type WidgetSpec<TKind extends string, TRawConfig, TResolvedConfig> = {
 
 type WidgetSchema = Record<string, FieldNormalizer<any, any>>
 
-type InferResolvedConfig<TKind extends string, TSchema extends WidgetSchema> = {
-  kind: TKind
-} & {
+type SchemaResolvedFields<TSchema extends WidgetSchema> = {
   [K in keyof TSchema]: TSchema[K] extends FieldNormalizer<any, infer TResolved>
     ? TResolved
     : never
 }
+
+type InferResolvedConfig<TKind extends string, TSchema extends WidgetSchema> = {
+  kind: TKind
+} & SchemaResolvedFields<TSchema>
 
 type InferRawConfig<TKind extends string, TSchema extends WidgetSchema> = WidgetConfig<
   TKind,
@@ -45,10 +43,9 @@ type InferRawConfig<TKind extends string, TSchema extends WidgetSchema> = Widget
 export function createWidgetSpec<
   TKind extends string,
   TSchema extends WidgetSchema,
-  TDefaults,
 >(spec: {
   kind: TKind
-  defaults: TDefaults
+  defaults: SchemaResolvedFields<TSchema>
   schema: TSchema
   render: (args: WidgetRenderArgs<InferResolvedConfig<TKind, TSchema>>) => JSX.Element
 }): WidgetSpec<TKind, InferRawConfig<TKind, TSchema>, InferResolvedConfig<TKind, TSchema>>

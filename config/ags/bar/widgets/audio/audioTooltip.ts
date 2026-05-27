@@ -1,5 +1,5 @@
 import { substituteTokens } from "../shared/template.ts"
-import type { NormalizedAudioTooltipConfig } from "./types.ts"
+import type { AudioTooltipTemplates } from "./audioState.ts"
 
 function formatAudioPercentage(volume: number) {
   return `${Math.round(Math.max(0, volume) * 100)}%`
@@ -14,7 +14,7 @@ export function formatAudioTooltip({
   muted: boolean
   volume: number
   device?: string
-  formats: NormalizedAudioTooltipConfig
+  formats: AudioTooltipTemplates
 }) {
   const replacements = {
     device: device?.trim() || undefined,
@@ -27,7 +27,7 @@ export function formatAudioTooltip({
   )
 }
 
-export function formatUnavailableAudioTooltip(formats: NormalizedAudioTooltipConfig) {
+export function formatUnavailableAudioTooltip(formats: AudioTooltipTemplates) {
   return substituteTokens(formats.unavailable, {})
 }
 

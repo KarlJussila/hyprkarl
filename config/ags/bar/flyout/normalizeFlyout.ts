@@ -1,14 +1,12 @@
 import type {
   FlyoutAlign,
-  FlyoutConfig,
-  NormalizedFlyoutConfig,
 } from "./flyoutTypes.ts"
 import {
-  childContext,
+  composeObject,
   fail,
   normalizeBoolean,
   normalizeNonNegativeNumber,
-  normalizeObjectConfig,
+  type FieldNormalizer,
   type ValidationContext,
 } from "../widgets/shared/normalize.ts"
 
@@ -24,16 +22,10 @@ export function normalizeFlyoutAlign(
   return align
 }
 
-export function normalizeFlyoutConfig(
-  ctx: ValidationContext,
-  config: FlyoutConfig | undefined,
-  defaults: NormalizedFlyoutConfig,
-): NormalizedFlyoutConfig {
-  const rawConfig = normalizeObjectConfig(ctx, config) as FlyoutConfig | undefined
+const flyoutAlignNormalizer: FieldNormalizer<FlyoutAlign, FlyoutAlign> = normalizeFlyoutAlign
 
-  return {
-    enabled: normalizeBoolean(childContext(ctx, "enabled"), rawConfig?.enabled, defaults.enabled),
-    align: normalizeFlyoutAlign(childContext(ctx, "align"), rawConfig?.align, defaults.align),
-    gap: normalizeNonNegativeNumber(childContext(ctx, "gap"), rawConfig?.gap, defaults.gap),
-  }
-}
+export const normalizeFlyoutConfig = composeObject({
+  enabled: normalizeBoolean,
+  align: flyoutAlignNormalizer,
+  gap: normalizeNonNegativeNumber,
+})

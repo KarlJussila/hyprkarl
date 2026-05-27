@@ -2,7 +2,25 @@ import { createBinding, createComputed, type Accessor } from "ags"
 import AstalBattery from "gi://AstalBattery"
 import AstalPowerProfiles from "gi://AstalPowerProfiles"
 import { formatBatteryTooltip } from "./batteryTooltip.ts"
-import type { NormalizedBatteryTooltipConfig } from "./types.ts"
+
+export type BatteryTooltipTemplates = {
+  enabled: boolean
+  charging: string
+  discharging: string
+  plugged: string
+  fallback: string
+}
+
+export type BatteryIndicatorMetrics = {
+  width: number
+  height: number
+  borderWidth: number
+  terminalWidth: number
+  terminalHeight: number
+  chargingGlyph: string
+  chargingGlyphFontSize: number
+  chargingGlyphFontFamily: string
+}
 
 export type BatteryState = {
   isPresent: Accessor<boolean>
@@ -14,7 +32,7 @@ export type BatteryState = {
   setActivePowerProfile: (profileName: string) => void
 }
 
-export function createBatteryState(tooltipFormats: NormalizedBatteryTooltipConfig): BatteryState {
+export function createBatteryState(tooltipFormats: BatteryTooltipTemplates): BatteryState {
   const batteryService = AstalBattery.get_default()
   const powerProfileService = AstalPowerProfiles.get_default()
   const percentage = createBinding(batteryService, "percentage")

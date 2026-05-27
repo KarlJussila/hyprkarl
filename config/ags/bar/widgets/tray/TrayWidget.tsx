@@ -1,21 +1,24 @@
 import { createConnection, createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalTray from "gi://AstalTray"
-import { type TrayPlacement } from "../../layout/placement"
-import TrayExpander from "./TrayExpander"
-import TrayItems from "./TrayItems"
+import { type TrayPlacement } from "../../layout/placement.ts"
+import TrayExpander from "./TrayExpander.tsx"
+import TrayItems from "./TrayItems.tsx"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import type { NormalizedRevealConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
-import type { TrayDirection } from "./types.ts"
+import type { TrayDirection } from "./spec.tsx"
 
-type Props = {
-  placement: TrayPlacement
+type Config = {
   direction: TrayDirection
   mirrorTrigger: boolean
   reveal: NormalizedRevealConfig
   tooltip: NormalizedSimpleTooltipConfig
 }
 
-export default function TrayWidget({ placement, direction, mirrorTrigger, reveal, tooltip }: Props) {
+type Props = Omit<WidgetRenderArgs<Config>, "placement"> & { placement: TrayPlacement }
+
+export default function TrayWidget({ config, placement }: Props) {
+  const { direction, mirrorTrigger, reveal, tooltip } = config
   const trayService = AstalTray.get_default()
   const trayItems = createConnection(
     [...trayService.items],

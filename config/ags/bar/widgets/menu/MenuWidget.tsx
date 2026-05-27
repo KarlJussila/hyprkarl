@@ -1,28 +1,32 @@
 import { Gtk } from "ags/gtk4"
-import { type BarOrientation } from "../../layout/placement"
-import Button from "../../primitives/Button"
-import { resolveCommand } from "../shared/resolveCommand.ts"
+import Button from "../../primitives/Button.tsx"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
+import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
 import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
-import type { NormalizedCommandConfig } from "./types.ts"
 
-type Props = {
-  orientation: BarOrientation
+type Config = {
   icon: string
-  commands: NormalizedCommandConfig
+  commands: {
+    primary: string
+    secondary: string | undefined
+    tertiary: string | undefined
+  }
   tooltip: NormalizedSimpleTooltipConfig
 }
 
-export default function MenuWidget({ orientation, icon, commands, tooltip }: Props) {
-  const isVertical = orientation === "vertical"
+export default function MenuWidget({ config, placement }: WidgetRenderArgs<Config>) {
+  const { icon, commands, tooltip } = config
+  const isVertical = placement.orientation === "vertical"
+  const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({ commands })
 
   return (
     <Button
       class="widget-menu-button widget-glyph-button"
-      orientation={orientation}
+      orientation={placement.orientation}
       tooltipText={tooltip.enabled && tooltip.text ? tooltip.text : undefined}
-      execPrimary={resolveCommand(commands.primary, undefined)}
-      execSecondary={resolveCommand(commands.secondary, undefined)}
-      execMiddle={resolveCommand(commands.tertiary, undefined)}
+      execPrimary={execPrimary}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
     >
       <box
         class="widget-menu-content"

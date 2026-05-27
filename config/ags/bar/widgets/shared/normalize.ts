@@ -13,6 +13,12 @@ export type ValidationContext = {
   widgetId?: string
 }
 
+export type FieldNormalizer<TRaw, TResolved = TRaw> = (
+  ctx: ValidationContext,
+  val: TRaw | undefined,
+  fallback: TResolved,
+) => TResolved
+
 export function fail(context: ValidationContext, message: string): never {
   throw new BarConfigError({
     ...context,
@@ -63,6 +69,32 @@ export function normalizeObjectConfig(context: ValidationContext, value: unknown
   }
 
   return value
+}
+
+type SchemaRaw<TSchema> = {
+  [K in keyof TSchema]?: TSchema[K] extends FieldNormalizer<infer R, any> ? R : never
+}
+
+type SchemaResolved<TSchema> = {
+  [K in keyof TSchema]: TSchema[K] extends FieldNormalizer<any, infer N> ? N : never
+}
+
+export function composeObject<TSchema extends Record<string, FieldNormalizer<any, any>>>(
+  schema: TSchema,
+): FieldNormalizer<SchemaRaw<TSchema>, SchemaResolved<TSchema>> {
+  return (ctx, value, defaults) => {
+    const raw = normalizeObjectConfig(ctx, value) as Record<string, unknown> | undefined
+    const result: Record<string, unknown> = {}
+    for (const field of Object.keys(schema)) {
+      const normalizer = schema[field] as FieldNormalizer<unknown, unknown>
+      result[field] = normalizer(
+        childContext(ctx, field),
+        raw?.[field],
+        (defaults as Record<string, unknown>)[field],
+      )
+    }
+    return result as SchemaResolved<TSchema>
+  }
 }
 
 export function normalizeStringValue(
@@ -211,52 +243,22 @@ export function normalizeOptionalLayoutWidgetId(context: ValidationContext, valu
   return normalizeLayoutWidgetId(context, value)
 }
 
-export type RevealConfig = {
-  durationMs?: number
-}
+export const normalizeRevealConfig = composeObject({
+  durationMs: normalizePositiveNumber,
+})
 
-export type NormalizedRevealConfig = {
-  durationMs: number
-}
+export type NormalizedRevealConfig = ReturnType<typeof normalizeRevealConfig>
+export type RevealConfig = Parameters<typeof normalizeRevealConfig>[1]
 
-export function normalizeRevealConfig(
-  ctx: ValidationContext,
-  reveal: RevealConfig | undefined,
-  defaults: NormalizedRevealConfig,
-): NormalizedRevealConfig {
-  const rawReveal = normalizeObjectConfig(ctx, reveal) as RevealConfig | undefined
-  return {
-    durationMs: normalizePositiveNumber(childContext(ctx, "durationMs"), rawReveal?.durationMs, defaults.durationMs),
-  }
-}
+export const normalizeFormatConfig = composeObject({
+  primary: normalizeStringValue,
+  alt: normalizeStringValue,
+  vertical: normalizeStringValue,
+  verticalAlt: normalizeStringValue,
+})
 
-export type FormatConfig = {
-  primary?: string
-  alt?: string
-  vertical?: string
-  verticalAlt?: string
-}
-
-export type NormalizedFormatConfig = {
-  primary: string
-  alt: string
-  vertical: string
-  verticalAlt: string
-}
-
-export function normalizeFormatConfig(
-  ctx: ValidationContext,
-  value: FormatConfig | undefined,
-  defaults: NormalizedFormatConfig,
-): NormalizedFormatConfig {
-  const raw = normalizeObjectConfig(ctx, value) as FormatConfig | undefined
-  return {
-    primary: normalizeStringValue(childContext(ctx, "primary"), raw?.primary, defaults.primary),
-    alt: normalizeStringValue(childContext(ctx, "alt"), raw?.alt, defaults.alt),
-    vertical: normalizeStringValue(childContext(ctx, "vertical"), raw?.vertical, defaults.vertical),
-    verticalAlt: normalizeStringValue(childContext(ctx, "verticalAlt"), raw?.verticalAlt, defaults.verticalAlt),
-  }
-}
+export type NormalizedFormatConfig = ReturnType<typeof normalizeFormatConfig>
+export type FormatConfig = Parameters<typeof normalizeFormatConfig>[1]
 
 export type DecimalsConfig = {
   primary?: number
@@ -298,45 +300,15 @@ export function normalizeStringRecord<T extends Record<string, string>>(
   return result as T
 }
 
-export type SimpleTooltipConfig = {
-  enabled?: boolean
-  text?: string
-}
+export const normalizeSimpleTooltipConfig = composeObject({
+  enabled: normalizeBoolean,
+  text: normalizeStringValue,
+})
 
-export type NormalizedSimpleTooltipConfig = {
-  enabled: boolean
-  text: string
-}
+export type NormalizedSimpleTooltipConfig = ReturnType<typeof normalizeSimpleTooltipConfig>
+export type SimpleTooltipConfig = Parameters<typeof normalizeSimpleTooltipConfig>[1]
 
-export function normalizeSimpleTooltipConfig(
-  ctx: ValidationContext,
-  config: SimpleTooltipConfig | undefined,
-  defaults: NormalizedSimpleTooltipConfig,
-): NormalizedSimpleTooltipConfig {
-  const raw = normalizeObjectConfig(ctx, config) as SimpleTooltipConfig | undefined
-  return {
-    enabled: normalizeBoolean(childContext(ctx, "enabled"), raw?.enabled, defaults.enabled),
-    text: normalizeStringValue(childContext(ctx, "text"), raw?.text, defaults.text),
-  }
-}
-
-export type ClickCommandsConfig = {
-  primary?: string
-  secondary?: string
-  tertiary?: string
-}
-
-export type NormalizedClickCommandsConfig = {
-  primary: string | undefined
-  secondary: string | undefined
-  tertiary: string | undefined
-}
-
-function normalizeClickCommand(
-  ctx: ValidationContext,
-  value: string | undefined,
-  fallback: string | undefined,
-): string | undefined {
+const normalizeClickCommand: FieldNormalizer<string, string | undefined> = (ctx, value, fallback) => {
   if (value === undefined) return fallback
   if (value.length > 0 && value.trim().length === 0) {
     fail(ctx, 'must be a command, a token like "{name}", or "" to disable the click')
@@ -344,15 +316,11 @@ function normalizeClickCommand(
   return value
 }
 
-export function normalizeClickCommandsConfig(
-  ctx: ValidationContext,
-  value: ClickCommandsConfig | undefined,
-  defaults: NormalizedClickCommandsConfig,
-): NormalizedClickCommandsConfig {
-  const raw = normalizeObjectConfig(ctx, value) as ClickCommandsConfig | undefined
-  return {
-    primary: normalizeClickCommand(childContext(ctx, "primary"), raw?.primary, defaults.primary),
-    secondary: normalizeClickCommand(childContext(ctx, "secondary"), raw?.secondary, defaults.secondary),
-    tertiary: normalizeClickCommand(childContext(ctx, "tertiary"), raw?.tertiary, defaults.tertiary),
-  }
-}
+export const normalizeClickCommandsConfig = composeObject({
+  primary: normalizeClickCommand,
+  secondary: normalizeClickCommand,
+  tertiary: normalizeClickCommand,
+})
+
+export type NormalizedClickCommandsConfig = ReturnType<typeof normalizeClickCommandsConfig>
+export type ClickCommandsConfig = Parameters<typeof normalizeClickCommandsConfig>[1]

@@ -1,11 +1,27 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import {
+  composeObject,
+  normalizeBoolean,
   normalizeClickCommandsConfig,
-  type NormalizedClickCommandsConfig,
+  normalizeStringValue,
 } from "../shared/normalize.ts"
-import { normalizeNetworkIcons, normalizeNetworkTooltipConfig } from "./normalize.ts"
-import type { NormalizedNetworkIcons, NormalizedNetworkTooltip } from "./normalize.ts"
+import { normalizeWifiIcons } from "./normalize.ts"
 import NetworkWidget from "./NetworkWidget.tsx"
+
+const normalizeNetworkIcons = composeObject({
+  disconnected: normalizeStringValue,
+  ethernet: normalizeStringValue,
+  wifi: normalizeWifiIcons,
+})
+
+const normalizeNetworkTooltipConfig = composeObject({
+  enabled: normalizeBoolean,
+  disconnected: normalizeStringValue,
+  ethernet: normalizeStringValue,
+  wifi: normalizeStringValue,
+  wifiNoFreq: normalizeStringValue,
+  wifiNoSsid: normalizeStringValue,
+})
 
 export default createWidgetSpec({
   kind: "network",
@@ -14,12 +30,12 @@ export default createWidgetSpec({
       primary: "hk-launch-wifi",
       secondary: undefined,
       tertiary: undefined,
-    } satisfies NormalizedClickCommandsConfig,
+    },
     icons: {
       disconnected: "󰤮",
       ethernet: "󰀂",
       wifi: ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-    } satisfies NormalizedNetworkIcons,
+    },
     tooltip: {
       enabled: true,
       disconnected: "Disconnected",
@@ -27,19 +43,14 @@ export default createWidgetSpec({
       wifi: "{ssid} ({freq} GHz)",
       wifiNoFreq: "{ssid}",
       wifiNoSsid: "Wi-Fi connected",
-    } satisfies NormalizedNetworkTooltip,
+    },
   },
   schema: {
     commands: normalizeClickCommandsConfig,
     icons: normalizeNetworkIcons,
     tooltip: normalizeNetworkTooltipConfig,
   },
-  render: ({ config, placement }) => (
-    <NetworkWidget
-      orientation={placement.orientation}
-      commands={config.commands}
-      icons={config.icons}
-      tooltip={config.tooltip}
-    />
+  render: (args) => (
+    <NetworkWidget {...args} />
   ),
 })

@@ -1,60 +1,46 @@
-import { Gdk, Gtk } from "ags/gtk4"
-import { type FlyoutPlacement } from "../../layout/placement.ts"
+import { Gtk } from "ags/gtk4"
 import Button from "../../primitives/Button.tsx"
-import { createFlyoutCommands } from "../../flyout/createFlyoutCommands.tsx"
-import BatteryIndicator from "./BatteryIndicator"
-import { createBatteryState } from "./batteryState"
+import BatteryIndicator from "./BatteryIndicator.tsx"
+import { createBatteryState, type BatteryTooltipTemplates, type BatteryIndicatorMetrics } from "./batteryState.ts"
 import { formatReadoutPercent } from "../shared/formatters.ts"
-import PowerProfileMenu from "./PowerProfileMenu"
+import PowerProfileMenu from "./PowerProfileMenu.tsx"
+import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
-import type {
-  NormalizedBatteryIndicatorMetrics,
-  NormalizedBatteryTooltipConfig,
-} from "./types.ts"
 import type { NormalizedClickCommandsConfig } from "../shared/normalize.ts"
 
-type Props = {
-  id: string
-  placement: FlyoutPlacement
-  monitor: Gdk.Monitor
+type Config = {
   showPercentage: boolean
   lowThreshold: number
   flyout: NormalizedFlyoutConfig
-  tooltip: NormalizedBatteryTooltipConfig
-  indicator: NormalizedBatteryIndicatorMetrics
+  tooltip: BatteryTooltipTemplates
+  indicator: BatteryIndicatorMetrics
   commands: NormalizedClickCommandsConfig
 }
 
-export default function BatteryWidget({
-  id,
-  placement,
-  monitor,
-  showPercentage,
-  lowThreshold,
-  flyout,
-  tooltip,
-  indicator,
-  commands,
-}: Props) {
+export default function BatteryWidget({ id, config, placement, monitor }: WidgetRenderArgs<Config>) {
+  const { showPercentage, lowThreshold, flyout, tooltip, indicator, commands } = config
   const batteryState = createBatteryState(tooltip)
 
-  const { execPrimary, execSecondary, execMiddle, triggerSetup } = createFlyoutCommands({
-    flyout,
-    placement,
-    monitor,
-    id,
-    label: "battery-menu",
+  const { execPrimary, execSecondary, execMiddle, triggerSetup } = useWidgetCommands({
     commands,
-    renderContent: (closeFlyout) => (
-      <PowerProfileMenu
-        activeProfile={batteryState.activePowerProfile}
-        profiles={batteryState.availablePowerProfiles}
-        onSelect={(profileName) => {
-          batteryState.setActivePowerProfile(profileName)
-          closeFlyout()
-        }}
-      />
-    ),
+    flyout: {
+      config: flyout,
+      placement,
+      monitor,
+      id,
+      label: "battery-menu",
+      renderContent: (closeFlyout) => (
+        <PowerProfileMenu
+          activeProfile={batteryState.activePowerProfile}
+          profiles={batteryState.availablePowerProfiles}
+          onSelect={(profileName) => {
+            batteryState.setActivePowerProfile(profileName)
+            closeFlyout()
+          }}
+        />
+      ),
+    },
   })
 
   return (

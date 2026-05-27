@@ -1,22 +1,21 @@
 import { createComputed } from "ags"
 import { Gtk } from "ags/gtk4"
 import type { NormalizedSwitchMetrics } from "../../primitives/switchTypes.ts"
-import { type BarOrientation } from "../../layout/placement.ts"
-import Switch from "../../primitives/Switch"
+import Switch from "../../primitives/Switch.tsx"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import { getCaffeineController } from "./controller.ts"
-import type { NormalizedCaffeineTooltip } from "./types.ts"
 
-type Props = {
-  orientation: BarOrientation
+type Config = {
   glyph: string
   command: string
-  switchMetrics: NormalizedSwitchMetrics
-  tooltip: NormalizedCaffeineTooltip
+  switch: NormalizedSwitchMetrics
+  tooltip: { enabled: boolean; active: string; inactive: string }
 }
 
-export default function CaffeineWidget({ orientation, glyph, command, switchMetrics, tooltip }: Props) {
+export default function CaffeineWidget({ config, placement }: WidgetRenderArgs<Config>) {
+  const { glyph, command, switch: switchMetrics, tooltip } = config
   const caffeineController = getCaffeineController()
-  const isVertical = orientation === "vertical"
+  const isVertical = placement.orientation === "vertical"
 
   const tooltipText = tooltip.enabled
     ? createComputed(() => caffeineController.active() ? tooltip.active : tooltip.inactive)
@@ -27,7 +26,7 @@ export default function CaffeineWidget({ orientation, glyph, command, switchMetr
       class="widget-caffeine-switch widget-glyph-button"
       hexpand={isVertical}
       halign={Gtk.Align.FILL}
-      orientation={orientation}
+      orientation={placement.orientation}
       glyph={glyph}
       metrics={switchMetrics}
       active={caffeineController.active}

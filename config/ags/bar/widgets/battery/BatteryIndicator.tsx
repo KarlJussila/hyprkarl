@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import Pango from "gi://Pango"
 import PangoCairo from "gi://PangoCairo"
 import { type BarOrientation } from "../../layout/placement"
-import type { NormalizedBatteryIndicatorMetrics } from "./types"
+import type { BatteryIndicatorMetrics } from "./batteryState.ts"
 import { fontScaleFactor } from "../shared/drawScale.ts"
 
 function clamp(value: number, min = 0, max = 1) {
@@ -15,7 +15,7 @@ type Props = {
   level: Accessor<number>
   charging?: Accessor<boolean>
   lowThreshold: number
-  metrics: NormalizedBatteryIndicatorMetrics
+  metrics: BatteryIndicatorMetrics
 }
 
 // metrics values are base pixel dimensions at font-size 12px; they scale with font size.

@@ -1,6 +1,6 @@
 import { Astal, Gtk } from "ags/gtk4"
 import { type BarEdge } from "../types"
-import { type TrayDirection } from "../widgets/tray/types"
+import { type TrayDirection } from "../widgets/tray/spec.tsx"
 
 export type BarOrientation = "horizontal" | "vertical"
 export type FlyoutDirection = "down" | "up" | "right" | "left"

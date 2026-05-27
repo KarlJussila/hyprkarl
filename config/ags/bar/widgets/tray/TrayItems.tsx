@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import AstalTray from "gi://AstalTray"
 import { type TrayPlacement } from "../../layout/placement"
 import TrayItem from "./TrayItem"
-import type { TrayDirection } from "./types"
+import type { TrayDirection } from "./spec.tsx"
 
 type Props = {
   placement: TrayPlacement

@@ -2,7 +2,7 @@ import { createComputed, createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
-import { resolveCommand } from "./resolveCommand.ts"
+import { useWidgetCommands } from "./useWidgetCommands.ts"
 import { substituteTokens } from "./template.ts"
 import type { NormalizedClickCommandsConfig, NormalizedDecimalsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "./normalize.ts"
 
@@ -53,14 +53,12 @@ export default function PollingMonitorWidget({
   const toggleLabel = labelText ? () => setLabelVisible(!labelVisible()) : undefined
   const toggleAlt = hasAlt ? () => setUseAlt(!useAlt()) : undefined
 
-  const tokens = {
-    "toggle-label": toggleLabel,
-    "toggle-alt": toggleAlt,
-  }
-
-  const execPrimary = resolveCommand(commands.primary, toggleLabel, tokens)
-  const execSecondary = resolveCommand(commands.secondary, toggleAlt, tokens)
-  const execMiddle = resolveCommand(commands.tertiary, undefined, tokens)
+  const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({
+    commands,
+    primaryFallback: toggleLabel,
+    secondaryFallback: toggleAlt,
+    tokens: { "toggle-label": toggleLabel, "toggle-alt": toggleAlt },
+  })
 
   return (
     <Button

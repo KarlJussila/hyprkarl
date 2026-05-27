@@ -1,10 +1,8 @@
-import { createState } from "ags"
 import { Gdk } from "ags/gtk4"
 import { type FlyoutPlacement } from "../layout/placement.ts"
-import { createFlyout } from "./createFlyout.tsx"
+import { useWidgetCommands } from "../widgets/shared/useWidgetCommands.ts"
 import type { NormalizedFlyoutConfig } from "./flyoutTypes.ts"
 import type { NormalizedClickCommandsConfig } from "../widgets/shared/normalize.ts"
-import { resolveCommand } from "../widgets/shared/resolveCommand.ts"
 
 type Options = {
   flyout: NormalizedFlyoutConfig
@@ -26,18 +24,13 @@ export function createFlyoutCommands({
   label,
   commands,
   secondaryFallback,
-  extraTokens = {},
+  extraTokens,
   renderContent,
 }: Options) {
-  const [flyoutOpen, setFlyoutOpen] = createState(false)
-  const toggleFlyout = () => setFlyoutOpen(!flyoutOpen())
-  const tokens = { flyout: toggleFlyout, ...extraTokens }
-
-  const execPrimary = resolveCommand(commands.primary, flyout.enabled ? toggleFlyout : undefined, tokens)
-  const execSecondary = resolveCommand(commands.secondary, secondaryFallback, tokens)
-  const execMiddle = resolveCommand(commands.tertiary, undefined, tokens)
-
-  const { triggerSetup } = createFlyout({ flyout, placement, monitor, id, label, flyoutOpen, setFlyoutOpen, renderContent })
-
-  return { execPrimary, execSecondary, execMiddle, triggerSetup }
+  return useWidgetCommands({
+    commands,
+    secondaryFallback,
+    tokens: extraTokens,
+    flyout: { config: flyout, placement, monitor, id, label, renderContent },
+  })
 }

@@ -1,18 +1,15 @@
 import { createComputed, createEffect, createState, onCleanup } from "ags"
-import { Gdk, Gtk } from "ags/gtk4"
+import { Gtk } from "ags/gtk4"
 import { timeout, type Timer } from "ags/time"
 import GLib from "gi://GLib?version=2.0"
-import { type FlyoutPlacement } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
-import CalendarFlyoutContent from "./CalendarFlyoutContent"
-import { createFlyoutCommands } from "../../flyout/createFlyoutCommands.tsx"
+import CalendarFlyoutContent from "./CalendarFlyoutContent.tsx"
+import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
 import type { NormalizedClickCommandsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 
-type Props = {
-  id: string
-  placement: FlyoutPlacement
-  monitor: Gdk.Monitor
+type Config = {
   format: NormalizedFormatConfig
   flyout: NormalizedFlyoutConfig
   tooltip: NormalizedSimpleTooltipConfig
@@ -21,7 +18,8 @@ type Props = {
 
 const HAS_SECONDS = /%[ST]/
 
-export default function ClockWidget({ id, placement, monitor, format, flyout, tooltip, commands }: Props) {
+export default function ClockWidget({ id, config, placement, monitor }: WidgetRenderArgs<Config>) {
+  const { format, flyout, tooltip, commands } = config
   const [currentTime, setCurrentTime] = createState(GLib.DateTime.new_now_local())
   const [useAlt, setUseAlt] = createState(false)
 
@@ -31,16 +29,18 @@ export default function ClockWidget({ id, placement, monitor, format, flyout, to
 
   const toggleAlt = hasAlt ? () => setUseAlt(!useAlt()) : undefined
 
-  const { execPrimary, execSecondary, execMiddle, triggerSetup } = createFlyoutCommands({
-    flyout,
-    placement,
-    monitor,
-    id,
-    label: "calendar-menu",
+  const { execPrimary, execSecondary, execMiddle, triggerSetup } = useWidgetCommands({
     commands,
     secondaryFallback: toggleAlt,
-    extraTokens: { "toggle-alt": toggleAlt },
-    renderContent: () => <CalendarFlyoutContent currentTime={currentTime} />,
+    tokens: { "toggle-alt": toggleAlt },
+    flyout: {
+      config: flyout,
+      placement,
+      monitor,
+      id,
+      label: "calendar-menu",
+      renderContent: () => <CalendarFlyoutContent currentTime={currentTime} />,
+    },
   })
 
   const activeFormatHasSeconds = createComputed(() =>

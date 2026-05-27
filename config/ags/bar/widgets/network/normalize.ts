@@ -1,76 +1,15 @@
 import {
   childContext,
   fail,
-  normalizeBoolean,
-  normalizeObjectConfig,
-  normalizeStringValue,
-  type ValidationContext,
+  type FieldNormalizer,
 } from "../shared/normalize.ts"
 
-export type NetworkIcons = {
-  disconnected?: string
-  ethernet?: string
-  wifi?: [string, string, string, string, string]
-}
+type WifiIcons = [string, string, string, string, string]
 
-export type NormalizedNetworkIcons = {
-  disconnected: string
-  ethernet: string
-  wifi: [string, string, string, string, string]
-}
-
-export function normalizeNetworkIcons(
-  ctx: ValidationContext,
-  value: NetworkIcons | undefined,
-  defaults: NormalizedNetworkIcons,
-): NormalizedNetworkIcons {
-  const raw = normalizeObjectConfig(ctx, value) as NetworkIcons | undefined
-
-  let wifi = defaults.wifi as [string, string, string, string, string]
-  if (raw?.wifi !== undefined) {
-    if (!Array.isArray(raw.wifi) || raw.wifi.length !== 5 || !raw.wifi.every((s: unknown) => typeof s === "string")) {
-      fail(childContext(ctx, "wifi"), "must be an array of exactly 5 strings")
-    }
-    wifi = raw.wifi as [string, string, string, string, string]
+export const normalizeWifiIcons: FieldNormalizer<WifiIcons, WifiIcons> = (ctx, value, fallback) => {
+  if (value === undefined) return fallback
+  if (!Array.isArray(value) || value.length !== 5 || !value.every((s) => typeof s === "string")) {
+    fail(childContext(ctx, ""), "must be an array of exactly 5 strings")
   }
-
-  return {
-    disconnected: normalizeStringValue(childContext(ctx, "disconnected"), raw?.disconnected, defaults.disconnected),
-    ethernet: normalizeStringValue(childContext(ctx, "ethernet"), raw?.ethernet, defaults.ethernet),
-    wifi,
-  }
-}
-
-export type NetworkTooltipConfig = {
-  enabled?: boolean
-  disconnected?: string
-  ethernet?: string
-  wifi?: string
-  wifiNoFreq?: string
-  wifiNoSsid?: string
-}
-
-export type NormalizedNetworkTooltip = {
-  enabled: boolean
-  disconnected: string
-  ethernet: string
-  wifi: string
-  wifiNoFreq: string
-  wifiNoSsid: string
-}
-
-export function normalizeNetworkTooltipConfig(
-  ctx: ValidationContext,
-  config: NetworkTooltipConfig | undefined,
-  defaults: NormalizedNetworkTooltip,
-): NormalizedNetworkTooltip {
-  const raw = normalizeObjectConfig(ctx, config) as NetworkTooltipConfig | undefined
-  return {
-    enabled: normalizeBoolean(childContext(ctx, "enabled"), raw?.enabled, defaults.enabled),
-    disconnected: normalizeStringValue(childContext(ctx, "disconnected"), raw?.disconnected, defaults.disconnected),
-    ethernet: normalizeStringValue(childContext(ctx, "ethernet"), raw?.ethernet, defaults.ethernet),
-    wifi: normalizeStringValue(childContext(ctx, "wifi"), raw?.wifi, defaults.wifi),
-    wifiNoFreq: normalizeStringValue(childContext(ctx, "wifiNoFreq"), raw?.wifiNoFreq, defaults.wifiNoFreq),
-    wifiNoSsid: normalizeStringValue(childContext(ctx, "wifiNoSsid"), raw?.wifiNoSsid, defaults.wifiNoSsid),
-  }
+  return value as WifiIcons
 }

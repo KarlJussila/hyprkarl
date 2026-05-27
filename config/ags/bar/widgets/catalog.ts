@@ -10,6 +10,7 @@ import menuSpec from "./menu/spec.tsx"
 import networkSpec from "./network/spec.tsx"
 import traySpec from "./tray/spec.tsx"
 import workspacesSpec from "./workspaces/spec.tsx"
+import templateSpec from "./_template/spec.tsx"
 import type { WidgetRenderArgs } from "./shared/widgetSpec.tsx"
 
 export const widgetCatalog = {
@@ -25,6 +26,7 @@ export const widgetCatalog = {
   audio: audioSpec,
   battery: batterySpec,
   recording: recordingSpec,
+  _template: templateSpec,
 }
 
 export type WidgetSpecByKind = typeof widgetCatalog

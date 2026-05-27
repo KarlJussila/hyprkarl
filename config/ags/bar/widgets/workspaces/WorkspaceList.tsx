@@ -9,14 +9,14 @@ import type { VisibleWorkspace } from "./workspaceVisibility"
 
 type Props = {
   orientation: BarOrientation
-  workspaces: Array<VisibleWorkspace> | Accessor<Array<VisibleWorkspace>>
+  workspaces: Accessor<Array<VisibleWorkspace>>
   tooltip: NormalizedSimpleTooltipConfig
 }
 
 export default function WorkspaceList({ orientation, workspaces, tooltip }: Props) {
-  const workspaceSignature = Array.isArray(workspaces)
-    ? null
-    : createComputed(() => workspaces().map((workspace) => `${workspace.id}:${workspace.isEmpty ? "e" : "o"}`).join(","))
+  const workspaceSignature = createComputed(() =>
+    workspaces().map((workspace) => `${workspace.id}:${workspace.isEmpty ? "e" : "o"}`).join(","),
+  )
 
   return (
     <box
@@ -27,7 +27,6 @@ export default function WorkspaceList({ orientation, workspaces, tooltip }: Prop
       halign={orientation === "vertical" ? Gtk.Align.FILL : Gtk.Align.CENTER}
       orientation={orientation === "vertical" ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
       $={(self) => {
-        if (!workspaceSignature) return
         let previousMeasuredWidth = 0
         let widthMeasureTimer: Timer | null = null
 
@@ -56,22 +55,16 @@ export default function WorkspaceList({ orientation, workspaces, tooltip }: Prop
         })
       }}
     >
-      {Array.isArray(workspaces)
-        ? workspaces.map((workspace) => (
-            <WorkspaceButton orientation={orientation} id={workspace.id} isEmpty={workspace.isEmpty} tooltip={tooltip} />
-          ))
-        : (
-            <For each={workspaces}>
-              {(workspace) => (
-                <WorkspaceButton
-                  orientation={orientation}
-                  id={workspace.id}
-                  isEmpty={workspace.isEmpty}
-                  tooltip={tooltip}
-                />
-              )}
-            </For>
-          )}
+      <For each={workspaces}>
+        {(workspace) => (
+          <WorkspaceButton
+            orientation={orientation}
+            id={workspace.id}
+            isEmpty={workspace.isEmpty}
+            tooltip={tooltip}
+          />
+        )}
+      </For>
     </box>
   )
 }

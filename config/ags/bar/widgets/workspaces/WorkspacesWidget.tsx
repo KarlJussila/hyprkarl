@@ -1,28 +1,24 @@
 import { createConnection } from "ags"
 import AstalHyprland from "gi://AstalHyprland"
-import { type BarOrientation } from "../../layout/placement"
-import WorkspaceList from "./WorkspaceList"
-import { currentVisibleWorkspaces, fixedVisibleWorkspaces } from "./workspaceVisibility"
+import WorkspaceList from "./WorkspaceList.tsx"
+import { currentVisibleWorkspaces, fixedVisibleWorkspaces } from "./workspaceVisibility.ts"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
-import type { NormalizedWorkspaceVisibilityConfig } from "./types"
+import type { NormalizedWorkspaceVisibilityConfig } from "./types.ts"
 
-type DynamicProps = {
-  orientation: BarOrientation
-  mode: "dynamic"
-  visibility: NormalizedWorkspaceVisibilityConfig
-  tooltip: NormalizedSimpleTooltipConfig
-}
+type Config =
+  | {
+      mode: "dynamic"
+      visibility: NormalizedWorkspaceVisibilityConfig
+      tooltip: NormalizedSimpleTooltipConfig
+    }
+  | {
+      mode: "fixed"
+      ids: Array<number>
+      tooltip: NormalizedSimpleTooltipConfig
+    }
 
-type FixedProps = {
-  orientation: BarOrientation
-  mode: "fixed"
-  ids: Array<number>
-  tooltip: NormalizedSimpleTooltipConfig
-}
-
-type Props = DynamicProps | FixedProps
-
-export default function WorkspacesWidget({ orientation, ...config }: Props) {
+export default function WorkspacesWidget({ config, placement }: WidgetRenderArgs<Config>) {
   const hyprland = AstalHyprland.get_default()
 
   const listVisibleWorkspaces = () => config.mode === "fixed"
@@ -37,5 +33,5 @@ export default function WorkspacesWidget({ orientation, ...config }: Props) {
     [hyprland, "client-moved", listVisibleWorkspaces],
   )
 
-  return <WorkspaceList orientation={orientation} workspaces={visibleWorkspaces} tooltip={config.tooltip} />
+  return <WorkspaceList orientation={placement.orientation} workspaces={visibleWorkspaces} tooltip={config.tooltip} />
 }

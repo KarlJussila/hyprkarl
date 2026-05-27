@@ -5,7 +5,13 @@ import {
   formatAudioTooltip,
   formatUnavailableAudioTooltip,
 } from "./audioTooltip.ts"
-import type { NormalizedAudioTooltipConfig } from "./types.ts"
+
+export type AudioTooltipTemplates = {
+  enabled: boolean
+  active: string
+  muted: string
+  unavailable: string
+}
 
 export type AudioState = {
   volume: Accessor<number>
@@ -15,7 +21,7 @@ export type AudioState = {
   setVolume: (v: number) => void
 }
 
-export function createAudioState(formats: NormalizedAudioTooltipConfig): AudioState {
+export function createAudioState(formats: AudioTooltipTemplates): AudioState {
   const speaker = AstalWp.get_default()?.defaultSpeaker ?? null
 
   if (!speaker) {

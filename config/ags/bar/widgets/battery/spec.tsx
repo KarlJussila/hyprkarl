@@ -1,27 +1,38 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import {
+  composeObject,
   normalizeBoolean,
-  normalizeClickCommandsConfig,
+  normalizeNonNegativeNumber,
+  normalizePositiveNumber,
+  normalizeStringValue,
   normalizeUnitInterval,
-  type NormalizedClickCommandsConfig,
 } from "../shared/normalize.ts"
-import { normalizeFlyoutConfig } from "../../flyout/normalizeFlyout.ts"
-import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
-import { normalizeBatteryIndicatorMetrics, normalizeBatteryTooltipConfig } from "./normalize.ts"
-import type {
-  NormalizedBatteryIndicatorMetrics,
-  NormalizedBatteryTooltipConfig,
-} from "./types.ts"
+import { flyoutWidgetSchema, flyoutWidgetDefaults } from "../shared/widgetKit.ts"
 import BatteryWidget from "./BatteryWidget.tsx"
 
+const normalizeBatteryIndicatorMetrics = composeObject({
+  width: normalizePositiveNumber,
+  height: normalizePositiveNumber,
+  borderWidth: normalizeNonNegativeNumber,
+  terminalWidth: normalizePositiveNumber,
+  terminalHeight: normalizePositiveNumber,
+  chargingGlyph: normalizeStringValue,
+  chargingGlyphFontSize: normalizePositiveNumber,
+  chargingGlyphFontFamily: normalizeStringValue,
+})
+
+const normalizeBatteryTooltipConfig = composeObject({
+  enabled: normalizeBoolean,
+  charging: normalizeStringValue,
+  discharging: normalizeStringValue,
+  plugged: normalizeStringValue,
+  fallback: normalizeStringValue,
+})
+
 const batteryDefaults = {
+  ...flyoutWidgetDefaults,
   showPercentage: true,
   lowThreshold: 0.15,
-  flyout: {
-    enabled: true,
-    align: "center",
-    gap: 0,
-  },
   tooltip: {
     enabled: true,
     charging: "{power}↑ {time}",
@@ -39,42 +50,19 @@ const batteryDefaults = {
     chargingGlyphFontSize: 6,
     chargingGlyphFontFamily: "JetBrains Mono Nerd Font Propo",
   },
-  commands: {
-    primary: undefined,
-    secondary: undefined,
-    tertiary: undefined,
-  },
-} satisfies {
-  showPercentage: boolean
-  lowThreshold: number
-  flyout: NormalizedFlyoutConfig
-  tooltip: NormalizedBatteryTooltipConfig
-  indicator: NormalizedBatteryIndicatorMetrics
-  commands: NormalizedClickCommandsConfig
 }
 
 export default createWidgetSpec({
   kind: "battery",
   defaults: batteryDefaults,
   schema: {
+    ...flyoutWidgetSchema,
     showPercentage: normalizeBoolean,
     lowThreshold: normalizeUnitInterval,
-    flyout: normalizeFlyoutConfig,
     tooltip: normalizeBatteryTooltipConfig,
     indicator: normalizeBatteryIndicatorMetrics,
-    commands: normalizeClickCommandsConfig,
   },
-  render: ({ id, config, placement, monitor }) => (
-    <BatteryWidget
-      id={id}
-      placement={placement}
-      monitor={monitor}
-      showPercentage={config.showPercentage}
-      lowThreshold={config.lowThreshold}
-      flyout={config.flyout}
-      tooltip={config.tooltip}
-      indicator={config.indicator}
-      commands={config.commands}
-    />
+  render: (args) => (
+    <BatteryWidget {...args} />
   ),
 })

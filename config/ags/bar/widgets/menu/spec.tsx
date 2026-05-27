@@ -1,42 +1,32 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import {
+  composeObject,
+  normalizeOptionalCommand,
+  normalizeRequiredCommand,
   normalizeSimpleTooltipConfig,
   normalizeStringValue,
-  type NormalizedSimpleTooltipConfig,
 } from "../shared/normalize.ts"
-import { normalizeCommands } from "./normalize.ts"
-import type { NormalizedCommandConfig } from "./types.ts"
 import MenuWidget from "./MenuWidget.tsx"
 
-const menuDefaults = {
-  icon: "",
-  commands: {
-    primary: "hk-menu",
-  },
-  tooltip: {
-    enabled: true,
-    text: "",
-  },
-} satisfies {
-  icon: string
-  commands: NormalizedCommandConfig
-  tooltip: NormalizedSimpleTooltipConfig
-}
+export const normalizeMenuCommands = composeObject({
+  primary: normalizeRequiredCommand,
+  secondary: normalizeOptionalCommand,
+  tertiary: normalizeOptionalCommand,
+})
 
 export default createWidgetSpec({
   kind: "menu",
-  defaults: menuDefaults,
+  defaults: {
+    icon: "",
+    commands: { primary: "hk-menu", secondary: undefined, tertiary: undefined },
+    tooltip: { enabled: true, text: "" },
+  },
   schema: {
     icon: normalizeStringValue,
-    commands: normalizeCommands,
+    commands: normalizeMenuCommands,
     tooltip: normalizeSimpleTooltipConfig,
   },
-  render: ({ config, placement }) => (
-    <MenuWidget
-      orientation={placement.orientation}
-      icon={config.icon}
-      commands={config.commands}
-      tooltip={config.tooltip}
-    />
+  render: (args) => (
+    <MenuWidget {...args} />
   ),
 })

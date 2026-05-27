@@ -1,18 +1,16 @@
 import { createBinding, createComputed } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalBluetooth from "gi://AstalBluetooth"
-import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
-import { resolveCommand } from "../shared/resolveCommand.ts"
 import { substituteTokens } from "../shared/template.ts"
+import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import type { NormalizedClickCommandsConfig } from "../shared/normalize.ts"
-import type { NormalizedBluetoothIcons, NormalizedBluetoothTooltip } from "./normalize.ts"
 
-type Props = {
-  orientation: BarOrientation
+type Config = {
   commands: NormalizedClickCommandsConfig
-  icons: NormalizedBluetoothIcons
-  tooltip: NormalizedBluetoothTooltip
+  icons: { enabled: string; disabled: string }
+  tooltip: { enabled: boolean; off: string; on: string; connected: string }
 }
 
 function countConnectedDevices(devices: Array<any>) {
@@ -25,8 +23,9 @@ function countConnectedDevices(devices: Array<any>) {
   }).length
 }
 
-export default function BluetoothWidget({ orientation, commands, icons, tooltip }: Props) {
-  const isVertical = orientation === "vertical"
+export default function BluetoothWidget({ config, placement }: WidgetRenderArgs<Config>) {
+  const { commands, icons, tooltip } = config
+  const isVertical = placement.orientation === "vertical"
   const bluetooth = AstalBluetooth.get_default()
   const isPowered = createBinding(bluetooth, "isPowered")
   const isConnected = createBinding(bluetooth, "isConnected")
@@ -41,14 +40,12 @@ export default function BluetoothWidget({ orientation, commands, icons, tooltip 
       })
     : undefined
 
-  const execPrimary = resolveCommand(commands.primary, undefined)
-  const execSecondary = resolveCommand(commands.secondary, undefined)
-  const execMiddle = resolveCommand(commands.tertiary, undefined)
+  const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({ commands })
 
   return (
     <Button
       class="widget-bluetooth-button widget-glyph-button"
-      orientation={orientation}
+      orientation={placement.orientation}
       tooltipText={tooltipText}
       execPrimary={execPrimary}
       execSecondary={execSecondary}

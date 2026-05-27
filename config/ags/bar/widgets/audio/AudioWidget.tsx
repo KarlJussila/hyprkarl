@@ -1,56 +1,46 @@
-import { Gdk, Gtk } from "ags/gtk4"
+import { Gtk } from "ags/gtk4"
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
-import { type FlyoutPlacement } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
-import { createFlyoutCommands } from "../../flyout/createFlyoutCommands.tsx"
 import AudioIndicator from "./AudioIndicator.tsx"
 import AudioSliderFlyout from "./AudioSliderFlyout.tsx"
 import { formatReadoutPercent } from "../shared/formatters.ts"
-import { createAudioState } from "./audioState.ts"
-import type { NormalizedAudioTooltipConfig } from "./types.ts"
+import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
+import { createAudioState, type AudioTooltipTemplates } from "./audioState.ts"
+import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import type { NormalizedClickCommandsConfig } from "../shared/normalize.ts"
 
-type Props = {
-  id: string
-  placement: FlyoutPlacement
-  monitor: Gdk.Monitor
+type Config = {
   showPercentage: boolean
   commands: NormalizedClickCommandsConfig
   flyout: NormalizedFlyoutConfig
-  tooltip: NormalizedAudioTooltipConfig
+  tooltip: AudioTooltipTemplates
   slider: NormalizedSliderMetrics
 }
 
-export default function AudioWidget({
-  id,
-  placement,
-  monitor,
-  showPercentage,
-  commands,
-  flyout,
-  tooltip,
-  slider,
-}: Props) {
+export default function AudioWidget({ id, config, placement, monitor }: WidgetRenderArgs<Config>) {
+  const { showPercentage, commands, flyout, tooltip, slider } = config
   const audioState = createAudioState(tooltip)
 
-  const { execPrimary, execSecondary, execMiddle, triggerSetup } = createFlyoutCommands({
-    flyout,
-    placement,
-    monitor,
-    id,
-    label: "audio-menu",
+  const { execPrimary, execSecondary, execMiddle, triggerSetup } = useWidgetCommands({
     commands,
-    renderContent: () => audioState.isAvailable
-      ? (
-          <AudioSliderFlyout
-            edge={placement.edge}
-            volume={audioState.volume}
-            onChange={audioState.setVolume}
-            metrics={slider}
-          />
-        )
-      : <label label="Audio unavailable" />,
+    flyout: {
+      config: flyout,
+      placement,
+      monitor,
+      id,
+      label: "audio-menu",
+      renderContent: () => audioState.isAvailable
+        ? (
+            <AudioSliderFlyout
+              edge={placement.edge}
+              volume={audioState.volume}
+              onChange={audioState.setVolume}
+              metrics={slider}
+            />
+          )
+        : <label label="Audio unavailable" />,
+    },
   })
 
   return (

@@ -38,12 +38,63 @@ does not try to document every internal script.
   Open the rofi app launcher.
 - `hk-menu-config`
   Open the configuration menu for themes, wallpapers, and defaults.
+- `hk-menu-defaults`
+  Open the defaults submenu (terminal, editor, shell).
+- `hk-menu-editor` / `hk-menu-shell` / `hk-menu-terminal`
+  Pick a default editor, shell, or terminal directly without going through the
+  defaults menu.
 - `hk-menu-install`
   Open the install menu for packages and Docker services.
 - `hk-menu-uninstall`
   Open the uninstall menu for packages and Docker services.
+- `hk-menu-utils`
+  Open the utilities submenu (toggles, screen recording, and other actions).
 - `hk-menu-power`
   Open the power menu.
+- `hk-menu-power-profile`
+  Pick a `power-profiles-daemon` profile (performance / balanced / saver).
+- `hk-menu-keybindings`
+  Open a searchable rofi menu of all Hyprland keybindings. Pass `--print` /
+  `-p` to print them to stdout instead.
+- `hk-menu-calculator`
+  Open `rofi-calc`. `Ctrl+Return` copies the current result to the clipboard;
+  history is trimmed to five entries on exit.
+
+### Launching apps
+
+- `hk-launch-audio`
+  Launch the audio controls TUI (`wiremix`), focusing an existing window if
+  one is already open.
+- `hk-launch-bluetooth`
+  Launch the bluetooth controls TUI (`bluetui`). Unblocks bluetooth via
+  `rfkill` first.
+- `hk-launch-wifi`
+  Launch the Wi-Fi controls TUI (`wifitui`). Unblocks Wi-Fi via `rfkill`
+  first.
+- `hk-launch-browser [--private] [args...]`
+  Launch the default browser as defined by `xdg-settings`. `--private` is
+  translated to the right private-browsing flag for the detected browser
+  (Firefox, Edge, Chromium, etc.).
+- `hk-launch-editor [args...]`
+  Launch the editor set in `$EDITOR` (with `nvim` as a fallback). Known TUI
+  editors run inside the hyprkarl terminal; everything else runs detached.
+- `hk-open-terminal [args...]`
+  Open a terminal window using the configured hyprkarl terminal app-id.
+  Arguments are forwarded to `xdg-terminal-exec`.
+- `hk-open-with <file>`
+  Show a rofi-based app picker for opening a file.
+- `hk-lock`
+  Launch `hyprlock` if it is not already running and wait until its Wayland
+  surface is present before returning.
+
+### Power
+
+- `hk-suspend`
+  Lock the session with `hk-lock`, then `systemctl suspend`.
+- `hk-reboot`
+  Reboot through `hyprshutdown` with the standard countdown overlay.
+- `hk-shutdown`
+  Shut down through `hyprshutdown` with the standard countdown overlay.
 
 ## Themes and Wallpapers
 
@@ -188,6 +239,15 @@ does not try to document every internal script.
 - `hk-record-screen`
   Start or stop screen recording. Supports desktop audio, microphone audio,
   webcam overlays, and explicit resolution arguments.
+- `hk-compress-video [input] [target_size] [options]`
+  Two-pass compression of a video file to a target file size. Prompts via
+  `gum` for missing arguments unless `--non-interactive` is set.
+- `hk-select-picture [directory]`
+  Open `yazi` as an image picker and print the chosen path. Defaults to
+  `~/Pictures`.
+- `hk-select-video [directory]`
+  Open `yazi` as a video picker and print the chosen path. Defaults to
+  `~/Videos`.
 - `hk-nightlight [on|off|toggle]`
   Enable, disable, or toggle hyprsunset nightlight (warm color temperature +
   gamma dimming).
@@ -201,12 +261,34 @@ does not try to document every internal script.
   Toggle microphone mute and show the current state.
 - `hk-webcam`
   Open a webcam preview window.
+- `hk-dictionary`
+  Dictionary TUI powered by `fzf` and dict.org.
 - `hk-wifi-restart`
   Unblock Wi-Fi.
 - `hk-audio-restart`
   Restart the PipeWire audio service.
+- `hk-btop-reload`
+  Reload the running `btop` so it picks up theme changes.
+
+## Internal Helpers
+
+These `hk-*` commands exist in `bin/` but are not meant to be typed directly.
+They are invoked by other scripts, keybindings, and bar widgets. Listed for
+completeness so they can be discovered with grep:
+
+- Launching glue: `hk-launch-or-focus`, `hk-launch-or-focus-tui`,
+  `hk-launch-tui`, `hk-restart-app`
+- Hardware actions bound to function keys: `hk-brightness-display`,
+  `hk-brightness-keyboard`, `hk-audio-switch`, `hk-battery-monitor`
+- Notification and OSD helpers: `hk-notify-battery`, `hk-notify-window-class`,
+  `hk-show-done`, `hk-suggest-reboot`
+- Lookup helpers: `hk-find-battery`, `hk-find-icon`, `hk-cmd-present`,
+  `hk-terminal-cwd`
+
+If you need behavior one of these provides from your own script, source or
+shell it out the same way the existing callers do.
 
 ## Notes
 
 For editing conventions, see [Repo Conventions](repo-conventions.md) and
-[Shell Style](../shell-style.md).
+[Shell Style](shell-style.md).

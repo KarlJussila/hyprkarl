@@ -178,4 +178,4 @@ review, or `hk-update dotfiles --force` to overwrite it with the repo version.
 
 - [Getting Started](getting-started.md)
 - [Configuration Map](configuration-map.md)
-- [Command Reference](reference/commands.md)
+- [Command Reference](commands.md)

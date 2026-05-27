@@ -1,7 +1,7 @@
 # Repo Conventions
 
 This page covers Hyprkarl’s general editing conventions beyond the shell
-guidelines in [Shell Style](../shell-style.md).
+guidelines in [Shell Style](shell-style.md).
 
 ## Readability First
 
@@ -21,9 +21,9 @@ That means:
 - `themes/`
   Theme assets and per-theme overrides
 - `bin/`
-  Commands meant to be run directly
+  Commands meant to be run directly. Subcommands of a dispatcher (`hk-theme set`, `hk-pkg install`, …) live as their own top-level commands using the noun-first form `hk-<noun>-<action>`. The dispatcher is a thin router that `exec`s them.
 - `bin/lib/`
-  Internal shell helpers for `bin/`, kept as `*.sh` files
+  Shared sourced helpers used by more than one `bin/` command (`docker.sh`, `update.sh`). Single-use logic stays in the command itself.
 - `scripts/`
   Support scripts and backend logic
 - `templates/`
@@ -49,13 +49,14 @@ intend to replace it.
 Files under `config/` and `applications/` are exposed through GNU Stow.
 
 - editing an existing tracked file needs no extra step
-- adding a new tracked file usually requires `./scripts/add-dotfiles.sh`
+- adding a new tracked file (or removing one) requires re-stowing with
+  `hk-update dotfiles`
 
 Do not treat `setup-dotfiles.sh` as a normal maintenance command. It belongs to
 the initial setup flow and is too aggressive for routine refreshes.
 
 ## Related Docs
 
-- [Shell Style](../shell-style.md)
-- [Configuration Map](../configuration-map.md)
-- [Extending Hyprkarl](../extending-hyprkarl.md)
+- [Shell Style](shell-style.md)
+- [Configuration Map](configuration-map.md)
+- [Extending Hyprkarl](extending-hyprkarl.md)

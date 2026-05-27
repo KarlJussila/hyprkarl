@@ -57,7 +57,7 @@ For editing guidance, see:
 
 - [Configuration Map](configuration-map.md)
 - [Extending Hyprkarl](extending-hyprkarl.md)
-- [Repo Conventions](reference/repo-conventions.md)
+- [Repo Conventions](repo-conventions.md)
 - [Shell Style](shell-style.md)
 
 ## Updating

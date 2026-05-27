@@ -1,0 +1,27 @@
+#!/bin/bash
+# hk-fingerprint-select
+# Display a fingerprint picker and print the selected finger name to stdout.
+#
+# Usage:
+#   hk-fingerprint-select [message]
+
+fingers=$(hk-fingerprint-list)
+
+if [[ -z "$fingers" ]]; then
+  exit 1
+fi
+
+# Format kebab-case finger names as "Title Case" for display.
+display_list=()
+while IFS= read -r finger; do
+  [[ -n "$finger" ]] || continue
+  display_list+=("$(echo "$finger" | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g')")
+done <<< "$fingers"
+
+message="${1:-Select Fingerprint}"
+
+selected=$(printf '%s\n' "${display_list[@]}" \
+  | rofi -dmenu -p "" -no-custom -mesg "$message" -theme ~/.config/rofi/custom-menu.rasi) || exit 1
+
+# Reverse: spaces back to hyphens, lowercase.
+echo "$selected" | tr '[:upper:]' '[:lower:]' | tr ' ' '-'

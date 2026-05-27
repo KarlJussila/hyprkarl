@@ -9,9 +9,11 @@ new theme-aware configuration.
 Use this rule of thumb:
 
 - `bin/`
-  Commands meant to be run directly
+  Commands meant to be run directly. Dispatcher subcommands also live here as
+  top-level `hk-<noun>-<action>` commands.
 - `bin/lib/`
-  Internal shell helpers for `bin/`, kept as `*.sh` files
+  Shared sourced helpers used by more than one `bin/` command. Currently
+  `docker.sh` and `update.sh`. Single-use logic stays in the command itself.
 - `scripts/`
   Support scripts and backend logic
 - `config/`
@@ -23,9 +25,12 @@ Use this rule of thumb:
 - `applications/`
   Desktop files exposed under `~/.local/share/applications/`
 
-If a command is something a user would reasonably type, put it in `bin/`. If it
-exists to support another `bin/` command, put it in `bin/lib/`. If it exists to
-support something else, put it under `scripts/`.
+If a command is something a user would reasonably type, put it in `bin/`. If a
+helper would only ever be called from one command, keep it in that command
+inline. If it would genuinely be shared by two or more commands, extract it as
+a function into the appropriate `bin/lib/*.sh` file (or create a new one). If
+the thing exists to support something other than a `hk-*` command, put it
+under `scripts/`.
 
 ## Add a New Shell Command
 
@@ -35,6 +40,19 @@ Typical workflow:
 2. Follow the repo shell conventions in [Shell Style](shell-style.md).
 3. If the command shares enough logic with other `bin/` commands, extract or
    reuse a helper in `bin/lib/`.
+
+### Adding a Subcommand to an Existing Dispatcher
+
+Dispatchers like `hk-theme`, `hk-pkg`, `hk-fingerprint`, `hk-wallpaper`, and
+`hk-update` route to top-level commands named `hk-<noun>-<action>`. To add a
+new subcommand:
+
+1. Create the action as a new executable: `bin/hk-<noun>-<new-action>`.
+2. Add the action name to the `case` in the dispatcher so it routes to your
+   new command.
+
+The action script is callable directly (`hk-theme-set foo`) as well as through
+the dispatcher (`hk-theme set foo`).
 
 ## Add a Menu Action
 
@@ -52,8 +70,6 @@ Minimal example:
 ```bash
 #!/bin/bash
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 BACK=()
@@ -79,6 +95,11 @@ case "$CHOICE" in
     "")        (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac
 ```
+
+The `BACK`/`SELF` plumbing lets a submenu return to its caller when the user
+dismisses it; pass `--back "${SELF[@]}"` when invoking another `hk-menu-*`
+command. Omit it for menus that don't need a back navigation chain. See
+`bin/hk-menu-config` for the canonical pattern.
 
 ## Add a New Keybinding
 

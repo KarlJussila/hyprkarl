@@ -30,7 +30,7 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - Add a command, menu action, keybinding, or theme-aware config:
   [Extending Hyprkarl](extending-hyprkarl.md)
 - Look up the main `hk-*` commands:
-  [Command Reference](reference/commands.md)
+  [Command Reference](commands.md)
 - Troubleshooting issues:
   [Troubleshooting](troubleshooting.md)
 
@@ -44,6 +44,6 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - [Customizing the Bar](customizing-bar.md)
 - [Extending Hyprkarl](extending-hyprkarl.md)
 - [Troubleshooting](troubleshooting.md)
-- [Command Reference](reference/commands.md)
-- [Repo Conventions](reference/repo-conventions.md)
+- [Command Reference](commands.md)
+- [Repo Conventions](repo-conventions.md)
 - [Shell Style](shell-style.md)

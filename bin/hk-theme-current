@@ -1,0 +1,12 @@
+#!/bin/bash
+# hk-theme-current
+# Print the current theme name, formatted as "Title Case".
+
+THEME_NAME_PATH="$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
+
+if [[ ! -f "$THEME_NAME_PATH" ]]; then
+  echo "Unknown"
+  exit 0
+fi
+
+sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g' "$THEME_NAME_PATH"

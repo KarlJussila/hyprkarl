@@ -1,0 +1,52 @@
+#!/bin/bash
+# hk-theme-set
+# Switch the active Hyprkarl theme and reload affected components.
+#
+# Usage:
+#   hk-theme-set <theme-name>
+#
+# The theme name is case-insensitive and spaces are treated as hyphens,
+# so "Forest Dark" and "forest-dark" are equivalent.
+
+if [[ -z $1 ]]; then
+  echo "Usage: hk-theme-set <theme-name>" >&2
+  exit 1
+fi
+
+THEMES_PATH="$HYPRKARL_PATH/themes"
+THEME_LINK="$HYPRKARL_PATH/config/hyprkarl/current/theme"
+THEME_NAME=$(echo "$*" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+if [[ ! -d "$THEMES_PATH/$THEME_NAME" ]]; then
+  echo "Theme '$THEME_NAME' does not exist" >&2
+  exit 1
+fi
+
+ln -sfn "../../../themes/$THEME_NAME" "$THEME_LINK"
+echo "$THEME_NAME" > "$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
+
+if ! hk-wallpaper-init; then
+  hk-wallpaper-cycle
+fi
+
+# Apply matching GTK color scheme and icon theme.
+if [[ -f ~/.config/hyprkarl/current/theme/light.mode ]]; then
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+else
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+fi
+
+GNOME_ICONS_THEME=~/.config/hyprkarl/current/theme/icons.theme
+if [[ -f "$GNOME_ICONS_THEME" ]]; then
+  gsettings set org.gnome.desktop.interface icon-theme "$(<"$GNOME_ICONS_THEME")"
+else
+  gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
+fi
+
+if pgrep -x ags >/dev/null; then
+  hk-ags restart
+fi
+hyprctl reload >/dev/null
+hk-mako-reload
+hk-terminal-reload
+hk-btop-reload

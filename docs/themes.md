@@ -162,5 +162,5 @@ hk-wallpaper init || hk-wallpaper cycle
 ## Related Docs
 
 - [Using Hyprkarl](using-hyprkarl.md)
-- [Command Reference](reference/commands.md)
+- [Command Reference](commands.md)
 - [Extending Hyprkarl](extending-hyprkarl.md)

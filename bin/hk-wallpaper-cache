@@ -1,0 +1,57 @@
+#!/bin/bash
+# hk-wallpaper-cache
+# Manage the wallpaper thumbnail cache for the current theme.
+#
+# Usage:
+#   hk-wallpaper-cache                          Sync cache (add missing, remove stale)
+#   hk-wallpaper-cache --regenerate             Wipe and regenerate entire cache
+#   hk-wallpaper-cache --single <filename>      Regenerate one thumbnail
+
+THEME_NAME=$(cat "$HYPRKARL_PATH/config/hyprkarl/current/theme.name")
+WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
+CACHE_DIR="$HOME/.cache/hyprkarl/wallpapers/$THEME_NAME"
+
+mkdir -p "$CACHE_DIR"
+
+generate_thumbnail() {
+  local img="$1"
+  local name
+  name=$(basename "$img")
+  magick "$img" -strip -thumbnail 500x500^ -gravity center -extent 500x500 "$CACHE_DIR/$name"
+}
+
+if [[ "$1" == "--regenerate" ]]; then
+  rm -f "$CACHE_DIR"/*
+  for img in "$WALLPAPER_DIR"/*; do
+    [[ -f "$img" ]] || continue
+    generate_thumbnail "$img"
+  done
+  exit 0
+fi
+
+if [[ "$1" == "--single" ]]; then
+  if [[ -z "$2" ]]; then
+    echo "Usage: hk-wallpaper-cache --single <filename>" >&2
+    exit 1
+  fi
+  rm -f "$CACHE_DIR/$2"
+  generate_thumbnail "$WALLPAPER_DIR/$2"
+  exit 0
+fi
+
+# Sync mode: remove stale thumbs, add missing.
+for cached in "$CACHE_DIR"/*; do
+  [[ -f "$cached" ]] || continue
+  name=$(basename "$cached")
+  if [[ ! -f "$WALLPAPER_DIR/$name" ]]; then
+    rm "$cached"
+  fi
+done
+
+for img in "$WALLPAPER_DIR"/*; do
+  [[ -f "$img" ]] || continue
+  name=$(basename "$img")
+  if [[ ! -f "$CACHE_DIR/$name" ]]; then
+    generate_thumbnail "$img"
+  fi
+done

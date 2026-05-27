@@ -1,0 +1,18 @@
+#!/bin/bash
+# hk-pkg-remove-flatpak
+# Remove all the named Flatpaks if they're installed (otherwise ignore).
+
+removed_any=0
+
+for app in "$@"; do
+  if flatpak info --system "$app" &>/dev/null; then
+    flatpak uninstall -y --delete-data "$app" || exit 1
+    removed_any=1
+  else
+    printf 'Skipping not-installed Flatpak: %s\n' "$app" >&2
+  fi
+done
+
+if (( removed_any )); then
+  flatpak uninstall -y --unused || exit 1
+fi

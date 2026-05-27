@@ -8,7 +8,7 @@
 #   hk-docker list
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/docker/docker.sh"
+source "$SCRIPT_DIR/lib/docker.sh"
 
 docker_usage() {
   cat <<EOF

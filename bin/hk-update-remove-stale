@@ -1,0 +1,10 @@
+#!/bin/bash
+# hk-update-remove-stale
+# Remove stale hyprkarl symlinks and empty directories.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/update.sh"
+
+remove_stale_symlinks
+remove_empty_dirs
+printf 'Stale symlinks and empty directories removed.\n'

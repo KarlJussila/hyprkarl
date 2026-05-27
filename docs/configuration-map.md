@@ -6,9 +6,9 @@ would edit.
 ## Top-Level Layout
 
 - `bin/`
-  Commands meant to be run directly
+  Commands meant to be run directly. Dispatchers (`hk-theme`, `hk-pkg`, …) route to top-level `hk-<noun>-<action>` commands.
 - `bin/lib/`
-  Internal shell helpers for `bin/`, kept as `*.sh` files
+  Shared sourced helpers (`docker.sh`, `update.sh`). Reserved for utilities used by more than one command, not single-use implementations.
 - `config/`
   Application config and session behavior
 - `packages/`
@@ -152,6 +152,6 @@ See [Themes](themes.md) for the full theme layout and how
 
 Use this rule of thumb:
 
-- put a command in `bin/` if it should be run directly
-- put a shell helper in `bin/lib/` if it supports another `bin/` command
+- put a command in `bin/` if it should be run directly. Subcommands of a dispatcher (e.g. `hk-theme set`) live as their own top-level commands (`hk-theme-set`); the dispatcher just `exec`s them.
+- put a sourced helper in `bin/lib/` only if it is shared by more than one command (`docker.sh`, `update.sh`).
 - put a support script in `scripts/` if it supports something else

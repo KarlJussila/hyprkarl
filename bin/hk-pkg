@@ -8,9 +8,6 @@
 #   hk-pkg missing [--flatpak] <package> [package...]
 #   hk-pkg present [--flatpak] <package> [package...]
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-ACTION_DIR="$SCRIPT_DIR/lib/pkg"
-
 usage() {
   cat <<'EOF'
 Usage:
@@ -21,89 +18,36 @@ Usage:
 EOF
 }
 
-set_source() {
-  local requested_source=$1
-
-  if [[ "$source_name" != "pacman" && "$source_name" != "$requested_source" ]]; then
-    printf 'Choose only one source flag.\n' >&2
-    return 1
-  fi
-
-  source_name=$requested_source
-}
-
-resolve_action_path() {
-  case "$1:$2" in
-    install:pacman)  printf '%s/install.sh\n' "$ACTION_DIR" ;;
-    install:aur)     printf '%s/install-aur.sh\n' "$ACTION_DIR" ;;
-    install:flatpak) printf '%s/install-flatpak.sh\n' "$ACTION_DIR" ;;
-    remove:pacman)   printf '%s/remove.sh\n' "$ACTION_DIR" ;;
-    remove:flatpak)  printf '%s/remove-flatpak.sh\n' "$ACTION_DIR" ;;
-    missing:pacman)  printf '%s/missing.sh\n' "$ACTION_DIR" ;;
-    missing:flatpak) printf '%s/missing-flatpak.sh\n' "$ACTION_DIR" ;;
-    present:pacman)  printf '%s/present.sh\n' "$ACTION_DIR" ;;
-    present:flatpak) printf '%s/present-flatpak.sh\n' "$ACTION_DIR" ;;
-    *) return 1 ;;
-  esac
-}
-
 action=${1:-}
 shift || true
 
 case "$action" in
-  install|remove|missing|present)
-    ;;
-  ""|-h|--help|help)
-    usage
-    exit 0
-    ;;
-  *)
-    usage >&2
-    exit 1
-    ;;
+  install|remove|missing|present) ;;
+  ""|-h|--help|help) usage; exit 0 ;;
+  *) usage >&2; exit 1 ;;
 esac
 
-source_name="pacman"
-action_args=()
-
-while (($# > 0)); do
-  case "$1" in
-    --aur)
-      set_source aur || exit 1
-      ;;
-    --flatpak)
-      set_source flatpak || exit 1
-      ;;
-    --)
-      shift
-      action_args+=("$@")
-      break
-      ;;
-    -h|--help)
-      usage
-      exit 0
+# Translate --aur / --flatpak into a suffix on the action command.
+suffix=""
+args=()
+for arg in "$@"; do
+  case "$arg" in
+    --aur|--flatpak)
+      if [[ -n "$suffix" ]]; then
+        echo "Choose only one source flag." >&2
+        exit 1
+      fi
+      suffix="-${arg#--}"
       ;;
     *)
-      action_args+=("$1")
+      args+=("$arg")
       ;;
   esac
-  shift
 done
 
-action_path=$(resolve_action_path "$action" "$source_name") || {
-  printf 'Unsupported source flag for hk-pkg %s: --%s\n' "$action" "$source_name" >&2
-  exit 1
-}
-
-if ((${#action_args[@]} == 0)); then
-  printf 'hk-pkg %s requires at least one package name.\n' "$action" >&2
-  usage >&2
+if [[ "$suffix" == "-aur" && "$action" != "install" ]]; then
+  echo "Unsupported flag for hk-pkg $action: --aur" >&2
   exit 1
 fi
 
-if [[ ! -x "$action_path" ]]; then
-  printf 'Unknown package subcommand implementation: %s\n' "$action" >&2
-  exit 1
-fi
-
-exec "$action_path" "${action_args[@]}"
+exec "hk-pkg-${action}${suffix}" "${args[@]}"

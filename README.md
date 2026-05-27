@@ -64,8 +64,10 @@ The full manual lives under `docs/`.
   Adding commands, menus, keybindings, and theme-aware config
 - [docs/troubleshooting.md](docs/troubleshooting.md)
   Common setup and runtime failures
-- [docs/reference/commands.md](docs/reference/commands.md)
+- [docs/commands.md](docs/commands.md)
   Command reference
+- [docs/repo-conventions.md](docs/repo-conventions.md)
+  Editing conventions, stowed-config model, stateful paths
 - [docs/shell-style.md](docs/shell-style.md)
   Hyprkarl's shell scripting style
 
@@ -106,6 +108,7 @@ If you have customized Hyprkarl, update it like a normal git branch. Review
 upstream changes before merging them, and commit your own work first,
 especially changes under `config/` and `applications/`.
 
-For the full update workflow, including when to run `setup-packages.sh`,
-`setup-system.sh`, `scripts/add-dotfiles.sh`, or `setup-dotfiles.sh`, see
-[docs/getting-started.md](docs/getting-started.md).
+For the full update workflow, including when to run `hk-update`,
+`setup-packages.sh`, `setup-system.sh`, or `setup-dotfiles.sh`, see
+[docs/getting-started.md](docs/getting-started.md) and
+[docs/updating.md](docs/updating.md).

@@ -173,4 +173,4 @@ Common utility commands include:
 - `hk-wifi-restart`
 
 For the rest of the command surface, see
-[Command Reference](reference/commands.md).
+[Command Reference](commands.md).

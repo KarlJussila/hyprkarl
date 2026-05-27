@@ -1,0 +1,15 @@
+#!/bin/bash
+# hk-pkg-install
+# Install listed pacman packages.
+# Returns false if it couldn't be done.
+
+if hk-pkg-missing "$@"; then
+  sudo pacman -S --noconfirm --needed "$@" || exit 1
+fi
+
+for pkg in "$@"; do
+  if ! pacman -Q "$pkg" &>/dev/null; then
+    printf '\033[31mError: Package %q did not install\033[0m\n' "$pkg" >&2
+    exit 1
+  fi
+done

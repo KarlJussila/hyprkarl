@@ -1,0 +1,9 @@
+#!/bin/bash
+# hk-fingerprint-list
+# List enrolled fingerprints, one finger name per line.
+
+if ! command -v fprintd-list &>/dev/null; then
+  exit 1
+fi
+
+fprintd-list "$USER" 2>/dev/null | awk -F': ' '/^ - #/ {print $2}'

@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-fingerprint
-# Manage fingerprint authentication and enrolled fingers.
+# Dispatch fingerprint operations to hk-fingerprint-<action>.
 #
 # Usage:
 #   hk-fingerprint enroll [finger-name]
@@ -8,9 +8,6 @@
 #   hk-fingerprint remove <finger-name>
 #   hk-fingerprint select [message]
 #   hk-fingerprint setup [--remove]
-
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-ACTION_DIR="$SCRIPT_DIR/lib/fingerprint"
 
 usage() {
   cat <<'EOF'
@@ -27,23 +24,7 @@ action=${1:-}
 shift || true
 
 case "$action" in
-  enroll|list|remove|select|setup)
-    ;;
-  ""|-h|--help|help)
-    usage
-    exit 0
-    ;;
-  *)
-    usage >&2
-    exit 1
-    ;;
+  enroll|list|remove|select|setup) exec "hk-fingerprint-$action" "$@" ;;
+  ""|-h|--help|help) usage; exit 0 ;;
+  *) usage >&2; exit 1 ;;
 esac
-
-action_path="$ACTION_DIR/$action.sh"
-
-if [[ ! -x "$action_path" ]]; then
-  printf 'Unknown fingerprint subcommand: %s\n' "$action" >&2
-  exit 1
-fi
-
-exec "$action_path" "$@"

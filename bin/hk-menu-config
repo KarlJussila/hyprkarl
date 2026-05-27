@@ -1,29 +1,16 @@
 #!/bin/bash
 # hk-menu-config
 # Menu for accessing/editing configs
-#
-# Usage:
-#   hk-menu-config [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              Also passed to submenus so they can navigate back to this
-#              menu or continue up the call chain. If omitted, dismissing
-#              the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
-SELF=("$(basename "$0")")
-[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
 THEME=" Theme"
 WALLPAPER=" Wallpaper"
 DEFAULTS="󰆓 Defaults"
 TIMEZONE="󰇧 Timezone"
 FINGERPRINT="󰈷 Fingerprint"
+
+relaunch_menu() { exec "$0"; }
 
 CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$DEFAULTS\n$TIMEZONE\n$FINGERPRINT" \
     | rofi -dmenu \
@@ -33,10 +20,12 @@ CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$DEFAULTS\n$TIMEZONE\n$FINGERPRINT" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$THEME")       hk-menu-theme --back "${SELF[@]}" ;;
-    "$WALLPAPER")   hk-menu-wallpaper --back "${SELF[@]}" ;;
-    "$DEFAULTS")    hk-menu-defaults --back "${SELF[@]}" ;;
+    "$THEME")       hk-menu-theme || relaunch_menu ;;
+    "$WALLPAPER")   hk-menu-wallpaper || relaunch_menu ;;
+    "$DEFAULTS")    hk-menu-defaults || relaunch_menu ;;
     "$TIMEZONE")    hk-open-terminal hk-setup-timezone ;;
-    "$FINGERPRINT") hk-menu-fingerprint --back "${SELF[@]}" ;;
-    "")             (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "$FINGERPRINT") hk-menu-fingerprint || relaunch_menu ;;
+    "")             exit 1 ;;
 esac
+
+exit 0

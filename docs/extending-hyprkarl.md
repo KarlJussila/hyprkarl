@@ -67,17 +67,12 @@ text.
 
 Minimal example:
 
+Leaf menu (no submenus):
+
 ```bash
 #!/bin/bash
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
-SELF=("$(basename "$0")")
-[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")
 
 FIRST="First action"
 SECOND="Second action"
@@ -92,14 +87,42 @@ CHOICE=$(printf '%s\n' "$FIRST" "$SECOND" \
 case "$CHOICE" in
     "$FIRST")  first-command ;;
     "$SECOND") second-command ;;
-    "")        (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "")        exit 1 ;;
 esac
+
+exit 0
 ```
 
-The `BACK`/`SELF` plumbing lets a submenu return to its caller when the user
-dismisses it; pass `--back "${SELF[@]}"` when invoking another `hk-menu-*`
-command. Omit it for menus that don't need a back navigation chain. See
-`bin/hk-menu-config` for the canonical pattern.
+Dismissing exits 1 so a parent can detect it. Because these scripts run without
+`set -e`, a failed action branch still falls through to `exit 0` — only the
+explicit `exit 1` on dismiss signals the parent.
+
+Parent menu (has submenus) adds `relaunch_menu` and uses `|| relaunch_menu`
+on submenu calls:
+
+```bash
+relaunch_menu() { exec "$0"; }
+
+CHOICE=$(printf '%s\n' "$SUBMENU" "$ACTION" \
+    | rofi -dmenu \
+           -p "" \
+           -no-custom \
+           -mesg "Example" \
+           -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+    "$SUBMENU") hk-menu-sub || relaunch_menu ;;  # dismissed → re-show this menu
+    "$ACTION")  do-thing ;;
+    "")         exit 1 ;;
+esac
+
+exit 0
+```
+
+When a submenu exits 1 (dismissed), `|| relaunch_menu` execs the current script
+in-place, re-showing this menu. When an action completes, execution falls
+through to `exit 0`. Dismissing this menu exits 1 so its own parent can detect
+it. See `bin/hk-menu` for the canonical pattern.
 
 ## Add a New Keybinding
 

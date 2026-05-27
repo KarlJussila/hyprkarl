@@ -1,23 +1,10 @@
 #!/bin/bash
 # hk-menu
 # Main hyprkarl menu
-#
-# Usage:
-#   hk-menu [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              Also passed to submenus so they can navigate back to this
-#              menu or continue up the call chain. If omitted, dismissing
-#              the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
-SELF=("$(basename "$0")")
-[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
+relaunch_menu() { exec "$0"; }
 
 LAUNCH="󱓟 Launch"
 INSTALL=" Install"
@@ -35,10 +22,12 @@ CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$CONFIG\n$POWER" \
 
 case "$CHOICE" in
     "$LAUNCH")    hk-menu-launcher ;;
-    "$INSTALL")   hk-menu-install --back "${SELF[@]}" ;;
-    "$UNINSTALL") hk-menu-uninstall --back "${SELF[@]}" ;;
-    "$UTILS")     hk-menu-utils --back "${SELF[@]}" ;;
-    "$CONFIG")    hk-menu-config --back "${SELF[@]}" ;;
-    "$POWER")     hk-menu-power --back "${SELF[@]}" ;;
-    "")           [[ -n "${BACK[*]}" ]] && "${BACK[@]}" ;;
+    "$INSTALL")   hk-menu-install || relaunch_menu ;;
+    "$UNINSTALL") hk-menu-uninstall || relaunch_menu ;;
+    "$UTILS")     hk-menu-utils || relaunch_menu ;;
+    "$CONFIG")    hk-menu-config || relaunch_menu ;;
+    "$POWER")     hk-menu-power || relaunch_menu ;;
+    "")           exit 1 ;;
 esac
+
+exit 0

@@ -1,28 +1,15 @@
 #!/bin/bash
 # hk-menu-install
 # Menu for installing packages
-#
-# Usage:
-#   hk-menu-install [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              Also passed to submenus so they can navigate back to this
-#              menu or continue up the call chain. If omitted, dismissing
-#              the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
-SELF=("$(basename "$0")")
-[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
 PACMAN="󰣇 Pacman"
 AUR=" AUR"
 FLATPAK="󰏖 Flatpak"
 DOCKER="󰡨 Docker"
+
+relaunch_menu() { exec "$0"; }
 
 CHOICE=$(echo -e "$PACMAN\n$AUR\n$FLATPAK\n$DOCKER" \
     | rofi -dmenu \
@@ -35,6 +22,8 @@ case "$CHOICE" in
     "$PACMAN")  hk-open-terminal hk-pkg-install-tui ;;
     "$AUR")     hk-open-terminal hk-pkg-install-tui --aur ;;
     "$FLATPAK") hk-open-terminal hk-pkg-install-tui --flatpak ;;
-    "$DOCKER")  hk-menu-docker-install --back "${SELF[@]}" ;;
-    "")         (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "$DOCKER")  hk-menu-docker-install || relaunch_menu ;;
+    "")         exit 1 ;;
 esac
+
+exit 0

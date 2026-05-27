@@ -1,27 +1,14 @@
 #!/bin/bash
 # hk-menu-defaults
 # Menu for setting default applications
-#
-# Usage:
-#   hk-menu-defaults [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              Also passed to submenus so they can navigate back to this
-#              menu or continue up the call chain. If omitted, dismissing
-#              the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
-SELF=("$(basename "$0")")
-[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
 TERMINAL=" Terminal"
 EDITOR=" Editor"
 SHELL=" Shell"
+
+relaunch_menu() { exec "$0"; }
 
 CHOICE=$(echo -e "$TERMINAL\n$EDITOR\n$SHELL" \
     | rofi -dmenu \
@@ -31,8 +18,10 @@ CHOICE=$(echo -e "$TERMINAL\n$EDITOR\n$SHELL" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$TERMINAL") hk-menu-terminal --back "${SELF[@]}" ;;
-    "$EDITOR")   hk-menu-editor --back "${SELF[@]}" ;;
-    "$SHELL")    hk-menu-shell --back "${SELF[@]}" ;;
-    "")          (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "$TERMINAL") hk-menu-terminal || relaunch_menu ;;
+    "$EDITOR")   hk-menu-editor || relaunch_menu ;;
+    "$SHELL")    hk-menu-shell || relaunch_menu ;;
+    "")          exit 1 ;;
 esac
+
+exit 0

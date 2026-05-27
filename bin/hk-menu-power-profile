@@ -1,19 +1,8 @@
 #!/bin/bash
 # hk-menu-power-profile
 # Menu for setting the system power profile via power-profiles-daemon
-#
-# Usage:
-#   hk-menu-power-profile [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              If omitted, dismissing the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
 
 CURRENT=$(powerprofilesctl get)
 
@@ -38,5 +27,7 @@ case "$CHOICE" in
     "$POWER_SAVER")   powerprofilesctl set power-saver ;;
     "$BALANCED")      powerprofilesctl set balanced ;;
     "$PERFORMANCE")   powerprofilesctl set performance ;;
-    "")               (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "")               exit 1 ;;
 esac
+
+exit 0

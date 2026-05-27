@@ -1,19 +1,8 @@
 #!/bin/bash
 # hk-menu-ags
 # Menu for controlling the AGS bar.
-#
-# Usage:
-#   hk-menu-ags [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              If omitted, dismissing the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-    shift; BACK=("$@")
-fi
 
 STATUS=$(ags request bar status 2>/dev/null)
 
@@ -40,5 +29,7 @@ case "$CHOICE" in
     "$TOGGLE_ENTRY")    hk-ags toggle ;;
     "$AUTOHIDE_ENTRY")  hk-ags autohide ;;
     "$EXCLUSIVE_ENTRY") hk-ags exclusive ;;
-    "")                 (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "")                 exit 1 ;;
 esac
+
+exit 0

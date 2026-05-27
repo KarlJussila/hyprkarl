@@ -1,27 +1,14 @@
 #!/bin/bash
 # hk-menu-uninstall
 # Menu for uninstalling packages
-#
-# Usage:
-#   hk-menu-uninstall [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              Also passed to submenus so they can navigate back to this
-#              menu or continue up the call chain. If omitted, dismissing
-#              the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
-SELF=("$(basename "$0")")
-[[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
 SYSTEM="󰣇 System"
 FLATPAK="󰏖 Flatpak"
 DOCKER="󰡨 Docker"
+
+relaunch_menu() { exec "$0"; }
 
 CHOICE=$(echo -e "$SYSTEM\n$FLATPAK\n$DOCKER" \
     | rofi -dmenu \
@@ -33,6 +20,8 @@ CHOICE=$(echo -e "$SYSTEM\n$FLATPAK\n$DOCKER" \
 case "$CHOICE" in
     "$SYSTEM")  hk-open-terminal hk-pkg-remove-tui ;;
     "$FLATPAK") hk-open-terminal hk-pkg-remove-tui --flatpak ;;
-    "$DOCKER")  hk-menu-docker-uninstall --back "${SELF[@]}" ;;
-    "")         (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "$DOCKER")  hk-menu-docker-uninstall || relaunch_menu ;;
+    "")         exit 1 ;;
 esac
+
+exit 0

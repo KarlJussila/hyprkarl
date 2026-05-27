@@ -1,14 +1,6 @@
 #!/bin/bash
 # hk-menu-fingerprint
 # Menu for fingerprint management
-#
-# Usage:
-#   hk-menu-fingerprint [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              Also passed to submenus so they can navigate back to this
-#              menu or continue up the call chain. If omitted, dismissing
-#              the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
@@ -16,11 +8,6 @@ ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 is_setup() {
   command -v fprintd-list &>/dev/null && grep -q pam_fprintd.so /etc/pam.d/sudo 2>/dev/null
 }
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
 
 SETUP="󰈷 Setup"
 ENROLL="󰈷 Add Fingerprint"
@@ -47,5 +34,7 @@ case "$CHOICE" in
     "$REMOVE")    hk-fingerprint remove \
                   "$(hk-fingerprint select 'Remove Fingerprint')" ;;
     "$UNINSTALL") hk-open-terminal hk-fingerprint setup --remove ;;
-    "")           (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "")           exit 1 ;;
 esac
+
+exit 0

@@ -1,23 +1,10 @@
 #!/bin/bash
 # hk-menu-docker-uninstall
 # Menu for uninstalling Docker service stacks.
-#
-# Usage:
-#   hk-menu-docker-uninstall [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              Also passed to submenus so they can navigate back to this
-#              menu or continue up the call chain. If omitted, dismissing
-#              the menu does nothing.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/docker.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
 
 CHOICES=()
 CHOICE_IDS=()
@@ -42,9 +29,7 @@ CHOICE=$(printf '%s\n' "${CHOICES[@]}" \
            -mesg "$MESG" \
            -theme "$ROFI_THEME")
 
-case "$CHOICE" in
-    "")         (( ${#BACK[@]} )) && "${BACK[@]}" ;;
-esac
+[[ -z "$CHOICE" ]] && exit 1
 
 for index in "${!CHOICE_IDS[@]}"; do
     if [[ "$CHOICE" == "${CHOICES[$index]}" ]]; then

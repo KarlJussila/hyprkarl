@@ -1,21 +1,8 @@
 #!/bin/bash
 # hk-menu-editor
 # Menu for selecting a default text editor
-#
-# Usage:
-#   hk-menu-editor [--back <command> [args...]]
-#
-#   --back     Optional command to invoke if the user dismisses the menu.
-#              Also passed to submenus so they can navigate back to this
-#              menu or continue up the call chain. If omitted, dismissing
-#              the menu does nothing.
 
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-BACK=()
-if [[ "${1:-}" == "--back" ]]; then
-  shift; BACK=("$@")
-fi
 
 NVIM=" Neovim"
 VIM=" Vim"
@@ -36,5 +23,7 @@ case "$CHOICE" in
     "$NANO")     hk-default-editor nano ;;
     "$MICRO")    hk-default-editor micro ;;
     "$VSCODIUM") hk-default-editor vscodium ;;
-    "")          (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "")          exit 1 ;;
 esac
+
+exit 0

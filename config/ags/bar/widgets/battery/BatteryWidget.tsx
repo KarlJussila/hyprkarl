@@ -1,6 +1,7 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
-import FlyoutButton from "../shared/FlyoutButton.tsx"
+import Button from "../../primitives/Button.tsx"
+import { createFlyoutCommands } from "../../overlays/flyout/createFlyoutCommands.tsx"
 import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState } from "./batteryState"
 import { formatReadoutPercent } from "../shared/formatters.ts"
@@ -10,6 +11,7 @@ import type {
   NormalizedBatteryIndicatorMetrics,
   NormalizedBatteryTooltipConfig,
 } from "./types.ts"
+import type { NormalizedClickCommandsConfig } from "../shared/normalize.ts"
 
 type Props = {
   id: string
@@ -20,6 +22,7 @@ type Props = {
   flyout: NormalizedFlyoutConfig
   tooltip: NormalizedBatteryTooltipConfig
   indicator: NormalizedBatteryIndicatorMetrics
+  commands: NormalizedClickCommandsConfig
 }
 
 export default function BatteryWidget({
@@ -31,56 +34,62 @@ export default function BatteryWidget({
   flyout,
   tooltip,
   indicator,
+  commands,
 }: Props) {
   const batteryState = createBatteryState(tooltip)
 
-  const batteryContent = (
-    <box
-      class={`widget-battery-display widget-icon-display is-${placement.orientation}`}
-      orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
-      spacing={0}
-      halign={Gtk.Align.CENTER}
-      valign={Gtk.Align.CENTER}
-    >
-      <BatteryIndicator
-        orientation={placement.orientation}
-        level={batteryState.percentage}
-        charging={batteryState.isCharging}
-        lowThreshold={lowThreshold}
-        metrics={indicator}
+  const { execPrimary, execSecondary, execMiddle, triggerSetup } = createFlyoutCommands({
+    flyout,
+    placement,
+    monitor,
+    id,
+    label: "battery-menu",
+    commands,
+    renderContent: (closeFlyout) => (
+      <PowerProfileMenu
+        activeProfile={batteryState.activePowerProfile}
+        profiles={batteryState.availablePowerProfiles}
+        onSelect={(profileName) => {
+          batteryState.setActivePowerProfile(profileName)
+          closeFlyout()
+        }}
       />
-      {showPercentage && (
-        <label
-          class="widget-battery-percent widget-readout widget-readout-percent"
-          valign={Gtk.Align.CENTER}
-          label={batteryState.percentage(formatReadoutPercent)}
-        />
-      )}
-    </box>
-  )
+    ),
+  })
 
   return (
-    <FlyoutButton
-      widgetClass="widget-battery-button widget-glyph-button"
-      placement={placement}
-      monitor={monitor}
-      id={id}
-      flyoutLabel="battery-menu"
-      flyout={flyout}
+    <Button
+      class={`widget-battery-button widget-glyph-button is-${placement.orientation}`}
+      orientation={placement.orientation}
       tooltipText={batteryState.tooltipText}
       visible={batteryState.isPresent}
-      renderFlyoutContent={(closeFlyout) => (
-        <PowerProfileMenu
-          activeProfile={batteryState.activePowerProfile}
-          profiles={batteryState.availablePowerProfiles}
-          onSelect={(profileName) => {
-            batteryState.setActivePowerProfile(profileName)
-            closeFlyout()
-          }}
-        />
-      )}
+      execPrimary={execPrimary}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
+      $={triggerSetup}
     >
-      {batteryContent}
-    </FlyoutButton>
+      <box
+        class={`widget-battery-display widget-icon-display is-${placement.orientation}`}
+        orientation={placement.isVertical ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL}
+        spacing={0}
+        halign={Gtk.Align.CENTER}
+        valign={Gtk.Align.CENTER}
+      >
+        <BatteryIndicator
+          orientation={placement.orientation}
+          level={batteryState.percentage}
+          charging={batteryState.isCharging}
+          lowThreshold={lowThreshold}
+          metrics={indicator}
+        />
+        {showPercentage && (
+          <label
+            class="widget-battery-percent widget-readout widget-readout-percent"
+            valign={Gtk.Align.CENTER}
+            label={batteryState.percentage(formatReadoutPercent)}
+          />
+        )}
+      </box>
+    </Button>
   )
 }

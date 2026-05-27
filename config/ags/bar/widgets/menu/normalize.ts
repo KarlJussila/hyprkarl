@@ -20,5 +20,6 @@ export function normalizeCommands(
   return {
     primary: normalizeRequiredCommand(childContext(ctx, "primary"), rawCommands?.primary, defaults.primary),
     secondary: normalizeOptionalCommand(childContext(ctx, "secondary"), rawCommands?.secondary, defaults.secondary),
+    tertiary: normalizeOptionalCommand(childContext(ctx, "tertiary"), rawCommands?.tertiary, defaults.tertiary),
   }
 }

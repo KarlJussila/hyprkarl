@@ -2,7 +2,7 @@ import type {
   FlyoutAlign,
   FlyoutConfig,
   NormalizedFlyoutConfig,
-} from "../overlays/flyout/flyoutTypes.ts"
+} from "./flyoutTypes.ts"
 import {
   childContext,
   fail,
@@ -10,7 +10,7 @@ import {
   normalizeNonNegativeNumber,
   normalizeObjectConfig,
   type ValidationContext,
-} from "./normalize.ts"
+} from "../../widgets/shared/normalize.ts"
 
 export function normalizeFlyoutAlign(
   context: ValidationContext,

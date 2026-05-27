@@ -1,18 +1,22 @@
-import { execAsync } from "ags/process"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
-import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
+import { resolveCommand } from "../shared/resolveCommand.ts"
+import type { NormalizedClickCommandsConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 import { getRecordingController } from "./controller.ts"
 
 type Props = {
   orientation: BarOrientation
   icon: string
-  command: string
+  commands: NormalizedClickCommandsConfig
   tooltip: NormalizedSimpleTooltipConfig
 }
 
-export default function RecordingWidget({ orientation, icon, command, tooltip }: Props) {
+export default function RecordingWidget({ orientation, icon, commands, tooltip }: Props) {
   const controller = getRecordingController()
+
+  const execPrimary = resolveCommand(commands.primary, undefined)
+  const execSecondary = resolveCommand(commands.secondary, undefined)
+  const execMiddle = resolveCommand(commands.tertiary, undefined)
 
   return (
     <Button
@@ -20,7 +24,9 @@ export default function RecordingWidget({ orientation, icon, command, tooltip }:
       orientation={orientation}
       visible={controller.active}
       tooltipText={tooltip.enabled && tooltip.text ? tooltip.text : undefined}
-      execPrimary={() => execAsync(command).catch(() => {})}
+      execPrimary={execPrimary}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
     >
       <label class="widget-recording-glyph" xalign={0.5} label={icon} />
     </Button>

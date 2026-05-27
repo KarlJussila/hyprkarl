@@ -1,5 +1,8 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeRequiredCommand } from "../shared/normalize.ts"
+import {
+  normalizeClickCommandsConfig,
+  type NormalizedClickCommandsConfig,
+} from "../shared/normalize.ts"
 import { normalizeNetworkIcons, normalizeNetworkTooltipConfig } from "./normalize.ts"
 import type { NormalizedNetworkIcons, NormalizedNetworkTooltip } from "./normalize.ts"
 import NetworkWidget from "./NetworkWidget.tsx"
@@ -7,7 +10,11 @@ import NetworkWidget from "./NetworkWidget.tsx"
 export default createWidgetSpec({
   kind: "network",
   defaults: {
-    command: "hk-launch-wifi",
+    commands: {
+      primary: "hk-launch-wifi",
+      secondary: undefined,
+      tertiary: undefined,
+    } satisfies NormalizedClickCommandsConfig,
     icons: {
       disconnected: "󰤮",
       ethernet: "󰀂",
@@ -23,14 +30,14 @@ export default createWidgetSpec({
     } satisfies NormalizedNetworkTooltip,
   },
   schema: {
-    command: normalizeRequiredCommand,
+    commands: normalizeClickCommandsConfig,
     icons: normalizeNetworkIcons,
     tooltip: normalizeNetworkTooltipConfig,
   },
   render: ({ config, placement }) => (
     <NetworkWidget
       orientation={placement.orientation}
-      command={config.command}
+      commands={config.commands}
       icons={config.icons}
       tooltip={config.tooltip}
     />

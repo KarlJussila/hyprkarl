@@ -6,9 +6,26 @@ import {
   type ValidationContext,
 } from "../shared/normalize.ts"
 
+export type BluetoothIconsConfig = {
+  enabled?: string
+  disabled?: string
+}
+
 export type NormalizedBluetoothIcons = {
   enabled: string
   disabled: string
+}
+
+export function normalizeBluetoothIcons(
+  ctx: ValidationContext,
+  config: BluetoothIconsConfig | undefined,
+  defaults: NormalizedBluetoothIcons,
+): NormalizedBluetoothIcons {
+  const raw = normalizeObjectConfig(ctx, config) as BluetoothIconsConfig | undefined
+  return {
+    enabled: normalizeStringValue(childContext(ctx, "enabled"), raw?.enabled, defaults.enabled),
+    disabled: normalizeStringValue(childContext(ctx, "disabled"), raw?.disabled, defaults.disabled),
+  }
 }
 
 export type BluetoothTooltipConfig = {

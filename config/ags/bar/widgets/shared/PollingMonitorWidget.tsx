@@ -2,8 +2,9 @@ import { createComputed, createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
+import { resolveCommand } from "./resolveCommand.ts"
 import { substituteTokens } from "./template.ts"
-import type { NormalizedDecimalsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "./normalize.ts"
+import type { NormalizedClickCommandsConfig, NormalizedDecimalsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "./normalize.ts"
 
 type Props = {
   widgetClass: string
@@ -13,6 +14,7 @@ type Props = {
   decimals: NormalizedDecimalsConfig
   tooltip: NormalizedSimpleTooltipConfig
   revealDurationMs: number
+  commands: NormalizedClickCommandsConfig
   buildSubstitutions: (decimals: number) => Record<string, string | undefined>
 }
 
@@ -24,6 +26,7 @@ export default function PollingMonitorWidget({
   decimals,
   tooltip,
   revealDurationMs,
+  commands,
   buildSubstitutions,
 }: Props) {
   const [labelVisible, setLabelVisible] = createState(false)
@@ -47,13 +50,26 @@ export default function PollingMonitorWidget({
       })
     : null
 
+  const toggleLabel = labelText ? () => setLabelVisible(!labelVisible()) : undefined
+  const toggleAlt = hasAlt ? () => setUseAlt(!useAlt()) : undefined
+
+  const tokens = {
+    "toggle-label": toggleLabel,
+    "toggle-alt": toggleAlt,
+  }
+
+  const execPrimary = resolveCommand(commands.primary, toggleLabel, tokens)
+  const execSecondary = resolveCommand(commands.secondary, toggleAlt, tokens)
+  const execMiddle = resolveCommand(commands.tertiary, undefined, tokens)
+
   return (
     <Button
       class={`${widgetClass}-button widget-glyph-button`}
       orientation={orientation}
       tooltipText={tooltipText}
-      execPrimary={labelText ? () => setLabelVisible(!labelVisible()) : undefined}
-      execSecondary={hasAlt ? () => setUseAlt(!useAlt()) : undefined}
+      execPrimary={execPrimary}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
     >
       <box
         class={`${widgetClass}-display widget-icon-display is-${orientation}`}

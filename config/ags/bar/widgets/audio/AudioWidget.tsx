@@ -1,21 +1,22 @@
-import { execAsync } from "ags/process"
 import { Gdk, Gtk } from "ags/gtk4"
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
-import FlyoutButton from "../shared/FlyoutButton.tsx"
+import Button from "../../primitives/Button.tsx"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
+import { createFlyoutCommands } from "../../overlays/flyout/createFlyoutCommands.tsx"
 import AudioIndicator from "./AudioIndicator.tsx"
 import AudioSliderFlyout from "./AudioSliderFlyout.tsx"
 import { formatReadoutPercent } from "../shared/formatters.ts"
 import { createAudioState } from "./audioState.ts"
 import type { NormalizedAudioTooltipConfig } from "./types.ts"
+import type { NormalizedClickCommandsConfig } from "../shared/normalize.ts"
 
 type Props = {
   id: string
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
   showPercentage: boolean
-  command: string
+  commands: NormalizedClickCommandsConfig
   flyout: NormalizedFlyoutConfig
   tooltip: NormalizedAudioTooltipConfig
   slider: NormalizedSliderMetrics
@@ -26,35 +27,41 @@ export default function AudioWidget({
   placement,
   monitor,
   showPercentage,
-  command,
+  commands,
   flyout,
   tooltip,
   slider,
 }: Props) {
   const audioState = createAudioState(tooltip)
-  const launchAudio = () => execAsync(command).catch(() => {})
+
+  const { execPrimary, execSecondary, execMiddle, triggerSetup } = createFlyoutCommands({
+    flyout,
+    placement,
+    monitor,
+    id,
+    label: "audio-menu",
+    commands,
+    renderContent: () => audioState.isAvailable
+      ? (
+          <AudioSliderFlyout
+            edge={placement.edge}
+            volume={audioState.volume}
+            onChange={audioState.setVolume}
+            metrics={slider}
+          />
+        )
+      : <label label="Audio unavailable" />,
+  })
 
   return (
-    <FlyoutButton
-      widgetClass="widget-audio-button widget-glyph-button"
-      placement={placement}
-      monitor={monitor}
-      id={id}
-      flyoutLabel="audio-menu"
-      flyout={flyout}
+    <Button
+      class={`widget-audio-button widget-glyph-button is-${placement.orientation}`}
+      orientation={placement.orientation}
       tooltipText={audioState.tooltipText}
-      execPrimary={launchAudio}
-      execSecondary={launchAudio}
-      renderFlyoutContent={() => audioState.isAvailable
-        ? (
-            <AudioSliderFlyout
-              edge={placement.edge}
-              volume={audioState.volume}
-              onChange={audioState.setVolume}
-              metrics={slider}
-            />
-          )
-        : <label label="Audio unavailable" />}
+      execPrimary={execPrimary}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
+      $={triggerSetup}
     >
       <box
         class={`widget-audio-display widget-icon-display is-${placement.orientation}`}
@@ -74,6 +81,6 @@ export default function AudioWidget({
           />
         )}
       </box>
-    </FlyoutButton>
+    </Button>
   )
 }

@@ -1,7 +1,7 @@
-import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
 import { type BarOrientation } from "../../layout/placement"
 import Button from "../../primitives/Button"
+import { resolveCommand } from "../shared/resolveCommand.ts"
 import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 import type { NormalizedCommandConfig } from "./types.ts"
 
@@ -20,10 +20,9 @@ export default function MenuWidget({ orientation, icon, commands, tooltip }: Pro
       class="widget-menu-button widget-glyph-button"
       orientation={orientation}
       tooltipText={tooltip.enabled && tooltip.text ? tooltip.text : undefined}
-      execPrimary={() => execAsync(commands.primary).catch(() => {})}
-      execSecondary={commands.secondary
-        ? () => execAsync(commands.secondary!).catch(() => {})
-        : undefined}
+      execPrimary={resolveCommand(commands.primary, undefined)}
+      execSecondary={resolveCommand(commands.secondary, undefined)}
+      execMiddle={resolveCommand(commands.tertiary, undefined)}
     >
       <box
         class="widget-menu-content"

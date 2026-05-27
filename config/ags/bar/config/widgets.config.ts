@@ -92,18 +92,18 @@ const widgetDefinitions = {
 
   network: {
     kind: "network",
-    command: "hk-launch-wifi",
   },
 
   bluetooth: {
     kind: "bluetooth",
-    command: "hk-launch-bluetooth",
   },
 
   audio: {
     kind: "audio",
     showPercentage: false,
-    command: "hk-launch-audio",
+    commands: {
+      secondary: "hk-launch-audio",
+    },
     flyout: {
       enabled: true,
       align: "center",

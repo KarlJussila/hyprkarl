@@ -29,7 +29,9 @@ test("normalizes audio widget defaults from minimal config", () => {
 
   const audio = resolved.widgets.audio as ResolvedAudioWidgetConfig
   assert.equal(audio.showPercentage, true)
-  assert.equal(audio.command, "hk-launch-audio")
+  assert.equal(audio.commands.primary, undefined)
+  assert.equal(audio.commands.secondary, "hk-launch-audio")
+  assert.equal(audio.commands.tertiary, undefined)
   assert.equal(audio.flyout.enabled, true)
   assert.equal(audio.tooltip.active, "{device} {percentage}")
   assert.equal(audio.tooltip.unavailable, "Audio unavailable")
@@ -55,7 +57,9 @@ test("normalizes audio widget overrides", () => {
       audio: {
         kind: "audio",
         showPercentage: false,
-        command: "custom-audio-command",
+        commands: {
+          secondary: "custom-audio-command",
+        },
         flyout: {
           enabled: false,
           align: "end",
@@ -81,7 +85,7 @@ test("normalizes audio widget overrides", () => {
 
   const audio = resolved.widgets.audio as ResolvedAudioWidgetConfig
   assert.equal(audio.showPercentage, false)
-  assert.equal(audio.command, "custom-audio-command")
+  assert.equal(audio.commands.secondary, "custom-audio-command")
   assert.equal(audio.flyout.enabled, false)
   assert.equal(audio.flyout.align, "end")
   assert.equal(audio.flyout.gap, 6)
@@ -96,6 +100,42 @@ test("normalizes audio widget overrides", () => {
   assert.equal(audio.slider.thumbHeight, 12)
   assert.equal(audio.slider.thumbRadius, 4)
   assert.equal(audio.slider.thumbVisible, true)
+})
+
+test("audio commands can be fully overridden", () => {
+  const resolved = resolveBarConfiguration(
+    { edge: "top", start: ["audio"], center: { start: [], center: [], end: [] }, end: [] },
+    {
+      audio: {
+        kind: "audio",
+        commands: {
+          primary: "custom-primary",
+          secondary: "custom-secondary",
+          tertiary: "custom-tertiary",
+        },
+      },
+    },
+  )
+
+  const audio = resolved.widgets.audio as ResolvedAudioWidgetConfig
+  assert.equal(audio.commands.primary, "custom-primary")
+  assert.equal(audio.commands.secondary, "custom-secondary")
+  assert.equal(audio.commands.tertiary, "custom-tertiary")
+})
+
+test("audio commands can be individually disabled with empty string", () => {
+  const resolved = resolveBarConfiguration(
+    { edge: "top", start: ["audio"], center: { start: [], center: [], end: [] }, end: [] },
+    {
+      audio: {
+        kind: "audio",
+        commands: { secondary: "" },
+      },
+    },
+  )
+
+  const audio = resolved.widgets.audio as ResolvedAudioWidgetConfig
+  assert.equal(audio.commands.secondary, "")
 })
 
 test("formats an active audio tooltip", () => {

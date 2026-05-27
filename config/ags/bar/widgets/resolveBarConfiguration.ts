@@ -53,8 +53,8 @@ function normalizeLayoutConfig(layoutConfig: BarLayoutConfig): ResolvedLayoutCon
     fail(layoutContext("center"), "must be an object")
   }
 
-  const autohide = normalizeBoolean(layoutContext("autohide"), rawLayout.autohide, false)
-  const exclusive = normalizeBoolean(layoutContext("exclusive"), rawLayout.exclusive, !autohide)
+  const autohide = normalizeBoolean(layoutContext("autohide"), rawLayout.autohide as boolean | undefined, false)
+  const exclusive = normalizeBoolean(layoutContext("exclusive"), rawLayout.exclusive as boolean | undefined, !autohide)
 
   const centerStart = normalizeLayoutIdList("center.start", centerLayout.start)
   const centerCenter = normalizeLayoutIdList("center.center", centerLayout.center)
@@ -71,7 +71,7 @@ function normalizeLayoutConfig(layoutConfig: BarLayoutConfig): ResolvedLayoutCon
     edge: normalizeBarEdge(rawLayout.edge),
     showCornerCurves: normalizeBoolean(
       layoutContext("showCornerCurves"),
-      rawLayout.showCornerCurves,
+      rawLayout.showCornerCurves as boolean | undefined,
       true,
     ),
     autohide,

@@ -1,6 +1,11 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeBoolean, normalizeUnitInterval } from "../shared/normalize.ts"
-import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
+import {
+  normalizeBoolean,
+  normalizeClickCommandsConfig,
+  normalizeUnitInterval,
+  type NormalizedClickCommandsConfig,
+} from "../shared/normalize.ts"
+import { normalizeFlyoutConfig } from "../../overlays/flyout/normalizeFlyout.ts"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import { normalizeBatteryIndicatorMetrics, normalizeBatteryTooltipConfig } from "./normalize.ts"
 import type {
@@ -34,12 +39,18 @@ const batteryDefaults = {
     chargingGlyphFontSize: 6,
     chargingGlyphFontFamily: "JetBrains Mono Nerd Font Propo",
   },
+  commands: {
+    primary: undefined,
+    secondary: undefined,
+    tertiary: undefined,
+  },
 } satisfies {
   showPercentage: boolean
   lowThreshold: number
   flyout: NormalizedFlyoutConfig
   tooltip: NormalizedBatteryTooltipConfig
   indicator: NormalizedBatteryIndicatorMetrics
+  commands: NormalizedClickCommandsConfig
 }
 
 export default createWidgetSpec({
@@ -51,6 +62,7 @@ export default createWidgetSpec({
     flyout: normalizeFlyoutConfig,
     tooltip: normalizeBatteryTooltipConfig,
     indicator: normalizeBatteryIndicatorMetrics,
+    commands: normalizeClickCommandsConfig,
   },
   render: ({ id, config, placement, monitor }) => (
     <BatteryWidget
@@ -62,6 +74,7 @@ export default createWidgetSpec({
       flyout={config.flyout}
       tooltip={config.tooltip}
       indicator={config.indicator}
+      commands={config.commands}
     />
   ),
 })

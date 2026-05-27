@@ -1,6 +1,10 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeRequiredCommand, normalizeStringRecord } from "../shared/normalize.ts"
 import {
+  normalizeClickCommandsConfig,
+  type NormalizedClickCommandsConfig,
+} from "../shared/normalize.ts"
+import {
+  normalizeBluetoothIcons,
   normalizeBluetoothTooltipConfig,
   type NormalizedBluetoothIcons,
   type NormalizedBluetoothTooltip,
@@ -10,7 +14,11 @@ import BluetoothWidget from "./BluetoothWidget.tsx"
 export default createWidgetSpec({
   kind: "bluetooth",
   defaults: {
-    command: "hk-launch-bluetooth",
+    commands: {
+      primary: "hk-launch-bluetooth",
+      secondary: undefined,
+      tertiary: undefined,
+    } satisfies NormalizedClickCommandsConfig,
     icons: {
       enabled: "",
       disabled: "󰂲",
@@ -23,14 +31,14 @@ export default createWidgetSpec({
     } satisfies NormalizedBluetoothTooltip,
   },
   schema: {
-    command: normalizeRequiredCommand,
-    icons: normalizeStringRecord,
+    commands: normalizeClickCommandsConfig,
+    icons: normalizeBluetoothIcons,
     tooltip: normalizeBluetoothTooltipConfig,
   },
   render: ({ config, placement }) => (
     <BluetoothWidget
       orientation={placement.orientation}
-      command={config.command}
+      commands={config.commands}
       icons={config.icons}
       tooltip={config.tooltip}
     />

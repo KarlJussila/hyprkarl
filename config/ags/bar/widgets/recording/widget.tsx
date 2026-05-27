@@ -1,22 +1,27 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import {
-  normalizeRequiredCommand,
+  normalizeClickCommandsConfig,
   normalizeSimpleTooltipConfig,
   normalizeStringValue,
+  type NormalizedClickCommandsConfig,
   type NormalizedSimpleTooltipConfig,
 } from "../shared/normalize.ts"
 import RecordingWidget from "./RecordingWidget.tsx"
 
 const recordingDefaults = {
   icon: "󰻂",
-  command: "hk-record-screen --stop-recording",
+  commands: {
+    primary: "hk-record-screen --stop-recording",
+    secondary: undefined,
+    tertiary: undefined,
+  },
   tooltip: {
     enabled: true,
     text: "Recording — click to stop",
   },
 } satisfies {
   icon: string
-  command: string
+  commands: NormalizedClickCommandsConfig
   tooltip: NormalizedSimpleTooltipConfig
 }
 
@@ -25,14 +30,14 @@ export default createWidgetSpec({
   defaults: recordingDefaults,
   schema: {
     icon: normalizeStringValue,
-    command: normalizeRequiredCommand,
+    commands: normalizeClickCommandsConfig,
     tooltip: normalizeSimpleTooltipConfig,
   },
   render: ({ config, placement }) => (
     <RecordingWidget
       orientation={placement.orientation}
       icon={config.icon}
-      command={config.command}
+      commands={config.commands}
       tooltip={config.tooltip}
     />
   ),

@@ -15,6 +15,7 @@ export default createPollingMonitorWidgetSpec({
     tooltip: { enabled: true, text: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}" },
     interval: 5000,
     reveal: { durationMs: 200 },
+    commands: { primary: undefined, secondary: undefined, tertiary: undefined },
   },
   Component: RamWidget,
 })

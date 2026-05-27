@@ -1,7 +1,11 @@
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
-import { normalizeBoolean, normalizeRequiredCommand } from "../shared/normalize.ts"
-import { normalizeFlyoutConfig } from "../shared/normalizeFlyout.ts"
+import {
+  normalizeBoolean,
+  normalizeClickCommandsConfig,
+  type NormalizedClickCommandsConfig,
+} from "../shared/normalize.ts"
+import { normalizeFlyoutConfig } from "../../overlays/flyout/normalizeFlyout.ts"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
 import { normalizeAudioTooltipConfig, normalizeSliderMetrics } from "./normalize.ts"
 import type { NormalizedAudioTooltipConfig } from "./types.ts"
@@ -9,7 +13,11 @@ import AudioWidget from "./AudioWidget.tsx"
 
 const audioDefaults = {
   showPercentage: true,
-  command: "hk-launch-audio",
+  commands: {
+    primary: undefined,
+    secondary: "hk-launch-audio",
+    tertiary: undefined,
+  },
   flyout: {
     enabled: true,
     align: "center",
@@ -34,7 +42,7 @@ const audioDefaults = {
   },
 } satisfies {
   showPercentage: boolean
-  command: string
+  commands: NormalizedClickCommandsConfig
   flyout: NormalizedFlyoutConfig
   tooltip: NormalizedAudioTooltipConfig
   slider: NormalizedSliderMetrics
@@ -45,7 +53,7 @@ export default createWidgetSpec({
   defaults: audioDefaults,
   schema: {
     showPercentage: normalizeBoolean,
-    command: normalizeRequiredCommand,
+    commands: normalizeClickCommandsConfig,
     flyout: normalizeFlyoutConfig,
     tooltip: normalizeAudioTooltipConfig,
     slider: normalizeSliderMetrics,
@@ -56,7 +64,7 @@ export default createWidgetSpec({
       placement={placement}
       monitor={monitor}
       showPercentage={config.showPercentage}
-      command={config.command}
+      commands={config.commands}
       flyout={config.flyout}
       tooltip={config.tooltip}
       slider={config.slider}

@@ -1,7 +1,7 @@
 import { type BarOrientation } from "../../layout/placement.ts"
 import { createRamState } from "./ramState.ts"
 import PollingMonitorWidget from "../shared/PollingMonitorWidget.tsx"
-import type { NormalizedDecimalsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
+import type { NormalizedClickCommandsConfig, NormalizedDecimalsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 
 type Props = {
   orientation: BarOrientation
@@ -11,6 +11,7 @@ type Props = {
   tooltip: NormalizedSimpleTooltipConfig
   interval: number
   revealDurationMs: number
+  commands: NormalizedClickCommandsConfig
 }
 
 function formatPercent(fraction: number, decimals: number): string {
@@ -32,6 +33,7 @@ export default function RamWidget({
   tooltip,
   interval,
   revealDurationMs,
+  commands,
 }: Props) {
   const ram = createRamState(interval)
 
@@ -59,6 +61,7 @@ export default function RamWidget({
       decimals={decimals}
       tooltip={tooltip}
       revealDurationMs={revealDurationMs}
+      commands={commands}
       buildSubstitutions={buildSubstitutions}
     />
   )

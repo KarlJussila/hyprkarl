@@ -23,6 +23,26 @@ test("normalizes cpu widget defaults from minimal config", () => {
   assert.equal(cpu.decimals.verticalAlt, 0)
   assert.equal(cpu.reveal.durationMs, 200)
   assert.equal(cpu.interval, 5000)
+  assert.equal(cpu.commands.primary, undefined)
+  assert.equal(cpu.commands.secondary, undefined)
+  assert.equal(cpu.commands.tertiary, undefined)
+})
+
+test("allows cpu widget commands to be overridden", () => {
+  const resolved = resolveBarConfiguration(
+    { edge: "top", start: ["cpu"], center: { start: [], center: [], end: [] }, end: [] },
+    {
+      cpu: {
+        kind: "cpu",
+        commands: { primary: "{toggle-label}", secondary: "", tertiary: "htop" },
+      },
+    },
+  )
+
+  const cpu = resolved.widgets.cpu as ResolvedCpuWidgetConfig
+  assert.equal(cpu.commands.primary, "{toggle-label}")
+  assert.equal(cpu.commands.secondary, "")
+  assert.equal(cpu.commands.tertiary, "htop")
 })
 
 test("normalizes cpu widget config overrides", () => {

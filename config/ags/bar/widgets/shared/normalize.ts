@@ -319,3 +319,40 @@ export function normalizeSimpleTooltipConfig(
     text: normalizeStringValue(childContext(ctx, "text"), raw?.text, defaults.text),
   }
 }
+
+export type ClickCommandsConfig = {
+  primary?: string
+  secondary?: string
+  tertiary?: string
+}
+
+export type NormalizedClickCommandsConfig = {
+  primary: string | undefined
+  secondary: string | undefined
+  tertiary: string | undefined
+}
+
+function normalizeClickCommand(
+  ctx: ValidationContext,
+  value: string | undefined,
+  fallback: string | undefined,
+): string | undefined {
+  if (value === undefined) return fallback
+  if (value.length > 0 && value.trim().length === 0) {
+    fail(ctx, 'must be a command, a token like "{name}", or "" to disable the click')
+  }
+  return value
+}
+
+export function normalizeClickCommandsConfig(
+  ctx: ValidationContext,
+  value: ClickCommandsConfig | undefined,
+  defaults: NormalizedClickCommandsConfig,
+): NormalizedClickCommandsConfig {
+  const raw = normalizeObjectConfig(ctx, value) as ClickCommandsConfig | undefined
+  return {
+    primary: normalizeClickCommand(childContext(ctx, "primary"), raw?.primary, defaults.primary),
+    secondary: normalizeClickCommand(childContext(ctx, "secondary"), raw?.secondary, defaults.secondary),
+    tertiary: normalizeClickCommand(childContext(ctx, "tertiary"), raw?.tertiary, defaults.tertiary),
+  }
+}

@@ -134,7 +134,9 @@ Add a network launcher widget:
 ```ts
 network: {
   kind: "network",
-  command: "hk-launch-wifi",
+  commands: {
+    primary: "hk-launch-wifi",
+  },
 },
 ```
 
@@ -143,7 +145,9 @@ Add a Bluetooth launcher widget:
 ```ts
 bluetooth: {
   kind: "bluetooth",
-  command: "hk-launch-bluetooth",
+  commands: {
+    primary: "hk-launch-bluetooth",
+  },
 },
 ```
 
@@ -153,7 +157,9 @@ Add an audio widget with a flyout slider, optional percentage label, and configu
 audio: {
   kind: "audio",
   showPercentage: true,
-  command: "hk-launch-audio",
+  commands: {
+    secondary: "hk-launch-audio",  // right-click launches audio app; left-click opens flyout
+  },
   tooltip: {
     enabled: true,
     active: "{device} {percentage}",
@@ -235,7 +241,7 @@ audio: {
 
 ## CPU Widget
 
-The `cpu` widget shows CPU temperature, usage, and a per-core tooltip. Primary click toggles the label; secondary click switches between primary and alt formats.
+The `cpu` widget shows CPU temperature, usage, and a per-core tooltip. By default, primary click toggles the label and secondary click switches between primary and alt formats. Both can be remapped via `commands` (see [Click Commands](#click-commands)).
 
 ```ts
 cpu: {
@@ -266,7 +272,7 @@ Leave `format` empty to show the icon only. Leave `formatAlt` empty to disable t
 
 ## RAM Widget
 
-The `ram` widget shows RAM and swap usage. Primary click toggles the label; secondary click switches between primary and alt formats.
+The `ram` widget shows RAM and swap usage. By default, primary click toggles the label and secondary click switches between primary and alt formats. Both can be remapped via `commands` (see [Click Commands](#click-commands)).
 
 ```ts
 ram: {
@@ -332,7 +338,9 @@ The `recording` widget is an indicator that appears only while a screen recordin
 recording: {
   kind: "recording",
   icon: "󰻂",
-  command: "hk-record-screen --stop-recording",
+  commands: {
+    primary: "hk-record-screen --stop-recording",
+  },
   tooltip: {
     text: "Recording — click to stop",
   },
@@ -342,6 +350,69 @@ recording: {
 The widget receives state updates via `ags request recording-sync`, which `hk-record-screen` calls automatically on start and stop. No polling is involved.
 
 Set `tooltip: { enabled: false }` to suppress the tooltip.
+
+## Click Commands
+
+Most widgets support a `commands` config object that lets you remap or add click actions without touching widget code:
+
+```ts
+commands: {
+  primary?: string    // left click
+  secondary?: string  // right click
+  tertiary?: string   // middle click
+}
+```
+
+Each field accepts:
+
+- **omitted** — use the widget's built-in default for that click
+- `""` — disable that click (no action)
+- `"some-shell-command"` — run the command via `execAsync`
+- `"{token}"` — call a widget-internal function
+
+Supported tokens per widget type:
+
+| Widget | Token | Effect |
+|--------|-------|--------|
+| clock | `{flyout}` | open/close the calendar flyout |
+| clock | `{toggle-alt}` | switch between primary and alt time formats |
+| audio | `{flyout}` | open/close the volume slider flyout |
+| battery | `{flyout}` | open/close the power profiles flyout |
+| cpu | `{toggle-label}` | reveal/hide the usage label |
+| cpu | `{toggle-alt}` | switch between primary and alt formats |
+| ram | `{toggle-label}` | reveal/hide the usage label |
+| ram | `{toggle-alt}` | switch between primary and alt formats |
+
+Examples:
+
+```ts
+// Disable right-click on clock (keep default left-click flyout)
+clock: {
+  kind: "clock",
+  commands: { secondary: "" },
+},
+
+// Open the calendar flyout on right-click instead of left-click
+clock: {
+  kind: "clock",
+  commands: { primary: "", secondary: "{flyout}" },
+},
+
+// Launch htop on middle-click from the CPU widget
+cpu: {
+  kind: "cpu",
+  commands: { tertiary: "kitty --class floating htop" },
+},
+
+// Network widget: left-click opens settings, right-click opens a second tool
+network: {
+  kind: "network",
+  commands: {
+    primary: "hk-launch-wifi",
+    secondary: "nm-connection-editor",
+  },
+},
+```
 
 ## Autohide
 
@@ -450,7 +521,7 @@ Each widget folder should keep the readable layout module separate from denser w
 
 Each widget uses `createWidgetSpec` which generates `resolve()` automatically from a `schema` map of field-name to `FieldNormalizer`. Widget-specific types are inferred from the schema rather than declared in a separate `types.ts`.
 
-`configuration.ts` stays bar-wide. Widget-specific types and normalizers live with the widget. Shared internal helpers live in `widgets/shared/`. `FlyoutButton.tsx` centralizes flyout trigger wiring so widgets like clock and battery do not duplicate it.
+`configuration.ts` stays bar-wide. Widget-specific types and normalizers live with the widget. Shared internal helpers live in `widgets/shared/`. Widgets with flyouts own their open/close state and call `createFlyout` from `widgets/shared/createFlyout.tsx` to mount the flyout window and get a trigger-setup hook for the button.
 
 ## Styling Architecture
 

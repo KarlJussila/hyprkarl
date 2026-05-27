@@ -25,7 +25,7 @@ export function createAudioState(formats: NormalizedAudioTooltipConfig): AudioSt
     return {
       volume,
       muted,
-      tooltipText: unavailableTooltip ? () => unavailableTooltip : undefined,
+      tooltipText: unavailableTooltip ? createComputed(() => unavailableTooltip) : undefined,
       isAvailable: false,
       setVolume: () => {},
     }

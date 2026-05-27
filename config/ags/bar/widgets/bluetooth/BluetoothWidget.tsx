@@ -1,15 +1,16 @@
 import { createBinding, createComputed } from "ags"
-import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
 import AstalBluetooth from "gi://AstalBluetooth"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
+import { resolveCommand } from "../shared/resolveCommand.ts"
 import { substituteTokens } from "../shared/template.ts"
+import type { NormalizedClickCommandsConfig } from "../shared/normalize.ts"
 import type { NormalizedBluetoothIcons, NormalizedBluetoothTooltip } from "./normalize.ts"
 
 type Props = {
   orientation: BarOrientation
-  command: string
+  commands: NormalizedClickCommandsConfig
   icons: NormalizedBluetoothIcons
   tooltip: NormalizedBluetoothTooltip
 }
@@ -24,7 +25,7 @@ function countConnectedDevices(devices: Array<any>) {
   }).length
 }
 
-export default function BluetoothWidget({ orientation, command, icons, tooltip }: Props) {
+export default function BluetoothWidget({ orientation, commands, icons, tooltip }: Props) {
   const isVertical = orientation === "vertical"
   const bluetooth = AstalBluetooth.get_default()
   const isPowered = createBinding(bluetooth, "isPowered")
@@ -40,12 +41,18 @@ export default function BluetoothWidget({ orientation, command, icons, tooltip }
       })
     : undefined
 
+  const execPrimary = resolveCommand(commands.primary, undefined)
+  const execSecondary = resolveCommand(commands.secondary, undefined)
+  const execMiddle = resolveCommand(commands.tertiary, undefined)
+
   return (
     <Button
       class="widget-bluetooth-button widget-glyph-button"
       orientation={orientation}
       tooltipText={tooltipText}
-      execPrimary={() => execAsync(command).catch(() => {})}
+      execPrimary={execPrimary}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
     >
       <box
         class="widget-bluetooth-content"

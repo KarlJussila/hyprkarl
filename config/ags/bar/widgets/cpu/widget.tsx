@@ -10,6 +10,7 @@ export default createPollingMonitorWidgetSpec({
     tooltip: { enabled: true, text: "CPU: {usage}%\n{cores}" },
     interval: 5000,
     reveal: { durationMs: 200 },
+    commands: { primary: undefined, secondary: undefined, tertiary: undefined },
   },
   Component: CpuWidget,
 })

@@ -1,16 +1,17 @@
 import { createBinding, createComputed, createEffect, createState, onCleanup } from "ags"
-import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
 import AstalNetwork from "gi://AstalNetwork"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
+import { resolveCommand } from "../shared/resolveCommand.ts"
 import { readString } from "../shared/read.ts"
 import { substituteTokens } from "../shared/template.ts"
+import type { NormalizedClickCommandsConfig } from "../shared/normalize.ts"
 import type { NormalizedNetworkIcons, NormalizedNetworkTooltip } from "./normalize.ts"
 
 type Props = {
   orientation: BarOrientation
-  command: string
+  commands: NormalizedClickCommandsConfig
   icons: NormalizedNetworkIcons
   tooltip: NormalizedNetworkTooltip
 }
@@ -29,7 +30,7 @@ function formatWifiTooltip(ssid: string, frequency: number, tooltip: NormalizedN
   return substituteTokens(tooltip.wifiNoFreq, { ssid })
 }
 
-export default function NetworkWidget({ orientation, command, icons, tooltip }: Props) {
+export default function NetworkWidget({ orientation, commands, icons, tooltip }: Props) {
   const isVertical = orientation === "vertical"
   const network = AstalNetwork.get_default()
 
@@ -38,8 +39,6 @@ export default function NetworkWidget({ orientation, command, icons, tooltip }: 
   const wifiRef = createBinding(network, "wifi")
   const wiredRef = createBinding(network, "wired")
 
-  // Wifi sub-properties tracked via GObject signals so strength/ssid/frequency
-  // changes propagate reactively without polling.
   const [wifiStrength, setWifiStrength] = createState(0)
   const [wifiSsid, setWifiSsid] = createState("")
   const [wifiFrequency, setWifiFrequency] = createState(0)
@@ -107,11 +106,17 @@ export default function NetworkWidget({ orientation, command, icons, tooltip }: 
     return tooltip.disconnected
   })
 
+  const execPrimary = resolveCommand(commands.primary, undefined)
+  const execSecondary = resolveCommand(commands.secondary, undefined)
+  const execMiddle = resolveCommand(commands.tertiary, undefined)
+
   return (
     <Button
       class="widget-network-button widget-glyph-button"
       orientation={orientation}
-      execPrimary={() => execAsync(command).catch(() => {})}
+      execPrimary={execPrimary}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
       tooltipText={tooltip.enabled ? tooltipText : undefined}
     >
       <box

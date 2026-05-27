@@ -1,11 +1,13 @@
 import { createWidgetSpec } from "./widgetSpec.tsx"
 import {
+  normalizeClickCommandsConfig,
   normalizeDecimalsConfig,
   normalizeFormatConfig,
   normalizePositiveNumber,
   normalizeRevealConfig,
   normalizeSimpleTooltipConfig,
   normalizeStringValue,
+  type NormalizedClickCommandsConfig,
   type NormalizedDecimalsConfig,
   type NormalizedFormatConfig,
   type NormalizedRevealConfig,
@@ -21,6 +23,7 @@ export type PollingMonitorComponentProps = {
   tooltip: NormalizedSimpleTooltipConfig
   interval: number
   revealDurationMs: number
+  commands: NormalizedClickCommandsConfig
 }
 
 type PollingMonitorDefaults = {
@@ -30,6 +33,7 @@ type PollingMonitorDefaults = {
   tooltip: NormalizedSimpleTooltipConfig
   interval: number
   reveal: NormalizedRevealConfig
+  commands: NormalizedClickCommandsConfig
 }
 
 const pollingMonitorSchema = {
@@ -39,6 +43,7 @@ const pollingMonitorSchema = {
   tooltip: normalizeSimpleTooltipConfig,
   interval: normalizePositiveNumber,
   reveal: normalizeRevealConfig,
+  commands: normalizeClickCommandsConfig,
 }
 
 export function createPollingMonitorWidgetSpec<TKind extends string>({
@@ -63,6 +68,7 @@ export function createPollingMonitorWidgetSpec<TKind extends string>({
         tooltip={config.tooltip}
         interval={config.interval}
         revealDurationMs={config.reveal.durationMs}
+        commands={config.commands}
       />
     ),
   })

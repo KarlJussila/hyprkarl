@@ -9,7 +9,7 @@ import type { NormalizedCommandConfig } from "./types.ts"
 import MenuWidget from "./MenuWidget.tsx"
 
 const menuDefaults = {
-  icon: "",
+  icon: "",
   commands: {
     primary: "hk-menu",
   },

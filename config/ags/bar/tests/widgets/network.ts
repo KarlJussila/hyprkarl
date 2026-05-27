@@ -12,7 +12,9 @@ test("normalizes network widget defaults from minimal config", () => {
   )
 
   const network = resolved.widgets.network as ResolvedNetworkWidgetConfig
-  assert.equal(network.command, "hk-launch-wifi")
+  assert.equal(network.commands.primary, "hk-launch-wifi")
+  assert.equal(network.commands.secondary, undefined)
+  assert.equal(network.commands.tertiary, undefined)
   assert.equal(network.icons.disconnected, "󰤮")
   assert.equal(network.icons.ethernet, "󰀂")
   assert.equal(network.icons.wifi.length, 5)
@@ -24,11 +26,38 @@ test("normalizes network widget defaults from minimal config", () => {
 test("allows network widgets to override their launch command", () => {
   const resolved = resolveBarConfiguration(
     { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
-    { network: { kind: "network", command: "custom-network-command" } },
+    { network: { kind: "network", commands: { primary: "custom-network-command" } } },
   )
 
   const network = resolved.widgets.network as ResolvedNetworkWidgetConfig
-  assert.equal(network.command, "custom-network-command")
+  assert.equal(network.commands.primary, "custom-network-command")
+})
+
+test("allows network widgets to add secondary and tertiary commands", () => {
+  const resolved = resolveBarConfiguration(
+    { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
+    {
+      network: {
+        kind: "network",
+        commands: { secondary: "secondary-cmd", tertiary: "tertiary-cmd" },
+      },
+    },
+  )
+
+  const network = resolved.widgets.network as ResolvedNetworkWidgetConfig
+  assert.equal(network.commands.primary, "hk-launch-wifi")
+  assert.equal(network.commands.secondary, "secondary-cmd")
+  assert.equal(network.commands.tertiary, "tertiary-cmd")
+})
+
+test("allows network primary click to be disabled with empty string", () => {
+  const resolved = resolveBarConfiguration(
+    { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
+    { network: { kind: "network", commands: { primary: "" } } },
+  )
+
+  const network = resolved.widgets.network as ResolvedNetworkWidgetConfig
+  assert.equal(network.commands.primary, "")
 })
 
 test("allows network widgets to override icons", () => {
@@ -69,6 +98,17 @@ test("rejects wifi icons that are not an array of exactly 5 strings", () => {
       resolveBarConfiguration(
         { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
         { network: { kind: "network", icons: { wifi: ["a", "b"] as any } } },
+      ),
+    { name: "BarConfigError" },
+  )
+})
+
+test("rejects whitespace-only command strings", () => {
+  assert.throws(
+    () =>
+      resolveBarConfiguration(
+        { edge: "top", start: ["network"], center: { start: [], center: [], end: [] }, end: [] },
+        { network: { kind: "network", commands: { primary: "   " } } },
       ),
     { name: "BarConfigError" },
   )

@@ -5,7 +5,9 @@ import { type BarOrientation } from "../layout/placement.ts"
 import { CommonButtonProps } from "./shared"
 
 type Props = CommonButtonProps<Gtk.Button> & {
-  orientation: BarOrientation
+  orientation?: BarOrientation
+  hexpand?: boolean
+  halign?: Gtk.Align
   execPrimary?: () => void
   execSecondary?: () => void
   execMiddle?: () => void
@@ -14,7 +16,9 @@ type Props = CommonButtonProps<Gtk.Button> & {
 export default function Button({
   $: setup,
   class: className = "",
-  orientation,
+  orientation = "horizontal",
+  hexpand,
+  halign,
   tooltipText,
   visible,
   children,
@@ -53,8 +57,8 @@ export default function Button({
   const button = (
     <button
       class={resolvedClassName}
-      hexpand={orientation === "vertical"}
-      halign={Gtk.Align.FILL}
+      hexpand={hexpand ?? orientation === "vertical"}
+      halign={halign ?? Gtk.Align.FILL}
       visible={visible}
       $={setupButton}
     >

@@ -3,10 +3,11 @@ import { Gdk, Gtk } from "ags/gtk4"
 import { timeout, type Timer } from "ags/time"
 import GLib from "gi://GLib?version=2.0"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
-import FlyoutButton from "../shared/FlyoutButton.tsx"
+import Button from "../../primitives/Button.tsx"
 import CalendarFlyoutContent from "./CalendarFlyoutContent"
+import { createFlyoutCommands } from "../../overlays/flyout/createFlyoutCommands.tsx"
 import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
-import type { NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
+import type { NormalizedClickCommandsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 
 type Props = {
   id: string
@@ -15,17 +16,32 @@ type Props = {
   format: NormalizedFormatConfig
   flyout: NormalizedFlyoutConfig
   tooltip: NormalizedSimpleTooltipConfig
+  commands: NormalizedClickCommandsConfig
 }
 
 const HAS_SECONDS = /%[ST]/
 
-export default function ClockWidget({ id, placement, monitor, format, flyout, tooltip }: Props) {
+export default function ClockWidget({ id, placement, monitor, format, flyout, tooltip, commands }: Props) {
   const [currentTime, setCurrentTime] = createState(GLib.DateTime.new_now_local())
   const [useAlt, setUseAlt] = createState(false)
 
   const primaryFormat = placement.isVertical && format.vertical ? format.vertical : format.primary
   const altFormat = placement.isVertical && format.verticalAlt ? format.verticalAlt : format.alt
   const hasAlt = altFormat.length > 0
+
+  const toggleAlt = hasAlt ? () => setUseAlt(!useAlt()) : undefined
+
+  const { execPrimary, execSecondary, execMiddle, triggerSetup } = createFlyoutCommands({
+    flyout,
+    placement,
+    monitor,
+    id,
+    label: "calendar-menu",
+    commands,
+    secondaryFallback: toggleAlt,
+    extraTokens: { "toggle-alt": toggleAlt },
+    renderContent: () => <CalendarFlyoutContent currentTime={currentTime} />,
+  })
 
   const activeFormatHasSeconds = createComputed(() =>
     HAS_SECONDS.test(hasAlt && useAlt() ? altFormat : primaryFormat),
@@ -74,16 +90,14 @@ export default function ClockWidget({ id, placement, monitor, format, flyout, to
   onCleanup(() => activeTimer?.cancel())
 
   return (
-    <FlyoutButton
-      widgetClass="widget-clock-button"
-      placement={placement}
-      monitor={monitor}
-      id={id}
-      flyoutLabel="calendar-menu"
-      flyout={flyout}
+    <Button
+      class={`widget-clock-button is-${placement.orientation}`}
+      orientation={placement.orientation}
       tooltipText={tooltipText}
-      execSecondary={hasAlt ? () => setUseAlt(!useAlt()) : undefined}
-      renderFlyoutContent={() => <CalendarFlyoutContent currentTime={currentTime} />}
+      execPrimary={execPrimary}
+      execSecondary={execSecondary}
+      execMiddle={execMiddle}
+      $={triggerSetup}
     >
       <label
         class={`widget-clock-time widget-readout is-${placement.orientation}`}
@@ -94,6 +108,6 @@ export default function ClockWidget({ id, placement, monitor, format, flyout, to
         xalign={0.5}
         label={labelText}
       />
-    </FlyoutButton>
+    </Button>
   )
 }

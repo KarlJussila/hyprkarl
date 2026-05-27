@@ -1,9 +1,8 @@
-import type { Accessor } from "ags"
-import { createState } from "ags"
+import { createComputed, createState } from "ags"
 
 const [lockCount, setLockCount] = createState(0)
 
-export const flyoutLocked: Accessor<boolean> = () => lockCount() > 0
+export const flyoutLocked = createComputed(() => lockCount() > 0)
 
 export function acquireFlyoutLock(): () => void {
   setLockCount((n) => n + 1)

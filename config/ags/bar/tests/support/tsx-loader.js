@@ -53,12 +53,12 @@ registerHooks({
     const source = readFileSync(filePath, "utf-8")
     const basename = path.basename(filePath)
 
-    // Widget spec files (widget.tsx) and widgetSpec.tsx need to load fully so
+    // Widget spec files (spec.tsx) and widgetSpec.tsx need to load fully so
     // their resolve() functions work in tests. Strip JSX from render: bodies.
     // All other .tsx files are view components — tests never call render(), so
     // stub them out entirely.
     let processed
-    if (basename === "widget.tsx" || basename === "widgetSpec.tsx" || basename === "createPollingMonitorWidgetSpec.tsx") {
+    if (basename === "spec.tsx" || basename === "widgetSpec.tsx" || basename === "createPollingMonitorWidgetSpec.tsx") {
       processed = stripRenderJsx(source)
     } else {
       processed = "export default null"

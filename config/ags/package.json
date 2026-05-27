@@ -7,7 +7,7 @@
   "scripts": {
     "bundle:check": "ags bundle app.ts /tmp/hyprkarl-ags-bundle.js -r .",
     "check": "npm test && npm run bundle:check",
-    "test:bar-config": "node --experimental-strip-types --import ./bar/tests/support/tsx-loader.js --test ./bar/tests/registry/*.ts ./bar/tests/shared/*.ts ./bar/tests/widgets/*.ts",
+    "test:bar-config": "node --experimental-strip-types --import ./bar/tests/support/tsx-loader.js --test ./bar/tests/catalog/*.ts ./bar/tests/shared/*.ts ./bar/tests/widgets/*.ts",
     "test": "npm run test:bar-config"
   },
   "prettier": {

@@ -1,14 +1,13 @@
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import {
   normalizeBoolean,
+  normalizeRevealConfig,
   normalizeSimpleTooltipConfig,
+  type NormalizedRevealConfig,
   type NormalizedSimpleTooltipConfig,
 } from "../shared/normalize.ts"
-import { normalizeRevealConfig, normalizeTrayDirection } from "./normalize.ts"
-import type {
-  NormalizedTrayRevealConfig,
-  TrayDirection,
-} from "./types.ts"
+import { normalizeTrayDirection } from "./normalize.ts"
+import type { TrayDirection } from "./types.ts"
 import TrayWidget from "./TrayWidget.tsx"
 
 const trayDefaults = {
@@ -24,7 +23,7 @@ const trayDefaults = {
 } satisfies {
   direction: TrayDirection
   mirrorTrigger: boolean
-  reveal: NormalizedTrayRevealConfig
+  reveal: NormalizedRevealConfig
   tooltip: NormalizedSimpleTooltipConfig
 }
 

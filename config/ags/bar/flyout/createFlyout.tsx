@@ -1,10 +1,10 @@
 import { createState } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 import type { Accessor } from "ags"
-import { type FlyoutPlacement } from "../../layout/placement.ts"
+import { type FlyoutPlacement } from "../layout/placement.ts"
 import AttachedFlyout from "./AttachedFlyout.tsx"
 import type { NormalizedFlyoutConfig } from "./flyoutTypes.ts"
-import { createWidgetFlyoutName } from "../../widgets/shared/instanceNames.ts"
+import { createWidgetFlyoutName } from "../widgets/shared/instanceNames.ts"
 
 type FlyoutOptions = {
   flyout: NormalizedFlyoutConfig

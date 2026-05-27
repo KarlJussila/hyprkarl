@@ -1,4 +1,4 @@
-import type { BarLayoutConfig } from "../configuration"
+import type { BarLayoutConfig } from "../types"
 
 // Edit this file to rearrange the bar, move it to another screen edge, or toggle decorative corner curves.
 const layoutConfig = {

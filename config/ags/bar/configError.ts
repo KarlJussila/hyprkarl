@@ -1,4 +1,4 @@
-import type { BarEdge } from "./configuration"
+import type { BarEdge } from "./types"
 
 export const BAR_LAYOUT_SOURCE_FILE = "layout.config.ts"
 export const BAR_WIDGETS_SOURCE_FILE = "widgets.config.ts"

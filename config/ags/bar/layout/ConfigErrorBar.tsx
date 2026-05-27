@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import { type BarConfigError } from "../configError"
-import { type BarEdge } from "../configuration"
+import { type BarEdge } from "../types"
 import { createBarPlacement, placementClasses } from "./placement"
 
 type Props = {

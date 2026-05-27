@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk4"
 import { type BarPlacement, placementClasses } from "./placement"
-import CornerCurve from "../styles/CornerCurve"
+import CornerCurve from "./CornerCurve"
 
 type IslandEdge =
   | "segment-edge-rounded-start"

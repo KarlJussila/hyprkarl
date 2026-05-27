@@ -4,17 +4,14 @@ import AstalTray from "gi://AstalTray"
 import { type TrayPlacement } from "../../layout/placement"
 import TrayExpander from "./TrayExpander"
 import TrayItems from "./TrayItems"
-import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
-import type {
-  NormalizedTrayRevealConfig,
-  TrayDirection,
-} from "./types.ts"
+import type { NormalizedRevealConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
+import type { TrayDirection } from "./types.ts"
 
 type Props = {
   placement: TrayPlacement
   direction: TrayDirection
   mirrorTrigger: boolean
-  reveal: NormalizedTrayRevealConfig
+  reveal: NormalizedRevealConfig
   tooltip: NormalizedSimpleTooltipConfig
 }
 

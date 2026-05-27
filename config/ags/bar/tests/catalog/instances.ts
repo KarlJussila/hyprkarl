@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import type { BarLayoutConfig } from "../../configuration.ts"
+import type { BarLayoutConfig } from "../../types.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
 import type {
   BarWidgetDefinitions,

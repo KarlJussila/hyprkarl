@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 import { BAR_LAYOUT_SOURCE_FILE, formatBarConfigError } from "../../configError.ts"
-import type { BarLayoutConfig } from "../../configuration.ts"
+import type { BarLayoutConfig } from "../../types.ts"
 import { expectBarConfigError, resolveBarConfiguration } from "../support/index.ts"
 
 const minimalWidgets = {

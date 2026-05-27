@@ -1,8 +1,8 @@
 import { Accessor, createComputed, createEffect, onCleanup } from "ags"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
-import { type BarEdge } from "../../configuration"
-import { type FlyoutPlacement, placementClasses } from "../../layout/placement"
+import { type BarEdge } from "../types"
+import { type FlyoutPlacement, placementClasses } from "../layout/placement"
 import { type FlyoutMargins } from "./flyoutGeometry"
 import { createFlyoutVisibility } from "./flyoutVisibility"
 

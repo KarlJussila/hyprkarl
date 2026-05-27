@@ -1,5 +1,5 @@
 import { Astal, Gtk } from "ags/gtk4"
-import { type BarEdge } from "../configuration"
+import { type BarEdge } from "../types"
 import { type TrayDirection } from "../widgets/tray/types"
 
 export type BarOrientation = "horizontal" | "vertical"

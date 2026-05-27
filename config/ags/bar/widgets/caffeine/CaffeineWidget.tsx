@@ -4,7 +4,7 @@ import type { NormalizedSwitchMetrics } from "../../primitives/switchTypes.ts"
 import { type BarOrientation } from "../../layout/placement.ts"
 import Switch from "../../primitives/Switch"
 import { getCaffeineController } from "./controller.ts"
-import type { NormalizedCaffeineTooltip } from "./normalize.ts"
+import type { NormalizedCaffeineTooltip } from "./types.ts"
 
 type Props = {
   orientation: BarOrientation

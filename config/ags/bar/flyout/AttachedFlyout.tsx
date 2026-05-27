@@ -1,7 +1,7 @@
 import { Accessor, createEffect, createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import { type FlyoutAlign } from "./flyoutTypes"
-import { type FlyoutPlacement } from "../../layout/placement"
+import { type FlyoutPlacement } from "../layout/placement"
 import FlyoutWindow, { type FlyoutWindowProps } from "./FlyoutWindow"
 import {
   computeFlyoutMargins,

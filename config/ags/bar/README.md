@@ -7,7 +7,7 @@ Casual users:
 - Change widget behavior in `config/widgets.config.ts`
 - Adjust styling in the active theme's `bar.scss`
 Advanced users:
-- Change rendering and runtime logic under `widgets/`, `layout/`, `overlays/`, and `primitives/`
+- Change rendering and runtime logic under `widgets/`, `layout/`, `flyout/`, and `primitives/`
 - Adjust styling in `layout/styles/`
 
 ## Start Here
@@ -516,12 +516,12 @@ A hotzone window sits at the bar edge when the bar is hidden. Pointer entry into
 Each widget folder should keep the readable layout module separate from denser wiring:
 
 - `WidgetName.tsx`: top-level view module, kept intentionally small
-- `widget.tsx`: widget-owned resolve logic and render entry using `createWidgetSpec`
+- `spec.tsx`: widget-owned resolve logic and render entry using `createWidgetSpec`
 - helper files like `normalize.ts`, service integrations, and sub-components
 
 Each widget uses `createWidgetSpec` which generates `resolve()` automatically from a `schema` map of field-name to `FieldNormalizer`. Widget-specific types are inferred from the schema rather than declared in a separate `types.ts`.
 
-`configuration.ts` stays bar-wide. Widget-specific types and normalizers live with the widget. Shared internal helpers live in `widgets/shared/`. Widgets with flyouts own their open/close state and call `createFlyout` from `widgets/shared/createFlyout.tsx` to mount the flyout window and get a trigger-setup hook for the button.
+`bar/types.ts` holds the bar-wide config type definitions. Widget-specific types and normalizers live with the widget. Shared internal helpers live in `widgets/shared/`. Widgets with flyouts own their open/close state and call `createFlyout` from `flyout/createFlyout.tsx` to mount the flyout window and get a trigger-setup hook for the button.
 
 ## Styling Architecture
 

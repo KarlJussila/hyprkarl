@@ -1,6 +1,6 @@
 import { substituteTokens } from "../shared/template.ts"
 import type { NormalizedBatteryTooltipConfig } from "./types.ts"
-import { formatBatteryPercentage } from "./batteryStateShared.ts"
+import { formatBatteryPercentage } from "./batteryFormatters.ts"
 
 function formatPower(powerWatts: number) {
   return `${powerWatts.toFixed(1)}W`

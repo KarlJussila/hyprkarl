@@ -2,7 +2,7 @@ import { createComputed, createEffect } from "ags"
 import { Gdk, Gtk } from "ags/gtk4"
 import { timeout, type Timer } from "ags/time"
 import { type BarOrientation } from "../layout/placement.ts"
-import { CommonButtonProps } from "./shared"
+import { CommonButtonProps } from "./buttonTypes"
 
 type Props = CommonButtonProps<Gtk.Button> & {
   orientation?: BarOrientation

@@ -7,8 +7,8 @@ import {
   type NormalizedFormatConfig,
   type NormalizedSimpleTooltipConfig,
 } from "../shared/normalize.ts"
-import { normalizeFlyoutConfig } from "../../overlays/flyout/normalizeFlyout.ts"
-import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
+import { normalizeFlyoutConfig } from "../../flyout/normalizeFlyout.ts"
+import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
 import ClockWidget from "./ClockWidget.tsx"
 
 const clockDefaults = {

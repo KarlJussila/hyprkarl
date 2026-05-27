@@ -5,8 +5,8 @@ import GLib from "gi://GLib?version=2.0"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
 import CalendarFlyoutContent from "./CalendarFlyoutContent"
-import { createFlyoutCommands } from "../../overlays/flyout/createFlyoutCommands.tsx"
-import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
+import { createFlyoutCommands } from "../../flyout/createFlyoutCommands.tsx"
+import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
 import type { NormalizedClickCommandsConfig, NormalizedFormatConfig, NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
 
 type Props = {

@@ -1,5 +1,5 @@
 import { Gtk } from "ags/gtk4"
-import { type BarEdge } from "../../configuration"
+import { type BarEdge } from "../types"
 import { type FlyoutAlign } from "./flyoutTypes"
 
 export type FlyoutSize = { width: number; height: number }

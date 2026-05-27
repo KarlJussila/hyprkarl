@@ -1,13 +1,5 @@
-import type {
-  TrayDirection,
-} from "./types.ts"
-import {
-  fail,
-  normalizeRevealConfig,
-  type ValidationContext,
-} from "../shared/normalize.ts"
-
-export { normalizeRevealConfig }
+import type { TrayDirection } from "./types.ts"
+import { fail, type ValidationContext } from "../shared/normalize.ts"
 
 export function normalizeTrayDirection(
   ctx: ValidationContext,

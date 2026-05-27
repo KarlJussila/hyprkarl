@@ -2,7 +2,7 @@ import type { NormalizedSwitchMetrics } from "../../primitives/switchTypes.ts"
 import { createWidgetSpec } from "../shared/widgetSpec.tsx"
 import { normalizeRequiredCommand, normalizeStringValue } from "../shared/normalize.ts"
 import { normalizeCaffeineTooltipConfig, normalizeSwitchMetrics } from "./normalize.ts"
-import type { NormalizedCaffeineTooltip } from "./normalize.ts"
+import type { NormalizedCaffeineTooltip } from "./types.ts"
 import CaffeineWidget from "./CaffeineWidget.tsx"
 
 const caffeineDefaults = {

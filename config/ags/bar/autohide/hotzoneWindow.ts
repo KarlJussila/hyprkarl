@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import { createEffect, onCleanup } from "ags"
-import type { BarEdge } from "../configuration"
+import type { BarEdge } from "../types"
 import type { BarVisibilityController } from "./barVisibilityController"
 
 const HOTZONE_THICKNESS = 1

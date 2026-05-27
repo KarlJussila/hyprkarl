@@ -1,10 +1,10 @@
 import { createState } from "ags"
 import { Gdk } from "ags/gtk4"
-import { type FlyoutPlacement } from "../../layout/placement.ts"
+import { type FlyoutPlacement } from "../layout/placement.ts"
 import { createFlyout } from "./createFlyout.tsx"
 import type { NormalizedFlyoutConfig } from "./flyoutTypes.ts"
-import type { NormalizedClickCommandsConfig } from "../../widgets/shared/normalize.ts"
-import { resolveCommand } from "../../widgets/shared/resolveCommand.ts"
+import type { NormalizedClickCommandsConfig } from "../widgets/shared/normalize.ts"
+import { resolveCommand } from "../widgets/shared/resolveCommand.ts"
 
 type Options = {
   flyout: NormalizedFlyoutConfig

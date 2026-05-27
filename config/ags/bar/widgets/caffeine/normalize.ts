@@ -1,5 +1,9 @@
 import type { NormalizedSwitchMetrics } from "../../primitives/switchTypes.ts"
-import type { SwitchMetrics } from "./types.ts"
+import type {
+  CaffeineTooltipConfig,
+  NormalizedCaffeineTooltip,
+  SwitchMetrics,
+} from "./types.ts"
 import {
   childContext,
   normalizeBoolean,
@@ -10,18 +14,6 @@ import {
   normalizeStringValue,
   type ValidationContext,
 } from "../shared/normalize.ts"
-
-export type CaffeineTooltipConfig = {
-  enabled?: boolean
-  active?: string
-  inactive?: string
-}
-
-export type NormalizedCaffeineTooltip = {
-  enabled: boolean
-  active: string
-  inactive: string
-}
 
 export function normalizeCaffeineTooltipConfig(
   ctx: ValidationContext,

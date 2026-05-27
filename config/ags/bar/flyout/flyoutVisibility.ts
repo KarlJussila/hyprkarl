@@ -1,6 +1,6 @@
 import { Accessor, createEffect, createState, onCleanup } from "ags"
 import { Timer, timeout } from "ags/time"
-import { acquireFlyoutLock } from "../../autohide/flyoutLock"
+import { acquireFlyoutLock } from "../autohide/flyoutLock"
 
 type Props = {
   open: Accessor<boolean>

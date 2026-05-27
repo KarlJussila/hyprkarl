@@ -1,6 +1,6 @@
 import { type Accessor } from "ags"
 import { Gtk } from "ags/gtk4"
-import { type BarEdge } from "../../configuration.ts"
+import { type BarEdge } from "../../types.ts"
 import Slider from "../../primitives/Slider.tsx"
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
 import { formatReadoutPercent } from "../shared/formatters.ts"

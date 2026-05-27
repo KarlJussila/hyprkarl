@@ -108,7 +108,7 @@ The AGS bar has two casual editing surfaces and one advanced one:
 To add a new widget kind, create a folder under `config/ags/bar/widgets/<name>/`
 with:
 
-- `widget.tsx`: `createWidgetSpec` call with `kind`, `defaults`, `schema`, and
+- `spec.tsx`: `createWidgetSpec` call with `kind`, `defaults`, `schema`, and
   `render`.
 - `<Name>Widget.tsx`: top-level view component.
 - `normalize.ts`: field normalizers used as `schema` values (if needed).

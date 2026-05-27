@@ -5,7 +5,7 @@ import {
   type BarConfigSourceFile,
   isBarEdge,
 } from "../../configError.ts"
-import type { BarEdge } from "../../configuration.ts"
+import type { BarEdge } from "../../types.ts"
 
 export type ValidationContext = {
   sourceFile: BarConfigSourceFile

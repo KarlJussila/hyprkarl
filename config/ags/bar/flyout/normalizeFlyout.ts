@@ -10,7 +10,7 @@ import {
   normalizeNonNegativeNumber,
   normalizeObjectConfig,
   type ValidationContext,
-} from "../../widgets/shared/normalize.ts"
+} from "../widgets/shared/normalize.ts"
 
 export function normalizeFlyoutAlign(
   context: ValidationContext,

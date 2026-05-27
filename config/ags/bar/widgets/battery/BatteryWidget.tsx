@@ -1,12 +1,12 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import Button from "../../primitives/Button.tsx"
-import { createFlyoutCommands } from "../../overlays/flyout/createFlyoutCommands.tsx"
+import { createFlyoutCommands } from "../../flyout/createFlyoutCommands.tsx"
 import BatteryIndicator from "./BatteryIndicator"
 import { createBatteryState } from "./batteryState"
 import { formatReadoutPercent } from "../shared/formatters.ts"
 import PowerProfileMenu from "./PowerProfileMenu"
-import type { NormalizedFlyoutConfig } from "../../overlays/flyout/flyoutTypes.ts"
+import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
 import type {
   NormalizedBatteryIndicatorMetrics,
   NormalizedBatteryTooltipConfig,

@@ -4,7 +4,7 @@ import {
   BAR_WIDGETS_SOURCE_FILE,
   formatBarConfigError,
 } from "../../configError.ts"
-import type { BarLayoutConfig } from "../../configuration.ts"
+import type { BarLayoutConfig } from "../../types.ts"
 import { expectBarConfigError, resolveBarConfiguration } from "../support/index.ts"
 import type { BarWidgetDefinitions } from "../../widgets/catalog.ts"
 

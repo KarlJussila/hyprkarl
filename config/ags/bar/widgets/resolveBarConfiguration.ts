@@ -5,7 +5,7 @@ import type {
   BarEdge,
   BarLayoutConfig,
   ResolvedBarConfiguration,
-} from "../configuration.ts"
+} from "../types.ts"
 import type {
   BarWidgetDefinitions,
   WidgetKind,

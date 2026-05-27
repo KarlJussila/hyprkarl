@@ -10,8 +10,6 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 BACK=()

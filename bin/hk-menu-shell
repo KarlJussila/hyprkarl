@@ -10,8 +10,6 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 BACK=()
@@ -31,8 +29,8 @@ CHOICE=$(echo -e "$FISH\n$ZSH\n$BASH" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$FISH") hyprkarl_open_terminal hk-default-shell fish ;;
-    "$ZSH")  hyprkarl_open_terminal hk-default-shell zsh ;;
-    "$BASH") hyprkarl_open_terminal hk-default-shell bash ;;
+    "$FISH") hk-open-terminal hk-default-shell fish ;;
+    "$ZSH")  hk-open-terminal hk-default-shell zsh ;;
+    "$BASH") hk-open-terminal hk-default-shell bash ;;
     "")      (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

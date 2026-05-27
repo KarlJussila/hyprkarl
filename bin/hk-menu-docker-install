@@ -1,8 +1,6 @@
 #!/bin/bash
 # hk-menu-docker-install
-# Menu for setting up Docker and installing Docker service stacks.
-# Shows only the Docker setup option until Docker is configured, then
-# exposes service install options.
+# Menu for installing Docker service stacks.
 #
 # Usage:
 #   hk-menu-docker-install [--back <command> [args...]]
@@ -13,7 +11,7 @@
 #              the menu does nothing.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/docker.sh"
+source "$SCRIPT_DIR/lib/docker/docker.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 BACK=()
@@ -23,41 +21,33 @@ fi
 SELF=("$(basename "$0")")
 [[ -n "${BACK[*]}" ]] && SELF+=(--back "${BACK[@]}")  # carry back-chain so submenus can return here
 
-DOCKER="󰡨 Setup Docker"
 CHOICES=()
 CHOICE_IDS=()
 
-if ! docker_setup_complete; then
-    CHOICES=("$DOCKER")
-    MESG="Docker Setup"
-else
-    MESG="Install Service"
-    while IFS=$'\t' read -r service_id service_label; do
-        [[ -n "$service_id" ]] || continue
-        CHOICES+=("$service_label")
-        CHOICE_IDS+=("$service_id")
-    done < <(docker_list_services missing)
+while IFS=$'\t' read -r service_id service_label; do
+    [[ -n "$service_id" ]] || continue
+    CHOICES+=("$service_label")
+    CHOICE_IDS+=("$service_id")
+done < <(list_services missing)
 
-    if (( ${#CHOICE_IDS[@]} == 0 )); then
-        CHOICES=("(nothing to install)")
-    fi
+if (( ${#CHOICE_IDS[@]} == 0 )); then
+    CHOICES=("(nothing to install)")
 fi
 
 CHOICE=$(printf '%s\n' "${CHOICES[@]}" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
-           -mesg "$MESG" \
+           -mesg "Install Service" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$DOCKER")  hyprkarl_open_terminal hk-docker setup ;;
-    "")         (( ${#BACK[@]} )) && "${BACK[@]}" ;;
+    "") (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac
 
 for index in "${!CHOICE_IDS[@]}"; do
     if [[ "$CHOICE" == "${CHOICES[$index]}" ]]; then
-        hyprkarl_open_terminal hk-docker install "${CHOICE_IDS[$index]}"
+        hk-open-terminal hk-docker install "${CHOICE_IDS[$index]}"
         exit 0
     fi
 done

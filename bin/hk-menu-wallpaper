@@ -10,8 +10,6 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 BACK=()
@@ -20,8 +18,8 @@ if [[ "${1:-}" == "--back" ]]; then
 fi
 
 SELECT="󰋹 Select"
-ADD=" Add"
-REMOVE=" Remove"
+ADD=" Add"
+REMOVE=" Remove"
 
 CHOICE=$(echo -e "$SELECT\n$ADD\n$REMOVE" \
     | rofi -dmenu \
@@ -32,7 +30,16 @@ CHOICE=$(echo -e "$SELECT\n$ADD\n$REMOVE" \
 
 case "$CHOICE" in
     "$SELECT") hk-wallpaper set "$(hk-wallpaper select)" ;;
-    "$ADD")    hk-wallpaper add "$(hyprkarl_capture_terminal_output hk-select-picture)" ;;
+    "$ADD")
+        output_file=$(mktemp) || exit 1
+        if hk-open-terminal -e bash -lc 'output_file=$1; shift; "$@" >"$output_file"' bash "$output_file" hk-select-picture; then
+            selected=$(cat "$output_file")
+            rm -f "$output_file"
+            hk-wallpaper add "$selected"
+        else
+            rm -f "$output_file"
+        fi
+        ;;
     "$REMOVE") hk-wallpaper remove "$(hk-wallpaper select '@urgent')" ;;
     "")        (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

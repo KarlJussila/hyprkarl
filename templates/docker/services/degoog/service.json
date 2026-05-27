@@ -1,12 +1,11 @@
 {
   "id": "degoog",
   "label": "Degoog",
-  "install_dir": "$HOME/.degoog",
   "compose_file": "docker-compose.yml",
   "hosts_entry": "127.0.0.1 degoog.local",
   "require_traefik_network": true,
   "install_message": "Degoog is available at http://degoog.local (requires Traefik) or http://localhost:4444",
-  "remove_warning": "This will stop the Degoog container and permanently delete all data in $HOME/.degoog.",
+  "remove_warning": "This will stop the Degoog container and permanently delete all data in ~/.docker-containers/degoog.",
   "template_files": [
     "docker-compose.yml:docker-compose.yml"
   ],

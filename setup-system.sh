@@ -27,6 +27,10 @@ sudo sed -i 's/^# *deny = .*/deny = 10/' /etc/security/faillock.conf
 sudo ufw allow 53317/tcp
 sudo ufw allow 53317/udp
 
+# Docker
+sudo systemctl enable --now docker.service
+sudo usermod -aG docker "$USER"
+
 # Record installed commit for update tracking
 mkdir -p "$SCRIPT_DIR/config/hyprkarl/update"
 git -C "$SCRIPT_DIR" rev-parse HEAD > "$SCRIPT_DIR/config/hyprkarl/update/system.commit"

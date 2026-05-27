@@ -2,16 +2,13 @@
 # hk-battery-monitor
 # Monitors battery level and fires actions at configured thresholds
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
-
 POLL_INTERVAL=30
 RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}/hyprkarl"
 FIRED_FILE="$RUNTIME_DIR/battery-fired"
 
 mkdir -p "$RUNTIME_DIR"
 
-BATTERY=$(hyprkarl_find_battery) || {
+BATTERY=$(hk-find-battery) || {
     echo "No battery device found; battery monitor disabled." >&2
     exit 0
 }

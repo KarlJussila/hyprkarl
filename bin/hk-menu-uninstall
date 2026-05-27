@@ -10,8 +10,6 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 BACK=()
@@ -33,8 +31,8 @@ CHOICE=$(echo -e "$SYSTEM\n$FLATPAK\n$DOCKER" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$SYSTEM")  hyprkarl_open_terminal hk-pkg-remove-tui ;;
-    "$FLATPAK") hyprkarl_open_terminal hk-pkg-remove-tui --flatpak ;;
+    "$SYSTEM")  hk-open-terminal hk-pkg-remove-tui ;;
+    "$FLATPAK") hk-open-terminal hk-pkg-remove-tui --flatpak ;;
     "$DOCKER")  hk-menu-docker-uninstall --back "${SELF[@]}" ;;
     "")         (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

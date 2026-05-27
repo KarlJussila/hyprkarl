@@ -10,8 +10,6 @@
 #              menu or continue up the call chain. If omitted, dismissing
 #              the menu does nothing.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 # Check if fingerprint auth is set up
@@ -44,10 +42,10 @@ CHOICE=$(echo "$options" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$SETUP")     hyprkarl_open_terminal hk-fingerprint setup ;;
-    "$ENROLL")    hyprkarl_open_terminal hk-fingerprint enroll ;;
+    "$SETUP")     hk-open-terminal hk-fingerprint setup ;;
+    "$ENROLL")    hk-open-terminal hk-fingerprint enroll ;;
     "$REMOVE")    hk-fingerprint remove \
                   "$(hk-fingerprint select 'Remove Fingerprint')" ;;
-    "$UNINSTALL") hyprkarl_open_terminal hk-fingerprint setup --remove ;;
+    "$UNINSTALL") hk-open-terminal hk-fingerprint setup --remove ;;
     "")           (( ${#BACK[@]} )) && "${BACK[@]}" ;;
 esac

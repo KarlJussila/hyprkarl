@@ -1,4 +1,3 @@
-
 validate_stage_dir() {
   local service_name=$1
   local stage_dir=$2
@@ -52,9 +51,6 @@ install_loaded_service() {
   local stage_dir
   local -n service_ref=$service_name
 
-  validate_install_dir "${service_ref["install_dir"]}" || return 1
-  require_cli || return 1
-
   gum log --level info "Preparing ${service_ref["label"]} files..."
   stage_dir=$(prepare_stage_dir "$service_name" "$template_name" "$data_name" "$preserve_name") || return 1
 
@@ -64,7 +60,7 @@ install_loaded_service() {
     return 1
   fi
 
-  if (( service_ref["require_traefik_network"] )); then
+  if ((service_ref["require_traefik_network"])); then
     gum log --level info "Ensuring traefik-proxy network exists..."
     if ! ensure_network; then
       rm -rf "$stage_dir"
@@ -88,9 +84,7 @@ install_loaded_service() {
 
   gum log --level info "Starting ${service_ref["label"]}..."
   if ! compose_up "$service_name"; then
-    if (( DOCKER_HOSTS_ENTRY_ADDED )); then
-      remove_hosts_entry "${service_ref["hosts_entry"]}"
-    fi
+    remove_hosts_entry "${service_ref["hosts_entry"]}"
     rm -rf "$stage_dir"
     return 1
   fi
@@ -110,18 +104,17 @@ install_loaded_service() {
 
 remove_loaded_service() {
   local service_name=$1
-  local compose_file
   local -n service_ref=$service_name
 
-  validate_install_dir "${service_ref["install_dir"]}" || return 1
+  if [[ "${service_ref["install_dir"]}" != "$HOME/"* ]]; then
+    gum log --level error "Refusing to remove Docker service files outside \$HOME: ${service_ref["install_dir"]}"
+    return 1
+  fi
 
-  compose_file=$(compose_path "$service_name")
-  if [[ ! -f "$compose_file" ]]; then
+  if [[ ! -f "${service_ref["install_dir"]}/${service_ref["compose_file"]}" ]]; then
     gum log --level error "No ${service_ref["label"]} installation found at ${service_ref["install_dir"]}, nothing to do."
     return 0
   fi
-
-  require_cli || return 1
 
   gum log --level warn "${service_ref["remove_warning"]}"
   if ! gum confirm "Continue?"; then

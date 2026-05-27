@@ -11,7 +11,7 @@
 #              the menu does nothing.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/docker.sh"
+source "$SCRIPT_DIR/lib/docker/docker.sh"
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 BACK=()
@@ -26,7 +26,7 @@ while IFS=$'\t' read -r service_id service_label; do
     [[ -n "$service_id" ]] || continue
     CHOICES+=("$service_label")
     CHOICE_IDS+=("$service_id")
-done < <(docker_list_services installed)
+done < <(list_services installed)
 
 if (( ${#CHOICE_IDS[@]} == 0 )); then
     CHOICES=("(nothing to remove)")
@@ -48,7 +48,7 @@ esac
 
 for index in "${!CHOICE_IDS[@]}"; do
     if [[ "$CHOICE" == "${CHOICES[$index]}" ]]; then
-        hyprkarl_open_terminal hk-docker uninstall "${CHOICE_IDS[$index]}"
+        hk-open-terminal hk-docker uninstall "${CHOICE_IDS[$index]}"
         exit 0
     fi
 done

@@ -1,12 +1,11 @@
 {
   "id": "searxng",
   "label": "SearXNG",
-  "install_dir": "$HOME/.searxng",
   "compose_file": "docker-compose.yaml",
   "hosts_entry": "127.0.0.1 searxng.local",
   "require_traefik_network": true,
   "install_message": "SearXNG is available at http://searxng.local (requires Traefik) or http://localhost:8080",
-  "remove_warning": "This will stop the SearXNG stack and permanently delete all configuration in $HOME/.searxng. Cached data and Valkey storage are removed through docker compose down --volumes.",
+  "remove_warning": "This will stop the SearXNG stack and permanently delete all configuration in ~/.docker-containers/searxng. Cached data and Valkey storage are removed through docker compose down --volumes.",
   "template_files": [
     "docker-compose.yaml:docker-compose.yaml",
     "searxng/settings.yml:searxng/settings.yml"

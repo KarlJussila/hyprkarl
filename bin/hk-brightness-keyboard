@@ -5,12 +5,15 @@
 # Usage:
 #   hk-brightness-keyboard <up|down>
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
-
 direction="${1:-up}"
 
-device=$(hyprkarl_find_keyboard_backlight)
+device=""
+for backlight_path in /sys/class/leds/*kbd_backlight*; do
+  if [[ -d "$backlight_path" ]]; then
+    device=$(basename "$backlight_path")
+    break
+  fi
+done
 
 if [[ -z "$device" ]]; then
     echo "No keyboard backlight device found" >&2

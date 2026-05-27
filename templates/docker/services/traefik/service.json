@@ -1,7 +1,6 @@
 {
   "id": "traefik",
   "label": "Traefik",
-  "install_dir": "$HOME/.traefik",
   "compose_file": "docker-compose.yml",
   "require_traefik_network": true,
   "install_message": "Traefik is running and will automatically route .local hostnames.",

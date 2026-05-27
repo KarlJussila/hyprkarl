@@ -1,4 +1,3 @@
-
 set_substitution() {
   local substitutions_name=$1
   local key=$2
@@ -43,12 +42,12 @@ render_template() {
     sed_args+=(-e "s|@$key@|$escaped_value|g")
   done
 
-  if (( ${#sed_args[@]} == 0 )); then
-    cat "$source_file" > "$destination_file"
+  if ((${#sed_args[@]} == 0)); then
+    cat "$source_file" >"$destination_file"
     return 0
   fi
 
-  sed "${sed_args[@]}" "$source_file" > "$destination_file"
+  sed "${sed_args[@]}" "$source_file" >"$destination_file"
 }
 
 prepare_stage_dir() {

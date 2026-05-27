@@ -1,0 +1,9 @@
+#!/bin/bash
+# hk-open-terminal
+# Open a terminal window using the configured hyprkarl terminal app-id.
+#
+# Usage:
+#   hk-open-terminal [args...]
+#
+# Any arguments are forwarded to xdg-terminal-exec.
+exec xdg-terminal-exec --app-id=org.hyprkarl.terminal "$@"

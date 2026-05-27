@@ -5,6 +5,8 @@ brightnessctl
 btop
 curl
 dart-sass
+docker
+docker-compose
 ffmpeg
 fish
 flatpak

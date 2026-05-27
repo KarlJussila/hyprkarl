@@ -9,10 +9,7 @@
 #   %p in title/body will be replaced with current battery percentage
 #   %s in title/body will be replaced with battery status
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/shell.sh"
-
-BATTERY=$(hyprkarl_find_battery) || {
+BATTERY=$(hk-find-battery) || {
     echo "No battery device found." >&2
     exit 1
 }

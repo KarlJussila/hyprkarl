@@ -1,0 +1,16 @@
+#!/bin/bash
+# hk-find-battery
+# Print the name of the first battery device found in /sys/class/power_supply/.
+# Exits 1 if no battery is found.
+#
+# Usage:
+#   hk-find-battery
+
+for battery_path in /sys/class/power_supply/BAT*; do
+  if [[ -d "$battery_path" ]]; then
+    basename "$battery_path"
+    exit 0
+  fi
+done
+
+exit 1

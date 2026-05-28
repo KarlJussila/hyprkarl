@@ -3,6 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { type BarOrientation } from "../../layout/placement"
 import Button from "../../primitives/Button"
 import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
+import { resolveSimpleTooltipText } from "../shared/widgetKit.ts"
 
 type Props = {
   orientation: BarOrientation
@@ -39,7 +40,7 @@ export default function TrayExpander({
       <Button
         class={buttonStateClass}
         orientation={orientation}
-        tooltipText={tooltip.enabled && tooltip.text ? tooltip.text : undefined}
+        tooltipText={resolveSimpleTooltipText(tooltip)}
         execPrimary={onToggle}
       >
         <box

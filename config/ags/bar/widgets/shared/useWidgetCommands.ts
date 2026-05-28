@@ -21,7 +21,7 @@ type UseWidgetCommandsOptions = {
   commands: NormalizedClickCommandsConfig
   primaryFallback?: CommandToken
   secondaryFallback?: CommandToken
-  middleFallback?: CommandToken
+  tertiaryFallback?: CommandToken
   tokens?: Record<string, CommandToken>
   flyout?: FlyoutBinding
 }
@@ -30,7 +30,7 @@ export function useWidgetCommands({
   commands,
   primaryFallback,
   secondaryFallback,
-  middleFallback,
+  tertiaryFallback,
   tokens: extraTokens,
   flyout,
 }: UseWidgetCommandsOptions) {
@@ -41,8 +41,8 @@ export function useWidgetCommands({
   if (flyout) {
     const [flyoutOpen, setFlyoutOpen] = createState(false)
     const toggleFlyout = () => setFlyoutOpen(!flyoutOpen())
-    tokens.flyout = flyout.config.enabled ? toggleFlyout : undefined
-    if (flyout.config.enabled && resolvedPrimaryFallback === undefined) {
+    tokens.flyout = toggleFlyout
+    if (resolvedPrimaryFallback === undefined) {
       resolvedPrimaryFallback = toggleFlyout
     }
     triggerSetup = createFlyout({
@@ -60,7 +60,7 @@ export function useWidgetCommands({
   return {
     execPrimary: resolveCommand(commands.primary, resolvedPrimaryFallback, tokens),
     execSecondary: resolveCommand(commands.secondary, secondaryFallback, tokens),
-    execMiddle: resolveCommand(commands.tertiary, middleFallback, tokens),
+    execTertiary: resolveCommand(commands.tertiary, tertiaryFallback, tokens),
     triggerSetup,
   }
 }

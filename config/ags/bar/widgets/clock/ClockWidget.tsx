@@ -29,7 +29,7 @@ export default function ClockWidget({ id, config, placement, monitor }: WidgetRe
 
   const toggleAlt = hasAlt ? () => setUseAlt(!useAlt()) : undefined
 
-  const { execPrimary, execSecondary, execMiddle, triggerSetup } = useWidgetCommands({
+  const { execPrimary, execSecondary, execTertiary, triggerSetup } = useWidgetCommands({
     commands,
     secondaryFallback: toggleAlt,
     tokens: { "toggle-alt": toggleAlt },
@@ -52,7 +52,7 @@ export default function ClockWidget({ id, config, placement, monitor }: WidgetRe
     return currentTime().format(fmt) ?? ""
   })
 
-  const tooltipText = tooltip.enabled && tooltip.text
+  const tooltipText = tooltip.text
     ? createComputed(() => currentTime().format(tooltip.text) ?? "")
     : undefined
 
@@ -96,7 +96,7 @@ export default function ClockWidget({ id, config, placement, monitor }: WidgetRe
       tooltipText={tooltipText}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
-      execMiddle={execMiddle}
+      execTertiary={execTertiary}
       $={triggerSetup}
     >
       <label

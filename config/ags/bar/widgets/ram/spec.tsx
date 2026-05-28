@@ -12,7 +12,7 @@ export default createPollingMonitorWidgetSpec({
       verticalAlt: "{ram_used}\n{swap_used}",
     },
     decimals: { primary: 0, alt: 0, vertical: 0, verticalAlt: 0 },
-    tooltip: { enabled: true, text: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}" },
+    tooltip: { text: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}" },
     interval: 5000,
     reveal: { durationMs: 200 },
     commands: { primary: undefined, secondary: undefined, tertiary: undefined },

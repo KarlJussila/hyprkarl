@@ -2,7 +2,7 @@ import audioSpec from "./audio/spec.tsx"
 import recordingSpec from "./recording/spec.tsx"
 import batterySpec from "./battery/spec.tsx"
 import bluetoothSpec from "./bluetooth/spec.tsx"
-import caffeineSpec from "./caffeine/spec.tsx"
+import toggleSpec from "./toggle/spec.tsx"
 import clockSpec from "./clock/spec.tsx"
 import cpuSpec from "./cpu/spec.tsx"
 import ramSpec from "./ram/spec.tsx"
@@ -18,7 +18,7 @@ export const widgetCatalog = {
   workspaces: workspacesSpec,
   tray: traySpec,
   clock: clockSpec,
-  caffeine: caffeineSpec,
+  toggle: toggleSpec,
   cpu: cpuSpec,
   ram: ramSpec,
   network: networkSpec,

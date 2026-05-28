@@ -16,7 +16,6 @@ test("normalizes clock widget defaults from minimal config", () => {
   assert.equal(clock.format.alt, "")
   assert.equal(clock.format.vertical, "%I\n%M\n%p")
   assert.equal(clock.format.verticalAlt, "")
-  assert.equal(clock.flyout.enabled, true)
   assert.equal(clock.flyout.align, "center")
   assert.equal(clock.flyout.gap, 0)
 })
@@ -28,7 +27,7 @@ test("normalizes clock widget overrides", () => {
       clock: {
         kind: "clock",
         format: { primary: "%H:%M", vertical: "%H\n%M" },
-        flyout: { enabled: false },
+        flyout: { align: "start" },
       },
     },
   )
@@ -36,5 +35,5 @@ test("normalizes clock widget overrides", () => {
   const clock = resolved.widgets.clock as ResolvedClockWidgetConfig
   assert.equal(clock.format.primary, "%H:%M")
   assert.equal(clock.format.vertical, "%H\n%M")
-  assert.equal(clock.flyout.enabled, false)
+  assert.equal(clock.flyout.align, "start")
 })

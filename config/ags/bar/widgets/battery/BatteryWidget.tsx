@@ -22,7 +22,7 @@ export default function BatteryWidget({ id, config, placement, monitor }: Widget
   const { showPercentage, lowThreshold, flyout, tooltip, indicator, commands } = config
   const batteryState = createBatteryState(tooltip)
 
-  const { execPrimary, execSecondary, execMiddle, triggerSetup } = useWidgetCommands({
+  const { execPrimary, execSecondary, execTertiary, triggerSetup } = useWidgetCommands({
     commands,
     flyout: {
       config: flyout,
@@ -51,7 +51,7 @@ export default function BatteryWidget({ id, config, placement, monitor }: Widget
       visible={batteryState.isPresent}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
-      execMiddle={execMiddle}
+      execTertiary={execTertiary}
       $={triggerSetup}
     >
       <box

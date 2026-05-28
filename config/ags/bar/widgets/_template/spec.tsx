@@ -30,7 +30,7 @@ export default createWidgetSpec({
     label: "template",
     active: true,
     icons: { active: "*", inactive: "-" },
-    tooltip: { enabled: true, text: "Template widget — copy bar/widgets/_template/" },
+    tooltip: { text: "Template widget — copy bar/widgets/_template/" },
   },
   schema: {
     ...commonWidgetSchema,

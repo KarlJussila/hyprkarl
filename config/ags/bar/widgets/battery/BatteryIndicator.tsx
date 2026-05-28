@@ -155,16 +155,17 @@ export default function BatteryIndicator({
           }
 
           if (isCharging) {
+            const chargingGlyph = metrics.glyphs.charging
             if (!pangoLayout) {
               pangoLayout = PangoCairo.create_layout(context)
               pangoLayout.set_font_description(
                 Pango.FontDescription.from_string(
-                  `${metrics.chargingGlyphFontFamily} ${metrics.chargingGlyphFontSize * s}`,
+                  `${metrics.fontFamily} ${metrics.fontSize * s}`,
                 ),
               )
             }
 
-            pangoLayout.set_text(metrics.chargingGlyph, -1)
+            pangoLayout.set_text(chargingGlyph.glyph, -1)
 
             const [, logicalRect] = pangoLayout.get_pixel_extents()
             const glyphMetrics = logicalRect || { x: 0, y: 0, width: 0, height: 0 }
@@ -175,8 +176,8 @@ export default function BatteryIndicator({
 
             context.setSourceRGBA(glyphColor.red, glyphColor.green, glyphColor.blue, glyphColor.alpha)
             context.moveTo(
-              drawX - (glyphMetrics.width / 2) - glyphMetrics.x,
-              drawY - (glyphMetrics.height / 2) - glyphMetrics.y,
+              drawX - (glyphMetrics.width / 2) - glyphMetrics.x + chargingGlyph.glyphOffset[0] * s,
+              drawY - (glyphMetrics.height / 2) - glyphMetrics.y + chargingGlyph.glyphOffset[1] * s,
             )
             PangoCairo.show_layout(context, pangoLayout)
           }

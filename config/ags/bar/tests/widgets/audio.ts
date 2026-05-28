@@ -32,13 +32,30 @@ test("normalizes audio widget defaults from minimal config", () => {
   assert.equal(audio.commands.primary, undefined)
   assert.equal(audio.commands.secondary, "hk-launch-audio")
   assert.equal(audio.commands.tertiary, undefined)
-  assert.equal(audio.flyout.enabled, true)
   assert.equal(audio.tooltip.active, "{device} {percentage}")
   assert.equal(audio.tooltip.unavailable, "Audio unavailable")
   assert.ok(audio.slider.trackLength > 0)
   assert.ok(audio.slider.trackThickness > 0)
   assert.ok(audio.slider.thumbWidth > 0)
   assert.ok(audio.slider.thumbHeight > 0)
+  assert.equal(audio.indicator.height, 14)
+  assert.equal(audio.indicator.lineWidth, 1.4)
+})
+
+test("allows audio indicator overrides", () => {
+  const resolved = resolveBarConfiguration(
+    { edge: "top", start: ["audio"], center: { start: [], center: [], end: [] }, end: [] },
+    {
+      audio: {
+        kind: "audio",
+        indicator: { height: 20, lineWidth: 2 },
+      },
+    },
+  )
+
+  const audio = resolved.widgets.audio as ResolvedAudioWidgetConfig
+  assert.equal(audio.indicator.height, 20)
+  assert.equal(audio.indicator.lineWidth, 2)
 })
 
 test("normalizes audio widget overrides", () => {
@@ -61,7 +78,6 @@ test("normalizes audio widget overrides", () => {
           secondary: "custom-audio-command",
         },
         flyout: {
-          enabled: false,
           align: "end",
           gap: 6,
         },
@@ -86,7 +102,6 @@ test("normalizes audio widget overrides", () => {
   const audio = resolved.widgets.audio as ResolvedAudioWidgetConfig
   assert.equal(audio.showPercentage, false)
   assert.equal(audio.commands.secondary, "custom-audio-command")
-  assert.equal(audio.flyout.enabled, false)
   assert.equal(audio.flyout.align, "end")
   assert.equal(audio.flyout.gap, 6)
   assert.equal(audio.tooltip.active, "{percentage}")

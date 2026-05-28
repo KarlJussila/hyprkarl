@@ -24,7 +24,7 @@ export default createWidgetSpec({
     direction: "start",
     mirrorTrigger: false,
     reveal: { durationMs: 220 },
-    tooltip: { enabled: true, text: "" },
+    tooltip: { text: "" },
   },
   schema: {
     direction: normalizeTrayDirection,

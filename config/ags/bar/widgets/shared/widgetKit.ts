@@ -7,6 +7,10 @@ import {
   type NormalizedSimpleTooltipConfig,
 } from "./normalize.ts"
 
+export function resolveSimpleTooltipText(tooltip: NormalizedSimpleTooltipConfig): string | undefined {
+  return tooltip.text ? tooltip.text : undefined
+}
+
 export const commonWidgetSchema = {
   tooltip: normalizeSimpleTooltipConfig,
   commands: normalizeClickCommandsConfig,
@@ -16,7 +20,7 @@ export const commonWidgetDefaults: {
   tooltip: NormalizedSimpleTooltipConfig
   commands: NormalizedClickCommandsConfig
 } = {
-  tooltip: { enabled: true, text: "" },
+  tooltip: { text: "" },
   commands: { primary: undefined, secondary: undefined, tertiary: undefined },
 }
 
@@ -29,5 +33,5 @@ export const flyoutWidgetDefaults: typeof commonWidgetDefaults & {
   flyout: NormalizedFlyoutConfig
 } = {
   ...commonWidgetDefaults,
-  flyout: { enabled: true, align: "center", gap: 0 },
+  flyout: { align: "center", gap: 0 },
 }

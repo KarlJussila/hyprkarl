@@ -3,53 +3,67 @@ import test from "node:test"
 import type { ResolvedBarWidgetDefinition } from "../../widgets/catalog.ts"
 import { resolveBarConfiguration } from "../support/index.ts"
 
-type ResolvedCaffeineWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "caffeine" }>
+type ResolvedToggleWidgetConfig = Extract<ResolvedBarWidgetDefinition, { kind: "toggle" }>
 
-test("normalizes caffeine widget defaults from minimal config", () => {
+test("normalizes toggle widget defaults to neutral placeholders", () => {
   const resolved = resolveBarConfiguration(
     { edge: "top", start: ["caffeine"], center: { start: [], center: [], end: [] }, end: [] },
-    { caffeine: { kind: "caffeine" } },
+    { caffeine: { kind: "toggle" } },
   )
 
-  const caffeine = resolved.widgets.caffeine as ResolvedCaffeineWidgetConfig
-  assert.equal(caffeine.glyph, "")
-  assert.equal(caffeine.command, "hk-caffeine")
-  assert.equal(caffeine.switch.trackLength, 24)
-  assert.equal(caffeine.tooltip.active, "Caffeine: on")
-  assert.equal(caffeine.tooltip.inactive, "Caffeine: off")
+  const toggle = resolved.widgets.caffeine as ResolvedToggleWidgetConfig
+  assert.equal(toggle.switch.glyphs.on.glyph, "?")
+  assert.equal(toggle.switch.glyphs.off.glyph, "?")
+  assert.equal(toggle.commands.on, "true")
+  assert.equal(toggle.commands.off, "true")
+  assert.equal(toggle.commands.sync, "false")
+  assert.equal(toggle.endpoint, "")
+  assert.equal(toggle.switch.trackLength, 24)
+  assert.equal(toggle.tooltip.active, "")
+  assert.equal(toggle.tooltip.inactive, "")
 })
 
-test("normalizes caffeine advanced switch overrides", () => {
+test("normalizes toggle advanced switch overrides", () => {
   const resolved = resolveBarConfiguration(
     { edge: "top", start: ["caffeine"], center: { start: [], center: [], end: [] }, end: [] },
     {
       caffeine: {
-        kind: "caffeine",
+        kind: "toggle",
         switch: {
           trackLength: 32,
-          glyphOffsetY: -1,
+          glyphs: {
+            on: { glyphOffset: [0, -1] },
+          },
         },
       },
     },
   )
 
-  const caffeine = resolved.widgets.caffeine as ResolvedCaffeineWidgetConfig
-  assert.equal(caffeine.switch.trackLength, 32)
-  assert.equal(caffeine.switch.glyphOffsetY, -1)
+  const toggle = resolved.widgets.caffeine as ResolvedToggleWidgetConfig
+  assert.equal(toggle.switch.trackLength, 32)
+  assert.equal(toggle.switch.glyphs.on.glyphOffset[1], -1)
 })
 
-test("allows caffeine widgets to override tooltip templates", () => {
+test("allows toggle widgets to override commands, endpoint, and tooltip text", () => {
   const resolved = resolveBarConfiguration(
     { edge: "top", start: ["caffeine"], center: { start: [], center: [], end: [] }, end: [] },
     {
       caffeine: {
-        kind: "caffeine",
+        kind: "toggle",
+        commands: {
+          on: "hk-caffeine on",
+          off: "hk-caffeine off",
+          sync: "hk-caffeine status",
+        },
+        endpoint: "caffeine-sync",
         tooltip: { active: "No sleep", inactive: "Sleep allowed" },
       },
     },
   )
 
-  const caffeine = resolved.widgets.caffeine as ResolvedCaffeineWidgetConfig
-  assert.equal(caffeine.tooltip.active, "No sleep")
-  assert.equal(caffeine.tooltip.inactive, "Sleep allowed")
+  const toggle = resolved.widgets.caffeine as ResolvedToggleWidgetConfig
+  assert.equal(toggle.commands.on, "hk-caffeine on")
+  assert.equal(toggle.endpoint, "caffeine-sync")
+  assert.equal(toggle.tooltip.active, "No sleep")
+  assert.equal(toggle.tooltip.inactive, "Sleep allowed")
 })

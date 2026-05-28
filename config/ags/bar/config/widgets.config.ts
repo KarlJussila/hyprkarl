@@ -42,7 +42,6 @@ const widgetDefinitions = {
       verticalAlt: "%I\n%M\n%S\n%p",
     },
     flyout: {
-      enabled: true,
       align: "center",
       gap: 0,
     },
@@ -52,11 +51,22 @@ const widgetDefinitions = {
   },
 
   caffeine: {
-    kind: "caffeine",
-    glyph: "",
-    command: "hk-caffeine",
+    kind: "toggle",
+    commands: {
+      on: "hk-caffeine on",
+      off: "hk-caffeine off",
+      sync: "hk-caffeine status",
+    },
+    endpoint: "caffeine-sync",
+    tooltip: {
+      active: "Caffeine: on",
+      inactive: "Caffeine: off",
+    },
     switch: {
-      glyphOffsetX: 1
+      glyphs: {
+        on: { glyph: "", glyphOffset: [1, 0] },
+        off: { glyph: "󰽖"},
+      }
     }
   },
 
@@ -105,7 +115,6 @@ const widgetDefinitions = {
       secondary: "hk-launch-audio",
     },
     flyout: {
-      enabled: true,
       align: "center",
       gap: 0,
     },
@@ -121,7 +130,6 @@ const widgetDefinitions = {
     showPercentage: true,
     lowThreshold: 0.15,
     flyout: {
-      enabled: true,
       align: "center",
       gap: 0,
     },
@@ -137,7 +145,6 @@ const widgetDefinitions = {
     showPercentage: false,
     lowThreshold: 0.15,
     flyout: {
-      enabled: true,
       align: "center",
       gap: 0,
     },

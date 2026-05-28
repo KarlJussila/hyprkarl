@@ -26,14 +26,13 @@ test("allows multiple widget IDs of the same kind with independent configs", () 
       kind: "clock",
       format: { primary: "%H:%M" },
       flyout: {
-        enabled: false,
+        align: "start",
       },
     },
     clockFull: {
       kind: "clock",
       format: { primary: "%a %-I:%M %p" },
       flyout: {
-        enabled: true,
         align: "end",
       },
     },
@@ -47,7 +46,6 @@ test("allows multiple widget IDs of the same kind with independent configs", () 
   assert.equal(fullClock.kind, "clock")
   assert.equal(compactClock.format.primary, "%H:%M")
   assert.equal(fullClock.format.primary, "%a %-I:%M %p")
-  assert.equal(compactClock.flyout.enabled, false)
-  assert.equal(fullClock.flyout.enabled, true)
+  assert.equal(compactClock.flyout.align, "start")
   assert.equal(fullClock.flyout.align, "end")
 })

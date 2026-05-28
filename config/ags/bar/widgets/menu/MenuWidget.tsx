@@ -3,6 +3,7 @@ import Button from "../../primitives/Button.tsx"
 import type { WidgetRenderArgs } from "../shared/widgetSpec.tsx"
 import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
 import type { NormalizedSimpleTooltipConfig } from "../shared/normalize.ts"
+import { resolveSimpleTooltipText } from "../shared/widgetKit.ts"
 
 type Config = {
   icon: string
@@ -17,16 +18,16 @@ type Config = {
 export default function MenuWidget({ config, placement }: WidgetRenderArgs<Config>) {
   const { icon, commands, tooltip } = config
   const isVertical = placement.orientation === "vertical"
-  const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({ commands })
+  const { execPrimary, execSecondary, execTertiary } = useWidgetCommands({ commands })
 
   return (
     <Button
       class="widget-menu-button widget-glyph-button"
       orientation={placement.orientation}
-      tooltipText={tooltip.enabled && tooltip.text ? tooltip.text : undefined}
+      tooltipText={resolveSimpleTooltipText(tooltip)}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
-      execMiddle={execMiddle}
+      execTertiary={execTertiary}
     >
       <box
         class="widget-menu-content"

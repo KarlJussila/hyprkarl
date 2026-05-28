@@ -16,6 +16,11 @@ const normalizeAudioTooltipConfig = composeObject({
   unavailable: normalizeStringValue,
 })
 
+const normalizeAudioIndicatorMetrics = composeObject({
+  height: normalizePositiveNumber,
+  lineWidth: normalizePositiveNumber,
+})
+
 const normalizeSliderMetrics = composeObject({
   trackLength: normalizePositiveNumber,
   trackThickness: normalizePositiveNumber,
@@ -44,6 +49,10 @@ export default createWidgetSpec({
       muted: "Muted {device}",
       unavailable: "Audio unavailable",
     },
+    indicator: {
+      height: 14,
+      lineWidth: 1.4,
+    },
     slider: {
       trackLength: 100,
       trackThickness: 6,
@@ -60,6 +69,7 @@ export default createWidgetSpec({
     ...flyoutWidgetSchema,
     showPercentage: normalizeBoolean,
     tooltip: normalizeAudioTooltipConfig,
+    indicator: normalizeAudioIndicatorMetrics,
     slider: normalizeSliderMetrics,
   },
   render: (args) => (

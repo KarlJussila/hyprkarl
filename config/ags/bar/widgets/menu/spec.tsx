@@ -19,7 +19,7 @@ export default createWidgetSpec({
   defaults: {
     icon: "",
     commands: { primary: "hk-menu", secondary: undefined, tertiary: undefined },
-    tooltip: { enabled: true, text: "" },
+    tooltip: { text: "" },
   },
   schema: {
     icon: normalizeStringValue,

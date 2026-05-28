@@ -10,7 +10,7 @@ type Props = CommonButtonProps<Gtk.Button> & {
   halign?: Gtk.Align
   execPrimary?: () => void
   execSecondary?: () => void
-  execMiddle?: () => void
+  execTertiary?: () => void
 }
 
 export default function Button({
@@ -24,7 +24,7 @@ export default function Button({
   children,
   execPrimary,
   execSecondary,
-  execMiddle,
+  execTertiary,
 }: Props) {
   let pressTimer: Timer | null = null
 
@@ -76,11 +76,11 @@ export default function Button({
           onPressed={() => press(button, execSecondary)}
         />
       )}
-      {execMiddle && (
+      {execTertiary && (
         <Gtk.GestureClick
           propagationPhase={Gtk.PropagationPhase.CAPTURE}
           button={Gdk.BUTTON_MIDDLE}
-          onPressed={() => press(button, execMiddle)}
+          onPressed={() => press(button, execTertiary)}
         />
       )}
       {children}

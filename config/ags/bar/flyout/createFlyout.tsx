@@ -31,29 +31,26 @@ export function createFlyout({
   const closeFlyout = () => setFlyoutOpen(false)
   const flyoutName = createWidgetFlyoutName(label, id, monitor.connector)
 
-  if (flyout.enabled) {
-    void (
-      <AttachedFlyout
-        name={flyoutName}
-        placement={placement}
-        monitor={monitor}
-        trigger={triggerWidget}
-        open={flyoutOpen}
-        onRequestClose={closeFlyout}
-        align={flyout.align}
-        gap={flyout.gap}
-      >
-        {renderContent(closeFlyout)}
-      </AttachedFlyout>
-    )
-  }
+  // Evaluating this JSX registers the layer-shell window with AGS; the element itself is discarded.
+  void (
+    <AttachedFlyout
+      name={flyoutName}
+      placement={placement}
+      monitor={monitor}
+      trigger={triggerWidget}
+      open={flyoutOpen}
+      onRequestClose={closeFlyout}
+      align={flyout.align}
+      gap={flyout.gap}
+    >
+      {renderContent(closeFlyout)}
+    </AttachedFlyout>
+  )
 
-  const triggerSetup = flyout.enabled
-    ? (self: Gtk.Button) => {
-        setTriggerWidget(self)
-        self.connect("destroy", () => setTriggerWidget(null))
-      }
-    : undefined
+  const triggerSetup = (self: Gtk.Button) => {
+    setTriggerWidget(self)
+    self.connect("destroy", () => setTriggerWidget(null))
+  }
 
   return { triggerSetup }
 }

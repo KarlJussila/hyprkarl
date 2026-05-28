@@ -39,7 +39,7 @@ export default function PollingMonitorWidget({
   const altDecimals = Math.round(isVertical ? decimals.verticalAlt : decimals.alt)
   const hasAlt = altFormat.length > 0
 
-  const tooltipText = tooltip.enabled && tooltip.text
+  const tooltipText = tooltip.text
     ? createComputed(() => substituteTokens(tooltip.text, buildSubstitutions(primaryDecimals)))
     : undefined
 
@@ -53,7 +53,7 @@ export default function PollingMonitorWidget({
   const toggleLabel = labelText ? () => setLabelVisible(!labelVisible()) : undefined
   const toggleAlt = hasAlt ? () => setUseAlt(!useAlt()) : undefined
 
-  const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({
+  const { execPrimary, execSecondary, execTertiary } = useWidgetCommands({
     commands,
     primaryFallback: toggleLabel,
     secondaryFallback: toggleAlt,
@@ -67,7 +67,7 @@ export default function PollingMonitorWidget({
       tooltipText={tooltipText}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
-      execMiddle={execMiddle}
+      execTertiary={execTertiary}
     >
       <box
         class={`${widgetClass}-display widget-icon-display is-${orientation}`}

@@ -2,17 +2,21 @@ import { Accessor, createEffect } from "ags"
 import { Gtk } from "ags/gtk4"
 import { fontScaleFactor } from "../shared/drawScale.ts"
 
+export type AudioIndicatorMetrics = {
+  height: number
+  lineWidth: number
+}
+
 type Props = {
   volume: Accessor<number>
   muted: Accessor<boolean>
+  metrics: AudioIndicatorMetrics
 }
 
-const BASE_HEIGHT = 14
 const BASE_WAVE_RADII = [3.0, 4.8, 6.6, 8.4]
 const BASE_STROKE_PADDING = 1.2
 const BASE_SPEAKER_END_X = 9.2
 const BASE_MUTE_SLASH_END_X = 11.8
-const BASE_LINE_WIDTH = 1.4
 
 function clamp(value: number, min = 0, max = 1.25) {
   return Math.min(max, Math.max(min, value))
@@ -38,11 +42,11 @@ function maxWidth(s: number) {
   return resolveWidth(4, true, s)
 }
 
-export default function AudioIndicator({ volume, muted }: Props) {
+export default function AudioIndicator({ volume, muted, metrics }: Props) {
   return (
     <drawingarea
       contentWidth={maxWidth(1)}
-      contentHeight={BASE_HEIGHT}
+      contentHeight={metrics.height}
       class="widget-audio-indicator"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
@@ -50,7 +54,7 @@ export default function AudioIndicator({ volume, muted }: Props) {
         self.connect("realize", () => {
           const s = fontScaleFactor(self)
           self.set_content_width(maxWidth(s))
-          self.set_content_height(Math.ceil(BASE_HEIGHT * s))
+          self.set_content_height(Math.ceil(metrics.height * s))
         })
 
         createEffect(() => {
@@ -61,7 +65,7 @@ export default function AudioIndicator({ volume, muted }: Props) {
 
         self.set_draw_func((area, context) => {
           const s = fontScaleFactor(area)
-          const h = BASE_HEIGHT * s
+          const h = metrics.height * s
           const style = area.get_style_context()
           const color = style.get_color()
           const isMuted = muted()
@@ -72,7 +76,7 @@ export default function AudioIndicator({ volume, muted }: Props) {
 
           context.translate(offset, 0)
           context.setSourceRGBA(color.red, color.green, color.blue, color.alpha)
-          context.setLineWidth(BASE_LINE_WIDTH * s)
+          context.setLineWidth(metrics.lineWidth * s)
           context.setLineCap(1)
           context.setLineJoin(1)
 

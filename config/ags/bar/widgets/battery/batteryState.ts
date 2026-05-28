@@ -11,15 +11,19 @@ export type BatteryTooltipTemplates = {
   fallback: string
 }
 
+import type { NormalizedGlyph } from "../../primitives/glyphNormalize.ts"
+
 export type BatteryIndicatorMetrics = {
   width: number
   height: number
   borderWidth: number
   terminalWidth: number
   terminalHeight: number
-  chargingGlyph: string
-  chargingGlyphFontSize: number
-  chargingGlyphFontFamily: string
+  fontSize: number
+  fontFamily: string
+  glyphs: {
+    charging: NormalizedGlyph
+  }
 }
 
 export type BatteryState = {

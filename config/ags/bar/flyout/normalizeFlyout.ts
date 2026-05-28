@@ -4,7 +4,6 @@ import type {
 import {
   composeObject,
   fail,
-  normalizeBoolean,
   normalizeNonNegativeNumber,
   type FieldNormalizer,
   type ValidationContext,
@@ -25,7 +24,6 @@ export function normalizeFlyoutAlign(
 const flyoutAlignNormalizer: FieldNormalizer<FlyoutAlign, FlyoutAlign> = normalizeFlyoutAlign
 
 export const normalizeFlyoutConfig = composeObject({
-  enabled: normalizeBoolean,
   align: flyoutAlignNormalizer,
   gap: normalizeNonNegativeNumber,
 })

@@ -93,7 +93,7 @@ clockCompact: {
   kind: "clock",
   format: "%H:%M",
   flyout: {
-    enabled: false,
+    align: "start",
   },
 },
 
@@ -124,7 +124,7 @@ clock: {
   kind: "clock",
   format: "%a %-I:%M %p",
   flyout: {
-    enabled: false,
+    align: "end",
   },
 },
 ```
@@ -206,7 +206,7 @@ Audio tooltip tokens:
 - `{device}`: current output description when available, for example `Speakers`
 - `{percentage}`: current volume percentage, for example `42%`
 
-Battery indicator overrides live directly on the widget config:
+Battery indicator overrides live directly on the widget config. The shape parallels the toggle's switch: pixel dimensions at the top level, font typography shared across glyphs, and a `glyphs` record where each entry has `glyph` + `glyphOffset`:
 
 ```ts
 battery: {
@@ -215,7 +215,23 @@ battery: {
     width: 20,
     terminalWidth: 5,
     terminalHeight: 2,
-    chargingGlyphFontSize: 10,
+    fontSize: 10,
+    fontFamily: "JetBrains Mono Nerd Font Propo",
+    glyphs: {
+      charging: { glyph: "󱐋", glyphOffset: [0, 0] },
+    },
+  },
+},
+```
+
+Audio has two configurable surfaces: the bar icon (`indicator`) and the slider in the flyout (`slider`). Tune the bar icon's overall size and stroke weight with two knobs:
+
+```ts
+audio: {
+  kind: "audio",
+  indicator: {
+    height: 18,     // base canvas height in px (default 14)
+    lineWidth: 2,   // stroke width (default 1.4)
   },
 },
 ```
@@ -266,7 +282,7 @@ CPU tooltip tokens include all format tokens plus:
 
 - `{cores}`: multi-line per-core breakdown, for example `Core 0: 12%\nCore 1: 8%`
 
-Set `tooltip: { enabled: false }` to suppress the tooltip entirely.
+Set `tooltip: { text: "" }` to suppress the tooltip entirely.
 
 Leave `format` empty to show the icon only. Leave `formatAlt` empty to disable the secondary click.
 
@@ -301,7 +317,7 @@ RAM format tokens:
 - `{swap_total}`: total swap as a human-readable size
 - `{swap_free}`: free swap as a human-readable size
 
-Set `tooltip: { enabled: false }` to suppress the tooltip entirely.
+Set `tooltip: { text: "" }` to suppress the tooltip entirely.
 
 Decimal precision is controlled per format slot. Setting `decimals` changes the base precision and the remaining fields fall back to it:
 
@@ -317,7 +333,7 @@ ram: {
 
 ## Clock Tooltip
 
-The clock tooltip accepts a `strftime` format string via `tooltip.text`. When `text` is empty (the default), no tooltip is shown even if `enabled` is true.
+The clock tooltip accepts a `strftime` format string via `tooltip.text`. When `text` is empty (the default), no tooltip is shown.
 
 ```ts
 clock: {
@@ -328,7 +344,7 @@ clock: {
 },
 ```
 
-This shows the full weekday and date, for example `Monday, May 25`. Any `strftime` format is valid — `%c` for the locale default, `%Y-%m-%d %H:%M:%S` for an ISO-style datetime, and so on. Set `enabled: false` to suppress the tooltip entirely.
+This shows the full weekday and date, for example `Monday, May 25`. Any `strftime` format is valid — `%c` for the locale default, `%Y-%m-%d %H:%M:%S` for an ISO-style datetime, and so on. Set `text: ""` to suppress the tooltip entirely.
 
 ## Recording Widget
 
@@ -349,7 +365,7 @@ recording: {
 
 The widget receives state updates via `ags request recording-sync`, which `hk-record-screen` calls automatically on start and stop. No polling is involved.
 
-Set `tooltip: { enabled: false }` to suppress the tooltip.
+Set `tooltip: { text: "" }` to suppress the tooltip.
 
 ## Click Commands
 
@@ -461,8 +477,8 @@ These commands affect all monitors. `bar toggle` forces visibility off if the ba
 That means this is valid:
 
 ```ts
-clockCompact: { kind: "clock", flyout: { enabled: false } },
-clockFull: { kind: "clock", flyout: { enabled: true } },
+clockCompact: { kind: "clock", flyout: { align: "start" } },
+clockFull: { kind: "clock", flyout: { align: "end" } },
 ```
 
 Both are `clock` widgets, but they are different instances because their IDs are different.

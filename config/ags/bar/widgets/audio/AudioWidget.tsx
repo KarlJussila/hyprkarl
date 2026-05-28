@@ -2,7 +2,7 @@ import { Gtk } from "ags/gtk4"
 import type { NormalizedSliderMetrics } from "../../primitives/sliderTypes.ts"
 import Button from "../../primitives/Button.tsx"
 import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
-import AudioIndicator from "./AudioIndicator.tsx"
+import AudioIndicator, { type AudioIndicatorMetrics } from "./AudioIndicator.tsx"
 import AudioSliderFlyout from "./AudioSliderFlyout.tsx"
 import { formatReadoutPercent } from "../shared/formatters.ts"
 import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
@@ -15,14 +15,15 @@ type Config = {
   commands: NormalizedClickCommandsConfig
   flyout: NormalizedFlyoutConfig
   tooltip: AudioTooltipTemplates
+  indicator: AudioIndicatorMetrics
   slider: NormalizedSliderMetrics
 }
 
 export default function AudioWidget({ id, config, placement, monitor }: WidgetRenderArgs<Config>) {
-  const { showPercentage, commands, flyout, tooltip, slider } = config
+  const { showPercentage, commands, flyout, tooltip, indicator, slider } = config
   const audioState = createAudioState(tooltip)
 
-  const { execPrimary, execSecondary, execMiddle, triggerSetup } = useWidgetCommands({
+  const { execPrimary, execSecondary, execTertiary, triggerSetup } = useWidgetCommands({
     commands,
     flyout: {
       config: flyout,
@@ -50,7 +51,7 @@ export default function AudioWidget({ id, config, placement, monitor }: WidgetRe
       tooltipText={audioState.tooltipText}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
-      execMiddle={execMiddle}
+      execTertiary={execTertiary}
       $={triggerSetup}
     >
       <box
@@ -60,7 +61,7 @@ export default function AudioWidget({ id, config, placement, monitor }: WidgetRe
         halign={Gtk.Align.CENTER}
         valign={Gtk.Align.CENTER}
       >
-        <AudioIndicator volume={audioState.volume} muted={audioState.muted} />
+        <AudioIndicator volume={audioState.volume} muted={audioState.muted} metrics={indicator} />
         {showPercentage && (
           <label
             class="widget-audio-percent widget-readout widget-readout-percent"

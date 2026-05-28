@@ -40,7 +40,7 @@ export default function BluetoothWidget({ config, placement }: WidgetRenderArgs<
       })
     : undefined
 
-  const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({ commands })
+  const { execPrimary, execSecondary, execTertiary } = useWidgetCommands({ commands })
 
   return (
     <Button
@@ -49,7 +49,7 @@ export default function BluetoothWidget({ config, placement }: WidgetRenderArgs<
       tooltipText={tooltipText}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
-      execMiddle={execMiddle}
+      execTertiary={execTertiary}
     >
       <box
         class="widget-bluetooth-content"

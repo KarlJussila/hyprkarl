@@ -27,7 +27,6 @@ type SwitchProps = {
   orientation: BarOrientation
   active: Accessor<boolean>
   onToggle?: (next: boolean) => void
-  glyph: string
   metrics: NormalizedSwitchMetrics
   tooltipText?: Accessor<string> | string
 }
@@ -40,7 +39,6 @@ export default function Switch({
   orientation,
   active,
   onToggle,
-  glyph,
   metrics,
   tooltipText,
 }: SwitchProps) {
@@ -48,6 +46,7 @@ export default function Switch({
   let drawingArea!: Gtk.DrawingArea
   let pangoLayout: Pango.Layout | null = null
   let lastScale = -1
+  let lastGlyph = ""
 
   let animationProgress = active() ? 1 : 0
   let animationTickId = 0
@@ -144,9 +143,12 @@ export default function Switch({
           self.set_draw_func((area, context, _drawWidth, drawHeight) => {
             const style = area.get_style_context()
             const s = fontScaleFactor(area)
+            const glyphState = active() ? metrics.glyphs.on : metrics.glyphs.off
+            const currentGlyph = glyphState.glyph
 
-            if (s !== lastScale) {
+            if (s !== lastScale || currentGlyph !== lastGlyph) {
               lastScale = s
+              lastGlyph = currentGlyph
               pangoLayout = null
             }
 
@@ -227,10 +229,10 @@ export default function Switch({
               context.restore()
             }
 
-            if (glyph) {
+            if (currentGlyph) {
               if (!pangoLayout) {
                 pangoLayout = PangoCairo.create_layout(context)
-                pangoLayout.set_text(glyph, -1)
+                pangoLayout.set_text(currentGlyph, -1)
                 pangoLayout.set_font_description(
                   Pango.FontDescription.from_string(`${metrics.fontFamily} ${metrics.fontSize * s}`),
                 )
@@ -247,8 +249,8 @@ export default function Switch({
 
               context.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha)
               context.moveTo(
-                drawX - (glyphMetrics.width / 2) - glyphMetrics.x + metrics.glyphOffsetX * s,
-                drawY - (glyphMetrics.height / 2) - glyphMetrics.y + metrics.glyphOffsetY * s,
+                drawX - (glyphMetrics.width / 2) - glyphMetrics.x + glyphState.glyphOffset[0] * s,
+                drawY - (glyphMetrics.height / 2) - glyphMetrics.y + glyphState.glyphOffset[1] * s,
               )
               PangoCairo.show_layout(context, pangoLayout)
             }

@@ -47,7 +47,7 @@ export default function WorkspaceButton({
   )
   const isActive = focusedWorkspaceId((activeId) => activeId === id)
 
-  const tooltipText = tooltip.enabled && tooltip.text
+  const tooltipText = tooltip.text
     ? substituteTokens(tooltip.text, { id: String(id) })
     : undefined
 

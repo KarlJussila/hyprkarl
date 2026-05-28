@@ -301,7 +301,6 @@ export function normalizeStringRecord<T extends Record<string, string>>(
 }
 
 export const normalizeSimpleTooltipConfig = composeObject({
-  enabled: normalizeBoolean,
   text: normalizeStringValue,
 })
 

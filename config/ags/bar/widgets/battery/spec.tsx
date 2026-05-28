@@ -8,7 +8,12 @@ import {
   normalizeUnitInterval,
 } from "../shared/normalize.ts"
 import { flyoutWidgetSchema, flyoutWidgetDefaults } from "../shared/widgetKit.ts"
+import { normalizeGlyph } from "../../primitives/glyphNormalize.ts"
 import BatteryWidget from "./BatteryWidget.tsx"
+
+const normalizeBatteryIndicatorGlyphs = composeObject({
+  charging: normalizeGlyph,
+})
 
 const normalizeBatteryIndicatorMetrics = composeObject({
   width: normalizePositiveNumber,
@@ -16,9 +21,9 @@ const normalizeBatteryIndicatorMetrics = composeObject({
   borderWidth: normalizeNonNegativeNumber,
   terminalWidth: normalizePositiveNumber,
   terminalHeight: normalizePositiveNumber,
-  chargingGlyph: normalizeStringValue,
-  chargingGlyphFontSize: normalizePositiveNumber,
-  chargingGlyphFontFamily: normalizeStringValue,
+  fontSize: normalizePositiveNumber,
+  fontFamily: normalizeStringValue,
+  glyphs: normalizeBatteryIndicatorGlyphs,
 })
 
 const normalizeBatteryTooltipConfig = composeObject({
@@ -46,9 +51,11 @@ const batteryDefaults = {
     borderWidth: 1,
     terminalWidth: 2,
     terminalHeight: 4,
-    chargingGlyph: "󱐋",
-    chargingGlyphFontSize: 6,
-    chargingGlyphFontFamily: "JetBrains Mono Nerd Font Propo",
+    fontSize: 6,
+    fontFamily: "JetBrains Mono Nerd Font Propo",
+    glyphs: {
+      charging: { glyph: "󱐋", glyphOffset: [0, 0] as [number, number] },
+    },
   },
 }
 

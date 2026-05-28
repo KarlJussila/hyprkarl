@@ -26,11 +26,13 @@ test("normalizes battery widget defaults from minimal config", () => {
   const battery = resolved.widgets.battery as ResolvedBatteryWidgetConfig
   assert.equal(battery.showPercentage, true)
   assert.equal(battery.lowThreshold, 0.15)
-  assert.equal(battery.flyout.enabled, true)
   assert.equal(battery.tooltip.charging, "{power}↑ {time}")
   assert.equal(battery.tooltip.fallback, "{percentage}")
   assert.equal(battery.indicator.terminalHeight, 4)
-  assert.equal(battery.indicator.chargingGlyph, "󱐋")
+  assert.equal(battery.indicator.glyphs.charging.glyph, "󱐋")
+  assert.equal(battery.indicator.glyphs.charging.glyphOffset[0], 0)
+  assert.equal(battery.indicator.glyphs.charging.glyphOffset[1], 0)
+  assert.equal(battery.indicator.fontSize, 6)
 })
 
 test("normalizes flat widget appearance overrides", () => {
@@ -47,10 +49,12 @@ test("normalizes flat widget appearance overrides", () => {
     },
     {
       caffeine: {
-        kind: "caffeine",
+        kind: "toggle",
         switch: {
           trackLength: 32,
-          glyphOffsetY: -1,
+          glyphs: {
+            on: { glyphOffset: [0, -1] },
+          },
         },
       },
       clock: {
@@ -62,7 +66,10 @@ test("normalizes flat widget appearance overrides", () => {
           width: 20,
           terminalWidth: 5,
           terminalHeight: 2,
-          chargingGlyphFontSize: 10,
+          fontSize: 10,
+          glyphs: {
+            charging: { glyphOffset: [1, -1] },
+          },
         },
       },
     },
@@ -72,7 +79,9 @@ test("normalizes flat widget appearance overrides", () => {
   assert.equal(battery.indicator.width, 20)
   assert.equal(battery.indicator.terminalWidth, 5)
   assert.equal(battery.indicator.terminalHeight, 2)
-  assert.equal(battery.indicator.chargingGlyphFontSize, 10)
+  assert.equal(battery.indicator.fontSize, 10)
+  assert.equal(battery.indicator.glyphs.charging.glyphOffset[0], 1)
+  assert.equal(battery.indicator.glyphs.charging.glyphOffset[1], -1)
 })
 
 test("normalizes battery tooltip format overrides", () => {

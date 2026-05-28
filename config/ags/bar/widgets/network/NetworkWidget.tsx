@@ -114,7 +114,7 @@ export default function NetworkWidget({ config, placement }: WidgetRenderArgs<Co
     return tooltip.disconnected
   })
 
-  const { execPrimary, execSecondary, execMiddle } = useWidgetCommands({ commands })
+  const { execPrimary, execSecondary, execTertiary } = useWidgetCommands({ commands })
 
   return (
     <Button
@@ -122,7 +122,7 @@ export default function NetworkWidget({ config, placement }: WidgetRenderArgs<Co
       orientation={placement.orientation}
       execPrimary={execPrimary}
       execSecondary={execSecondary}
-      execMiddle={execMiddle}
+      execTertiary={execTertiary}
       tooltipText={tooltip.enabled ? tooltipText : undefined}
     >
       <box

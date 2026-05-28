@@ -26,7 +26,7 @@ test("layout defaults decorative corner curves to enabled", () => {
       workspaces: { kind: "workspaces" },
       tray: { kind: "tray" },
       clock: { kind: "clock" },
-      caffeine: { kind: "caffeine" },
+      caffeine: { kind: "toggle" },
       battery: { kind: "battery" },
     },
   )
@@ -171,7 +171,7 @@ test("allows multiple widgets in the center array", () => {
     {
       menu: { kind: "menu" },
       clock: { kind: "clock" },
-      caffeine: { kind: "caffeine" },
+      caffeine: { kind: "toggle" },
     },
   )
 

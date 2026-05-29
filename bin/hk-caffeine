@@ -1,39 +1,44 @@
 #!/bin/bash
-
 # hk-caffeine
 # Toggles hypridle on/off to prevent sleep and lock
-
+#
 # Usage:
-#   hk-caffeine [on|off|toggle]
-
+#   hk-caffeine [on|off|toggle|status]
+#
 #   on      Enable caffeine (stop hypridle). No-op if already on.
 #   off     Disable caffeine (start hypridle). No-op if already off.
 #   toggle  (default) Switch to whichever state is not current.
+#   status  Exit 0 if caffeine is active, 1 if inactive. No side effects.
 
 ICON_ON="☕"
 ICON_OFF="💤"
 
 is_active() {
-    systemctl --user is-active --quiet hypridle.service
+  systemctl --user is-active --quiet hypridle.service
 }
 
 enable_caffeine() {
-    is_active || return 0
-    systemctl --user stop hypridle.service
-    notify-send "$ICON_ON Sleep & lock disabled"
+  is_active || return 0
+  systemctl --user stop hypridle.service
+  notify-send "$ICON_ON Sleep & lock disabled"
 }
 
 disable_caffeine() {
-    is_active && return 0
-    systemctl --user start hypridle.service
-    notify-send "$ICON_OFF Sleep & lock restored"
+  is_active && return 0
+  systemctl --user start hypridle.service
+  notify-send "$ICON_OFF Sleep & lock restored"
 }
 
 case "${1:-toggle}" in
-    on)     enable_caffeine ;;
-    off)    disable_caffeine ;;
-    toggle) is_active && enable_caffeine || disable_caffeine ;;
-    *)      echo "Usage: $(basename "$0") [on|off|toggle]" >&2; exit 1 ;;
+on) enable_caffeine ;;
+off) disable_caffeine ;;
+toggle) is_active && enable_caffeine || disable_caffeine ;;
+status) is_active && exit 1 || exit 0 ;;
+*)
+  echo "Usage: $(basename "$0") [on|off|toggle|status]" >&2
+  exit 1
+  ;;
 esac
 
 ags request caffeine-sync
+

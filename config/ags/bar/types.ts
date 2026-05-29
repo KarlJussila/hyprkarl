@@ -1,5 +1,3 @@
-import type { ResolvedBarWidgetDefinition } from "./widgets/catalog.ts"
-
 /**
  * Shared bar configuration types.
  *
@@ -23,21 +21,4 @@ export type BarLayoutConfig = {
     end: Array<string>
   }
   end: Array<string>
-}
-
-export type ResolvedBarConfiguration = {
-  edge: BarEdge
-  showCornerCurves: boolean
-  autohide: boolean
-  exclusive: boolean
-  layout: {
-    start: Array<string>
-    center: {
-      start: Array<string>
-      center: Array<string>
-      end: Array<string>
-    }
-    end: Array<string>
-  }
-  widgets: Record<string, ResolvedBarWidgetDefinition>
 }

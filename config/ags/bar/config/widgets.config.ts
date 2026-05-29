@@ -1,16 +1,17 @@
-import type { BarWidgetDefinitions } from "../widgets/catalog"
+import type { WidgetDefinitions } from "../widgets/index.ts"
 
 // Edit this file to change widget behavior without touching rendering code.
-// Keep this file focused on high-level behavior and content, not low-level drawing metrics.
-// Widget IDs are instance names, not fixed kind names. You can define multiple
-// entries with the same `kind` when you want different variants on the bar.
+// Each entry is keyed by an instance ID (a name you pick); `kind` selects the
+// widget implementation. Multiple entries can share the same `kind`.
+//
+// Every field shown here is optional — each widget has a `defaults` object
+// next to its component. Fields you omit fall back to those defaults. See
+// `bar/widgets/SPEC.md` for the full list of knobs.
 const widgetDefinitions = {
   menu: {
     kind: "menu",
     icon: "",
-    commands: {
-      primary: "hk-menu",
-    },
+    commands: { primary: "hk-menu" },
   },
 
   workspaces: {
@@ -28,9 +29,6 @@ const widgetDefinitions = {
     kind: "tray",
     direction: "end",
     mirrorTrigger: false,
-    reveal: {
-      durationMs: 220,
-    },
   },
 
   clock: {
@@ -41,13 +39,7 @@ const widgetDefinitions = {
       vertical: "%I\n%M\n%p",
       verticalAlt: "%I\n%M\n%S\n%p",
     },
-    flyout: {
-      align: "center",
-      gap: 0,
-    },
-    tooltip: {
-      text: "%c"
-    }
+    tooltip: "%c",
   },
 
   caffeine: {
@@ -65,9 +57,9 @@ const widgetDefinitions = {
     switch: {
       glyphs: {
         on: { glyph: "", glyphOffset: [1, 0] },
-        off: { glyph: "󰽖"},
-      }
-    }
+        off: { glyph: "󰽖", glyphOffset: [0, 0] },
+      },
+    },
   },
 
   cpu: {
@@ -77,9 +69,7 @@ const widgetDefinitions = {
       alt: "{temp}° | {usage}%",
       verticalAlt: "{usage}%",
     },
-    tooltip: {
-      text: "CPU: {usage}%\n{cores}",
-    },
+    tooltip: "CPU: {usage}%\n{cores}",
   },
 
   ram: {
@@ -91,12 +81,7 @@ const widgetDefinitions = {
       vertical: "{ram}%",
       verticalAlt: "{ram_used}\n{swap_used}",
     },
-    decimals: {
-      primary: 0,
-    },
-    tooltip: {
-      text: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
-    },
+    tooltip: "RAM: {ram_used}/{ram_total}\nSwap: {swap_used}/{swap_total}",
     interval: 5000,
   },
 
@@ -111,13 +96,7 @@ const widgetDefinitions = {
   audio: {
     kind: "audio",
     showPercentage: false,
-    commands: {
-      secondary: "hk-launch-audio",
-    },
-    flyout: {
-      align: "center",
-      gap: 0,
-    },
+    commands: { secondary: "hk-launch-audio" },
     tooltip: {
       active: "{device} {percentage}",
       muted: "Muted {device}",
@@ -129,10 +108,6 @@ const widgetDefinitions = {
     kind: "battery",
     showPercentage: true,
     lowThreshold: 0.15,
-    flyout: {
-      align: "center",
-      gap: 0,
-    },
     tooltip: {
       charging: "{power}↑ {time}",
       discharging: "{power}↓ {time}",
@@ -144,10 +119,6 @@ const widgetDefinitions = {
     kind: "battery",
     showPercentage: false,
     lowThreshold: 0.15,
-    flyout: {
-      align: "center",
-      gap: 0,
-    },
     tooltip: {
       charging: "{power}↑ {time}",
       discharging: "{power}↓ {time}",
@@ -158,6 +129,6 @@ const widgetDefinitions = {
   recording: {
     kind: "recording",
   },
-} satisfies BarWidgetDefinitions
+} satisfies WidgetDefinitions
 
 export default widgetDefinitions

@@ -1,24 +1,15 @@
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
-import { type BarConfigError } from "../configError"
 import { type BarEdge } from "../types"
 import { createBarPlacement, placementClasses } from "./placement"
 
 type Props = {
   edge: BarEdge
-  error: BarConfigError
+  message: string
   monitor: Gdk.Monitor
 }
 
-function errorLocationLabel(error: BarConfigError) {
-  if (error.path) {
-    return `${error.sourceFile}: ${error.path}`
-  }
-
-  return error.sourceFile
-}
-
-export default function ConfigErrorBar({ edge, error, monitor }: Props) {
+export default function ConfigErrorBar({ edge, message, monitor }: Props) {
   const placement = createBarPlacement(edge)
   const itemOrientation = placement.isVertical
     ? Gtk.Orientation.VERTICAL
@@ -33,7 +24,7 @@ export default function ConfigErrorBar({ edge, error, monitor }: Props) {
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={placement.window.anchor}
       application={app}
-      tooltipText={error.message}
+      tooltipText={message}
     >
       <box
         class={`bar-config-error-layout bar-layout-root ${placementClasses(placement)}`}
@@ -49,7 +40,7 @@ export default function ConfigErrorBar({ edge, error, monitor }: Props) {
           valign={placement.isVertical ? Gtk.Align.START : Gtk.Align.CENTER}
         >
           <label class="bar-config-error-title" xalign={0.5} label="Bar config error" />
-          <label class="bar-config-error-path" xalign={0.5} label={errorLocationLabel(error)} />
+          <label class="bar-config-error-path" xalign={0.5} label={message} />
         </box>
       </box>
     </window>

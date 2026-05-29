@@ -2,14 +2,13 @@ import { createState } from "ags"
 import { Gdk } from "ags/gtk4"
 import { type FlyoutPlacement } from "../../layout/placement.ts"
 import { createFlyout } from "../../flyout/createFlyout.tsx"
-import type { NormalizedFlyoutConfig } from "../../flyout/flyoutTypes.ts"
-import type { NormalizedClickCommandsConfig } from "./normalize.ts"
+import type { WidgetClicks, WidgetFlyout } from "./types.ts"
 import { resolveCommand } from "./resolveCommand.ts"
 
 type CommandToken = (() => void) | undefined
 
 type FlyoutBinding = {
-  config: NormalizedFlyoutConfig
+  config: WidgetFlyout
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
   id: string
@@ -18,7 +17,7 @@ type FlyoutBinding = {
 }
 
 type UseWidgetCommandsOptions = {
-  commands: NormalizedClickCommandsConfig
+  commands: WidgetClicks
   primaryFallback?: CommandToken
   secondaryFallback?: CommandToken
   tertiaryFallback?: CommandToken

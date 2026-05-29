@@ -3,11 +3,10 @@ import { Gdk, Gtk } from "ags/gtk4"
 import type { Accessor } from "ags"
 import { type FlyoutPlacement } from "../layout/placement.ts"
 import AttachedFlyout from "./AttachedFlyout.tsx"
-import type { NormalizedFlyoutConfig } from "./flyoutTypes.ts"
-import { createWidgetFlyoutName } from "../widgets/shared/instanceNames.ts"
+import type { FlyoutConfig } from "./flyoutTypes.ts"
 
 type FlyoutOptions = {
-  flyout: NormalizedFlyoutConfig
+  flyout: FlyoutConfig
   placement: FlyoutPlacement
   monitor: Gdk.Monitor
   id: string
@@ -29,7 +28,7 @@ export function createFlyout({
 }: FlyoutOptions): { triggerSetup: ((self: Gtk.Button) => void) | undefined } {
   const [triggerWidget, setTriggerWidget] = createState<Gtk.Widget | null>(null)
   const closeFlyout = () => setFlyoutOpen(false)
-  const flyoutName = createWidgetFlyoutName(label, id, monitor.connector)
+  const flyoutName = `${label}-${id}-${monitor.connector ?? "monitor"}`
 
   // Evaluating this JSX registers the layer-shell window with AGS; the element itself is discarded.
   void (

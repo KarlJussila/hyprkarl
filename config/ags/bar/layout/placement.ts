@@ -1,6 +1,9 @@
 import { Astal, Gtk } from "ags/gtk4"
 import { type BarEdge } from "../types"
-import { type TrayDirection } from "../widgets/tray/spec.tsx"
+
+// Local copy of the tray's "direction" enum. Tray-specific code imports it from
+// here too, so the tray widget doesn't need to be loaded just to read a string union.
+export type TrayDirection = "start" | "end"
 
 export type BarOrientation = "horizontal" | "vertical"
 export type FlyoutDirection = "down" | "up" | "right" | "left"

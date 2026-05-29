@@ -1,4 +1,4 @@
-export type NormalizedSliderMetrics = {
+export type SliderMetrics = {
   trackLength: number
   trackThickness: number
   trackRadius: number
@@ -9,3 +9,6 @@ export type NormalizedSliderMetrics = {
   thumbRadius: number
   thumbVisible: boolean
 }
+
+// Back-compat alias; old code referred to this as Normalized*.
+export type NormalizedSliderMetrics = SliderMetrics

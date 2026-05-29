@@ -1,14 +1,9 @@
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import { createEffect, onCleanup } from "ags"
-import {
-  fallbackBarEdge,
-  formatBarConfigError,
-  isBarConfigError,
-} from "./configError"
 import layoutConfig from "./config/layout.config"
 import widgetDefinitions from "./config/widgets.config"
-import type { ResolvedBarConfiguration } from "./types"
+import type { BarEdge, BarLayoutConfig } from "./types"
 import { createHotzoneWindow } from "./autohide/hotzoneWindow"
 import { flyoutLocked } from "./autohide/flyoutLock"
 import { REVEAL_DURATION, createBarVisibilityController } from "./autohide/barVisibilityController"
@@ -16,9 +11,7 @@ import { registerBarCliHandler } from "./autohide/barCliHandler"
 import ConfigErrorBar from "./layout/ConfigErrorBar"
 import Island from "./layout/Island"
 import { createBarPlacement, placementClasses } from "./layout/placement"
-import type { BarEdge } from "./types"
-import { renderWidgetByKind } from "./widgets/renderWidgetByKind"
-import { resolveBarConfiguration } from "./widgets/resolveBarConfiguration"
+import { widgets, assertWidgetsExist, type WidgetDefinition, type WidgetDefinitions } from "./widgets/index.ts"
 
 const easeInOut = (t: number) =>
   t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
@@ -30,14 +23,43 @@ const edgeMargin: Record<BarEdge, { get: (w: Astal.Window) => number; set: (w: A
   right:  { get: (w) => w.marginRight,  set: (w, v) => { w.marginRight  = v } },
 }
 
+function isBarEdge(value: unknown): value is BarEdge {
+  return value === "top" || value === "bottom" || value === "left" || value === "right"
+}
+
+function fallbackBarEdge(value: unknown): BarEdge {
+  return isBarEdge(value) ? value : "top"
+}
+
+function renderWidget(
+  def: WidgetDefinition,
+  id: string,
+  placement: ReturnType<typeof createBarPlacement>,
+  monitor: Gdk.Monitor,
+) {
+  const entry = widgets[def.kind]
+  // The `as any` here is a deliberate single point of variance: TS can't see
+  // that `def.kind` discriminates which component to call with which config.
+  const Component = entry.Component as (props: any) => JSX.Element
+  const { kind: _kind, ...config } = def
+  return <Component id={id} config={config} placement={placement} monitor={monitor} />
+}
+
 function ResolvedBar({
   gdkmonitor,
-  resolvedBarConfiguration,
+  layout,
+  definitions,
 }: {
   gdkmonitor: Gdk.Monitor
-  resolvedBarConfiguration: ResolvedBarConfiguration
+  layout: BarLayoutConfig
+  definitions: WidgetDefinitions
 }) {
-  const placement = createBarPlacement(resolvedBarConfiguration.edge)
+  const edge = layout.edge
+  const showCornerCurves = layout.showCornerCurves ?? true
+  const autohide = layout.autohide ?? false
+  const exclusive = layout.exclusive ?? !autohide
+
+  const placement = createBarPlacement(edge)
   const islandCrossAxisSizeGroup = new Gtk.SizeGroup({
     mode: placement.isVertical
       ? Gtk.SizeGroupMode.HORIZONTAL
@@ -45,30 +67,21 @@ function ResolvedBar({
   })
 
   const controller = createBarVisibilityController({
-    autohide: resolvedBarConfiguration.autohide,
-    exclusive: resolvedBarConfiguration.exclusive,
+    autohide,
+    exclusive,
     flyoutOpen: flyoutLocked,
   })
   onCleanup(registerBarCliHandler(controller))
 
   createHotzoneWindow({ edge: placement.edge, gdkmonitor, controller })
 
-  function renderWidget(widgetId: string) {
-    const widgetConfig = resolvedBarConfiguration.widgets[widgetId]
+  const renderById = (id: string) => renderWidget(definitions[id]!, id, placement, gdkmonitor)
 
-    return renderWidgetByKind({
-      id: widgetId,
-      config: widgetConfig,
-      placement,
-      monitor: gdkmonitor,
-    })
-  }
-
-  const startWidgets = resolvedBarConfiguration.layout.start.map(renderWidget)
-  const centerStartWidgets = resolvedBarConfiguration.layout.center.start.map(renderWidget)
-  const centerWidgets = resolvedBarConfiguration.layout.center.center.map(renderWidget)
-  const centerEndWidgets = resolvedBarConfiguration.layout.center.end.map(renderWidget)
-  const endWidgets = resolvedBarConfiguration.layout.end.map(renderWidget)
+  const startWidgets = layout.start.map(renderById)
+  const centerStartWidgets = layout.center.start.map(renderById)
+  const centerWidgets = layout.center.center.map(renderById)
+  const centerEndWidgets = layout.center.end.map(renderById)
+  const endWidgets = layout.end.map(renderById)
   const hasCenterIsland = centerWidgets.length > 0 || centerStartWidgets.length > 0 || centerEndWidgets.length > 0
 
   return (
@@ -141,7 +154,7 @@ function ResolvedBar({
           $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
           class="bar-island-start"
           placement={placement}
-          showCornerCurves={resolvedBarConfiguration.showCornerCurves}
+          showCornerCurves={showCornerCurves}
           side="start"
           halign={placement.island.start.halign}
           valign={placement.island.start.valign}
@@ -158,7 +171,7 @@ function ResolvedBar({
             class="bar-island-main"
             cssName="box"
             placement={placement}
-            showCornerCurves={resolvedBarConfiguration.showCornerCurves}
+            showCornerCurves={showCornerCurves}
             halign={placement.island.center.halign}
             valign={placement.island.center.valign}
             hexpand={placement.island.center.hexpand}
@@ -174,7 +187,7 @@ function ResolvedBar({
           $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
           class="bar-island-end"
           placement={placement}
-          showCornerCurves={resolvedBarConfiguration.showCornerCurves}
+          showCornerCurves={showCornerCurves}
           side="end"
           halign={placement.island.end.halign}
           valign={placement.island.end.valign}
@@ -190,25 +203,23 @@ function ResolvedBar({
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   try {
-    const resolvedBarConfiguration = resolveBarConfiguration(layoutConfig, widgetDefinitions)
+    assertWidgetsExist(layoutConfig as BarLayoutConfig, widgetDefinitions as WidgetDefinitions)
 
     return (
       <ResolvedBar
         gdkmonitor={gdkmonitor}
-        resolvedBarConfiguration={resolvedBarConfiguration}
+        layout={layoutConfig as BarLayoutConfig}
+        definitions={widgetDefinitions as WidgetDefinitions}
       />
     )
   } catch (error) {
-    if (!isBarConfigError(error)) {
-      throw error
-    }
-
-    console.error(formatBarConfigError(error))
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`Bar config error: ${message}`)
 
     return (
       <ConfigErrorBar
         edge={fallbackBarEdge((layoutConfig as { edge?: unknown }).edge)}
-        error={error}
+        message={message}
         monitor={gdkmonitor}
       />
     )

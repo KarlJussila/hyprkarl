@@ -1,9 +1,9 @@
-export type NormalizedSwitchGlyph = {
+export type SwitchGlyph = {
   glyph: string
   glyphOffset: [number, number]
 }
 
-export type NormalizedSwitchMetrics = {
+export type SwitchMetrics = {
   thumbSize: number
   trackHeight: number
   trackLength: number
@@ -12,7 +12,11 @@ export type NormalizedSwitchMetrics = {
   fontSize: number
   fontFamily: string
   glyphs: {
-    on: NormalizedSwitchGlyph
-    off: NormalizedSwitchGlyph
+    on: SwitchGlyph
+    off: SwitchGlyph
   }
 }
+
+// Back-compat aliases; old code referred to these as Normalized*.
+export type NormalizedSwitchGlyph = SwitchGlyph
+export type NormalizedSwitchMetrics = SwitchMetrics

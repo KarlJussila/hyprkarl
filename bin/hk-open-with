@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Show a rofi-based app picker for opening a file."""
+"""Show a rofi-based app picker for opening a file.
+
+Usage:
+    hk-open-with <file-path>
+"""
 from __future__ import annotations
 
 import html

@@ -11,7 +11,10 @@ ICON_NEXT=$(hk-find-icon "media-skip-forward-symbolic")
 ICON_PREV=$(hk-find-icon "media-skip-backward-symbolic")
 
 action="${1:-}"
-[[ -n "$action" ]] || { echo "Usage: hk-playerctl <play-pause|next|previous>" >&2; exit 1; }
+if [[ -z "$action" ]]; then
+  echo "Usage: hk-playerctl <play-pause|next|previous>" >&2
+  exit 1
+fi
 
 if [[ "$action" == "next" || "$action" == "previous" ]]; then
     old_title=$(playerctl metadata title 2>/dev/null)

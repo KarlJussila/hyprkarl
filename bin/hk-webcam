@@ -16,9 +16,9 @@ for arg in "$@"; do
 done
 
 # Auto-detect first available webcam if no device specified
-if [[ -z $DEVICE ]]; then
+if [[ -z "$DEVICE" ]]; then
   DEVICE=$(v4l2-ctl --list-devices 2>/dev/null | grep -m1 "^[[:space:]]*/dev/video" | tr -d '\t')
-  if [[ -z $DEVICE ]]; then
+  if [[ -z "$DEVICE" ]]; then
     notify-send "No webcam devices found" -u critical -t 3000
     exit 1
   fi

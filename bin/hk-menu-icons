@@ -1,0 +1,25 @@
+#!/bin/bash
+# hk-menu-icons
+# Fuzzy Nerd Font icon picker — copies selected icon to clipboard
+
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/icons.rasi"
+GLYPH_DATA="${XDG_DATA_HOME:-$HOME/.local/share}/hyprkarl/data/nerdfont-glyphs.txt"
+
+if [[ ! -f "$GLYPH_DATA" ]]; then
+  gum log --level error "Glyph data not found at $GLYPH_DATA"
+  gum log --level info "Run hk-icon-data-update to generate it"
+  exit 1
+fi
+
+chosen=$(rofi -dmenu \
+  -matching fuzzy \
+  -p "" \
+  -no-custom \
+  -theme "$ROFI_THEME" \
+  <"$GLYPH_DATA")
+
+[[ -z "$chosen" ]] && exit 0
+
+icon=$(awk '{print $1}' <<<"$chosen")
+printf '%s' "$icon" | wl-copy
+gum log --level info "Copied to clipboard: $chosen"

@@ -3,7 +3,7 @@
 # Adjusts and displays volume via mako notification
 #
 # Usage:
-#   hk-volume [raise|lower|mute-toggle]
+#   hk-volume [raise|lower|toggle]
 #
 #   (none)        Display current volume without changing it.
 #   raise         Raise volume by 5%.

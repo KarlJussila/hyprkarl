@@ -9,6 +9,13 @@
 #   install_loaded_service
 #
 # without passing structs around by nameref.
+#
+# Public API:
+#   load_service SERVICE_ID              Load a service manifest into module globals
+#   list_services FILTER                 List service IDs (all|installed|missing)
+#   docker_install_service SERVICE_ID    Install and start a service
+#   docker_uninstall_service SERVICE_ID  Stop and remove a service
+#   set_substitution KEY VALUE           Register a template substitution (call from hooks)
 
 DOCKER_SERVICE_ROOT="$HYPRKARL_PATH/templates/docker/services"
 DOCKER_CONTAINERS_DIR="$HOME/.docker-containers"

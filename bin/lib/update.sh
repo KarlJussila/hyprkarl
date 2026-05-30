@@ -2,6 +2,23 @@
 # Shared helpers for the hk-update-* action commands. Source from each script:
 #   SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 #   source "$SCRIPT_DIR/lib/update.sh"
+#
+# Commit/baseline state:
+#   update_read_commit TYPE              Read recorded baseline commit (dotfiles|packages|system)
+#   update_write_commit TYPE             Write current HEAD as baseline for TYPE
+#   update_head_commit                   Print current HEAD commit hash
+#   update_commit_valid COMMIT           Return 0 if COMMIT exists in repo history
+#
+# Package list diffing:
+#   pkg_diff FILE BASELINE_COMMIT        Compare package file against baseline; sets $added/$removed
+#   pkg_comment PKG FILE                 Print the inline comment for PKG in FILE, if any
+#
+# Stow / symlink management:
+#   check_config_conflicts               Detect stow conflicts before an update
+#   stow_adopt_config                    Adopt conflicting files into the repo (--adopt)
+#   stow_restow_config                   Re-stow config without conflicts
+#   remove_stale_symlinks                Remove broken symlinks pointing into hyprkarl
+#   remove_empty_dirs                    Remove empty directories left behind after stow
 
 HYPRKARL_PATH="${HYPRKARL_PATH:-$HOME/.local/share/hyprkarl}"
 UPDATE_STATE_DIR="$HYPRKARL_PATH/config/hyprkarl/update"

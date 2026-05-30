@@ -18,8 +18,8 @@ CHOICE=$(echo -e "$SYSTEM\n$FLATPAK\n$DOCKER" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$SYSTEM")  hk-open-terminal hk-pkg-remove-tui ;;
-    "$FLATPAK") hk-open-terminal hk-pkg-remove-tui --flatpak ;;
+    "$SYSTEM")  hk-launch-tui hk-pkg-remove-tui ;;
+    "$FLATPAK") hk-launch-tui hk-pkg-remove-tui --flatpak ;;
     "$DOCKER")  hk-menu-docker-uninstall || relaunch_menu ;;
     "")         exit 1 ;;
 esac

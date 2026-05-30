@@ -23,7 +23,7 @@ case "$CHOICE" in
     "$THEME")       hk-menu-theme || relaunch_menu ;;
     "$WALLPAPER")   hk-menu-wallpaper || relaunch_menu ;;
     "$DEFAULTS")    hk-menu-defaults || relaunch_menu ;;
-    "$TIMEZONE")    hk-open-terminal hk-setup-timezone ;;
+    "$TIMEZONE")    hk-launch-tui hk-setup-timezone ;;
     "$FINGERPRINT") hk-menu-fingerprint || relaunch_menu ;;
     "")             exit 1 ;;
 esac

@@ -1,0 +1,22 @@
+#!/bin/bash
+# hk-icon-data-update
+# Downloads and regenerates the Nerd Font glyph data file
+
+GLYPH_DATA="${XDG_DATA_HOME:-$HOME/.local/share}/hyprkarl/data/nerdfont-glyphs.txt"
+CSV_URL="https://raw.githubusercontent.com/8bitmcu/NerdFont-Cheat-Sheet/master/nerdfont.csv"
+
+gum log --level info "Downloading Nerd Font glyph data..."
+
+curl -sf "$CSV_URL" | python3 -c "
+import sys
+for line in sys.stdin:
+    parts = line.strip().split(',')
+    if len(parts) >= 2 and parts[1].strip():
+        try:
+            print(chr(int(parts[1].strip(), 16)) + '  ' + parts[0])
+        except ValueError:
+            pass
+" > "$GLYPH_DATA"
+
+count=$(wc -l < "$GLYPH_DATA")
+gum log --level info "Saved $count icons to $GLYPH_DATA"

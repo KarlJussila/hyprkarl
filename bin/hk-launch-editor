@@ -1,6 +1,8 @@
 #!/bin/bash
 # hk-launch-editor
-# Launch the default editor defined by $EDITOR (~/.config/uwsm/default).
+# Launch the default editor ($EDITOR from ~/.config/uwsm/default), falling back to nvim.
+# TUI editors (nvim, vim, nano, micro, hx, helix, fresh) run in a terminal via hk-launch-tui.
+# GUI editors launch directly via uwsm-app.
 
 hk-cmd-present "$EDITOR" || EDITOR=nvim
 

@@ -42,7 +42,7 @@ if hk-pkg install "$package"; then
   sed -i --follow-symlinks "s/^export TERMINAL=.*/export TERMINAL=$package/" ~/.config/uwsm/default
 
   # Update xdg-terminals.list to prioritize the proper terminal
-  sed "s|{{desktop_id}}|$desktop_id|" "$HYPRKARL_PATH/templates/xdg/xdg-terminals.list" > ~/.config/xdg-terminals.list
+  sed "s|{{desktop_id}}|$desktop_id|" "$HYPRKARL_PATH/templates/xdg/xdg-terminals.list" > "$HYPRKARL_PATH/config/xdg-terminals.list"
 else
   echo "Failed to install $package"
 fi

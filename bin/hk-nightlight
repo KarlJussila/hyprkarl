@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-nightlight
-# Nightlight toggle (color temperature and sub-mininmum dimming)
+# Nightlight toggle (color temperature and sub-minimum dimming)
 #
 # Usage: hk-nightlight [on|off|toggle]
 #   on     - enable nightlight (warm temperature), no-op if already on
@@ -22,14 +22,14 @@ fi
 CURRENT_TEMP=$(hyprctl hyprsunset temperature 2>/dev/null | grep -oE '[0-9]+')
 
 enable_nightlight() {
-  [ "$CURRENT_TEMP" == "$ON_TEMP" ] && return 0
+  [[ "$CURRENT_TEMP" == "$ON_TEMP" ]] && return 0
   hyprctl hyprsunset temperature $ON_TEMP
   hyprctl hyprsunset gamma $ON_GAMMA
   notify-send " Nightlight screen temperature"
 }
 
 disable_nightlight() {
-  [ "$CURRENT_TEMP" == "$OFF_TEMP" ] && return 0
+  [[ "$CURRENT_TEMP" == "$OFF_TEMP" ]] && return 0
   hyprctl hyprsunset temperature $OFF_TEMP
   hyprctl hyprsunset gamma $OFF_GAMMA
   notify-send " Daylight screen temperature"

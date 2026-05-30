@@ -8,27 +8,30 @@ SELECT="󰋹 Select"
 ADD=" Add"
 REMOVE=" Remove"
 
-CHOICE=$(echo -e "$SELECT\n$ADD\n$REMOVE" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Wallpaper" \
-           -theme "$ROFI_THEME")
+CHOICE=$(printf '%s\n' "$SELECT" "$ADD" "$REMOVE" |
+  rofi -dmenu \
+    -p "" \
+    -no-custom \
+    -mesg "Wallpaper" \
+    -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$SELECT") hk-wallpaper set "$(hk-wallpaper select)" ;;
-    "$ADD")
-        output_file=$(mktemp) || exit 1
-        if hk-open-terminal -e bash -lc 'output_file=$1; shift; "$@" >"$output_file"' bash "$output_file" hk-select-picture; then
-            selected=$(cat "$output_file")
-            rm -f "$output_file"
-            hk-wallpaper add "$selected"
-        else
-            rm -f "$output_file"
-        fi
-        ;;
-    "$REMOVE") hk-wallpaper remove "$(hk-wallpaper select '@urgent')" ;;
-    "")        exit 1 ;;
+"$SELECT")
+  hk-wallpaper set "$(hk-wallpaper select)"
+  ;;
+"$ADD")
+  output_file=$(mktemp) || exit 1
+  trap 'rm -f "$output_file"' EXIT
+  hk-open-terminal -e bash -c 'hk-select-picture >"$1"' _ "$output_file"
+  selected=$(<"$output_file")
+  if [[ -n "$selected" ]]; then
+    hk-wallpaper add "$selected"
+  fi
+  ;;
+"$REMOVE")
+  hk-wallpaper remove "$(hk-wallpaper select '@urgent')"
+  ;;
+"")
+  exit 1
+  ;;
 esac
-
-exit 0

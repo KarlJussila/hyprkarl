@@ -1,7 +1,6 @@
 #!/bin/bash
 # hk-launch-bluetooth
-# Launch bluetooth controls (provided by bluetui).
-# Also attempts to unblock bluetooth service if rfkill had blocked it.
+# Unblock bluetooth via rfkill and focus/launch the bluetui TUI.
 
 rfkill unblock bluetooth
-exec hk-launch-or-focus-tui bluetui
+exec hk-launch-tui bluetui

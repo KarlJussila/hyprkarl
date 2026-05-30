@@ -33,7 +33,7 @@ CHOICE=$(printf '%s\n' "${CHOICES[@]}" \
 
 for index in "${!CHOICE_IDS[@]}"; do
     if [[ "$CHOICE" == "${CHOICES[$index]}" ]]; then
-        hk-open-terminal hk-docker uninstall "${CHOICE_IDS[$index]}"
+        hk-launch-tui hk-docker uninstall "${CHOICE_IDS[$index]}"
         exit 0
     fi
 done

@@ -16,9 +16,9 @@ CHOICE=$(echo -e "$FISH\n$ZSH\n$BASH" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$FISH") hk-open-terminal hk-default-shell fish ;;
-    "$ZSH")  hk-open-terminal hk-default-shell zsh ;;
-    "$BASH") hk-open-terminal hk-default-shell bash ;;
+    "$FISH") hk-launch-tui hk-default-shell fish ;;
+    "$ZSH")  hk-launch-tui hk-default-shell zsh ;;
+    "$BASH") hk-launch-tui hk-default-shell bash ;;
     "")      exit 1 ;;
 esac
 

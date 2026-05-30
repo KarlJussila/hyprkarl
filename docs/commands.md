@@ -59,12 +59,19 @@ does not try to document every internal script.
 - `hk-menu-calculator`
   Open `rofi-calc`. `Ctrl+Return` copies the current result to the clipboard;
   history is trimmed to five entries on exit.
+- `hk-menu-icons`
+  Open a fuzzy Nerd Font icon picker. Search by icon name, select an entry, and
+  the glyph is copied to the clipboard. Requires the glyph data file — run
+  `hk-icon-data-update` first if it is missing.
+- `hk-icon-data-update`
+  Download the latest Nerd Font glyph list from the upstream cheat-sheet and
+  regenerate `~/.local/share/hyprkarl/data/nerdfont-glyphs.txt`. Re-run after upgrading
+  Nerd Fonts to pick up new icons.
 
 ### Launching apps
 
 - `hk-launch-audio`
-  Launch the audio controls TUI (`wiremix`), focusing an existing window if
-  one is already open.
+  Launch the audio controls TUI (`wiremix`).
 - `hk-launch-bluetooth`
   Launch the bluetooth controls TUI (`bluetui`). Unblocks bluetooth via
   `rfkill` first.
@@ -79,8 +86,9 @@ does not try to document every internal script.
   Launch the editor set in `$EDITOR` (with `nvim` as a fallback). Known TUI
   editors run inside the hyprkarl terminal; everything else runs detached.
 - `hk-open-terminal [args...]`
-  Open a terminal window using the configured hyprkarl terminal app-id.
-  Arguments are forwarded to `xdg-terminal-exec`.
+  Open a terminal window with the hyprkarl terminal app-id, waiting for it
+  to close before returning. Arguments are forwarded to `xdg-terminal-exec`.
+  Use `hk-launch-tui` instead when you don't need to wait for the result.
 - `hk-open-with <file>`
   Show a rofi-based app picker for opening a file.
 - `hk-lock`
@@ -276,8 +284,7 @@ These `hk-*` commands exist in `bin/` but are not meant to be typed directly.
 They are invoked by other scripts, keybindings, and bar widgets. Listed for
 completeness so they can be discovered with grep:
 
-- Launching glue: `hk-launch-or-focus`, `hk-launch-or-focus-tui`,
-  `hk-launch-tui`, `hk-restart-app`
+- Launching glue: `hk-launch-tui`, `hk-restart-app`
 - Hardware actions bound to function keys: `hk-brightness-display`,
   `hk-brightness-keyboard`, `hk-audio-switch`, `hk-battery-monitor`
 - Notification and OSD helpers: `hk-notify-battery`, `hk-notify-window-class`,

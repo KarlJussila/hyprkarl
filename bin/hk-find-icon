@@ -3,7 +3,10 @@
 # Categories default to "actions" and are only used for system icon theme lookups.
 
 icon_name="${1:-}"
-[[ -n "$icon_name" ]] || { echo "Usage: hk-find-icon <icon-name> [category...]" >&2; exit 1; }
+if [[ -z "$icon_name" ]]; then
+  echo "Usage: hk-find-icon <icon-name> [category...]" >&2
+  exit 1
+fi
 shift
 
 categories=("${@:-actions}")

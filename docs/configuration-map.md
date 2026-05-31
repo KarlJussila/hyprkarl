@@ -64,7 +64,10 @@ rest of the config:
   General appearance, animations, layout, and related settings
 - `windows.conf`
   Window rules, layer rules, floating behavior, opacity, and app-specific rule
-  includes
+  includes. All windows receive the `default-opacity` tag, which applies
+  `opacity 1.0 0.8` (full focused, 80% unfocused). App configs in `apps/` run
+  before this final rule, so they can opt a window out by adding
+  `tag -default-opacity` to their rules.
 - `input.conf`
   Input settings
 - `bindings.conf`

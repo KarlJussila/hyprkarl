@@ -1,13 +1,16 @@
 #!/bin/bash
 # hk-notify-window-class
-# Send a notification with the class of the currently focused window
+# Send a notification with class/title, copy full JSON to clipboard
 
-# Get the class of the active window
-WINDOW_CLASS=$(hyprctl activewindow -j | jq -r '.class')
+WINDOW_JSON=$(hyprctl activewindow -j 2>/dev/null)
 
-# Send notification if a window is active
-if [[ -n "$WINDOW_CLASS" && "$WINDOW_CLASS" != "null" ]]; then
-    notify-send "Active Window" "$WINDOW_CLASS"
-else
+if [[ -z "$WINDOW_JSON" ]]; then
     notify-send "Active Window" "No active window"
+    exit 0
 fi
+
+CLASS=$(echo "$WINDOW_JSON" | jq -r '.class // "N/A"')
+TITLE=$(echo "$WINDOW_JSON" | jq -r '.title // "N/A"')
+
+notify-send "Active Window" "$(printf 'Class: %s\nTitle: %s' "$CLASS" "$TITLE")"
+echo "$WINDOW_JSON" | wl-copy

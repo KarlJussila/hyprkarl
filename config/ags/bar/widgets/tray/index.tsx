@@ -1,4 +1,4 @@
-import { createConnection, createState } from "ags"
+import { createComputed, createConnection, createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalTray from "gi://AstalTray"
 import { type TrayPlacement, type TrayDirection } from "../../layout/placement.ts"
@@ -41,9 +41,9 @@ export default function TrayWidget({ config, placement }: Props) {
   )
   const hasTrayItems = trayItems((currentItems) => currentItems.length > 0)
   const [trayOpen, setTrayOpen] = createState(false)
+  const showPanel = createComputed(() => trayOpen() && hasTrayItems())
 
   function toggleTray() {
-    if (!hasTrayItems()) return
     setTrayOpen(!trayOpen())
   }
 
@@ -52,7 +52,7 @@ export default function TrayWidget({ config, placement }: Props) {
       placement={placement}
       direction={direction}
       items={trayItems}
-      open={trayOpen}
+      open={showPanel}
       revealDurationMs={reveal.durationMs}
     />
   )

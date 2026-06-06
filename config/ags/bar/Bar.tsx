@@ -3,14 +3,14 @@ import { Astal, Gdk, Gtk } from "ags/gtk4"
 import { createEffect, onCleanup } from "ags"
 import layoutConfig from "./config/layout.config"
 import widgetDefinitions from "./config/widgets.config"
-import type { BarEdge, BarLayoutConfig } from "./types"
+import type { BarEdge, BarLayoutConfig, ResolvedIslandCorners } from "./types"
 import { createHotzoneWindow } from "./autohide/hotzoneWindow"
 import { flyoutLocked } from "./autohide/flyoutLock"
 import { REVEAL_DURATION, createBarVisibilityController } from "./autohide/barVisibilityController"
 import { registerBarCliHandler } from "./autohide/barCliHandler"
 import ConfigErrorBar from "./layout/ConfigErrorBar"
 import Island from "./layout/Island"
-import { createBarPlacement, placementClasses } from "./layout/placement"
+import { createBarPlacement, windowMarginsForEdge, placementClasses } from "./layout/placement"
 import { widgets, assertWidgetsExist, type WidgetDefinition, type WidgetDefinitions } from "./widgets/index.ts"
 
 const easeInOut = (t: number) =>
@@ -55,11 +55,48 @@ function ResolvedBar({
   definitions: WidgetDefinitions
 }) {
   const edge = layout.edge
-  const showCornerCurves = layout.showCornerCurves ?? true
+  const corners: ResolvedIslandCorners = {
+    screenOuter: layout.corners?.screenOuter ?? "round",
+    screenInner: layout.corners?.screenInner ?? "round",
+    contentOuter: layout.corners?.contentOuter ?? "round",
+    contentInner: layout.corners?.contentInner ?? "round",
+  }
+  const borders = {
+    screen: layout.borders?.screen ?? true,
+    content: layout.borders?.content ?? true,
+    outer: layout.borders?.outer ?? true,
+    inner: layout.borders?.inner ?? true,
+  }
+  const dividers = layout.dividers ?? true
+  const layoutClasses = [
+    borders.screen && "border-screen",
+    borders.content && "border-content",
+    borders.outer && "border-outer",
+    borders.inner && "border-inner",
+    dividers && "dividers",
+    corners.screenOuter === "round" && "round-screen-outer",
+    corners.screenInner === "round" && "round-screen-inner",
+    corners.contentOuter === "round" && "round-content-outer",
+    corners.contentInner === "round" && "round-content-inner",
+  ].filter(Boolean).join(" ")
   const autohide = layout.autohide ?? false
   const exclusive = layout.exclusive ?? !autohide
 
-  const placement = createBarPlacement(edge)
+  const rawMargin = layout.margin ?? 0
+  const margin = typeof rawMargin === "number"
+    ? { screen: rawMargin, outer: rawMargin, content: rawMargin }
+    : { screen: rawMargin.screen ?? 0, outer: rawMargin.outer ?? 0, content: rawMargin.content ?? 0 }
+  const configMargins = windowMarginsForEdge(edge, margin)
+  // The gap is applied as window padding (not a window margin): a widget's margin
+  // is outside its input region, so a pointer resting in a margin gap reads as
+  // "off the bar" and autohide retracts it; padding is part of the surface and is
+  // hit-tested, and it's also counted in the exclusive zone, so it reserves space.
+  const paddingCss = `window { padding: ${configMargins.top}px ${configMargins.right}px ${configMargins.bottom}px ${configMargins.left}px; }`
+  // Revealed resting position of the animated docked-edge margin; the gap itself
+  // is padding, so the bar sits flush (0) and slides to -barSize to hide.
+  const configEdgeMargin = 0
+
+  const placement = createBarPlacement(edge, configMargins)
   const islandCrossAxisSizeGroup = new Gtk.SizeGroup({
     mode: placement.isVertical
       ? Gtk.SizeGroupMode.HORIZONTAL
@@ -88,6 +125,7 @@ function ResolvedBar({
     <window
         name="bar"
         class={`Bar bar-shell ${placementClasses(placement)}`}
+        css={paddingCss}
         gdkmonitor={gdkmonitor}
         visible={controller.windowVisible}
         anchor={placement.window.anchor}
@@ -109,7 +147,12 @@ function ResolvedBar({
 
           const getMargin = () => edgeMargin[placement.edge].get(self)
           const setMargin = (v: number) => edgeMargin[placement.edge].set(self, v)
-          const getBarSize = () => placement.isVertical ? self.get_width() : self.get_height()
+          // get_width/get_height report the content box (CSS padding excluded), so
+          // add the docked-axis padding to retract the whole surface when hiding.
+          const dockedPadding = placement.isVertical
+            ? configMargins.left + configMargins.right
+            : configMargins.top + configMargins.bottom
+          const getBarSize = () => (placement.isVertical ? self.get_width() : self.get_height()) + dockedPadding
 
           let tickId = 0
           let animFrom = 0
@@ -135,7 +178,7 @@ function ResolvedBar({
 
           createEffect(() => {
             if (controller.contentRevealed()) {
-              startAnimation(0)
+              startAnimation(configEdgeMargin)
             } else {
               startAnimation(-Math.max(getBarSize(), 1))
             }
@@ -146,7 +189,7 @@ function ResolvedBar({
       >
       <centerbox
         cssName="centerbox"
-        class={`bar-layout bar-layout-root ${placementClasses(placement)}`}
+        class={`bar-layout bar-layout-root ${placementClasses(placement)}${layoutClasses ? ` ${layoutClasses}` : ""}`}
         orientation={placement.layoutOrientation}
       >
         <Island
@@ -154,7 +197,7 @@ function ResolvedBar({
           $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
           class="bar-island-start"
           placement={placement}
-          showCornerCurves={showCornerCurves}
+          corners={corners}
           side="start"
           halign={placement.island.start.halign}
           valign={placement.island.start.valign}
@@ -171,7 +214,7 @@ function ResolvedBar({
             class="bar-island-main"
             cssName="box"
             placement={placement}
-            showCornerCurves={showCornerCurves}
+            corners={corners}
             halign={placement.island.center.halign}
             valign={placement.island.center.valign}
             hexpand={placement.island.center.hexpand}
@@ -187,7 +230,7 @@ function ResolvedBar({
           $={(self) => islandCrossAxisSizeGroup.add_widget(self)}
           class="bar-island-end"
           placement={placement}
-          showCornerCurves={showCornerCurves}
+          corners={corners}
           side="end"
           halign={placement.island.end.halign}
           valign={placement.island.end.valign}

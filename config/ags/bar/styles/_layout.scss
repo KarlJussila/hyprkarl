@@ -1,5 +1,26 @@
+@use "sass:map";
 @use "../theme" as theme;
 @use "./shared" as shared;
+
+// Island borders and corner rounding are generated per bar edge from this
+// logical → physical map. `screen`/`content` are the long edges facing toward/
+// away from the screen; `start`/`end` are the leading/trailing caps along the
+// bar's main axis.
+$bar-edges: (
+  top:    (screen: top,    content: bottom, start: left, end: right),
+  bottom: (screen: bottom, content: top,    start: left, end: right),
+  left:   (screen: left,   content: right,  start: top,  end: bottom),
+  right:  (screen: right,  content: left,   start: top,  end: bottom),
+);
+
+// Assemble a corner-radius property from a vertical and a horizontal side passed
+// in either order — CSS requires the `border-{top|bottom}-{left|right}-radius` form.
+@function corner-radius($a, $b) {
+  @if $a == top or $a == bottom {
+    @return border-#{$a}-#{$b}-radius;
+  }
+  @return border-#{$b}-#{$a}-radius;
+}
 
 window.bar-hotzone-window {
   background: transparent;
@@ -26,11 +47,14 @@ window.Bar.bar-shell {
       border-spacing: 0px;
     }
 
+    // Segments carry the island surface and border color, but no border width or
+    // radius by default — the per-edge rules below add exactly the sides and
+    // corners requested by `borders`/`corners`/`dividers`.
     .bar-segment {
       margin: 0px;
       border-radius: 0px;
       background-color: theme.$surface;
-      border: theme.$border-width solid theme.$border;
+      border: 0 solid theme.$border;
     }
   }
 
@@ -48,97 +72,62 @@ window.Bar.bar-shell {
     }
   }
 
-  centerbox.bar-layout-root.edge-top {
-    .bar-segment {
-      border-width: 0px theme.$border-width theme.$border-width 0px;
-    }
+  // ---- Composable island borders + corner rounding ----
+  //
+  // Opt-in classes set by Bar.tsx from `borders`/`corners`/`dividers`:
+  //   border-{screen,content,outer,inner}  — which island sides get a border
+  //   round-{screen,content}-{outer,inner} — which corners are rounded
+  //   dividers                             — separators between widgets
+  // Outer caps are the `segment-edge-screen-*` segments (facing the screen
+  // edges); inner caps are the `segment-edge-rounded-*` segments (facing the
+  // gaps between islands, including both ends of the center island).
+  centerbox.bar-layout-root {
+    @each $edge, $sides in $bar-edges {
+      $screen: map.get($sides, screen);
+      $content: map.get($sides, content);
+      $start: map.get($sides, start);
+      $end: map.get($sides, end);
 
-    .bar-segment.segment-edge-rounded-start {
-      border-bottom-left-radius: theme.$border-radius;
-      border-left-width: theme.$border-width;
-    }
+      &.edge-#{$edge} {
+        // Dividers: a separator on the end side of every non-trailing segment.
+        &.dividers .bar-segment:not(.segment-edge-rounded-end):not(.segment-edge-screen-end) {
+          border-#{$end}-width: theme.$border-width;
+        }
 
-    .bar-segment.segment-edge-rounded-end {
-      border-bottom-right-radius: theme.$border-radius;
-      border-right-width: theme.$border-width;
-    }
+        // Long-edge borders (every segment).
+        &.border-screen .bar-segment { border-#{$screen}-width: theme.$border-width; }
+        &.border-content .bar-segment { border-#{$content}-width: theme.$border-width; }
 
-    .bar-segment.segment-edge-screen-start {
-      border-left-width: 0px;
-    }
+        // Outer caps: start island's outer end + end island's outer end.
+        &.border-outer {
+          .bar-segment.segment-edge-screen-start { border-#{$start}-width: theme.$border-width; }
+          .bar-segment.segment-edge-screen-end { border-#{$end}-width: theme.$border-width; }
+        }
 
-    .bar-segment.segment-edge-screen-end {
-      border-right-width: 0px;
-    }
-  }
+        // Inner caps: gap-facing island ends (incl. both center-island ends).
+        &.border-inner {
+          .bar-segment.segment-edge-rounded-start { border-#{$start}-width: theme.$border-width; }
+          .bar-segment.segment-edge-rounded-end { border-#{$end}-width: theme.$border-width; }
+        }
 
-  centerbox.bar-layout-root.edge-bottom {
-    .bar-segment {
-      border-width: theme.$border-width theme.$border-width 0px 0px;
-    }
-
-    .bar-segment.segment-edge-rounded-start {
-      border-top-left-radius: theme.$border-radius;
-      border-left-width: theme.$border-width;
-    }
-
-    .bar-segment.segment-edge-rounded-end {
-      border-top-right-radius: theme.$border-radius;
-      border-right-width: theme.$border-width;
-    }
-
-    .bar-segment.segment-edge-screen-start {
-      border-left-width: 0px;
-    }
-
-    .bar-segment.segment-edge-screen-end {
-      border-right-width: 0px;
-    }
-  }
-
-  centerbox.bar-layout-root.edge-left {
-    .bar-segment {
-      border-width: 0px theme.$border-width theme.$border-width 0px;
-    }
-
-    .bar-segment.segment-edge-rounded-start {
-      border-top-right-radius: theme.$border-radius;
-      border-top-width: theme.$border-width;
-    }
-
-    .bar-segment.segment-edge-rounded-end {
-      border-bottom-right-radius: theme.$border-radius;
-    }
-
-    .bar-segment.segment-edge-screen-start {
-      border-top-width: 0px;
-    }
-
-    .bar-segment.segment-edge-screen-end {
-      border-bottom-width: 0px;
-    }
-  }
-
-  centerbox.bar-layout-root.edge-right {
-    .bar-segment {
-      border-width: 0px 0px theme.$border-width theme.$border-width;
-    }
-
-    .bar-segment.segment-edge-rounded-start {
-      border-top-left-radius: theme.$border-radius;
-      border-top-width: theme.$border-width;
-    }
-
-    .bar-segment.segment-edge-rounded-end {
-      border-bottom-left-radius: theme.$border-radius;
-    }
-
-    .bar-segment.segment-edge-screen-start {
-      border-top-width: 0px;
-    }
-
-    .bar-segment.segment-edge-screen-end {
-      border-bottom-width: 0px;
+        // Corner rounding — each corner is one (cap, long-edge) intersection.
+        &.round-screen-outer {
+          .bar-segment.segment-edge-screen-start { #{corner-radius($screen, $start)}: theme.$border-radius; }
+          .bar-segment.segment-edge-screen-end { #{corner-radius($screen, $end)}: theme.$border-radius; }
+        }
+        &.round-content-outer {
+          .bar-segment.segment-edge-screen-start { #{corner-radius($content, $start)}: theme.$border-radius; }
+          .bar-segment.segment-edge-screen-end { #{corner-radius($content, $end)}: theme.$border-radius; }
+        }
+        &.round-screen-inner {
+          .bar-segment.segment-edge-rounded-start { #{corner-radius($screen, $start)}: theme.$border-radius; }
+          .bar-segment.segment-edge-rounded-end { #{corner-radius($screen, $end)}: theme.$border-radius; }
+        }
+        &.round-content-inner {
+          .bar-segment.segment-edge-rounded-start { #{corner-radius($content, $start)}: theme.$border-radius; }
+          .bar-segment.segment-edge-rounded-end { #{corner-radius($content, $end)}: theme.$border-radius; }
+        }
+      }
     }
   }
 }

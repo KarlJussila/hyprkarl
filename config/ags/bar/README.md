@@ -18,11 +18,11 @@ Advanced users:
 
 ## Quick Examples
 
-Move the bar, reorder widgets, and hide the decorative corner curves:
+Move the bar, reorder widgets, and square off the gap-facing corners:
 
 ```ts
 edge: "left",
-showCornerCurves: false,
+corners: { screenInner: "square", contentInner: "square" },
 start: ["menu", "workspaces"],
 center: {
   start: [],
@@ -44,11 +44,18 @@ Keep the bar visible but stop reserving screen space:
 exclusive: false,
 ```
 
-Keep the standard rounded corners but hide only the extra curve cutouts:
+Use the classic edge look — concave curves where islands meet the screen edge across the gaps, rounded content-side corners:
 
 ```ts
 // layout.config.ts
-showCornerCurves: false
+corners: {
+  screenOuter: "square",
+  screenInner: "curve",
+  contentOuter: "square",
+  contentInner: "round",
+},
+borders: { screen: false, content: true, outer: true, inner: true },
+margin: 0,
 ```
 
 Leave the center island empty:
@@ -463,7 +470,18 @@ These commands affect all monitors. `bar toggle` forces visibility off if the ba
 `layout.config.ts` controls bar-level structure:
 
 - `edge`: which side of the screen the bar attaches to
-- `showCornerCurves`: whether the decorative concave corner cutouts are drawn
+
+Island appearance is composed from three independent knobs. Corners and sides are named in **screen/content** × **outer/inner** terms so the same name behaves correctly on any bar edge: **screen** is the long edge facing the docked screen edge, **content** the long edge facing away; **outer** is the short cap of the start/end islands that faces a screen edge, **inner** is any cap facing the gaps between islands (including both ends of the center island).
+
+- `corners`: per-corner style, each `"round" | "square" | "curve"` (defaults to `"round"`). Keys: `screenOuter`, `screenInner`, `contentOuter`, `contentInner`.
+  - `"curve"` draws the decorative concave cutout that joins islands to the screen edge across the gaps. It only has an anchor on the **screen-inner** corners (the gap-facing screen corner of every island — the start/end islands' inner corner and both caps of the center island, all set via `screenInner`). On any other corner `"curve"` falls back to `"square"`.
+- `borders`: which island sides draw a border, each a boolean (default `true`). Keys: `screen`, `content`, `outer`, `inner`.
+- `dividers`: whether separators are drawn between adjacent widgets within an island (default `true`).
+- `margin`: reserved gap in pixels around the bar. A single number applies uniformly, or an object with `screen`, `outer`, `content` (all optional, default `0`): `screen` is the gap on the docked edge, `outer` the gap at the bar's two ends, `content` the gap reserved between the bar and the windows it pushes away. Example: `margin: 8` reserves 8 px all around; `margin: { screen: 4, outer: 8 }`. A non-zero `screen`/`outer` margin pairs well with fully-rounded ("capsule") islands. Autohide accounts for the configured screen-edge margin automatically.
+
+Two common looks, expressed in these knobs:
+- **Floating capsules** (the default): all `corners` `"round"`, all `borders` on, a small `margin`.
+- **Classic edge bar**: `screenInner: "curve"` with `screenOuter`/`contentOuter` `"square"` and `contentInner: "round"`; `borders` `{ screen: false, content: true, outer: true, inner: true }`; `margin: 0`.
 - `autohide`: whether the bar hides when the pointer is not over it
 - `exclusive`: whether the bar reserves space at the screen edge (default true)
 - `start`, `center`, and `end`: which widget IDs appear in each island; `center` has its own `start`, `center`, and `end` sub-lists
@@ -499,15 +517,15 @@ Common styling changes:
 
 - tighter buttons: lower `$widget-padding-horizontal`
 - rounder islands: raise `$border-radius`
-- hide only the decorative curve cutouts: set `showCornerCurves: false` in `layout.config.ts`
+- change which corners are rounded/squared/curved: edit `corners` in `layout.config.ts`
 - softer separators: change `$border`
 - bigger flyout rows: raise `$flyout-row-pad`
 - more obvious active workspace: change `$accent`
 
-`showCornerCurves` and `$border-radius` are intentionally independent:
+`corners` (in `layout.config.ts`) and `$border-radius` (in `theme.scss`) are independent:
 
-- `showCornerCurves` controls the extra drawn corner pieces between islands and the screen edge.
-- `$border-radius` controls the normal rounded segment corners in the bar CSS.
+- `corners` chooses each corner's treatment — `"round"`, `"square"`, or `"curve"` (the concave cutout drawn between islands and the screen edge).
+- `$border-radius` controls how large the rounded/curved corners are.
 
 ## Architecture
 

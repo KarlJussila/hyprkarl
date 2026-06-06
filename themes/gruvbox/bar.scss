@@ -4,7 +4,7 @@
 // Core colors
 $text: #a9b665;
 $surface: #282828;
-$background: #28282800;
+$background: #28282800; // bar window fill; trailing 00 = fully transparent so only islands paint. Raise the alpha for a solid bar.
 $accent: #d8a657;
 $border: #524942;
 $error: #ea6962;

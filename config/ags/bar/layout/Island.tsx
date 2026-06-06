@@ -1,5 +1,6 @@
 import { Gtk } from "ags/gtk4"
 import { type BarPlacement, placementClasses } from "./placement"
+import type { ResolvedIslandCorners } from "../types"
 import {
   createCenterEndCornerCurve,
   createCenterStartCornerCurve,
@@ -20,7 +21,7 @@ type BaseProps = {
   class?: string
   cssName?: string
   placement: BarPlacement
-  showCornerCurves: boolean
+  corners: ResolvedIslandCorners
   halign?: Gtk.Align
   hexpand?: boolean
   valign?: Gtk.Align
@@ -115,7 +116,7 @@ function renderOuterIsland({
   class: className,
   cssName,
   placement,
-  showCornerCurves,
+  corners,
   $: setup,
   halign,
   hexpand,
@@ -124,7 +125,9 @@ function renderOuterIsland({
 }: OuterIslandProps) {
   const wrappedChildren = wrapIslandEntries(normalizeChildren(children), placement)
   markOuterIslandEdges(wrappedChildren, side)
-  const cornerCurve = showCornerCurves ? createOuterCornerCurve(placement, side) : null
+  // A start/end island's single curve sits on its inner (gap-facing) screen
+  // corner — same screen-inner corner the center island curves.
+  const cornerCurve = corners.screenInner === "curve" ? createOuterCornerCurve(placement, side) : null
 
   return (
     <box
@@ -149,7 +152,7 @@ function renderCenterIsland({
   center,
   end,
   placement,
-  showCornerCurves,
+  corners,
   startCorner,
   endCorner,
   class: className,
@@ -162,11 +165,13 @@ function renderCenterIsland({
 }: CenterIslandProps) {
   const startWidgets = wrapIslandEntries(normalizeChildren(start), placement)
   const endWidgets = wrapIslandEntries(normalizeChildren(end), placement)
+  // Both ends of the center island are screen-inner corners.
+  const curveCenter = corners.screenInner === "curve"
   const resolvedStartCorner = startCorner ?? (
-    showCornerCurves ? createCenterStartCornerCurve(placement) : null
+    curveCenter ? createCenterStartCornerCurve(placement) : null
   )
   const resolvedEndCorner = endCorner ?? (
-    showCornerCurves ? createCenterEndCornerCurve(placement) : null
+    curveCenter ? createCenterEndCornerCurve(placement) : null
   )
 
   if (!center || center.length === 0) {

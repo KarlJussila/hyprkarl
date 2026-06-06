@@ -1,5 +1,5 @@
 import { Astal, Gtk } from "ags/gtk4"
-import { type BarEdge } from "../types"
+import { type BarEdge, type BarMargin } from "../types"
 
 // Local copy of the tray's "direction" enum. Tray-specific code imports it from
 // here too, so the tray widget doesn't need to be loaded just to read a string union.
@@ -72,6 +72,24 @@ export function createBarWindowMargins(overrides: Partial<BarWindowMargins> = {}
     bottom: 0,
     left: 0,
     ...overrides,
+  }
+}
+
+// Map bar-relative margins (screen/content/outer) to physical window margins for
+// the given edge. `screen` is the docked edge, `content` the opposite edge, and
+// `outer` both edges along the bar's length.
+export function windowMarginsForEdge(edge: BarEdge, margin: Required<BarMargin>): BarWindowMargins {
+  const { screen, content, outer } = margin
+  switch (edge) {
+    case "bottom":
+      return { top: content, bottom: screen, left: outer, right: outer }
+    case "left":
+      return { left: screen, right: content, top: outer, bottom: outer }
+    case "right":
+      return { right: screen, left: content, top: outer, bottom: outer }
+    case "top":
+    default:
+      return { top: screen, bottom: content, left: outer, right: outer }
   }
 }
 

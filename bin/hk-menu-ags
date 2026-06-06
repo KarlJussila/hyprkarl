@@ -6,30 +6,32 @@ ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 STATUS=$(ags request bar status 2>/dev/null)
 
-HIDDEN=$(jq -r '.hidden' <<< "$STATUS")
-AUTOHIDE=$(jq -r '.autohide' <<< "$STATUS")
-EXCLUSIVE=$(jq -r '.exclusive' <<< "$STATUS")
+HIDDEN=$(jq -r '.hidden' <<<"$STATUS")
+AUTOHIDE=$(jq -r '.autohide' <<<"$STATUS")
+EXCLUSIVE=$(jq -r '.exclusive' <<<"$STATUS")
 
 state() {
-    [[ "$1" == "true" ]] && echo "$2" || echo "$3"
+  [[ "$1" == "true" ]] && echo "$2" || echo "$3"
 }
 
 TOGGLE_ENTRY="$(state "$HIDDEN" " Hidden" " Visible")"
 AUTOHIDE_ENTRY="$(state "$AUTOHIDE" "󱙝 Autohide" "󱙜 Autohide")"
 EXCLUSIVE_ENTRY="$(state "$EXCLUSIVE" "󱔓 Exclusive" "󱂬 Non-Exclusive")"
+RESTART_ENTRY=" Restart"
 
-CHOICE=$(echo -e "$TOGGLE_ENTRY\n$AUTOHIDE_ENTRY\n$EXCLUSIVE_ENTRY" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "AGS Bar" \
-           -theme "$ROFI_THEME")
+CHOICE=$(echo -e "$TOGGLE_ENTRY\n$AUTOHIDE_ENTRY\n$EXCLUSIVE_ENTRY\n$RESTART_ENTRY" |
+  rofi -dmenu \
+    -p "" \
+    -no-custom \
+    -mesg "AGS Bar" \
+    -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$TOGGLE_ENTRY")    hk-ags toggle ;;
-    "$AUTOHIDE_ENTRY")  hk-ags autohide ;;
-    "$EXCLUSIVE_ENTRY") hk-ags exclusive ;;
-    "")                 exit 1 ;;
+"$TOGGLE_ENTRY") hk-ags toggle ;;
+"$AUTOHIDE_ENTRY") hk-ags autohide ;;
+"$EXCLUSIVE_ENTRY") hk-ags exclusive ;;
+"$RESTART_ENTRY") hk-ags restart ;;
+"") exit 1 ;;
 esac
 
 exit 0

@@ -10,7 +10,7 @@ window.bar-hotzone-window {
 }
 
 window.Bar.bar-shell {
-  background: transparent;
+  background: theme.$background;
   color: theme.$text;
   font-family: theme.$font-ui;
   font-size: theme.$font-size;
@@ -150,7 +150,6 @@ window.Bar.bar-config-error {
       border-color: theme.$error;
       border-radius: theme.$border-radius;
     }
-
   }
 
   .bar-config-error-title {

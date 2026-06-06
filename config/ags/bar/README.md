@@ -489,7 +489,7 @@ The built-in widget kinds currently include `menu`, `workspaces`, `tray`, `clock
 
 `themes/<theme>/bar.scss` is the public styling surface. It is grouped by editing task:
 
-- `Core colors`: text, surface, accent, border, error, and low-battery colors
+- `Core colors`: text, surface, background, accent, border, error, and low-battery colors
 - `Typography`: main UI font, mono font, and font size
 - `Bar shell`: island radius and border width
 - `Widget tuning`: workspace, tray, icon, and widget padding spacing

@@ -7,32 +7,15 @@ const layoutConfig = {
   exclusive: true,
   showCornerCurves: true,
 
-  start: [
-    "menu",
-    "workspaces",
-    "cpu",
-    "ram",
-    "tray",
-  ],
+  start: ["menu", "workspaces", "cpu", "ram", "tray"],
 
   center: {
-    start: [
-      "recording",
-    ],
-    center: [
-      "clock",
-    ],
-    end: [
-      "caffeine",
-    ],
+    start: ["recording"],
+    center: ["clock"],
+    end: ["caffeine"],
   },
 
-  end: [
-    "audio",
-    "bluetooth",
-    "network",
-    "battery",
-  ],
+  end: ["audio", "bluetooth", "network", "battery"],
 } satisfies BarLayoutConfig
 
 export default layoutConfig

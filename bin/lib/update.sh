@@ -70,7 +70,9 @@ pkg_comment() {
 # --- stow / symlink helpers ---
 
 _stow_conflicts() {
-  stow -n -v "$@" 2>&1 | grep '^CONFLICT:'
+  # stow <2.4 prefixes conflicts with "CONFLICT:"; 2.4+ lists them as
+  # "  * cannot stow ... over existing target ..." bullets under a WARNING.
+  stow -n -v "$@" 2>&1 | grep -E '^(CONFLICT:|[[:space:]]+\* )'
 }
 
 _stow_gtk_theme() {

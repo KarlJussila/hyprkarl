@@ -13,6 +13,35 @@ The setup scripts (`setup-dotfiles.sh`, `setup-packages.sh`,
 `setup-system.sh`) write this baseline when they run, so `hk-update`
 immediately knows the starting state after a fresh install.
 
+## Guided Update (TUI)
+
+```bash
+hk-update tui
+```
+
+The recommended interactive path — also reachable from the main menu under
+**Update → Update Hyprkarl**, which opens it in a floating terminal. It walks
+the whole config-sync process in three phases:
+
+1. **Sync** — fetches from `origin` and merges the upstream branch. Because the
+   live `~/.config/` files are symlinks into the repo the working tree is
+   usually dirty, so it offers to stash-and-restore (or commit first) before
+   merging, and guides you through any merge or stash conflicts file by file
+   (edit in `$EDITOR`, take theirs, or keep yours).
+2. **Review** — summarizes the pending dotfile, package, and system changes and
+   lets you browse the diffs (rendered with `delta` inside an `fzf` preview
+   pane) before committing to anything.
+3. **Apply** — you pick which categories to apply. It delegates to the same
+   `hk-update-dotfiles` / `hk-update-packages` / `hk-update-system` commands
+   documented below (so baselines stay correct), surfacing stow conflicts with
+   a clear repo-vs-adopt choice and prompting per package removal.
+
+It deliberately excludes the system package upgrade (`paru -Syu`); run that
+separately via **Update → Upgrade Packages** / `hk-pkg-upgrade`.
+
+The manual flow below does the same work step by step and is still available if
+you prefer to drive each stage yourself.
+
 ## Normal Update Flow
 
 ```bash

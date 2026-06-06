@@ -1,0 +1,21 @@
+#!/bin/bash
+# hk-pkg-upgrade
+# Upgrade all installed packages (pacman + AUR) non-interactively,
+# then prompt to reboot.
+#
+# Intended to be launched via:
+#   hk-launch-tui hk-pkg-upgrade
+
+gum log --level info "Upgrading all packages..."
+paru -Syu --noconfirm
+paru_exit=$?
+
+if (( paru_exit != 0 )); then
+  gum log --level warn "Some packages failed to upgrade. Check output above."
+else
+  gum log --level info "All packages upgraded."
+fi
+
+if gum confirm "Reboot now?"; then
+  hk-reboot
+fi

@@ -13,6 +13,7 @@ flatpak
 foot
 fzf
 ghostty
+git-delta
 gpu-screen-recorder
 gum
 hypridle

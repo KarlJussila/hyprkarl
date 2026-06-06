@@ -1,0 +1,23 @@
+#!/bin/bash
+# hk-menu-update
+# Menu for system and hyprkarl updates
+
+ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+
+UPDATE_HK="󰚰 Update Hyprkarl"
+UPGRADE_PKGS="󰏕 Upgrade Packages"
+
+CHOICE=$(echo -e "$UPDATE_HK\n$UPGRADE_PKGS" |
+  rofi -dmenu \
+    -p "" \
+    -no-custom \
+    -mesg "Update" \
+    -theme "$ROFI_THEME")
+
+case "$CHOICE" in
+"$UPDATE_HK") hk-launch-tui hk-update-tui ;;
+"$UPGRADE_PKGS") hk-launch-tui hk-pkg-upgrade ;;
+"") exit 1 ;;
+esac
+
+exit 0

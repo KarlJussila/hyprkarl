@@ -21,6 +21,7 @@ Usage:
   hk-update packages             Install new required packages, prompt for dropped ones
   hk-update system               Re-run system-level setup
   hk-update all [--force|--adopt]  Run dotfiles, packages, and system in sequence
+  hk-update tui                  Interactive guided update (sync, review, apply)
 EOF
 }
 
@@ -40,7 +41,7 @@ case "$action" in
     hk-update-packages || exit 1
     hk-update-system   || exit 1
     ;;
-  check|dotfiles|packages|system|remove-stale)
+  check|dotfiles|packages|system|remove-stale|tui)
     exec "hk-update-$action" "$@" ;;
   ""|-h|--help|help)
     usage; exit 0 ;;

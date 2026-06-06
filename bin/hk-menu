@@ -11,23 +11,25 @@ INSTALL=" Install"
 UNINSTALL="󱧖 Uninstall"
 UTILS=" Utilities"
 CONFIG=" Config"
+UPDATE="󰧇 Update"
 POWER=" Power"
 
-CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$CONFIG\n$POWER" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Main Menu" \
-           -theme "$ROFI_THEME")
+CHOICE=$(echo -e "$LAUNCH\n$INSTALL\n$UNINSTALL\n$UTILS\n$CONFIG\n$UPDATE\n$POWER" |
+  rofi -dmenu \
+    -p "" \
+    -no-custom \
+    -mesg "Main Menu" \
+    -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$LAUNCH")    hk-menu-launcher ;;
-    "$INSTALL")   hk-menu-install || relaunch_menu ;;
-    "$UNINSTALL") hk-menu-uninstall || relaunch_menu ;;
-    "$UTILS")     hk-menu-utils || relaunch_menu ;;
-    "$CONFIG")    hk-menu-config || relaunch_menu ;;
-    "$POWER")     hk-menu-power || relaunch_menu ;;
-    "")           exit 1 ;;
+"$LAUNCH") hk-menu-launcher ;;
+"$INSTALL") hk-menu-install || relaunch_menu ;;
+"$UNINSTALL") hk-menu-uninstall || relaunch_menu ;;
+"$UTILS") hk-menu-utils || relaunch_menu ;;
+"$CONFIG") hk-menu-config || relaunch_menu ;;
+"$UPDATE") hk-menu-update || relaunch_menu ;;
+"$POWER") hk-menu-power || relaunch_menu ;;
+"") exit 1 ;;
 esac
 
 exit 0

@@ -11,6 +11,13 @@ does not try to document every internal script.
 - `hk-update all [--force|--adopt]`
   Run dotfiles, packages, and system updates in sequence. `--force` and
   `--adopt` are passed through to the dotfiles step.
+- `hk-update tui`
+  Interactive guided update in a terminal: fetch and merge upstream (safe on a
+  dirty working tree, with conflict resolution), review pending dotfile,
+  package, and system changes as `delta` diffs, then apply the categories you
+  select. Excludes the system package upgrade (`paru -Syu`) — see
+  `hk-pkg-upgrade` for that. Launch via the update menu or
+  `hk-launch-tui hk-update-tui`.
 - `hk-update dotfiles`
   Re-stow config files and remove stale symlinks. Checks for conflicts first
   and aborts if any are found.
@@ -47,6 +54,9 @@ does not try to document every internal script.
   Open the install menu for packages and Docker services.
 - `hk-menu-uninstall`
   Open the uninstall menu for packages and Docker services.
+- `hk-menu-update`
+  Open the update menu: "Update Hyprkarl" launches the guided `hk-update tui`,
+  "Upgrade Packages" runs the system package upgrade (`hk-pkg-upgrade`).
 - `hk-menu-utils`
   Open the utilities submenu (toggles, screen recording, and other actions).
 - `hk-menu-power`
@@ -162,6 +172,10 @@ does not try to document every internal script.
 
 ## Packages
 
+- `hk-pkg-upgrade`
+  Upgrade all installed packages (pacman + AUR) non-interactively, then prompt
+  to reboot. Intended to be launched via `hk-launch-tui hk-pkg-upgrade` so it
+  opens in a floating terminal.
 - `hk-pkg-install-tui`
   Open an `fzf` package picker to install pacman packages.
 - `hk-pkg-install-tui --aur`

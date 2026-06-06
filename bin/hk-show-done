@@ -2,5 +2,7 @@
 # hk-show-done
 # Show a "done" confirmation
 
+TITLE="${1:-Done! Press any key to close...}"
+
 echo
-gum spin --spinner "points" --title "Done! Press any key to close..." -- bash -c 'read -n 1 -s'
+gum spin --spinner "points" --title "$TITLE" -- bash -c 'read -n 1 -s'

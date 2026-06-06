@@ -1,0 +1,474 @@
+#!/bin/bash
+# hk-update-tui
+# Interactive guided hyprkarl update: sync upstream, review changes, apply.
+#
+# Walks three phases:
+#   1. Sync    fetch + merge upstream, safe on the (usually dirty) working tree
+#   2. Review  show pending dotfile / package / system changes, browse diffs
+#   3. Apply   delegate to hk-update-dotfiles / -packages / -system
+#
+# System package upgrades (paru -Syu) are intentionally out of scope — see
+# hk-pkg-upgrade for those.
+#
+# Usage:
+#   hk-update tui            (via the hk-update dispatcher)
+#   hk-launch-tui hk-update-tui
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/update.sh"
+
+HK="$HYPRKARL_PATH"
+PACKAGES_DIR="$HK/packages"
+STASH_LABEL="hk-update-tui auto-stash"
+
+# Diff rendering: prefer delta, fall back to git's own coloring.
+if command -v delta >/dev/null; then
+  PREVIEW_PIPE="delta --paging=never"
+  COLOR_FLAG=""
+else
+  PREVIEW_PIPE="cat"
+  COLOR_FLAG="--color=always"
+fi
+
+# Shared fzf preview-pane bindings, mirroring hk-pkg-install-tui.
+PREVIEW_BINDINGS=(
+  --preview-window 'right:60%:wrap'
+  --preview-label 'alt-p: toggle preview, alt-j/k: scroll'
+  --preview-label-pos 'bottom'
+  --bind 'alt-p:toggle-preview'
+  --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+  --bind 'alt-k:preview-up,alt-j:preview-down'
+)
+
+info()  { gum log --level info "$@"; }
+warn()  { gum log --level warn "$@"; }
+error() { gum log --level error "$@"; }
+
+require_tools() {
+  local -a missing=()
+  local tool
+  for tool in gum fzf git stow; do
+    command -v "$tool" >/dev/null || missing+=("$tool")
+  done
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    printf 'Missing required tools: %s\n' "${missing[*]}" >&2
+    return 1
+  fi
+}
+
+intro() {
+  local branch head
+  branch=$(git -C "$HK" branch --show-current)
+  head=$(git -C "$HK" log --oneline -1 --no-decorate)
+  gum style --border rounded --padding "0 2" --margin "1 0" --border-foreground 212 \
+    "Hyprkarl Update" \
+    "branch: $branch" \
+    "HEAD:   $head"
+}
+
+# --- Phase 1: sync ---
+
+resolve_upstream() {
+  local branch upstream
+  branch=$(git -C "$HK" branch --show-current)
+  upstream=$(git -C "$HK" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
+  if [[ -z "$upstream" ]] && git -C "$HK" rev-parse --verify "origin/$branch" >/dev/null 2>&1; then
+    upstream="origin/$branch"
+  fi
+  printf '%s' "$upstream"
+}
+
+phase_sync() {
+  local branch upstream behind
+  branch=$(git -C "$HK" branch --show-current)
+  upstream=$(resolve_upstream)
+
+  if [[ -z "$upstream" ]]; then
+    warn "No upstream for branch '$branch' and no origin/$branch found."
+    gum confirm "Skip sync and review what's already pending?" || return 1
+    return 0
+  fi
+
+  gum spin --title "Fetching from origin..." -- git -C "$HK" fetch origin || {
+    error "git fetch failed."
+    return 1
+  }
+
+  behind=$(git -C "$HK" rev-list --count "HEAD..$upstream" 2>/dev/null)
+  if [[ "${behind:-0}" -eq 0 ]]; then
+    info "Already up to date with $upstream."
+    return 0
+  fi
+
+  info "$behind new commit(s) on $upstream."
+  if gum confirm "Preview incoming commits?"; then
+    git -C "$HK" log --oneline --no-decorate "HEAD..$upstream" | gum pager
+  fi
+
+  gum confirm "Merge $upstream into $branch?" || return 1
+  sync_merge "$upstream"
+}
+
+sync_merge() {
+  local upstream="$1" dirty strategy
+  dirty=$(git -C "$HK" status --porcelain)
+
+  if [[ -z "$dirty" ]]; then
+    do_merge "$upstream"
+    return
+  fi
+
+  strategy=$(gum choose --header "Working tree has local changes. How to proceed?" \
+    "Stash, merge, then restore" \
+    "Commit my changes first" \
+    "Abort")
+
+  case "$strategy" in
+    "Stash, merge, then restore") sync_stash_merge "$upstream" ;;
+    "Commit my changes first")    sync_commit_merge "$upstream" ;;
+    *) info "Sync aborted."; return 1 ;;
+  esac
+}
+
+sync_stash_merge() {
+  local upstream="$1"
+  if ! git -C "$HK" stash push -u -m "$STASH_LABEL"; then
+    error "Stash failed."
+    return 1
+  fi
+  if ! do_merge "$upstream"; then
+    warn "Your changes are preserved in the stash: git -C \"$HK\" stash list"
+    warn "Restore them with: git -C \"$HK\" stash pop"
+    return 1
+  fi
+  info "Restoring your local changes..."
+  if ! git -C "$HK" stash pop; then
+    warn "Restoring your changes hit conflicts."
+    resolve_stash_conflicts
+  fi
+}
+
+sync_commit_merge() {
+  local upstream="$1" msg
+  msg=$(gum input --placeholder "Commit message for your local changes")
+  if [[ -z "$msg" ]]; then
+    info "No message given. Sync aborted."
+    return 1
+  fi
+  git -C "$HK" add -A || return 1
+  git -C "$HK" commit -m "$msg" || return 1
+  do_merge "$upstream"
+}
+
+do_merge() {
+  local upstream="$1"
+  if gum spin --title "Merging $upstream..." -- git -C "$HK" merge --no-edit "$upstream"; then
+    info "Merged $upstream."
+    return 0
+  fi
+  if [[ -z "$(git -C "$HK" diff --name-only --diff-filter=U)" ]]; then
+    error "Merge failed (not a conflict). Aborting merge."
+    git -C "$HK" merge --abort 2>/dev/null
+    return 1
+  fi
+  resolve_merge_conflicts
+}
+
+resolve_merge_conflicts() {
+  local -a conflicts
+  local file action
+  while true; do
+    mapfile -t conflicts < <(git -C "$HK" diff --name-only --diff-filter=U)
+    if [[ ${#conflicts[@]} -eq 0 ]]; then
+      git -C "$HK" commit --no-edit && info "Merge completed."
+      return 0
+    fi
+    info "${#conflicts[@]} conflicted file(s) remaining."
+    file=$(printf '%s\n' "${conflicts[@]}" | fzf \
+      --header "Select a conflict to resolve (Esc to abort merge)" \
+      --preview "git -C \"$HK\" diff $COLOR_FLAG -- {} | $PREVIEW_PIPE" \
+      "${PREVIEW_BINDINGS[@]}")
+    if [[ -z "$file" ]]; then
+      if gum confirm "Abort the merge entirely?"; then
+        git -C "$HK" merge --abort
+        warn "Merge aborted."
+        return 1
+      fi
+      continue
+    fi
+    action=$(gum choose --header "Resolve $file:" \
+      "Edit in editor" \
+      "Take incoming (theirs)" \
+      "Keep mine (ours)" \
+      "Cancel")
+    case "$action" in
+      "Edit in editor")
+        "${EDITOR:-nvim}" "$HK/$file"
+        git -C "$HK" add -- "$file" ;;
+      "Take incoming (theirs)")
+        git -C "$HK" checkout --theirs -- "$file" && git -C "$HK" add -- "$file" ;;
+      "Keep mine (ours)")
+        git -C "$HK" checkout --ours -- "$file" && git -C "$HK" add -- "$file" ;;
+      *) ;;
+    esac
+  done
+}
+
+resolve_stash_conflicts() {
+  local -a conflicts
+  local file
+  while true; do
+    mapfile -t conflicts < <(git -C "$HK" diff --name-only --diff-filter=U)
+    if [[ ${#conflicts[@]} -eq 0 ]]; then
+      git -C "$HK" stash drop >/dev/null 2>&1
+      info "Local changes restored."
+      return 0
+    fi
+    info "${#conflicts[@]} file(s) still conflicting from your restored changes."
+    file=$(printf '%s\n' "${conflicts[@]}" | fzf \
+      --header "Edit a file to resolve (Esc to finish manually)" \
+      --preview "git -C \"$HK\" diff $COLOR_FLAG -- {} | $PREVIEW_PIPE" \
+      "${PREVIEW_BINDINGS[@]}")
+    if [[ -z "$file" ]]; then
+      warn "Leaving conflicts in place. Your stash is preserved: git -C \"$HK\" stash list"
+      warn "Resolve the files, then: git -C \"$HK\" add -A && git -C \"$HK\" stash drop"
+      return 1
+    fi
+    "${EDITOR:-nvim}" "$HK/$file"
+    git -C "$HK" add -- "$file"
+  done
+}
+
+# --- Phase 2: review ---
+
+phase_review() {
+  local head pkg_base
+
+  head=$(update_head_commit)
+
+  DF_BASE=$(update_read_commit dotfiles)
+  REVIEW_DF_FILES=""
+  if [[ -n "$DF_BASE" ]] && [[ "$DF_BASE" != "$head" ]]; then
+    REVIEW_DF_FILES=$(git -C "$HK" diff --name-only "$DF_BASE" HEAD -- config/ applications/)
+  fi
+
+  pkg_base=$(update_read_commit packages)
+  if [[ -n "$pkg_base" ]] && ! update_commit_valid "$pkg_base"; then
+    pkg_base=""
+  fi
+  ADDED_PAC=""; REMOVED_PAC=""; ADDED_AUR=""; REMOVED_AUR=""; ADDED_REMOVE=""
+  if [[ -n "$pkg_base" ]] && [[ "$pkg_base" != "$head" ]]; then
+    pkg_diff "packages/pacman.txt" "$pkg_base"; ADDED_PAC="$added"; REMOVED_PAC="$removed"
+    pkg_diff "packages/aur.txt"    "$pkg_base"; ADDED_AUR="$added"; REMOVED_AUR="$removed"
+    pkg_diff "packages/remove.txt" "$pkg_base"; ADDED_REMOVE="$added"
+  fi
+
+  SYS_BASE=$(update_read_commit system)
+  REVIEW_SYS_FILES=""
+  if [[ -n "$SYS_BASE" ]] && [[ "$SYS_BASE" != "$head" ]]; then
+    REVIEW_SYS_FILES=$(git -C "$HK" diff --name-only "$SYS_BASE" HEAD -- setup-system.sh templates/setup/)
+  fi
+
+  show_review_summary
+  review_browse_loop
+}
+
+count_lines() {
+  [[ -z "$1" ]] && { printf '0'; return; }
+  printf '%s\n' "$1" | grep -c .
+}
+
+show_review_summary() {
+  local df_n sys_n pac_add pac_rem aur_add aur_rem rem_add
+  df_n=$(count_lines "$REVIEW_DF_FILES")
+  sys_n=$(count_lines "$REVIEW_SYS_FILES")
+  pac_add=$(count_lines "$ADDED_PAC")
+  pac_rem=$(count_lines "$REMOVED_PAC")
+  aur_add=$(count_lines "$ADDED_AUR")
+  aur_rem=$(count_lines "$REMOVED_AUR")
+  rem_add=$(count_lines "$ADDED_REMOVE")
+
+  gum format -- \
+    "## Pending changes" \
+    "" \
+    "- **Dotfiles**: $df_n changed file(s)" \
+    "- **Packages**: +$((pac_add + aur_add)) to install, $((pac_rem + aur_rem + rem_add)) to prompt for removal" \
+    "- **System**: $sys_n changed setup file(s)"
+}
+
+review_browse_loop() {
+  local choice
+  while true; do
+    choice=$(gum choose --header "Review (Esc / Continue to move on):" \
+      "Browse dotfiles diff" \
+      "Browse system diff" \
+      "Show package changes" \
+      "Continue to apply" \
+      "Quit")
+    case "$choice" in
+      "Browse dotfiles diff") browse_changes "$DF_BASE" "$REVIEW_DF_FILES" ;;
+      "Browse system diff")   browse_changes "$SYS_BASE" "$REVIEW_SYS_FILES" ;;
+      "Show package changes") show_package_plan ;;
+      "Continue to apply")    return 0 ;;
+      *) info "Update cancelled."; hk-show-done; exit 0 ;;
+    esac
+  done
+}
+
+browse_changes() {
+  local base="$1" files="$2"
+  if [[ -z "$base" ]] || [[ -z "$files" ]]; then
+    info "No changes to browse."
+    return
+  fi
+  printf '%s\n' "$files" | fzf \
+    --header "Changed files — preview shows the diff (Esc to go back)" \
+    --preview "git -C \"$HK\" diff $COLOR_FLAG \"$base\" HEAD -- {} | $PREVIEW_PIPE" \
+    "${PREVIEW_BINDINGS[@]}" >/dev/null
+}
+
+show_package_plan() {
+  local -a lines=("## Package changes" "")
+  local pkg reason
+
+  if [[ -n "$ADDED_PAC" ]]; then
+    lines+=("**Install (pacman):** $(printf '%s' "$ADDED_PAC" | paste -sd' ')")
+  fi
+  if [[ -n "$ADDED_AUR" ]]; then
+    lines+=("**Install (AUR):** $(printf '%s' "$ADDED_AUR" | paste -sd' ')")
+  fi
+  if [[ -n "$REMOVED_PAC$REMOVED_AUR" ]]; then
+    lines+=("**Removal prompts (dropped):** $(printf '%s\n%s' "$REMOVED_PAC" "$REMOVED_AUR" | grep . | paste -sd' ')")
+  fi
+  if [[ -n "$ADDED_REMOVE" ]]; then
+    lines+=("" "**Removal prompts (remove.txt):**")
+    while IFS= read -r pkg; do
+      [[ -z "$pkg" ]] && continue
+      reason=$(pkg_comment "$pkg" "$PACKAGES_DIR/remove.txt")
+      lines+=("- $pkg — ${reason:-added to removal list}")
+    done <<< "$ADDED_REMOVE"
+  fi
+
+  [[ ${#lines[@]} -le 2 ]] && lines+=("No package changes.")
+  gum format -- "${lines[@]}"
+}
+
+# --- Phase 3: apply ---
+
+phase_apply() {
+  local -a available=() chosen=()
+  local item
+
+  [[ -n "$REVIEW_DF_FILES" ]] && available+=("Dotfiles")
+  [[ -n "$ADDED_PAC$REMOVED_PAC$ADDED_AUR$REMOVED_AUR$ADDED_REMOVE" ]] && available+=("Packages")
+  [[ -n "$REVIEW_SYS_FILES" ]] && available+=("System")
+
+  if [[ ${#available[@]} -eq 0 ]]; then
+    info "Nothing to apply — everything is up to date."
+    return 0
+  fi
+
+  mapfile -t chosen < <(printf '%s\n' "${available[@]}" \
+    | gum choose --no-limit --selected "$(IFS=,; printf '%s' "${available[*]}")" \
+        --header "Select what to apply:")
+
+  if [[ ${#chosen[@]} -eq 0 ]]; then
+    info "Nothing selected."
+    return 0
+  fi
+
+  for item in "${chosen[@]}"; do
+    case "$item" in
+      Dotfiles) apply_dotfiles ;;
+      Packages) apply_packages ;;
+      System)   apply_system ;;
+    esac
+  done
+}
+
+apply_dotfiles() {
+  local conflicts choice
+  conflicts=$(check_config_conflicts)
+
+  if [[ -z "$conflicts" ]]; then
+    hk-update-dotfiles
+    return
+  fi
+
+  warn "Stow conflicts detected (a real file sits where a symlink should go):"
+  printf '%s\n' "$conflicts"
+  choice=$(gum choose --header "How to resolve dotfile conflicts?" \
+    "Keep repo versions (overwrite my files)" \
+    "Adopt my versions into the repo to review" \
+    "Skip dotfiles")
+  case "$choice" in
+    "Keep repo versions"*) apply_dotfiles_force ;;
+    "Adopt my versions"*)  hk-update-dotfiles --adopt ;;
+    *) info "Skipping dotfiles." ;;
+  esac
+}
+
+apply_dotfiles_force() {
+  local dirty msg
+  dirty=$(git -C "$HK" diff --name-only HEAD -- config/ applications/)
+  if [[ -n "$dirty" ]]; then
+    warn "Uncommitted config changes would be overwritten:"
+    printf '%s\n' "$dirty"
+    if ! gum confirm "Commit them first so --force can proceed?"; then
+      info "Skipping dotfiles (force needs a clean tree)."
+      return
+    fi
+    msg=$(gum input --placeholder "Commit message")
+    if [[ -z "$msg" ]]; then
+      info "No message given. Skipping dotfiles."
+      return
+    fi
+    git -C "$HK" add config/ applications/ && git -C "$HK" commit -m "$msg" || return
+  fi
+  hk-update-dotfiles --force
+}
+
+apply_packages() {
+  show_package_plan
+  if ! gum confirm "Proceed with package changes?"; then
+    info "Skipping packages."
+    return
+  fi
+  hk-update-packages
+}
+
+apply_system() {
+  if ! gum confirm "Re-run system setup (setup-system.sh)?"; then
+    info "Skipping system."
+    return
+  fi
+  hk-update-system
+}
+
+# --- outro ---
+
+outro() {
+  hk-show-done "Update complete! Press any key to close..."
+}
+
+main() {
+  case "${1:-}" in
+    -h|--help)
+      printf 'Usage: hk-update tui\n  Interactive guided hyprkarl update (sync, review, apply).\n'
+      exit 0 ;;
+  esac
+
+  require_tools || exit 1
+  intro
+
+  if ! phase_sync; then
+    hk-show-done "Update stopped. Press any key to close..."
+    exit 1
+  fi
+
+  phase_review
+  phase_apply
+  outro
+}
+
+main "$@"

@@ -255,6 +255,9 @@ does not try to document every internal script.
   Reload mako.
 - `hk-terminal-reload`
   Reload terminal configs for supported terminals.
+- `hk-workspace-swap <target_num>`
+  Swap all windows between the active workspace and the target workspace, then
+  focus the target. Tiled windows will be retiled on arrival.
 
 ## Media, Hardware, and Utilities
 

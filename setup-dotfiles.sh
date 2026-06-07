@@ -9,6 +9,7 @@ stow -D --ignore='@girs' --ignore='node_modules' --dir=$HOME/.local/share/hyprka
 
 # Adopt the config files, then replace with hyprkarl configs
 stow --ignore='@girs' --ignore='node_modules' --dir=$HOME/.local/share/hyprkarl --target=$HOME/.config config --adopt --no-folding
+mkdir -p "$HOME/.local/share/applications"
 stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications applications --adopt --no-folding
 git -C ~/.local/share/hyprkarl checkout config/
 git -C ~/.local/share/hyprkarl checkout applications/

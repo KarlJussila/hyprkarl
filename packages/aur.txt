@@ -1,3 +1,4 @@
+aylurs-gtk-shell
 dragon-drop
 hyprshutdown
 libastal-battery-git

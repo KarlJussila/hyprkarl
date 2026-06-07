@@ -1,5 +1,4 @@
 7zip
-aylurs-gtk-shell
 bluetui
 brightnessctl
 btop

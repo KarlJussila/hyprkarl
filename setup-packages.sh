@@ -2,7 +2,7 @@
 
 # This script installs packages for the hyprkarl setup.
 # NOTE: It also removes some packages that are replaced with alternatives.
-# Use yay consistently for AUR-backed installs and queries.
+# Use paru consistently for AUR-backed installs and queries.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -15,7 +15,7 @@ mapfile -t pacman_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/pacman.txt")
 sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
 
 mapfile -t aur_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/aur.txt")
-yay -S --needed --noconfirm "${aur_pkgs[@]}"
+paru -S --needed --noconfirm "${aur_pkgs[@]}"
 
 # Remove packages
 mapfile -t remove_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/remove.txt")

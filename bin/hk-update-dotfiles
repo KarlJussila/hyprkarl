@@ -42,6 +42,7 @@ else
 fi
 
 remove_stale_symlinks
+remove_empty_dirs
 
 if pgrep -x Hyprland >/dev/null; then
   hyprctl reload >/dev/null

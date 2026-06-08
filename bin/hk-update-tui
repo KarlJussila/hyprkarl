@@ -85,7 +85,7 @@ phase_sync() {
 
   if [[ -z "$upstream" ]]; then
     warn "No upstream for branch '$branch' and no origin/$branch found."
-    gum confirm "Skip sync and review what's already pending?" || return 1
+    gum confirm $'\n'"Skip sync and review what's already pending?" || return 1
     return 0
   fi
 
@@ -101,11 +101,11 @@ phase_sync() {
   fi
 
   info "$behind new commit(s) on $upstream."
-  if gum confirm "Preview incoming commits?"; then
+  if gum confirm $'\nPreview incoming commits?'; then
     git -C "$HK" log --oneline --no-decorate "HEAD..$upstream" | gum pager
   fi
 
-  gum confirm "Merge $upstream into $branch?" || return 1
+  gum confirm $'\n'"Merge $upstream into $branch?" || return 1
   sync_merge "$upstream"
 }
 
@@ -118,7 +118,7 @@ sync_merge() {
     return
   fi
 
-  strategy=$(gum choose --header "Working tree has local changes. How to proceed?" \
+  strategy=$(gum choose --header $'\nWorking tree has local changes. How to proceed?' \
     "Stash, merge, then restore" \
     "Commit my changes first" \
     "Abort")
@@ -189,14 +189,14 @@ resolve_merge_conflicts() {
       --preview "git -C \"$HK\" diff $COLOR_FLAG -- {} | $PREVIEW_PIPE" \
       "${PREVIEW_BINDINGS[@]}")
     if [[ -z "$file" ]]; then
-      if gum confirm "Abort the merge entirely?"; then
+      if gum confirm $'\nAbort the merge entirely?'; then
         git -C "$HK" merge --abort
         warn "Merge aborted."
         return 1
       fi
       continue
     fi
-    action=$(gum choose --header "Resolve $file:" \
+    action=$(gum choose --header $'\n'"Resolve $file:" \
       "Edit in editor" \
       "Take incoming (theirs)" \
       "Keep mine (ours)" \
@@ -261,6 +261,11 @@ phase_review() {
     pkg_diff "packages/pacman.txt" "$pkg_base"; ADDED_PAC="$added"; REMOVED_PAC="$removed"
     pkg_diff "packages/aur.txt"    "$pkg_base"; ADDED_AUR="$added"; REMOVED_AUR="$removed"
     pkg_diff "packages/remove.txt" "$pkg_base"; ADDED_REMOVE="$added"
+    while IFS= read -r pkg; do
+      [[ -z "$pkg" ]] && continue
+      [[ -n "$REMOVED_PAC" ]] && REMOVED_PAC=$(printf '%s\n' "$REMOVED_PAC" | grep -v "^${pkg}$" || true)
+      [[ -n "$REMOVED_AUR" ]] && REMOVED_AUR=$(printf '%s\n' "$REMOVED_AUR" | grep -v "^${pkg}$" || true)
+    done <<< "$ADDED_REMOVE"
   fi
 
   SYS_BASE=$(update_read_commit system)
@@ -288,26 +293,27 @@ show_review_summary() {
   aur_rem=$(count_lines "$REMOVED_AUR")
   rem_add=$(count_lines "$ADDED_REMOVE")
 
+  printf '\n'
   gum format -- \
     "## Pending changes" \
-    "" \
     "- **Dotfiles**: $df_n changed file(s)" \
     "- **Packages**: +$((pac_add + aur_add)) to install, $((pac_rem + aur_rem + rem_add)) to prompt for removal" \
     "- **System**: $sys_n changed setup file(s)"
+  printf '\n'
 }
 
 review_browse_loop() {
   local choice
   while true; do
-    choice=$(gum choose --header "Review (Esc / Continue to move on):" \
+    choice=$(gum choose --header $'\nReview (Esc / Continue to move on):' \
       "Browse dotfiles diff" \
       "Browse system diff" \
       "Show package changes" \
       "Continue to apply" \
       "Quit")
     case "$choice" in
-      "Browse dotfiles diff") browse_changes "$DF_BASE" "$REVIEW_DF_FILES" ;;
-      "Browse system diff")   browse_changes "$SYS_BASE" "$REVIEW_SYS_FILES" ;;
+      "Browse dotfiles diff") browse_changes "dotfiles" "$DF_BASE" "$REVIEW_DF_FILES" ;;
+      "Browse system diff")   browse_changes "system" "$SYS_BASE" "$REVIEW_SYS_FILES" ;;
       "Show package changes") show_package_plan ;;
       "Continue to apply")    return 0 ;;
       *) info "Update cancelled."; hk-show-done; exit 0 ;;
@@ -316,9 +322,9 @@ review_browse_loop() {
 }
 
 browse_changes() {
-  local base="$1" files="$2"
+  local label="$1" base="$2" files="$3"
   if [[ -z "$base" ]] || [[ -z "$files" ]]; then
-    info "No changes to browse."
+    info "No $label changes to browse."
     return
   fi
   printf '%s\n' "$files" | fzf \
@@ -328,29 +334,30 @@ browse_changes() {
 }
 
 show_package_plan() {
-  local -a lines=("## Package changes" "")
+  local -a lines=("## Package changes")
   local pkg reason
 
   if [[ -n "$ADDED_PAC" ]]; then
-    lines+=("**Install (pacman):** $(printf '%s' "$ADDED_PAC" | paste -sd' ')")
+    lines+=("- Install (pacman): $(printf '%s\n' "$ADDED_PAC" | paste -sd' ')")
   fi
   if [[ -n "$ADDED_AUR" ]]; then
-    lines+=("**Install (AUR):** $(printf '%s' "$ADDED_AUR" | paste -sd' ')")
+    lines+=("- Install (AUR): $(printf '%s\n' "$ADDED_AUR" | paste -sd' ')")
   fi
   if [[ -n "$REMOVED_PAC$REMOVED_AUR" ]]; then
-    lines+=("**Removal prompts (dropped):** $(printf '%s\n%s' "$REMOVED_PAC" "$REMOVED_AUR" | grep . | paste -sd' ')")
+    lines+=("- Removal prompts (dropped): $(printf '%s\n%s' "$REMOVED_PAC" "$REMOVED_AUR" | grep . | paste -sd' ')")
   fi
   if [[ -n "$ADDED_REMOVE" ]]; then
-    lines+=("" "**Removal prompts (remove.txt):**")
     while IFS= read -r pkg; do
       [[ -z "$pkg" ]] && continue
       reason=$(pkg_comment "$pkg" "$PACKAGES_DIR/remove.txt")
-      lines+=("- $pkg — ${reason:-added to removal list}")
+      lines+=("- Removal prompts (remove.txt): $pkg${reason:+ — $reason}")
     done <<< "$ADDED_REMOVE"
   fi
 
   [[ ${#lines[@]} -le 2 ]] && lines+=("No package changes.")
+  printf '\n'
   gum format -- "${lines[@]}"
+  printf '\n'
 }
 
 # --- Phase 3: apply ---
@@ -370,7 +377,7 @@ phase_apply() {
 
   mapfile -t chosen < <(printf '%s\n' "${available[@]}" \
     | gum choose --no-limit --selected "$(IFS=,; printf '%s' "${available[*]}")" \
-        --header "Select what to apply:")
+        --header $'\nSelect what to apply:')
 
   if [[ ${#chosen[@]} -eq 0 ]]; then
     info "Nothing selected."
@@ -397,7 +404,7 @@ apply_dotfiles() {
 
   warn "Stow conflicts detected (a real file sits where a symlink should go):"
   printf '%s\n' "$conflicts"
-  choice=$(gum choose --header "How to resolve dotfile conflicts?" \
+  choice=$(gum choose --header $'\nHow to resolve dotfile conflicts?' \
     "Keep repo versions (overwrite my files)" \
     "Adopt my versions into the repo to review" \
     "Skip dotfiles")
@@ -409,28 +416,23 @@ apply_dotfiles() {
 }
 
 apply_dotfiles_force() {
-  local dirty msg
+  local dirty
   dirty=$(git -C "$HK" diff --name-only HEAD -- config/ applications/)
   if [[ -n "$dirty" ]]; then
-    warn "Uncommitted config changes would be overwritten:"
+    warn "These config files have local uncommitted changes that will be discarded:"
     printf '%s\n' "$dirty"
-    if ! gum confirm "Commit them first so --force can proceed?"; then
-      info "Skipping dotfiles (force needs a clean tree)."
+    gum confirm $'\nDiscard local changes and apply repo versions?' || {
+      info "Skipping dotfiles."
       return
-    fi
-    msg=$(gum input --placeholder "Commit message")
-    if [[ -z "$msg" ]]; then
-      info "No message given. Skipping dotfiles."
-      return
-    fi
-    git -C "$HK" add config/ applications/ && git -C "$HK" commit -m "$msg" || return
+    }
+    git -C "$HK" checkout HEAD -- config/ applications/ || return
   fi
   hk-update-dotfiles --force
 }
 
 apply_packages() {
   show_package_plan
-  if ! gum confirm "Proceed with package changes?"; then
+  if ! gum confirm $'\nProceed with package changes?'; then
     info "Skipping packages."
     return
   fi
@@ -438,7 +440,7 @@ apply_packages() {
 }
 
 apply_system() {
-  if ! gum confirm "Re-run system setup (setup-system.sh)?"; then
+  if ! gum confirm $'\nRe-run system setup (setup-system.sh)?'; then
     info "Skipping system."
     return
   fi

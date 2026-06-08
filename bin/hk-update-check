@@ -14,21 +14,27 @@ check_dotfiles() {
 
   if [[ -z "$baseline" ]]; then
     printf '  No baseline recorded. Run setup-dotfiles.sh or hk-update dotfiles to establish one.\n'
-    return
-  fi
-
-  if [[ "$baseline" == "$HEAD" ]]; then
+  elif ! update_commit_valid "$baseline"; then
+    printf '  Warning: recorded baseline commit is no longer in git history.\n'
+    printf '  Run hk-update dotfiles to re-establish a baseline.\n'
+  elif [[ "$baseline" == "$HEAD" ]]; then
     printf '  Up to date.\n'
-    return
+  else
+    local changed
+    changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD -- config/ applications/ 2>/dev/null)
+    if [[ -n "$changed" ]]; then
+      printf '  Changed since last dotfiles update:\n'
+      printf '%s\n' "$changed" | sed 's/^/    /'
+    else
+      printf '  No config file changes since last dotfiles update.\n'
+    fi
   fi
 
-  local changed
-  changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD -- config/ applications/ 2>/dev/null)
-  if [[ -n "$changed" ]]; then
-    printf '  Changed since last dotfiles update:\n'
-    printf '%s\n' "$changed" | sed 's/^/    /'
-  else
-    printf '  No config file changes since last dotfiles update.\n'
+  local conflicts
+  conflicts=$(check_config_conflicts 2>/dev/null)
+  if [[ -n "$conflicts" ]]; then
+    printf '  Stow conflicts (would block hk-update dotfiles):\n'
+    printf '%s\n' "$conflicts" | sed 's/^/    /'
   fi
 
   local stale_found=0
@@ -44,6 +50,7 @@ check_dotfiles() {
       fi
     fi
   done < <(find "$HOME/.config" "$HOME/.local/share/applications" -type l 2>/dev/null)
+  [[ "$stale_found" -eq 0 ]] && printf '  No stale symlinks found.\n'
 }
 
 check_packages() {
@@ -84,6 +91,14 @@ check_packages() {
   pkg_diff "packages/remove.txt" "$baseline"
   local ar="$added"
 
+  # Deduplicate: a package moving from pacman/aur → remove.txt appears in both
+  # lists; strip it from the "dropped" lists so it's only reported once.
+  while IFS= read -r pkg; do
+    [[ -z "$pkg" ]] && continue
+    [[ -n "$rp" ]] && rp=$(printf '%s\n' "$rp" | grep -v "^${pkg}$" || true)
+    [[ -n "$ra" ]] && ra=$(printf '%s\n' "$ra" | grep -v "^${pkg}$" || true)
+  done <<< "$ar"
+
   local any=0
 
   if [[ -n "$ap" ]]; then
@@ -116,6 +131,12 @@ check_system() {
 
   if [[ -z "$baseline" ]]; then
     printf '  No baseline recorded. Run setup-system.sh or hk-update system to establish one.\n'
+    return
+  fi
+
+  if ! update_commit_valid "$baseline"; then
+    printf '  Warning: recorded baseline commit is no longer in git history.\n'
+    printf '  Run hk-update system to re-establish a baseline.\n'
     return
   fi
 

@@ -5,8 +5,8 @@
 ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
 SELECT="󰋹 Select"
-ADD=" Add"
-REMOVE=" Remove"
+ADD=" Add"
+REMOVE=" Remove"
 
 CHOICE=$(printf '%s\n' "$SELECT" "$ADD" "$REMOVE" |
   rofi -dmenu \

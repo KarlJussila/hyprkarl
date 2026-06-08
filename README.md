@@ -4,6 +4,19 @@ Omarchy. It is meant to be installed and then edited directly.
 
 > **Warning:** The setup process is largely untested. Use at your own risk.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="themes/hyprkarl/screenshots/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/hyprkarl/screenshots/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
+  </tr>
+  <tr>
+    <td><img src="themes/hyprkarl/screenshots/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/hyprkarl/screenshots/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+  </tr>
+</table>
+
 ## Requirements
 
 - Base CachyOS (Hyprland) install
@@ -84,6 +97,55 @@ hk-theme set <theme-name>
 
 To build your own theme, copy an existing theme directory and edit it. See
 [docs/themes.md](docs/themes.md) for the full theme layout.
+
+Provided themes:
+<details>
+<summary>hyprkarl</summary>
+
+<table>
+  <tr>
+    <td><img src="themes/hyprkarl/screenshots/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/hyprkarl/screenshots/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
+  </tr>
+  <tr>
+    <td><img src="themes/hyprkarl/screenshots/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/hyprkarl/screenshots/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+  </tr>
+</table>
+
+</details>
+
+<details>
+<summary>everforest</summary>
+
+<table>
+  <tr>
+    <td><img src="themes/everforest/screenshots/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/everforest/screenshots/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
+  </tr>
+  <tr>
+    <td><img src="themes/everforest/screenshots/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/everforest/screenshots/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+  </tr>
+</table>
+
+</details>
+
+<details>
+<summary>gruvbox</summary>
+
+<table>
+  <tr>
+    <td><img src="themes/gruvbox/screenshots/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/gruvbox/screenshots/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
+  </tr>
+  <tr>
+    <td><img src="themes/gruvbox/screenshots/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/gruvbox/screenshots/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+  </tr>
+</table>
+
+</details>
 
 ## Keybindings
 

@@ -18,9 +18,9 @@ git -C ~/.local/share/hyprkarl checkout applications/
 ags types -u -d ~/.config/ags
 
 # Stow the GTK theme
-rm -f "$HOME/.local/share/themes/hyprkarl"
+rm -rf "$HOME/.local/share/themes/hyprkarl"
 mkdir -p "$HOME/.local/share/themes/hyprkarl"
-stow --no-folding \
+stow --restow --no-folding \
   --dir="$HOME/.local/share/hyprkarl/config/hyprkarl/current/theme" \
   --target="$HOME/.local/share/themes/hyprkarl" \
   gtk-theme

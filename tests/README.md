@@ -27,8 +27,14 @@ tests/hk-update-tui.sh d         # stash-pop conflict (editor loop + recovery ms
 # Apply phase:
 tests/hk-update-tui.sh apply-dotfiles           # isolated: stows into a fake $HOME
 tests/hk-update-tui.sh apply-dotfiles-conflict  # planted stow conflict -> chooser
+tests/hk-update-tui.sh apply-dotfiles-dirty     # conflict + uncommitted changes -> dirty-tree guard
 tests/hk-update-tui.sh apply-packages           # installs the tiny 'sl' package (sudo)
 tests/hk-update-tui.sh apply-packages-cleanup   # uninstall 'sl'
+
+# Edge case / coverage scenarios:
+tests/hk-update-tui.sh review-packages  # Review shows package diff; dedup test (sl pacman→remove.txt)
+tests/hk-update-tui.sh no-upstream      # Sync with no upstream configured -> skip-sync prompt
+tests/hk-update-tui.sh uptodate         # All baselines at HEAD -> "Nothing to apply"
 
 tests/hk-update-tui.sh status    # sandbox ahead/behind + working tree
 tests/hk-update-tui.sh clean     # delete the sandbox

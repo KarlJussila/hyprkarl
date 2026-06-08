@@ -17,18 +17,21 @@ check_dotfiles() {
     return
   fi
 
-  if [[ "$baseline" == "$HEAD" ]]; then
+  if ! update_commit_valid "$baseline"; then
+    printf '  Warning: recorded baseline commit is no longer in git history.\n'
+    printf '  Run hk-update dotfiles to re-establish a baseline.\n'
+  elif [[ "$baseline" == "$HEAD" ]]; then
     printf '  Up to date.\n'
     return
-  fi
-
-  local changed
-  changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD -- config/ applications/ 2>/dev/null)
-  if [[ -n "$changed" ]]; then
-    printf '  Changed since last dotfiles update:\n'
-    printf '%s\n' "$changed" | sed 's/^/    /'
   else
-    printf '  No config file changes since last dotfiles update.\n'
+    local changed
+    changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD -- config/ applications/ 2>/dev/null)
+    if [[ -n "$changed" ]]; then
+      printf '  Changed since last dotfiles update:\n'
+      printf '%s\n' "$changed" | sed 's/^/    /'
+    else
+      printf '  No config file changes since last dotfiles update.\n'
+    fi
   fi
 
   local stale_found=0
@@ -116,6 +119,12 @@ check_system() {
 
   if [[ -z "$baseline" ]]; then
     printf '  No baseline recorded. Run setup-system.sh or hk-update system to establish one.\n'
+    return
+  fi
+
+  if ! update_commit_valid "$baseline"; then
+    printf '  Warning: recorded baseline commit is no longer in git history.\n'
+    printf '  Run hk-update system to re-establish a baseline.\n'
     return
   fi
 

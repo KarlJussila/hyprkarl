@@ -53,6 +53,16 @@ removed_aur="$removed"
 pkg_diff "packages/remove.txt" "$baseline"
 added_remove="$added"
 
+# When a package moves from pacman/aur.txt into remove.txt in the same update span it
+# would appear in both removed_pacman/removed_aur AND added_remove, causing a double
+# prompt.  Drop it from the "no longer required" lists — remove.txt already covers it
+# with a better reason string.
+while IFS= read -r pkg; do
+  [[ -z "$pkg" ]] && continue
+  [[ -n "$removed_pacman" ]] && removed_pacman=$(printf '%s\n' "$removed_pacman" | grep -v "^${pkg}$" || true)
+  [[ -n "$removed_aur" ]]    && removed_aur=$(printf '%s\n' "$removed_aur"    | grep -v "^${pkg}$" || true)
+done <<< "$added_remove"
+
 # Prompt for all removals before installing, so conflicting replacements don't block installs.
 while IFS= read -r pkg; do
   [[ -z "$pkg" ]] && continue

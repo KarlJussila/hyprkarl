@@ -14,8 +14,16 @@ stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications 
 git -C ~/.local/share/hyprkarl checkout config/
 git -C ~/.local/share/hyprkarl checkout applications/
 
-# Set up AGS
+# Set up AGS type definitions.
+# ags types -u rewrites config/ags/tsconfig.json through the stow symlink.
+# If the installed astal versions differ from what's committed, the file will
+# be dirty — review with: git -C ~/.local/share/hyprkarl diff config/ags/tsconfig.json
 ags types -u -d ~/.config/ags
+if ! git -C "$HOME/.local/share/hyprkarl" diff --quiet -- config/ags/tsconfig.json 2>/dev/null; then
+  printf 'Note: AGS type paths updated in config/ags/tsconfig.json\n'
+  printf '  Review: git -C %s diff config/ags/tsconfig.json\n' "$HOME/.local/share/hyprkarl"
+  printf '  Commit if the changes look correct.\n'
+fi
 
 # Stow the GTK theme
 rm -rf "$HOME/.local/share/themes/hyprkarl"

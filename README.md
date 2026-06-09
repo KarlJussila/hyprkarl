@@ -95,8 +95,10 @@ Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 hk-theme set <theme-name>
 ```
 
-To build your own theme, copy an existing theme directory and edit it. See
-[docs/themes.md](docs/themes.md) for the full theme layout.
+To build your own theme, either generate one from a color palette with
+[hyprkarl-theme-generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
+(recommended) or copy an existing theme directory and edit it. See
+[docs/themes.md](docs/themes.md) for both approaches and the full theme layout.
 
 Provided themes:
 <details>

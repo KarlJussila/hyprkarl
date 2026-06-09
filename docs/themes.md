@@ -100,7 +100,32 @@ Optional theme files:
 
 ## Create a New Theme
 
-Start from an existing theme:
+There are two ways to make a theme.
+
+### Generate one from a color palette (recommended)
+
+The themes shipped with Hyprkarl are produced by a companion tool,
+[hyprkarl-theme-generator](https://github.com/KarlJussila/hyprkarl-theme-generator).
+It renders an entire theme — every file listed under
+[Theme Contents](#theme-contents) — from a single YAML color palette, so the
+colors stay consistent across Hyprland, the bar, terminals, GTK, Qt, and the
+rest. It's the easiest path if you're building a new look, and it pairs well
+with an LLM: hand it a terminal colorscheme (or describe the mood you want) and
+have it write the palette.
+
+```bash
+git clone https://github.com/KarlJussila/hyprkarl-theme-generator.git
+cd hyprkarl-theme-generator
+# create palettes/my-theme/palette.yaml (see that repo's AGENTS.md), then:
+python generate.py my-theme
+export HYPRKARL_PATH=~/.local/share/hyprkarl
+./sync_theme.sh my-theme          # installs it into themes/my-theme/
+hk-theme set my-theme
+```
+
+### Copy an existing theme
+
+For quick tweaks to an existing look, copy a theme directory and edit it in place:
 
 ```bash
 cd ~/.local/share/hyprkarl

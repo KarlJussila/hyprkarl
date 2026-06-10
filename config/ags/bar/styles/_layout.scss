@@ -31,7 +31,6 @@ window.bar-hotzone-window {
 }
 
 window.Bar.bar-shell {
-  background: theme.$background;
   color: theme.$text;
   font-family: theme.$font-ui;
   font-size: theme.$font-size;
@@ -41,6 +40,7 @@ window.Bar.bar-shell {
   }
 
   centerbox.bar-layout-root {
+    background: theme.$background;
     .bar-island,
     .bar-island-balance-content,
     .widget-tray-item-list {

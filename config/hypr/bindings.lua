@@ -1,0 +1,5 @@
+require("bindings/system")
+require("bindings/apps")
+require("bindings/windows")
+require("bindings/workspaces")
+require("bindings/media")

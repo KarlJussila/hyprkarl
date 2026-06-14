@@ -45,8 +45,8 @@ Hyprkarl is edited from `~/.local/share/hyprkarl/`.
 
 The files under `~/.config/` and `~/.local/share/applications/` are symlinks
 back into that tree, so the tracked files in Hyprkarl are the source of truth.
-Editing `~/.config/hypr/hyprland.conf` and editing
-`~/.local/share/hyprkarl/config/hypr/hyprland.conf` are the same operation.
+Editing `~/.config/hypr/hyprland.lua` and editing
+`~/.local/share/hyprkarl/config/hypr/hyprland.lua` are the same operation.
 
 ## Editing Hyprkarl
 

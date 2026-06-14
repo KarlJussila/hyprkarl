@@ -21,16 +21,19 @@ clients=$(hyprctl clients -j)
 mapfile -t current_wins < <(jq -r "[.[] | select(.workspace.id == $current)] | sort_by(.at[1], .at[0]) | .[].address" <<< "$clients")
 mapfile -t target_wins  < <(jq -r "[.[] | select(.workspace.id == $target)]  | sort_by(.at[1], .at[0]) | .[].address" <<< "$clients")
 
+# Hyprland 0.55+ takes Lua dispatch expressions (hyprctl dispatch wraps the
+# argument in hl.dispatch(...)). movetoworkspacesilent -> window.move with
+# follow=false; workspace -> focus.
 for addr in "${current_wins[@]}"; do
-  hyprctl dispatch movetoworkspacesilent "${TEMP},address:${addr}"
+  hyprctl dispatch "hl.dsp.window.move({ workspace = 'name:${TEMP}', follow = false, window = 'address:${addr}' })"
 done
 
 for addr in "${target_wins[@]}"; do
-  hyprctl dispatch movetoworkspacesilent "${current},address:${addr}"
+  hyprctl dispatch "hl.dsp.window.move({ workspace = ${current}, follow = false, window = 'address:${addr}' })"
 done
 
 for addr in "${current_wins[@]}"; do
-  hyprctl dispatch movetoworkspacesilent "${target},address:${addr}"
+  hyprctl dispatch "hl.dsp.window.move({ workspace = ${target}, follow = false, window = 'address:${addr}' })"
 done
 
-hyprctl dispatch workspace "$target"
+hyprctl dispatch "hl.dsp.focus({ workspace = ${target} })"

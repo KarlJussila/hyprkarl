@@ -126,17 +126,33 @@ it. See `bin/hk-menu` for the canonical pattern.
 
 ## Add a New Keybinding
 
-Hyprland bindings live in:
+Hyprland is configured in Lua (see
+[configuration-map.md](configuration-map.md#hyprland)). Bindings live in:
 
-- `config/hypr/bindings/apps.conf`
-- `config/hypr/bindings/media.conf`
-- `config/hypr/bindings/tiling.conf`
-- `config/hypr/bindings/utilities.conf`
+- `config/hypr/bindings/apps.lua` — app launchers
+- `config/hypr/bindings/media.lua` — hardware media/brightness/volume keys
+- `config/hypr/bindings/windows.lua` — focus, move, resize, float, fullscreen, close
+- `config/hypr/bindings/workspaces.lua` — workspace switching, monitor moves, scratchpad
+- `config/hypr/bindings/system.lua` — menus, notifications, panels, screenshots, power
 
-Put the binding in the file that matches its purpose.
+Put the binding in the file that matches its purpose. The form is
+`hl.bind(keys, dispatcher, flags?)`:
+
+```lua
+-- Launch a command. Keep a description so it shows in hk-menu-keybindings.
+hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("my-command"), { description = "Do the thing" })
+
+-- A built-in dispatcher instead of a command.
+hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "Full screen" })
+```
+
+Common flags: `{ description = "…" }` (shown in the keybind menu, which reads live
+`hyprctl binds`), `locked = true` (works on the lockscreen), `repeating = true`,
+`mouse = true`. Dispatchers live under `hl.dsp.*` —
+see https://wiki.hypr.land/Configuring/Basics/Dispatchers/.
 
 If the binding needs more than a short command, add a script in `bin/` and bind
-to that.
+to that. After editing, validate with `Hyprland --verify-config`.
 
 ## Add an AGS Bar Feature
 
@@ -186,6 +202,7 @@ Examples:
 
 - the AGS bar symlinks `theme.scss` to `current/theme/bar.scss`
 - terminal configs import from `current/theme/...`
+- Hyprland `loadfile`s `current/theme/hyprland.lua` at the end of its config
 - `hyprlock` points at `current/wallpaper`
 
 ## Exposing New Config Files

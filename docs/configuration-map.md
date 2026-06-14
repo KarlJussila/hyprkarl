@@ -49,51 +49,67 @@ regardless of whether anything changed.
 
 ## Hyprland
 
-`config/hypr/hyprland.conf` is the main Hyprland entrypoint. It only sources the
-rest of the config:
+Hyprland is configured in **Lua** (`hyprland.lua`), required since Hyprland 0.55
+(hyprlang `.conf` is deprecated). `config/hypr/hyprland.lua` is the main
+entrypoint. It only `require()`s the rest of the config (each module loads as a
+separate Lua scope, so an error in one does not abort the others):
 
-- `envs.conf`
-  Hyprland environment variables
-- `autostart.conf`
-  Startup commands
-- `monitors.conf`
-  Monitor layout
-- `permissions.conf`
-  Permission rules
-- `looknfeel.conf`
-  General appearance, animations, layout, and related settings
-- `windows.conf`
-  Window rules, layer rules, floating behavior, opacity, and app-specific rule
-  includes. All windows receive the `default-opacity` tag, which applies
-  `opacity 1.0 0.8` (full focused, 80% unfocused). App configs in `apps/` run
-  before this final rule, so they can opt a window out by adding
-  `tag -default-opacity` to their rules.
-- `input.conf`
-  Input settings
-- `bindings.conf`
-  Keybinding includes
-- `~/.config/hyprkarl/current/theme/hyprland.conf`
-  Theme-specific Hyprland styling
+- `envs.lua`
+  Hyprland environment variables (`hl.env()`)
+- `autostart.lua`
+  Startup commands (`hl.on("hyprland.start", …)`)
+- `monitors.lua`
+  Monitor layout plus the HiDPI scaling knobs that pair with it — `GDK_SCALE`
+  and `xwayland.force_zero_scaling` (`hl.monitor{}`, `hl.env()`, `hl.config{}`)
+- `permissions.lua`
+  Permission rules (`hl.permission()`)
+- `looknfeel.lua`
+  General appearance and layout settings (`hl.config{}`)
+- `animations.lua`
+  Bezier curves and animation rules (`hl.curve()`, `hl.animation{}`)
+- `gum.lua`
+  GUM terminal UI color env vars (`hl.env()`)
+- `windows.lua`
+  Window rules, layer rules, floating behavior, opacity, and the per-category
+  rule includes from `windows/` (`hl.window_rule{}` / `hl.layer_rule{}`). All
+  windows receive the `default-opacity` tag, and the final window rule applies
+  `opacity 1.0 0.8` (full focused, 80% unfocused) to anything still carrying it.
+  Modules in `windows/` run before that final rule, so they can opt a window out
+  by adding `tag = "-default-opacity"` (media and video windows do this to stay
+  fully opaque). Rules are intentionally anonymous (no `name=`) so they evaluate
+  strictly top-to-bottom.
+- `input.lua`
+  Input settings (`hl.config{ input = … }`, `hl.gesture{}`)
+- `bindings.lua`
+  Keybinding includes (`hl.bind()`)
 
-`bindings.conf` then sources:
+`hyprland.lua` then loads the active theme last, by absolute path
+(`loadfile` of `~/.config/hyprkarl/current/theme/hyprland.lua`), so theme colors
+override. The theme dir lives outside `config/hypr/`, so `require()`'s relative
+resolution can't reach it — hence `loadfile`.
 
-- `bindings/utilities.conf`
-- `bindings/apps.conf`
-- `bindings/tiling.conf`
-- `bindings/media.conf`
+`bindings.lua` then requires:
 
-`windows.conf` sources `apps.conf`, which then sources:
+- `bindings/system.lua`
+- `bindings/apps.lua`
+- `bindings/windows.lua`
+- `bindings/workspaces.lua`
+- `bindings/media.lua`
 
-- `apps/browser.conf`
-- `apps/hyprshot.conf`
-- `apps/localsend.conf`
-- `apps/pip.conf`
-- `apps/steam.conf`
-- `apps/system.conf`
-- `apps/terminals.conf`
+`windows.lua` requires the per-category rule modules in `windows/`:
+
+- `windows/browsers.lua`
+- `windows/floating.lua`
+- `windows/media.lua`
+- `windows/terminals.lua`
+- `windows/screenshots.lua`
+
+Validate edits with `Hyprland --verify-config` (non-destructive: parses the config
+and reports errors without launching). There is no automatic fallback if
+`hyprland.lua` is broken.
 
 For keybindings, start in `config/hypr/bindings/`. For app-specific window
-rules, start in `config/hypr/apps/`.
+rules, start in `config/hypr/windows/`.
 
 For Hyprland syntax and option reference, see the official Hyprland docs:
 [Configuring](https://wiki.hypr.land/Configuring/) and

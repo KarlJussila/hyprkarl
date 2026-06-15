@@ -15,3 +15,6 @@ source ~/.config/uwsm/default
 
 # Set wifitui theme
 export WIFITUI_THEME="$HOME/.config/hyprkarl/current/theme/wifitui.toml"
+
+# Machine-local env vars (API keys, personal settings) — not tracked in git
+[[ -f ~/.config/uwsm/env.local ]] && source ~/.config/uwsm/env.local

@@ -125,6 +125,7 @@ For Hyprland syntax and option reference, see the official Hyprland docs:
 - points `WIFITUI_THEME` at the active theme
 - sets `QT_QPA_PLATFORMTHEME`
 - sources `config/uwsm/default`
+- sources `config/uwsm/env.local` if it exists
 
 `config/uwsm/default` is the user-editable place for:
 
@@ -135,6 +136,10 @@ For Hyprland syntax and option reference, see the official Hyprland docs:
 
 The default terminal and editor commands update this file. Changes here require
 a new session.
+
+`config/uwsm/env.local` is for machine-local environment variables such as API
+keys and personal settings. It is gitignored and never tracked. `setup-dotfiles.sh`
+creates it from `config/uwsm/env.local.example` on first run if it doesn't exist.
 
 ## AGS Bar
 

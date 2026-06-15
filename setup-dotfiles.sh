@@ -14,6 +14,11 @@ stow --dir=$HOME/.local/share/hyprkarl --target=$HOME/.local/share/applications 
 git -C ~/.local/share/hyprkarl checkout config/
 git -C ~/.local/share/hyprkarl checkout applications/
 
+# Create personal env var file from template if it doesn't exist
+if [[ ! -f ~/.config/uwsm/env.local ]]; then
+  cp "$HOME/.local/share/hyprkarl/templates/setup/env.local.example" ~/.config/uwsm/env.local
+fi
+
 # Set up AGS type definitions.
 # ags types -u rewrites config/ags/tsconfig.json through the stow symlink.
 # If the installed astal versions differ from what's committed, the file will
@@ -38,4 +43,4 @@ hyprctl reload
 # Record installed commit for update tracking
 mkdir -p "$HOME/.local/share/hyprkarl/config/hyprkarl/update"
 git -C "$HOME/.local/share/hyprkarl" rev-parse HEAD \
-  > "$HOME/.local/share/hyprkarl/config/hyprkarl/update/dotfiles.commit"
+  >"$HOME/.local/share/hyprkarl/config/hyprkarl/update/dotfiles.commit"

@@ -6,6 +6,10 @@
 -- Hyprkarl dialogs, previewers, and small media viewers
 hl.window_rule({ match = { class = [[(org\.hyprkarl\..*|org.gnome.NautilusPreviewer|org.gnome.Evince|com.gabm.satty|hyprkarl|About|imv|mpv)]] }, tag = "+floating-window" })
 
+-- Portal-spawned terminals open from a background daemon with no workspace context;
+-- force them onto the active workspace so they appear alongside the requesting app.
+hl.window_rule({ match = { class = [[org\.hyprkarl\.terminal]] }, workspace = "current" })
+
 -- File chooser / save dialogs from apps that don't advertise a dialog hint
 hl.window_rule({
     match = {

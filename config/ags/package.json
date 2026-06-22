@@ -6,13 +6,15 @@
   },
   "scripts": {
     "bundle:check": "ags bundle app.ts /tmp/hyprkarl-ags-bundle.js -r .",
-    "check": "npm run bundle:check"
+    "typecheck": "./typecheck.sh",
+    "check": "npm run typecheck && npm run bundle:check"
   },
   "prettier": {
     "semi": false,
     "tabWidth": 2
   },
   "devDependencies": {
-    "@types/node": "^25.7.0"
+    "@types/node": "^25.7.0",
+    "typescript": "^6.0.3"
   }
 }

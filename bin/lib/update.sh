@@ -88,7 +88,7 @@ _stow_gtk_theme() {
 }
 
 check_config_conflicts() {
-  _stow_conflicts --restow --no-folding --ignore='@girs' --ignore='node_modules' \
+  _stow_conflicts --restow --no-folding \
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.config" \
     config
@@ -104,9 +104,9 @@ check_config_conflicts() {
 }
 
 stow_adopt_config() {
-  stow -D --ignore='@girs' --ignore='node_modules' --no-folding \
+  stow -D --no-folding \
     --dir="$HYPRKARL_PATH" --target="$HOME/.config" config
-  stow --ignore='@girs' --ignore='node_modules' --adopt --no-folding \
+  stow --adopt --no-folding \
     --dir="$HYPRKARL_PATH" --target="$HOME/.config" config
   stow --adopt --no-folding \
     --dir="$HYPRKARL_PATH" --target="$HOME/.local/share/applications" applications
@@ -114,7 +114,7 @@ stow_adopt_config() {
 }
 
 stow_restow_config() {
-  stow --restow --no-folding --ignore='@girs' --ignore='node_modules' \
+  stow --restow --no-folding \
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.config" \
     config

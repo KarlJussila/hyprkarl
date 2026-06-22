@@ -1,3 +1,9 @@
 # .stow-local-ignore
-ags/@girs
-ags/node_modules
+#
+# Intentionally empty. ags/@girs and ags/node_modules used to be listed here so
+# stow skipped them, but they are now stowed like everything else: their symlinks
+# are relative, which GNU Stow accepts (it aborts only on ABSOLUTE symlinks).
+#
+# Keep this file present even though it's empty — its mere existence overrides
+# stow's built-in default ignore list (which would otherwise skip top-level
+# README/LICENSE/COPYING and VCS dirs), preserving the prior stow behavior.

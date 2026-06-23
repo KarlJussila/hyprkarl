@@ -50,6 +50,23 @@ Common conventions:
 
 ---
 
+## `gpu`
+
+| Field      | Type   | Default                              | Description                                                  |
+| ---------- | ------ | ------------------------------------ | ------------------------------------------------------------ |
+| `icon`     | string | `"󰢮"`                                | Leading glyph.                                               |
+| `card`     | string | `""` (auto-select)                   | DRM card to pin (e.g. `"card1"`). Empty auto-selects the most capable active GPU, skipping runtime-suspended cards (reading them never wakes them). |
+| `format.*` | string | see `widgets.config.ts`              | Reveal label template. Tokens: `{usage}`, `{vram}`, `{vram_used}`, `{vram_total}`, `{temp}`, `{name}`. |
+| `decimals.*` | number | `0`                                | Decimal precision per format slot (VRAM sizes are always 1 decimal). |
+| `tooltip`  | string | usage/VRAM/temp                      | Tooltip template; same tokens as `format`.                   |
+| `interval` | number | `5000`                               | Poll interval in ms. A suspendable discrete GPU's live sensors are read no faster than its autosuspend delay regardless, so it isn't pinned awake. |
+| `reveal.durationMs` | number | `200`                       | Reveal animation duration in ms.                             |
+| `commands` | clicks | primary toggles the reveal label; secondary toggles the alt format | Click overrides. |
+
+Vendor-agnostic: AMD/Intel metrics are read from sysfs in-process; NVIDIA falls back to `nvidia-smi`. Unavailable tokens render empty.
+
+---
+
 ## `ram`
 
 | Field      | Type   | Default                              | Description                                                                 |

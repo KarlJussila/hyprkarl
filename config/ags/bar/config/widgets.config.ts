@@ -72,6 +72,18 @@ const widgetDefinitions = {
     tooltip: "CPU: {usage}%\n{cores}",
   },
 
+  gpu: {
+    kind: "gpu",
+    format: {
+      primary: "{usage}%",
+      alt: "{usage}% | {vram_used}/{vram_total}",
+      vertical: "{usage}%",
+      verticalAlt: "{vram}%",
+    },
+    tooltip: "{name}\nUsage: {usage}%\nVRAM: {vram_used}/{vram_total}\nTemp: {temp}°",
+    interval: 5000,
+  },
+
   ram: {
     kind: "ram",
     icon: "",

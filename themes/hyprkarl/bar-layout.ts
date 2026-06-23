@@ -30,7 +30,7 @@ const layoutConfig = {
     content: 0
   },
 
-  start: ["menu", "workspaces", "cpu", "ram", "tray"],
+  start: ["menu", "workspaces", "cpu", "gpu", "ram", "tray"],
 
   center: {
     start: ["recording"],

@@ -293,6 +293,37 @@ Set `tooltip: { text: "" }` to suppress the tooltip entirely.
 
 Leave `format` empty to show the icon only. Leave `formatAlt` empty to disable the secondary click.
 
+## GPU Widget
+
+The `gpu` widget shows GPU usage, VRAM, and temperature for the active GPU. By default, primary click toggles the label and secondary click switches between primary and alt formats. Both can be remapped via `commands` (see [Click Commands](#click-commands)).
+
+```ts
+gpu: {
+  kind: "gpu",
+  format: {
+    primary: "{usage}%",
+    alt: "{usage}% | {vram_used}/{vram_total}",
+    vertical: "{usage}%",
+    verticalAlt: "{vram}%",
+  },
+  tooltip: "{name}\nUsage: {usage}%\nVRAM: {vram_used}/{vram_total}\nTemp: {temp}°",
+  interval: 5000,
+},
+```
+
+GPU format tokens:
+
+- `{usage}`: GPU usage as a whole percent, for example `42`
+- `{vram}`: VRAM usage as a percentage of total, for example `35`
+- `{vram_used}`: used VRAM in GiB, for example `2.7G`
+- `{vram_total}`: total VRAM in GiB, for example `8.0G`
+- `{temp}`: GPU temperature in degrees Celsius, for example `55`
+- `{name}`: the GPU's display name (tooltip use), for example `Radeon RX 7600`
+
+Data is read vendor-agnostically: AMD and Intel metrics come from sysfs in-process (no subprocess), and NVIDIA falls back to `nvidia-smi`. The widget auto-selects the most capable active GPU. On hybrid laptops, a runtime-suspended discrete GPU is skipped — its live data is unavailable while asleep, so the active iGPU is shown instead; when the dGPU is genuinely in use it becomes active and is followed automatically.
+
+The widget will not keep a discrete GPU awake. Reading an *active* discrete GPU's sensors (usage, VRAM, temperature) re-arms its runtime autosuspend timer, so for such a card the live sensors are read no faster than its autosuspend delay (the last reading is replayed in between); the card can then fall back to sleep when idle, and the widget reverts to the always-on GPU. The always-on GPU itself updates every `interval`. Pinning a discrete GPU with `card` (for example `"card1"`) bypasses auto-selection but is still subject to this throttle. A token with no available value (for example `{temp}` on hardware that exposes none) renders empty.
+
 ## RAM Widget
 
 The `ram` widget shows RAM and swap usage. By default, primary click toggles the label and secondary click switches between primary and alt formats. Both can be remapped via `commands` (see [Click Commands](#click-commands)).

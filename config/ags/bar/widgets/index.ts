@@ -8,6 +8,7 @@
  */
 import Clock,      { defaults as clockDefaults,      type ClockConfig }      from "./clock"
 import Cpu,        { defaults as cpuDefaults,        type CpuConfig }        from "./cpu"
+import Gpu,        { defaults as gpuDefaults,        type GpuConfig }        from "./gpu"
 import Menu,       { defaults as menuDefaults,       type MenuConfig }       from "./menu"
 import Ram,        { defaults as ramDefaults,        type RamConfig }        from "./ram"
 import Recording,  { defaults as recordingDefaults,  type RecordingConfig }  from "./recording"
@@ -25,6 +26,7 @@ import type { BarLayoutConfig } from "../types.ts"
 export const widgets = {
   clock:      { Component: Clock,      defaults: clockDefaults },
   cpu:        { Component: Cpu,        defaults: cpuDefaults },
+  gpu:        { Component: Gpu,        defaults: gpuDefaults },
   menu:       { Component: Menu,       defaults: menuDefaults },
   ram:        { Component: Ram,        defaults: ramDefaults },
   recording:  { Component: Recording,  defaults: recordingDefaults },
@@ -44,6 +46,7 @@ type ConfigByKind = {
   clock: ClockConfig
   menu: MenuConfig
   cpu: CpuConfig
+  gpu: GpuConfig
   ram: RamConfig
   recording: RecordingConfig
   _template: TemplateConfig

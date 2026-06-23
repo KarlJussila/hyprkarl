@@ -53,6 +53,32 @@ window.flyout-window {
     color: theme.$accent;
   }
 
+  .flyout-row-glyph {
+    min-width: 1.2em;
+  }
+
+  .flyout-row-lock {
+    opacity: 0.6;
+  }
+
+  .flyout-row-status {
+    opacity: 0.6;
+  }
+
+  .flyout-password-entry {
+    margin: 4px 0 2px;
+  }
+
+  .flyout-password-entry.error {
+    border: 1px solid theme.$error;
+    box-shadow: none;
+  }
+
+  .flyout-empty {
+    padding: theme.$flyout-row-pad;
+    opacity: 0.6;
+  }
+
   .bar-slider-track { color: theme.$surface; }
   .bar-slider-border { color: theme.$border; }
   .bar-slider-fill { color: theme.$accent; }

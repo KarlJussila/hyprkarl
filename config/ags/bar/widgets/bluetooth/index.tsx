@@ -2,12 +2,14 @@ import { createBinding, createComputed } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalBluetooth from "gi://AstalBluetooth"
 import Button from "../../primitives/Button.tsx"
+import DeviceMenu from "./DeviceMenu.tsx"
 import { substituteTokens } from "../shared/template.ts"
 import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
-import { mergeConfig, type WidgetClicks, type WidgetProps } from "../shared/types.ts"
+import { mergeConfig, defaultFlyout, type WidgetClicks, type WidgetFlyout, type WidgetProps } from "../shared/types.ts"
 
 export type BluetoothConfig = {
   commands?: WidgetClicks
+  flyout?: WidgetFlyout
   icons?: Partial<BluetoothIcons>
   tooltip?: Partial<BluetoothTooltip>
 }
@@ -20,12 +22,14 @@ type BluetoothTooltip = { off: string; on: string; connected: string }
 
 type BluetoothDefaults = {
   commands: WidgetClicks
+  flyout: WidgetFlyout
   icons: BluetoothIcons
   tooltip: BluetoothTooltip
 }
 
 export const defaults: BluetoothDefaults = {
-  commands: { primary: "hk-launch-bluetooth" },
+  commands: { secondary: "hk-launch-bluetooth" },
+  flyout: defaultFlyout,
   icons: {
     enabled: "",
     disabled: "󰂲",
@@ -47,9 +51,9 @@ function countConnectedDevices(devices: Array<any>) {
   }).length
 }
 
-export default function BluetoothWidget({ config, placement }: WidgetProps<BluetoothConfig>) {
+export default function BluetoothWidget({ id, config, placement, monitor }: WidgetProps<BluetoothConfig>) {
   const cfg = mergeConfig(defaults, config)
-  const { commands, icons, tooltip } = cfg
+  const { commands, flyout, icons, tooltip } = cfg
   const isVertical = placement.orientation === "vertical"
   const bluetooth = AstalBluetooth.get_default()
   const isPowered = createBinding(bluetooth, "isPowered")
@@ -67,7 +71,17 @@ export default function BluetoothWidget({ config, placement }: WidgetProps<Bluet
       })
     : undefined
 
-  const { execPrimary, execSecondary, execTertiary } = useWidgetCommands({ commands })
+  const { execPrimary, execSecondary, execTertiary, triggerSetup } = useWidgetCommands({
+    commands,
+    flyout: {
+      config: flyout,
+      placement,
+      monitor,
+      id,
+      label: "bluetooth-menu",
+      renderContent: () => <DeviceMenu devices={devices} />,
+    },
+  })
 
   return (
     <Button
@@ -77,6 +91,7 @@ export default function BluetoothWidget({ config, placement }: WidgetProps<Bluet
       execPrimary={execPrimary}
       execSecondary={execSecondary}
       execTertiary={execTertiary}
+      $={triggerSetup}
     >
       <box
         class="widget-bluetooth-content"

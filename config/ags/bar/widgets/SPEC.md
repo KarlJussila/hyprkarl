@@ -95,7 +95,8 @@ Vendor-agnostic: AMD/Intel metrics are read from sysfs in-process; NVIDIA falls 
 
 | Field             | Type   | Default                                | Description                                       |
 | ----------------- | ------ | -------------------------------------- | ------------------------------------------------- |
-| `commands`        | clicks | `{ primary: "hk-launch-bluetooth" }`   | Click handlers.                                   |
+| `commands`        | clicks | `{ secondary: "hk-launch-bluetooth" }` | Click handlers; primary opens the device flyout.  |
+| `flyout`          | flyout | `{ align: "center", gap: 0 }`          | Device list flyout placement.                     |
 | `icons.enabled`   | string | `""`                                  | Glyph when Bluetooth is on.                       |
 | `icons.disabled`  | string | `"󰂲"`                                  | Glyph when off.                                   |
 | `tooltip.off`     | string | `"Bluetooth off"`                      | Tooltip when off.                                 |
@@ -108,9 +109,11 @@ Vendor-agnostic: AMD/Intel metrics are read from sysfs in-process; NVIDIA falls 
 
 | Field                  | Type   | Default                                 | Description                                        |
 | ---------------------- | ------ | --------------------------------------- | -------------------------------------------------- |
-| `commands`             | clicks | `{ primary: "hk-launch-wifi" }`         | Click handlers.                                    |
+| `commands`             | clicks | `{ secondary: "hk-launch-wifi" }`       | Click handlers; primary opens the Wi-Fi flyout.    |
+| `flyout`               | flyout | `{ align: "center", gap: 0 }`           | Wi-Fi picker flyout placement.                     |
 | `icons.disconnected`   | string | `"󰤮"`                                   | Disconnected glyph.                                |
 | `icons.ethernet`       | string | `"󰀂"`                                   | Wired connection glyph.                            |
+| `icons.locked`         | string | `"󰌾"`                                   | Glyph next to secured networks that will prompt for a password (hidden once a profile is saved or the network is active); empty disables it. |
 | `icons.wifi`           | [s,s,s,s,s] | five wifi-strength glyphs           | Strength ramp; index 0 = weakest, 4 = strongest.   |
 | `tooltip.disconnected` | string | `"Disconnected"`                        | Tooltip when not connected.                        |
 | `tooltip.ethernet`     | string | `"Ethernet connected"`                  | Tooltip when wired.                                |

@@ -136,24 +136,27 @@ clock: {
 },
 ```
 
-Add a network launcher widget:
+Add a network widget. Primary click opens a flyout listing nearby Wi-Fi
+networks (click one to connect; secured networks prompt for a password inline);
+secondary opens the full network manager:
 
 ```ts
 network: {
   kind: "network",
   commands: {
-    primary: "hk-launch-wifi",
+    secondary: "hk-launch-wifi",
   },
 },
 ```
 
-Add a Bluetooth launcher widget:
+Add a Bluetooth widget. Primary click opens a flyout listing paired devices
+(click a row to connect/disconnect); secondary opens the full Bluetooth manager:
 
 ```ts
 bluetooth: {
   kind: "bluetooth",
   commands: {
-    primary: "hk-launch-bluetooth",
+    secondary: "hk-launch-bluetooth",
   },
 },
 ```
@@ -458,12 +461,14 @@ cpu: {
   commands: { tertiary: "kitty --class floating htop" },
 },
 
-// Network widget: left-click opens settings, right-click opens a second tool
+// Network widget: keep the Wi-Fi flyout on left-click via the {flyout} token,
+// and map the other clicks to launchers.
 network: {
   kind: "network",
   commands: {
-    primary: "hk-launch-wifi",
-    secondary: "nm-connection-editor",
+    primary: "{flyout}",
+    secondary: "hk-launch-wifi",
+    tertiary: "nm-connection-editor",
   },
 },
 ```

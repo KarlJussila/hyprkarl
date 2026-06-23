@@ -2,13 +2,13 @@ import { createBinding, createComputed, createEffect, createState, onCleanup } f
 import { Gtk } from "ags/gtk4"
 import AstalNetwork from "gi://AstalNetwork"
 import Button from "../../primitives/Button.tsx"
+import WifiMenu from "./WifiMenu.tsx"
+import { selectWifiIcon, type WifiIcons } from "./icons.ts"
 import { substituteTokens } from "../shared/template.ts"
 import { useWidgetCommands } from "../shared/useWidgetCommands.ts"
-import { mergeConfig, type WidgetClicks, type WidgetProps } from "../shared/types.ts"
+import { mergeConfig, defaultFlyout, type WidgetClicks, type WidgetFlyout, type WidgetProps } from "../shared/types.ts"
 
-type WifiIcons = [string, string, string, string, string]
-
-type NetworkIcons = { disconnected: string; ethernet: string; wifi: WifiIcons }
+type NetworkIcons = { disconnected: string; ethernet: string; locked: string; wifi: WifiIcons }
 
 // Empty strings disable the corresponding tooltip state.
 type NetworkTooltip = {
@@ -21,21 +21,25 @@ type NetworkTooltip = {
 
 export type NetworkConfig = {
   commands?: WidgetClicks
+  flyout?: WidgetFlyout
   icons?: Partial<NetworkIcons>
   tooltip?: Partial<NetworkTooltip>
 }
 
 type NetworkDefaults = {
   commands: WidgetClicks
+  flyout: WidgetFlyout
   icons: NetworkIcons
   tooltip: NetworkTooltip
 }
 
 export const defaults: NetworkDefaults = {
-  commands: { primary: "hk-launch-wifi" },
+  commands: { secondary: "hk-launch-wifi" },
+  flyout: defaultFlyout,
   icons: {
     disconnected: "󰤮",
     ethernet: "󰀂",
+    locked: "󰌾",
     wifi: ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
   },
   tooltip: {
@@ -51,23 +55,15 @@ function readString(value: unknown): string {
   return typeof value === "string" ? value.trim() : ""
 }
 
-function selectWifiIcon(strength: number, wifiIcons: WifiIcons) {
-  if (strength >= 80) return wifiIcons[4]
-  if (strength >= 60) return wifiIcons[3]
-  if (strength >= 40) return wifiIcons[2]
-  if (strength >= 20) return wifiIcons[1]
-  return wifiIcons[0]
-}
-
 function formatWifiTooltip(ssid: string, frequency: number, tooltip: NetworkTooltip): string {
   if (ssid.length === 0) return tooltip.wifiNoSsid
   if (frequency > 0) return substituteTokens(tooltip.wifi, { ssid, freq: (frequency / 1000).toFixed(1) })
   return substituteTokens(tooltip.wifiNoFreq, { ssid })
 }
 
-export default function NetworkWidget({ config, placement }: WidgetProps<NetworkConfig>) {
+export default function NetworkWidget({ id, config, placement, monitor }: WidgetProps<NetworkConfig>) {
   const cfg = mergeConfig(defaults, config)
-  const { commands, icons, tooltip } = cfg
+  const { commands, flyout, icons, tooltip } = cfg
   const isVertical = placement.orientation === "vertical"
   const network = AstalNetwork.get_default()
 
@@ -147,7 +143,17 @@ export default function NetworkWidget({ config, placement }: WidgetProps<Network
     return tooltip.disconnected
   })
 
-  const { execPrimary, execSecondary, execTertiary } = useWidgetCommands({ commands })
+  const { execPrimary, execSecondary, execTertiary, triggerSetup } = useWidgetCommands({
+    commands,
+    flyout: {
+      config: flyout,
+      placement,
+      monitor,
+      id,
+      label: "wifi-menu",
+      renderContent: () => <WifiMenu network={network} wifiIcons={icons.wifi} lockedIcon={icons.locked} />,
+    },
+  })
 
   return (
     <Button
@@ -157,6 +163,7 @@ export default function NetworkWidget({ config, placement }: WidgetProps<Network
       execSecondary={execSecondary}
       execTertiary={execTertiary}
       tooltipText={tooltipEnabled ? tooltipText : undefined}
+      $={triggerSetup}
     >
       <box
         class="widget-network-content"

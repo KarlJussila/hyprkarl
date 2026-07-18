@@ -1,9 +1,9 @@
 #!/bin/bash
-# hk-select-video
+# hk-video-select
 # Interactive picker for selecting a video file
 #
 # Usage:
-#   hk-select-video [directory]
+#   hk-video-select [directory]
 #
 #   directory   Directory to browse. Defaults to ~/Videos.
 

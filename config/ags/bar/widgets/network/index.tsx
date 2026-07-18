@@ -34,7 +34,7 @@ type NetworkDefaults = {
 }
 
 export const defaults: NetworkDefaults = {
-  commands: { secondary: "hk-launch-wifi" },
+  commands: { secondary: "hk-wifi-launch" },
   flyout: defaultFlyout,
   icons: {
     disconnected: "󰤮",

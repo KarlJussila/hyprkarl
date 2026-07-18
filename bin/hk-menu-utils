@@ -29,7 +29,7 @@ CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE\n$AGS" 
 case "$CHOICE" in
     "$CAFFEINE")      hk-caffeine ;;
     "$NIGHTLIGHT")    hk-nightlight ;;
-    "$SCREEN_RECORD") sleep 0.5 && hk-record-screen ;;
+    "$SCREEN_RECORD") sleep 0.5 && hk-screen-record ;;
     "$POWER_PROFILE") hk-menu-power-profile || relaunch_menu ;;
     "$AGS")           hk-menu-ags || relaunch_menu ;;
     "")               exit 1 ;;

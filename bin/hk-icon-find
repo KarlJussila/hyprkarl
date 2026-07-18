@@ -1,10 +1,10 @@
 #!/bin/bash
-# hk-find-icon — find an icon by name; checks hyprkarl theme first, then GTK theme → Yaru → hicolor.
+# hk-icon-find — find an icon by name; checks hyprkarl theme first, then GTK theme → Yaru → hicolor.
 # Categories default to "actions" and are only used for system icon theme lookups.
 
 icon_name="${1:-}"
 if [[ -z "$icon_name" ]]; then
-  echo "Usage: hk-find-icon <icon-name> [category...]" >&2
+  echo "Usage: hk-icon-find <icon-name> [category...]" >&2
   exit 1
 fi
 shift

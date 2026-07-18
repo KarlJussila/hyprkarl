@@ -12,7 +12,7 @@
 #
 # Usage:
 #   hk-update tui            (via the hk-update dispatcher)
-#   hk-launch-tui hk-update-tui
+#   hk-tui-launch hk-update-tui
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"

@@ -108,7 +108,7 @@ const widgetDefinitions = {
   audio: {
     kind: "audio",
     showPercentage: false,
-    commands: { secondary: "hk-launch-audio" },
+    commands: { secondary: "hk-audio-launch" },
     tooltip: {
       active: "{device} {percentage}",
       muted: "Muted {device}",

@@ -1,10 +1,10 @@
 #!/bin/bash
-# hk-launch-browser
+# hk-browser-launch
 # Launches the default browser as defined by xdg-settings, automatically
 # translating --private into the correct private browsing flag for the browser.
 #
 # Usage:
-#   hk-launch-browser [--private] [args...]
+#   hk-browser-launch [--private] [args...]
 #
 #   --private   Open in private/incognito mode. Translated to the appropriate
 #               flag for the detected browser (--private-window for Firefox-based,

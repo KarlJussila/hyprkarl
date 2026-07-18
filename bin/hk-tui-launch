@@ -1,17 +1,17 @@
 #!/bin/bash
-# hk-launch-tui
+# hk-tui-launch
 # Launches a TUI command in the default terminal with a hyprkarl app ID,
 # allowing it to be styled independently via window rules.
 #
 # Usage:
-#   hk-launch-tui <command> [args...]
+#   hk-tui-launch <command> [args...]
 #
 # Example:
-#   hk-launch-tui btop
-#   hk-launch-tui nvim ~/notes.md
+#   hk-tui-launch btop
+#   hk-tui-launch nvim ~/notes.md
 
 if (($# == 0)); then
-  echo "Usage: hk-launch-tui <command> [args...]" >&2
+  echo "Usage: hk-tui-launch <command> [args...]" >&2
   exit 1
 fi
 

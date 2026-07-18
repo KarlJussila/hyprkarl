@@ -158,13 +158,13 @@ Installed services keep their files under `~/.traefik`, `~/.kiwix`,
 Some Hyprkarl commands open TUIs and reuse an existing window when one is
 already open:
 
-- `hk-launch-audio`
-- `hk-launch-bluetooth`
-- `hk-launch-wifi`
+- `hk-audio-launch`
+- `hk-bluetooth-launch`
+- `hk-wifi-launch`
 
 Common utility commands include:
 
-- `hk-record-screen`
+- `hk-screen-record`
 - `hk-nightlight`
 - `hk-caffeine`
 - `hk-playerctl`

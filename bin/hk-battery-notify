@@ -1,15 +1,15 @@
 #!/bin/bash
-# hk-notify-battery
+# hk-battery-notify
 # Sends a battery notification with appropriate icon and urgency
 #
-# Usage: hk-notify-battery [-c] [-v] [-i icon] [title] [body]
+# Usage: hk-battery-notify [-c] [-v] [-i icon] [title] [body]
 #   -c        critical urgency
 #   -v        show progress bar
 #   -i icon   override icon
 #   %p in title/body will be replaced with current battery percentage
 #   %s in title/body will be replaced with battery status
 
-BATTERY=$(hk-find-battery) || {
+BATTERY=$(hk-battery-find) || {
     echo "No battery device found." >&2
     exit 1
 }
@@ -40,11 +40,11 @@ body="${body//%s/$status}"
 if [[ -n "$custom_icon" ]]; then
     icon="$custom_icon"
 elif [[ "$level" -le 33 ]]; then
-    icon=$(hk-find-icon "battery-caution-symbolic" status devices)
+    icon=$(hk-icon-find "battery-caution-symbolic" status devices)
 elif [[ "$level" -le 66 ]]; then
-    icon=$(hk-find-icon "battery-low-symbolic" status devices)
+    icon=$(hk-icon-find "battery-low-symbolic" status devices)
 else
-    icon=$(hk-find-icon "battery-symbolic" status devices)
+    icon=$(hk-icon-find "battery-symbolic" status devices)
 fi
 
 args=(

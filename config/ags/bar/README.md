@@ -144,7 +144,7 @@ secondary opens the full network manager:
 network: {
   kind: "network",
   commands: {
-    secondary: "hk-launch-wifi",
+    secondary: "hk-wifi-launch",
   },
 },
 ```
@@ -156,7 +156,7 @@ Add a Bluetooth widget. Primary click opens a flyout listing paired devices
 bluetooth: {
   kind: "bluetooth",
   commands: {
-    secondary: "hk-launch-bluetooth",
+    secondary: "hk-bluetooth-launch",
   },
 },
 ```
@@ -168,7 +168,7 @@ audio: {
   kind: "audio",
   showPercentage: true,
   commands: {
-    secondary: "hk-launch-audio",  // right-click launches audio app; left-click opens flyout
+    secondary: "hk-audio-launch",  // right-click launches audio app; left-click opens flyout
   },
   tooltip: {
     enabled: true,
@@ -396,7 +396,7 @@ recording: {
   kind: "recording",
   icon: "󰻂",
   commands: {
-    primary: "hk-record-screen --stop-recording",
+    primary: "hk-screen-record --stop-recording",
   },
   tooltip: {
     text: "Recording — click to stop",
@@ -404,7 +404,7 @@ recording: {
 },
 ```
 
-The widget receives state updates via `ags request recording-sync`, which `hk-record-screen` calls automatically on start and stop. No polling is involved.
+The widget receives state updates via `ags request recording-sync`, which `hk-screen-record` calls automatically on start and stop. No polling is involved.
 
 Set `tooltip: { text: "" }` to suppress the tooltip.
 
@@ -467,7 +467,7 @@ network: {
   kind: "network",
   commands: {
     primary: "{flyout}",
-    secondary: "hk-launch-wifi",
+    secondary: "hk-wifi-launch",
     tertiary: "nm-connection-editor",
   },
 },

@@ -1,6 +1,6 @@
 #!/bin/bash
-# hk-launch-wifi
+# hk-wifi-launch
 # Unblock wifi via rfkill and focus/launch the wifitui TUI.
 
 rfkill unblock wifi
-exec hk-launch-tui wifitui
+exec hk-tui-launch wifitui

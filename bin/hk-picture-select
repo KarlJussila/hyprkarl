@@ -1,9 +1,9 @@
 #!/bin/bash
-# hk-select-picture
+# hk-picture-select
 # Interactive picker for selecting an image file
 #
 # Usage:
-#   hk-select-picture [directory]
+#   hk-picture-select [directory]
 #
 #   directory   Directory to browse. Defaults to ~/Pictures.
 

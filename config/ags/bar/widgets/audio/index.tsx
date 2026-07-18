@@ -28,7 +28,7 @@ type AudioDefaults = {
 
 export const defaults: AudioDefaults = {
   showPercentage: true,
-  commands: { secondary: "hk-launch-audio" },
+  commands: { secondary: "hk-audio-launch" },
   flyout: defaultFlyout,
   tooltip: {
     active: "{device} {percentage}",

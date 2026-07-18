@@ -30,7 +30,7 @@ CHOICE=$(printf '%s\n' "${CHOICES[@]}" \
 
 for index in "${!CHOICE_IDS[@]}"; do
     if [[ "$CHOICE" == "${CHOICES[$index]}" ]]; then
-        hk-launch-tui hk-docker install "${CHOICE_IDS[$index]}"
+        hk-tui-launch hk-docker install "${CHOICE_IDS[$index]}"
         exit 0
     fi
 done

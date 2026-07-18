@@ -19,10 +19,10 @@ hl.bind("SUPER + SHIFT + ALT + COMMA", hl.dsp.exec_cmd("makoctl restore"), { des
 hl.bind("SUPER + CTRL + N", hl.dsp.exec_cmd("hk-nightlight"), { description = "Toggle nightlight" })
 
 -- Control panels
-hl.bind("SUPER + CTRL + A", hl.dsp.exec_cmd("hk-launch-audio"), { description = "Audio controls" })
-hl.bind("SUPER + CTRL + B", hl.dsp.exec_cmd("hk-launch-bluetooth"), { description = "Bluetooth controls" })
-hl.bind("SUPER + CTRL + W", hl.dsp.exec_cmd("hk-launch-wifi"), { description = "Wifi controls" })
-hl.bind("SUPER + CTRL + T", hl.dsp.exec_cmd("hk-launch-tui btop"), { description = "Activity" })
+hl.bind("SUPER + CTRL + A", hl.dsp.exec_cmd("hk-audio-launch"), { description = "Audio controls" })
+hl.bind("SUPER + CTRL + B", hl.dsp.exec_cmd("hk-bluetooth-launch"), { description = "Bluetooth controls" })
+hl.bind("SUPER + CTRL + W", hl.dsp.exec_cmd("hk-wifi-launch"), { description = "Wifi controls" })
+hl.bind("SUPER + CTRL + T", hl.dsp.exec_cmd("hk-tui-launch btop"), { description = "Activity" })
 
 -- Screenshots
 hl.bind("SUPER + PRINT", hl.dsp.exec_cmd("hyprshot -m window"), { description = "Screenshot window" })

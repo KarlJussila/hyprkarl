@@ -19,10 +19,10 @@ case "${1:-}" in
 esac
 
 if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -q MUTED; then
-    icon=$(hk-find-icon "microphone-sensitivity-muted-symbolic" status actions devices)
+    icon=$(hk-icon-find "microphone-sensitivity-muted-symbolic" status actions devices)
     summary="Mic Muted"
 else
-    icon=$(hk-find-icon "audio-input-microphone-symbolic" status actions devices)
+    icon=$(hk-icon-find "audio-input-microphone-symbolic" status actions devices)
     summary="Mic Active"
 fi
 

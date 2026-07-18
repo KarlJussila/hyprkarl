@@ -29,11 +29,11 @@ CHOICE=$(echo "$options" \
            -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-    "$SETUP")     hk-launch-tui hk-fingerprint setup ;;
-    "$ENROLL")    hk-launch-tui hk-fingerprint enroll ;;
+    "$SETUP")     hk-tui-launch hk-fingerprint setup ;;
+    "$ENROLL")    hk-tui-launch hk-fingerprint enroll ;;
     "$REMOVE")    hk-fingerprint remove \
                   "$(hk-fingerprint select 'Remove Fingerprint')" ;;
-    "$UNINSTALL") hk-launch-tui hk-fingerprint setup --remove ;;
+    "$UNINSTALL") hk-tui-launch hk-fingerprint setup --remove ;;
     "")           exit 1 ;;
 esac
 

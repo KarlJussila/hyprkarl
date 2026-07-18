@@ -17,7 +17,7 @@ does not try to document every internal script.
   package, and system changes as `delta` diffs, then apply the categories you
   select. Excludes the system package upgrade (`paru -Syu`) — see
   `hk-pkg-upgrade` for that. Launch via the update menu or
-  `hk-launch-tui hk-update-tui`.
+  `hk-tui-launch hk-update-tui`.
 - `hk-update dotfiles`
   Re-stow config files and remove stale symlinks. Checks for conflicts first
   and aborts if any are found.
@@ -80,25 +80,25 @@ does not try to document every internal script.
 
 ### Launching apps
 
-- `hk-launch-audio`
+- `hk-audio-launch`
   Launch the audio controls TUI (`wiremix`).
-- `hk-launch-bluetooth`
+- `hk-bluetooth-launch`
   Launch the bluetooth controls TUI (`bluetui`). Unblocks bluetooth via
   `rfkill` first.
-- `hk-launch-wifi`
+- `hk-wifi-launch`
   Launch the Wi-Fi controls TUI (`wifitui`). Unblocks Wi-Fi via `rfkill`
   first.
-- `hk-launch-browser [--private] [args...]`
+- `hk-browser-launch [--private] [args...]`
   Launch the default browser as defined by `xdg-settings`. `--private` is
   translated to the right private-browsing flag for the detected browser
   (Firefox, Edge, Chromium, etc.).
-- `hk-launch-editor [args...]`
+- `hk-editor-launch [args...]`
   Launch the editor set in `$EDITOR` (with `nvim` as a fallback). Known TUI
   editors run inside the hyprkarl terminal; everything else runs detached.
-- `hk-open-terminal [args...]`
+- `hk-terminal-open [args...]`
   Open a terminal window with the hyprkarl terminal app-id, waiting for it
   to close before returning. Arguments are forwarded to `xdg-terminal-exec`.
-  Use `hk-launch-tui` instead when you don't need to wait for the result.
+  Use `hk-tui-launch` instead when you don't need to wait for the result.
 - `hk-open-with <file>`
   Show a rofi-based app picker for opening a file.
 - `hk-lock`
@@ -167,14 +167,14 @@ does not try to document every internal script.
   Install an editor and make it the default editor.
 - `hk-default-shell <shell>`
   Install a shell and make it the login shell.
-- `hk-setup-timezone`
+- `hk-timezone-setup`
   Set the system timezone.
 
 ## Packages
 
 - `hk-pkg-upgrade`
   Upgrade all installed packages (pacman + AUR) non-interactively, then prompt
-  to reboot. Intended to be launched via `hk-launch-tui hk-pkg-upgrade` so it
+  to reboot. Intended to be launched via `hk-tui-launch hk-pkg-upgrade` so it
   opens in a floating terminal.
 - `hk-pkg-install-tui`
   Open an `fzf` package picker to install pacman packages.
@@ -261,16 +261,16 @@ does not try to document every internal script.
 
 ## Media, Hardware, and Utilities
 
-- `hk-record-screen`
+- `hk-screen-record`
   Start or stop screen recording. Supports desktop audio, microphone audio,
   webcam overlays, and explicit resolution arguments.
-- `hk-compress-video [input] [target_size] [options]`
+- `hk-video-compress [input] [target_size] [options]`
   Two-pass compression of a video file to a target file size. Prompts via
   `gum` for missing arguments unless `--non-interactive` is set.
-- `hk-select-picture [directory]`
+- `hk-picture-select [directory]`
   Open `yazi` as an image picker and print the chosen path. Defaults to
   `~/Pictures`.
-- `hk-select-video [directory]`
+- `hk-video-select [directory]`
   Open `yazi` as a video picker and print the chosen path. Defaults to
   `~/Videos`.
 - `hk-nightlight [on|off|toggle]`
@@ -301,12 +301,12 @@ These `hk-*` commands exist in `bin/` but are not meant to be typed directly.
 They are invoked by other scripts, keybindings, and bar widgets. Listed for
 completeness so they can be discovered with grep:
 
-- Launching glue: `hk-launch-tui`, `hk-restart-app`
+- Launching glue: `hk-tui-launch`, `hk-app-restart`
 - Hardware actions bound to function keys: `hk-brightness-display`,
   `hk-brightness-keyboard`, `hk-audio-switch`, `hk-battery-monitor`
-- Notification and OSD helpers: `hk-notify-battery`, `hk-notify-window-class`,
+- Notification and OSD helpers: `hk-battery-notify`, `hk-notify-window-class`,
   `hk-show-done`, `hk-suggest-reboot`
-- Lookup helpers: `hk-find-battery`, `hk-find-icon`, `hk-cmd-present`,
+- Lookup helpers: `hk-battery-find`, `hk-icon-find`, `hk-cmd-present`,
   `hk-terminal-cwd`
 
 If you need behavior one of these provides from your own script, source or

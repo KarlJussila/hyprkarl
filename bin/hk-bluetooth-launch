@@ -1,6 +1,6 @@
 #!/bin/bash
-# hk-launch-bluetooth
+# hk-bluetooth-launch
 # Unblock bluetooth via rfkill and focus/launch the bluetui TUI.
 
 rfkill unblock bluetooth
-exec hk-launch-tui bluetui
+exec hk-tui-launch bluetui

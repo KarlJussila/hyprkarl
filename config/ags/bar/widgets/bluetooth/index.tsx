@@ -28,7 +28,7 @@ type BluetoothDefaults = {
 }
 
 export const defaults: BluetoothDefaults = {
-  commands: { secondary: "hk-launch-bluetooth" },
+  commands: { secondary: "hk-bluetooth-launch" },
   flyout: defaultFlyout,
   icons: {
     enabled: "",

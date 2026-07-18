@@ -33,4 +33,4 @@ notify-send \
     -h int:value:"$brightness" \
     -a "osd-brightness" \
     "Brightness" "${brightness}%" \
-    --icon="$(hk-find-icon "display-brightness-symbolic" status actions)"
+    --icon="$(hk-icon-find "display-brightness-symbolic" status actions)"

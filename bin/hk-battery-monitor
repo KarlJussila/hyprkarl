@@ -8,7 +8,7 @@ FIRED_FILE="$RUNTIME_DIR/battery-fired"
 
 mkdir -p "$RUNTIME_DIR"
 
-BATTERY=$(hk-find-battery) || {
+BATTERY=$(hk-battery-find) || {
     echo "No battery device found; battery monitor disabled." >&2
     exit 0
 }
@@ -35,15 +35,15 @@ while true; do
     fi
 
     if at_battery 20; then
-        hk-notify-battery "Battery Low: %p%"
+        hk-battery-notify "Battery Low: %p%"
     fi
 
     if at_battery 10; then
-        hk-notify-battery "Battery Low: %p%"
+        hk-battery-notify "Battery Low: %p%"
     fi
 
     if at_battery 5; then
-        hk-notify-battery -c "Battery Low: %p%"
+        hk-battery-notify -c "Battery Low: %p%"
     fi
 
     sleep "$POLL_INTERVAL"

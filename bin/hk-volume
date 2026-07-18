@@ -22,14 +22,14 @@ volume_raw=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
 volume=$(awk '{printf "%d", $2 * 100}' <<< "$volume_raw")
 
 if grep -q MUTED <<< "$volume_raw"; then
-  icon=$(hk-find-icon "audio-volume-muted-symbolic" status actions)
+  icon=$(hk-icon-find "audio-volume-muted-symbolic" status actions)
   volume=0
 elif (( volume <= 33 )); then
-  icon=$(hk-find-icon "audio-volume-low-symbolic" status actions)
+  icon=$(hk-icon-find "audio-volume-low-symbolic" status actions)
 elif (( volume <= 66 )); then
-  icon=$(hk-find-icon "audio-volume-medium-symbolic" status actions)
+  icon=$(hk-icon-find "audio-volume-medium-symbolic" status actions)
 else
-  icon=$(hk-find-icon "audio-volume-high-symbolic" status actions)
+  icon=$(hk-icon-find "audio-volume-high-symbolic" status actions)
 fi
 
 notify-send \

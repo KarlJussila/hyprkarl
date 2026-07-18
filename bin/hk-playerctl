@@ -5,10 +5,10 @@
 # Usage:
 #   hk-playerctl <play-pause|next|previous>
 
-ICON_PLAY=$(hk-find-icon "media-playback-start-symbolic")
-ICON_PAUSE=$(hk-find-icon "media-playback-pause-symbolic")
-ICON_NEXT=$(hk-find-icon "media-skip-forward-symbolic")
-ICON_PREV=$(hk-find-icon "media-skip-backward-symbolic")
+ICON_PLAY=$(hk-icon-find "media-playback-start-symbolic")
+ICON_PAUSE=$(hk-icon-find "media-playback-pause-symbolic")
+ICON_NEXT=$(hk-icon-find "media-skip-forward-symbolic")
+ICON_PREV=$(hk-icon-find "media-skip-backward-symbolic")
 
 action="${1:-}"
 if [[ -z "$action" ]]; then

@@ -1,9 +1,9 @@
 #!/bin/bash
-# hk-compress-video
+# hk-video-compress
 # Compresses a video file to a target file size using two-pass encoding.
 #
 # Usage:
-#   hk-compress-video [input] [target_size] [options]
+#   hk-video-compress [input] [target_size] [options]
 #
 #   input        Path to source video. Prompted via gum if omitted.
 #   target_size  Target file size (e.g. 10M, 50M). Prompted if omitted.
@@ -80,7 +80,7 @@ parse_args() {
 # =============================================================================
 
 prompt_for_input_file() {
-    input=$(hk-select-video)
+    input=$(hk-video-select)
     [[ -n "$input" ]] || error "No file selected."
 }
 

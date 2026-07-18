@@ -86,7 +86,7 @@ Vendor-agnostic: AMD/Intel metrics are read from sysfs in-process; NVIDIA falls 
 | Field      | Type     | Default                                    | Description                                              |
 | ---------- | -------- | ------------------------------------------ | -------------------------------------------------------- |
 | `icon`     | string   | `"󰻂"`                                       | Glyph shown when recording.                              |
-| `commands` | clicks   | `{ primary: "hk-record-screen --stop-recording" }` | Click handlers.                                  |
+| `commands` | clicks   | `{ primary: "hk-screen-record --stop-recording" }` | Click handlers.                                  |
 | `tooltip`  | string   | `"Recording — click to stop"`             | Tooltip text; empty disables.                            |
 
 ---
@@ -95,7 +95,7 @@ Vendor-agnostic: AMD/Intel metrics are read from sysfs in-process; NVIDIA falls 
 
 | Field             | Type   | Default                                | Description                                       |
 | ----------------- | ------ | -------------------------------------- | ------------------------------------------------- |
-| `commands`        | clicks | `{ secondary: "hk-launch-bluetooth" }` | Click handlers; primary opens the device flyout.  |
+| `commands`        | clicks | `{ secondary: "hk-bluetooth-launch" }` | Click handlers; primary opens the device flyout.  |
 | `flyout`          | flyout | `{ align: "center", gap: 0 }`          | Device list flyout placement.                     |
 | `icons.enabled`   | string | `""`                                  | Glyph when Bluetooth is on.                       |
 | `icons.disabled`  | string | `"󰂲"`                                  | Glyph when off.                                   |
@@ -109,7 +109,7 @@ Vendor-agnostic: AMD/Intel metrics are read from sysfs in-process; NVIDIA falls 
 
 | Field                  | Type   | Default                                 | Description                                        |
 | ---------------------- | ------ | --------------------------------------- | -------------------------------------------------- |
-| `commands`             | clicks | `{ secondary: "hk-launch-wifi" }`       | Click handlers; primary opens the Wi-Fi flyout.    |
+| `commands`             | clicks | `{ secondary: "hk-wifi-launch" }`       | Click handlers; primary opens the Wi-Fi flyout.    |
 | `flyout`               | flyout | `{ align: "center", gap: 0 }`           | Wi-Fi picker flyout placement.                     |
 | `icons.disconnected`   | string | `"󰤮"`                                   | Disconnected glyph.                                |
 | `icons.ethernet`       | string | `"󰀂"`                                   | Wired connection glyph.                            |
@@ -128,7 +128,7 @@ Vendor-agnostic: AMD/Intel metrics are read from sysfs in-process; NVIDIA falls 
 | Field            | Type   | Default                                    | Description                                          |
 | ---------------- | ------ | ------------------------------------------ | ---------------------------------------------------- |
 | `showPercentage` | bool   | `true`                                     | Whether to show the numeric percentage label.        |
-| `commands`       | clicks | `{ secondary: "hk-launch-audio" }`         | Click handlers; primary toggles the slider flyout.   |
+| `commands`       | clicks | `{ secondary: "hk-audio-launch" }`         | Click handlers; primary toggles the slider flyout.   |
 | `flyout`         | flyout | `{ align: "center", gap: 0 }`              | Slider flyout placement.                             |
 | `tooltip.active` | string | `"{device} {percentage}"`                  | Tooltip when audio is unmuted. Tokens: `{device}`, `{percentage}`. |
 | `tooltip.muted`  | string | `"Muted {device}"`                         | Tooltip when muted.                                  |

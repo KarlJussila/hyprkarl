@@ -22,7 +22,7 @@ case "$CHOICE" in
 "$ADD")
   output_file=$(mktemp) || exit 1
   trap 'rm -f "$output_file"' EXIT
-  hk-open-terminal -e bash -c 'hk-select-picture >"$1"' _ "$output_file"
+  hk-terminal-open -e bash -c 'hk-picture-select >"$1"' _ "$output_file"
   selected=$(<"$output_file")
   if [[ -n "$selected" ]]; then
     hk-wallpaper add "$selected"

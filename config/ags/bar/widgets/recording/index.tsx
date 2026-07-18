@@ -19,7 +19,7 @@ type RecordingDefaults = {
 
 export const defaults: RecordingDefaults = {
   icon: "󰻂",
-  commands: { primary: "hk-record-screen --stop-recording" },
+  commands: { primary: "hk-screen-record --stop-recording" },
   tooltip: "Recording — click to stop",
 }
 

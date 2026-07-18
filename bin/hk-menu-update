@@ -15,8 +15,8 @@ CHOICE=$(echo -e "$UPDATE_HK\n$UPGRADE_PKGS" |
     -theme "$ROFI_THEME")
 
 case "$CHOICE" in
-"$UPDATE_HK") hk-launch-tui hk-update-tui ;;
-"$UPGRADE_PKGS") hk-launch-tui hk-pkg-upgrade ;;
+"$UPDATE_HK") hk-tui-launch hk-update-tui ;;
+"$UPGRADE_PKGS") hk-tui-launch hk-pkg-upgrade ;;
 "") exit 1 ;;
 esac
 

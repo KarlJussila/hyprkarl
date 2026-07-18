@@ -4,7 +4,7 @@
 # then prompt to reboot.
 #
 # Intended to be launched via:
-#   hk-launch-tui hk-pkg-upgrade
+#   hk-tui-launch hk-pkg-upgrade
 
 gum log --level info "Upgrading all packages..."
 paru -Syu --noconfirm

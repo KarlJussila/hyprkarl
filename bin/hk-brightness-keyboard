@@ -40,4 +40,4 @@ notify-send \
     -h int:value:"$percent" \
     -a "osd-brightness" \
     "Keyboard Brightness" "${percent}%" \
-    --icon="$(hk-find-icon "keyboard-brightness-symbolic" status actions)"
+    --icon="$(hk-icon-find "keyboard-brightness-symbolic" status actions)"

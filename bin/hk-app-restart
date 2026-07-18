@@ -1,7 +1,7 @@
 #!/bin/bash
-# hk-restart-app
+# hk-app-restart
 # Restart an application by killing it and relaunching via uwsm.
-# Usage: hk-restart-app <application-name>
+# Usage: hk-app-restart <application-name>
 
 pkill -x "$1"
 timeout 2 bash -c "while pgrep -x '$1' >/dev/null; do sleep 0.05; done" || pkill -9 -x "$1"

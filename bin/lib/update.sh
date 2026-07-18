@@ -107,9 +107,9 @@ stow_adopt_config() {
   stow -D --no-folding \
     --dir="$HYPRKARL_PATH" --target="$HOME/.config" config
   stow --adopt --no-folding \
-    --dir="$HYPRKARL_PATH" --target="$HOME/.config" config
+    --dir="$HYPRKARL_PATH" --target="$HOME/.config" config || return 1
   stow --adopt --no-folding \
-    --dir="$HYPRKARL_PATH" --target="$HOME/.local/share/applications" applications
+    --dir="$HYPRKARL_PATH" --target="$HOME/.local/share/applications" applications || return 1
   _stow_gtk_theme 1
 }
 
@@ -117,11 +117,11 @@ stow_restow_config() {
   stow --restow --no-folding \
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.config" \
-    config
+    config || return 1
   stow --restow --no-folding \
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.local/share/applications" \
-    applications
+    applications || return 1
   _stow_gtk_theme 0
 }
 

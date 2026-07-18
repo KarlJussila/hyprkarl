@@ -50,6 +50,17 @@ fi
 # the node_modules/ags link. If it differs from what's committed the file goes
 # dirty — review the diff before committing.
 ags types -u -d "$AGS_REPO_DIR"
+
+# `ags types -u` recreates the node_modules ags/gnim links as ABSOLUTE symlinks,
+# which stow refuses to stow — silently breaking the next `hk-update dotfiles`
+# restow. Convert them back to relative.
+for link in "$AGS_REPO_DIR"/node_modules/{ags,gnim}; do
+  target=$(readlink "$link")
+  if [[ "$target" == /* ]]; then
+    ln -sfrn "$target" "$link"
+  fi
+done
+
 if ! git -C "$SCRIPT_DIR" diff --quiet -- config/ags/tsconfig.json 2>/dev/null; then
   printf 'Note: AGS type paths updated in config/ags/tsconfig.json\n'
   printf '  Review: git -C %s diff config/ags/tsconfig.json\n' "$SCRIPT_DIR"

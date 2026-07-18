@@ -30,15 +30,14 @@ disable_caffeine() {
 }
 
 case "${1:-toggle}" in
-on) enable_caffeine ;;
-off) disable_caffeine ;;
-toggle) is_active && enable_caffeine || disable_caffeine ;;
-status) is_active && exit 1 || exit 0 ;;
-*)
-  echo "Usage: $(basename "$0") [on|off|toggle|status]" >&2
-  exit 1
-  ;;
+  on)     enable_caffeine ;;
+  off)    disable_caffeine ;;
+  toggle) is_active && enable_caffeine || disable_caffeine ;;
+  status) is_active && exit 1 || exit 0 ;;
+  *)
+    echo "Usage: $(basename "$0") [on|off|toggle|status]" >&2
+    exit 1
+    ;;
 esac
 
 ags request caffeine-sync
-

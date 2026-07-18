@@ -2,7 +2,7 @@
 
 ## Goals
 
-Scripts in this repo run in a known, controlled environment: CachyOS + Hyprland, a single user session, with all Hyprkarl dependencies and the full suite of `hk-*` commands always available. There's no need to defend against a minimal POSIX shell or an absent dependency.
+Scripts in this repo run in a known, controlled environment: CachyOS + Hyprland, a single user session, with all Hyprkarl dependencies and the full suite of `hk-*` commands always available. There's no need to defend against a minimal POSIX shell or an absent dependency. The session environment is part of that guarantee: `HYPRKARL_PATH` (set in `config/uwsm/env`) is always present inside a Hyprkarl session, so scripts use it without fallbacks. Only the install/update path (`bin/lib/update.sh` and the `setup-*.sh` scripts), which must work from a TTY before any session exists, carries a default.
 
 The goal is readability over robustness theater. Scripts should read top-to-bottom like a clear sequence of steps. No strict mode, minimal defensive wrappers. Handle the errors you actually care about; ignore the ones you don't.
 

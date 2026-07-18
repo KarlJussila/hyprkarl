@@ -22,6 +22,10 @@ What to do:
 - use `hk-update dotfiles` when you only need to expose new tracked files
 - keep your own changes on a git branch in `~/.local/share/hyprkarl`
 
+Note that your *committed* changes are safe: re-running `setup-dotfiles.sh`
+refuses to proceed while `config/` or `applications/` have uncommitted
+changes, because its stow step resets those paths to HEAD.
+
 ## A Change Did Not Take Effect
 
 Symptoms:

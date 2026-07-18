@@ -17,10 +17,15 @@ sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
 mapfile -t aur_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/aur.txt")
 paru -S --needed --noconfirm "${aur_pkgs[@]}"
 
-# Remove packages
+# Remove packages. Only pass installed ones to pacman — a single missing
+# target ("target not found") fails the whole transaction.
 mapfile -t remove_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/remove.txt")
-if [[ ${#remove_pkgs[@]} -gt 0 ]]; then
-  sudo pacman -Rns --noconfirm "${remove_pkgs[@]}"
+installed_remove=()
+for pkg in "${remove_pkgs[@]}"; do
+  pacman -Q "$pkg" &>/dev/null && installed_remove+=("$pkg")
+done
+if [[ ${#installed_remove[@]} -gt 0 ]]; then
+  sudo pacman -Rns --noconfirm "${installed_remove[@]}"
 fi
 
 # Record installed commit for update tracking

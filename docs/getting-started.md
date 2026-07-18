@@ -23,13 +23,10 @@ cd ~/.local/share/hyprkarl
 ./setup-all.sh
 ```
 
-`setup-all.sh` runs three scripts in order:
+`setup-all.sh` runs three scripts in order, stopping at the first failure:
 
 - `setup-packages.sh`
   Installs the packages Hyprkarl expects.
-- `setup-system.sh`
-  Applies system-level settings such as GTK defaults, SDDM autologin, logind
-  lid handling, sudo and faillock settings, and LocalSend firewall rules.
 - `setup-dotfiles.sh`
   Uses GNU Stow to replace the live files under `~/.config/` and
   `~/.local/share/applications/` with symlinks to the matching files in
@@ -38,6 +35,12 @@ cd ~/.local/share/hyprkarl
   symlink to Hyprkarl's tracked file. So after the script finishes, both new
   paths and overlapping paths point at Hyprkarl; the difference is that
   overlapping existing configs are overwritten unless you back them up first.
+  On re-runs it refuses to proceed while the repo has uncommitted `config/` or
+  `applications/` changes, since the stow step resets those paths to HEAD —
+  commit (or discard) first.
+- `setup-system.sh`
+  Applies system-level settings such as GTK defaults, SDDM autologin, logind
+  lid handling, sudo and faillock settings, and LocalSend firewall rules.
 
 ## Understand the Symlink Model
 

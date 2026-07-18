@@ -57,13 +57,16 @@ require_tools() {
 }
 
 intro() {
-  local branch head
+  local branch head version
   branch=$(git -C "$HK" branch --show-current)
   head=$(git -C "$HK" log --oneline -1 --no-decorate)
+  # Release tag when on one, tag-plus-distance otherwise, short hash pre-first-tag
+  version=$(git -C "$HK" describe --tags --always 2>/dev/null)
   gum style --border rounded --padding "0 2" --margin "1 0" --border-foreground 212 \
     "Hyprkarl Update" \
-    "branch: $branch" \
-    "HEAD:   $head"
+    "version: $version" \
+    "branch:  $branch" \
+    "HEAD:    $head"
 }
 
 # --- Phase 1: sync ---
@@ -100,7 +103,7 @@ phase_sync() {
     return 0
   fi
 
-  info "$behind new commit(s) on $upstream."
+  info "$behind new commit(s) on $upstream ($(git -C "$HK" describe --tags --always "$upstream" 2>/dev/null))."
   if gum confirm $'\nPreview incoming commits?'; then
     git -C "$HK" log --oneline --no-decorate "HEAD..$upstream" | gum pager
   fi

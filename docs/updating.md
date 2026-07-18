@@ -13,6 +13,10 @@ The setup scripts (`setup-dotfiles.sh`, `setup-packages.sh`,
 `setup-system.sh`) write this baseline when they run, so `hk-update`
 immediately knows the starting state after a fresh install.
 
+Upstream releases are annotated git tags (`vX.Y.Z`) on `main`, described in
+`CHANGELOG.md`. The guided TUI shows the current version (`git describe`) in
+its intro and the version of the merge target during sync.
+
 ## Guided Update (TUI)
 
 ```bash

@@ -168,6 +168,9 @@ SUPER + T              ->  Toggle tiling/floating
 
 ## Updating
 
+Releases are annotated git tags (`vX.Y.Z`) on `main`; see
+[CHANGELOG.md](CHANGELOG.md) for what changed in each.
+
 If you have customized Hyprkarl, update it like a normal git branch. Review
 upstream changes before merging them, and commit your own work first,
 especially changes under `config/` and `applications/`.

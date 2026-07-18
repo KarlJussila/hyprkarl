@@ -24,8 +24,6 @@ That means:
   Commands meant to be run directly. Subcommands of a dispatcher (`hk-theme set`, `hk-pkg install`, …) live as their own top-level commands using the noun-first form `hk-<noun>-<action>`. The dispatcher is a thin router that `exec`s them.
 - `bin/lib/`
   Shared sourced helpers used by more than one `bin/` command (`docker.sh`, `update.sh`). Single-use logic stays in the command itself.
-- `scripts/`
-  Support scripts and backend logic
 - `templates/`
   Files copied or rendered by setup and install commands
 - `applications/`
@@ -43,6 +41,28 @@ Most files in the repo are static, but these paths represent current state:
 
 If you change theme or wallpaper behavior, preserve that model unless you
 intend to replace it.
+
+## Branches and Releases
+
+- `main` is the released branch: what a fresh install clones and what
+  `hk-update` merges from.
+- `develop` is the integration branch. Work lands there first and is merged to
+  `main` when it's ready to ship.
+- A release is an annotated tag `vX.Y.Z` on `main`, cut together with a
+  hand-written entry in `CHANGELOG.md`:
+
+  ```bash
+  git checkout main && git merge develop
+  # move the Unreleased notes under a new version heading in CHANGELOG.md, commit
+  git tag -a vX.Y.Z -m "Hyprkarl vX.Y.Z"
+  git push origin main vX.Y.Z
+  ```
+
+- Until v1.0.0, minor versions may include breaking changes; the changelog
+  calls them out explicitly.
+
+`hk-update tui` shows the current version (`git describe`) in its intro, so an
+update reads as a move between releases rather than between commit hashes.
 
 ## Stow Behavior
 

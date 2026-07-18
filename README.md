@@ -2,7 +2,10 @@
 Hyprkarl is a desktop configuration repo for CachyOS + Hyprland, inspired by
 Omarchy. It is meant to be installed and then edited directly.
 
-> **Warning:** The setup process is largely untested. Use at your own risk.
+> **Warning:** The fresh-install path (`setup-*.sh` on a new machine) is
+> largely untested — the running system it produces is daily-driven, but the
+> first-run setup itself is not. Review the scripts before running them, and
+> use at your own risk.
 
 ## Screenshots
 
@@ -42,6 +45,16 @@ cd ~/.local/share/hyprkarl
 > **Warning:** If you already have configs you care about in `~/.config/` or
 > `~/.local/share/applications/`, back them up first. `setup-dotfiles.sh`
 > replaces overlapping live files with symlinks to Hyprkarl.
+
+## Uninstalling
+
+```bash
+~/.local/share/hyprkarl/uninstall.sh
+```
+
+Removes all of Hyprkarl's config symlinks (reversing `setup-dotfiles.sh`).
+Installed packages and `setup-system.sh` changes are left in place; the script
+lists them so you can undo what you want manually.
 
 ## After Installation
 

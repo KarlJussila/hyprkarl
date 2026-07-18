@@ -42,6 +42,10 @@ cd ~/.local/share/hyprkarl
   Applies system-level settings such as GTK defaults, SDDM autologin, logind
   lid handling, sudo and faillock settings, and LocalSend firewall rules.
 
+To leave Hyprkarl, `uninstall.sh` removes every config symlink (reversing
+`setup-dotfiles.sh`) and prints the packages and system settings it leaves in
+place for you to undo manually.
+
 ## Understand the Symlink Model
 
 Hyprkarl is edited from `~/.local/share/hyprkarl/`.

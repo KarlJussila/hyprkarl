@@ -2,6 +2,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+"$SCRIPT_DIR/setup-purge-noctalia.sh" || exit 1
 "$SCRIPT_DIR/setup-packages.sh" || exit 1
 "$SCRIPT_DIR/setup-dotfiles.sh" || exit 1
 "$SCRIPT_DIR/setup-system.sh" || exit 1

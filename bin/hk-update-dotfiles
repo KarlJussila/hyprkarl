@@ -27,7 +27,7 @@ if [[ "$force" -eq 1 ]]; then
   fi
   printf 'Restowing config files...\n'
   stow_adopt_config || exit 1
-  git -C "$HYPRKARL_PATH" checkout config/ applications/
+  git -C "$HYPRKARL_PATH" checkout config/ applications/ themes/
 elif [[ "$adopt" -eq 1 ]]; then
   printf 'Adopting config files...\n'
   stow_adopt_config || exit 1

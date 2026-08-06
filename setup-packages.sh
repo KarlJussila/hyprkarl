@@ -12,10 +12,10 @@ read_pkgs() {
 
 # Install packages
 mapfile -t pacman_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/pacman.txt")
-sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
+sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}" || exit 1
 
 mapfile -t aur_pkgs < <(read_pkgs "$SCRIPT_DIR/packages/aur.txt")
-paru -S --needed --noconfirm "${aur_pkgs[@]}"
+paru -S --needed --noconfirm "${aur_pkgs[@]}" || exit 1
 
 # Remove packages. Only pass installed ones to pacman — a single missing
 # target ("target not found") fails the whole transaction.

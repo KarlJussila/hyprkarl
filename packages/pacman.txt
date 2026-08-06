@@ -33,6 +33,7 @@ nautilus
 neovim
 noto-fonts
 noto-fonts-emoji
+paru
 pciutils
 perl-image-exiftool
 pipewire

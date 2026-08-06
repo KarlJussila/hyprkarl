@@ -9,7 +9,7 @@ export HYPRKARL_PATH="${HYPRKARL_PATH:-$SCRIPT_DIR}"
 
 # Early copy of the hk-update-dotfiles --force guard (which stows below), so a
 # doomed run fails here instead of after the slow AGS type generation.
-dirty=$(git -C "$SCRIPT_DIR" diff --name-only HEAD -- config/ applications/)
+dirty=$(git -C "$SCRIPT_DIR" diff --name-only HEAD -- config/ applications/ themes/)
 if [[ -n "$dirty" ]]; then
   printf 'Cannot install dotfiles — uncommitted changes would be overwritten:\n%s\n' "$dirty" >&2
   printf 'Commit your changes first.\n' >&2
@@ -39,6 +39,11 @@ rm -rf "$HOME/.config/ags/@girs" "$HOME/.config/ags/node_modules"
 # config changes (the reset to HEAD would silently discard them) and records
 # the installed commit for update tracking.
 "$SCRIPT_DIR/bin/hk-update-dotfiles" --force || exit 1
+
+# Seed the current-wallpaper symlink so it's already set on first login,
+# rather than relying on autostart's `hk-wallpaper init || cycle` fallback
+# to win a race against hyprpaper starting up on the very first boot.
+PATH="$SCRIPT_DIR/bin:$PATH" "$SCRIPT_DIR/bin/hk-wallpaper-cycle"
 
 # Create personal env var file from template if it doesn't exist
 if [[ ! -f ~/.config/uwsm/env.local ]]; then

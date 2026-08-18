@@ -1,0 +1,23 @@
+#!/bin/bash
+# hk-shell
+# Dispatch Quickshell lifecycle operations.
+
+usage() {
+  cat <<'EOF'
+Usage:
+  hk-shell start
+  hk-shell stop
+  hk-shell restart
+  hk-shell status
+  hk-shell logs [qs log options]
+EOF
+}
+
+action=${1:-}
+shift || true
+
+case "$action" in
+  start|stop|restart|status|logs) exec "hk-shell-$action" "$@" ;;
+  ""|-h|--help|help) usage; exit 0 ;;
+  *) usage >&2; exit 1 ;;
+esac

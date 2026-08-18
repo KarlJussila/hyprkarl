@@ -1,0 +1,19 @@
+#!/bin/bash
+# hk-shell-stop
+# Stop every running instance of the Hyprkarl Quickshell configuration.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/shell.sh
+source "$SCRIPT_DIR/lib/shell.sh"
+
+instances="$(hk_shell_instances)"
+if [[ -z "$instances" ]]; then
+  echo "Shell is already stopped."
+  exit 0
+fi
+
+while read -r instance_id; do
+  qs kill -i "$instance_id" >/dev/null || exit 1
+done < <(jq -r '.[].id' <<<"$instances")
+
+echo "Shell stopped."

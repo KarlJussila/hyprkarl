@@ -1,0 +1,13 @@
+import "../components"
+
+ShellButton {
+  required property string widgetId
+  required property var config
+  required property var systemState
+
+  visible: systemState.recording
+  text: config.icon
+  textColor: theme.error
+  tooltip: "Recording — click to stop"
+  primaryCommand: config.command
+}

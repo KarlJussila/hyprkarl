@@ -8,9 +8,13 @@ would edit.
 - `bin/`
   Commands meant to be run directly. Dispatchers (`hk-theme`, `hk-pkg`, …) route to top-level `hk-<noun>-<action>` commands.
 - `bin/lib/`
-  Shared sourced helpers (`docker.sh`, `update.sh`). Reserved for utilities used by more than one command, not single-use implementations.
+  Shared sourced helpers (`docker.sh`, `shell.sh`, `update.sh`). Reserved for utilities used by more than one command, not single-use implementations.
 - `config/`
   Application config and session behavior
+- `defaults/`
+  Upstream-owned data defaults used when no user replacement exists
+- `user/`
+  Reserved user-owned configuration; upstream keeps only documentation here
 - `packages/`
   Package lists read by `setup-packages.sh` and `hk-update packages`
 - `themes/`
@@ -165,6 +169,39 @@ hk-ags status
 
 See `config/ags/bar/README.md` for full widget configuration reference.
 
+## Quickshell Bar Replacement
+
+The replacement bar is being developed under `config/quickshell/` without
+changing session startup or the existing `hk-ags` commands yet. Its main
+editing surfaces are:
+
+- `defaults/shell.json`
+  Shipped bar edge, widget order, and inline widget instances
+- `user/shell.json`
+  Optional sparse user-owned override for the shipped shell configuration
+- `themes/<theme>/quickshell.json`
+  Theme-specific colors, typography, bar thickness, borders, radii, and spacing
+
+The prototype watches both shell JSON paths. Ordinary user objects merge over
+the default, arrays replace completely, and explicit widget-ID layout edits are
+applied afterward. Deleting the user file returns to the default, while an
+invalid live edit keeps the last valid configuration running. Version 1
+supports top and bottom bars and built-in widget kinds. See
+[Shell Configuration](shell-configuration.md) for the schema and extension
+roadmap.
+
+Run it alongside AGS with `hk-shell start`; use `hk-shell status`,
+`hk-shell logs`, and `hk-shell stop` to inspect and manage it. A direct
+`qs -p config/quickshell` launch remains useful for foreground development.
+See `config/quickshell/README.md` for its structure, checks, and interactions.
+The in-progress audio, network, Bluetooth, battery/power, and clock/calendar
+panels share a per-monitor host under `config/quickshell/panels/`; their
+feature-specific views and state live under `config/quickshell/features/`.
+Network scanning and Bluetooth discovery use feature-owned singletons because
+those operations are global to an adapter while panels are per monitor. Clock
+uses one application-wide current-time singleton while viewed-month navigation
+remains local to each panel. There is no separate feature-flyout boundary.
+
 ## Themes
 
 Theme files live under `themes/<theme-name>/`.
@@ -177,5 +214,5 @@ See [Themes](themes.md) for the full theme layout and how
 Use this rule of thumb:
 
 - put a command in `bin/` if it should be run directly. Subcommands of a dispatcher (e.g. `hk-theme set`) live as their own top-level commands (`hk-theme-set`); the dispatcher just `exec`s them.
-- put a sourced helper in `bin/lib/` only if it is shared by more than one command (`docker.sh`, `update.sh`).
+- put a sourced helper in `bin/lib/` only if it is shared by more than one command (`docker.sh`, `shell.sh`, `update.sh`).
 - put a support script in `scripts/` if it supports something else

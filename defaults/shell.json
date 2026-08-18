@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "bar": {
+    "edge": "top",
+    "exclusive": true,
+    "layout": {
+      "start": [
+        {
+          "id": "menu",
+          "kind": "menu",
+          "icon": "",
+          "command": "hk-menu"
+        },
+        {
+          "id": "workspaces",
+          "kind": "workspaces",
+          "alwaysShow": [1],
+          "includeFocused": true,
+          "includeOccupied": true
+        },
+        {
+          "id": "cpu",
+          "kind": "cpu",
+          "primary": "{temp}°",
+          "alternate": "{temp}° | {usage}%"
+        },
+        {
+          "id": "gpu",
+          "kind": "gpu",
+          "primary": "{usage}%",
+          "alternate": "{usage}% | {vramUsed}/{vramTotal}"
+        },
+        {
+          "id": "ram",
+          "kind": "ram",
+          "icon": "",
+          "primary": "{usedPercent}%",
+          "alternate": "{used}/{total} | {swapUsed}/{swapTotal}"
+        },
+        {
+          "id": "tray",
+          "kind": "tray",
+          "direction": "end"
+        }
+      ],
+      "center": {
+        "before": [
+          {
+            "id": "recording",
+            "kind": "recording",
+            "icon": "󰻂",
+            "command": "hk-screen-record --stop-recording"
+          }
+        ],
+        "anchor": {
+          "id": "clock",
+          "kind": "clock",
+          "primary": "ddd h:mm AP",
+          "alternate": "ddd h:mm:ss AP"
+        },
+        "after": [
+          {
+            "id": "caffeine",
+            "kind": "toggle",
+            "onCommand": "hk-caffeine on",
+            "offCommand": "hk-caffeine off",
+            "syncCommand": "hk-caffeine status",
+            "onIcon": "",
+            "offIcon": "󰽖"
+          }
+        ]
+      },
+      "end": [
+        {
+          "id": "audio",
+          "kind": "audio",
+          "showPercentage": false,
+          "secondaryCommand": "hk-audio-launch"
+        },
+        {
+          "id": "bluetooth",
+          "kind": "bluetooth",
+          "secondaryCommand": "hk-bluetooth-launch"
+        },
+        {
+          "id": "network",
+          "kind": "network",
+          "secondaryCommand": "hk-wifi-launch"
+        },
+        {
+          "id": "battery",
+          "kind": "battery",
+          "showPercentage": true,
+          "lowThreshold": 0.15,
+          "powerCommand": "hk-menu-power"
+        }
+      ]
+    }
+  }
+}

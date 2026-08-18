@@ -249,6 +249,29 @@ does not try to document every internal script.
 - `hk-ags request [args...]`
   Send an arbitrary request to the running AGS instance.
 
+## Quickshell Prototype
+
+These commands manage the replacement bar during development. They do not
+change session startup; AGS remains the active production bar.
+
+- `hk-shell start`
+  Start the Hyprkarl Quickshell configuration in a UWSM scope if it is not
+  already running. The command verifies that Quickshell registered a live
+  instance and reports QML load failures.
+- `hk-shell stop`
+  Stop every running instance of the Hyprkarl Quickshell configuration. It is
+  safe to run when the prototype is already stopped.
+- `hk-shell restart`
+  Stop and start the prototype.
+- `hk-shell status`
+  Print JSON containing `running` and the registered instances' IDs, process
+  IDs, and launch times. Exits nonzero when stopped.
+- `hk-shell logs [qs log options]`
+  Read the newest running instance's log, or the newest stopped instance when
+  the shell is not running. With no options it shows the last 200 lines;
+  native options such as `--follow`, `--tail 100`, and `--no-color` pass
+  through to `qs log`.
+
 ## UI Helpers
 
 - `hk-mako-reload`

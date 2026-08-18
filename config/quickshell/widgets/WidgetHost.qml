@@ -1,0 +1,58 @@
+import QtQuick
+
+Item {
+  id: root
+
+  required property var definition
+  required property string edge
+  required property bool showDivider
+  required property var barWindow
+  required property var theme
+  required property var systemState
+  required property var panelHost
+
+  readonly property string widgetId: definition.id
+  readonly property Item loadedItem: loader.item as Item
+  readonly property int dividerExtent: showDivider && loadedItem?.visible ? theme.borderWidth : 0
+  property bool initialized: false
+
+  implicitWidth: loadedItem?.visible ? loader.implicitWidth + dividerExtent : 0
+  implicitHeight: loadedItem?.visible ? loader.implicitHeight : 0
+  width: implicitWidth
+  height: implicitHeight
+
+  Rectangle {
+    visible: root.dividerExtent > 0
+    color: root.theme.border
+    width: root.dividerExtent
+    height: parent.height
+  }
+
+  Loader {
+    id: loader
+    x: root.dividerExtent
+    y: 0
+  }
+
+  function loadWidget(): void {
+    loader.source = ""
+    loader.setSource(Qt.resolvedUrl(root.definition.kind + ".qml"), {
+      widgetId: root.widgetId,
+      config: root.definition,
+      edge: root.edge,
+      barWindow: root.barWindow,
+      theme: root.theme,
+      systemState: root.systemState,
+      panelHost: root.panelHost
+    })
+  }
+
+  onDefinitionChanged: {
+    if (initialized) loadWidget()
+  }
+
+  Component.onCompleted: {
+    initialized = true
+    loadWidget()
+  }
+}

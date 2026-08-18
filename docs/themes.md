@@ -62,6 +62,11 @@ A full theme in this repo includes:
   Hyprtoolkit styling
 - `bar.scss`
   AGS bar colors, spacing, radii, and typography
+- `quickshell.json`
+  In-development Quickshell colors, typography, bar thickness, spacing, radii,
+  borders, dividers, tooltip radius, panel gap, preferred/max panel size, and
+  transition timing. All Quickshell surface colors and interaction states must
+  come from this semantic theme data.
 - `rofi.rasi`
   Rofi styling
 - `mako.ini`

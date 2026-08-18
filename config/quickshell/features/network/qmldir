@@ -1,0 +1,3 @@
+module qs.features.network
+singleton NetworkState 1.0 NetworkState.qml
+NetworkPanel 1.0 NetworkPanel.qml

@@ -14,8 +14,9 @@ in the same change** — both audiences:
 - **Human-facing docs** — `README.md` and `docs/` (getting-started, themes,
   commands, configuration-map, extending, repo-conventions, shell-style,
   updating, …).
-- **Agent-facing docs** — the three canonical `AGENTS.md` files: this one,
-  `bin/AGENTS.md` (command authoring), and `config/ags/AGENTS.md` (the bar).
+- **Agent-facing docs** — the canonical `AGENTS.md` files: this one,
+  `bin/AGENTS.md` (command authoring), `config/ags/AGENTS.md` (the current bar),
+  and `config/quickshell/AGENTS.md` (the replacement bar).
   Each adjacent `CLAUDE.md` only imports its `AGENTS.md` counterpart for Claude
   Code compatibility; keep shared guidance in `AGENTS.md`.
 
@@ -87,7 +88,7 @@ relaunching — a broken `hyprland.lua` has no automatic fallback.
 
 ### Theme System
 
-Themes live in `themes/{name}/` and control Hyprland, the AGS bar, rofi,
+Themes live in `themes/{name}/` and control Hyprland, the bars, rofi,
 terminals, mako, hyprlock, GTK, and Qt. Themes are meant to control **look** —
 colors, fonts, spacing — not behavior. The active theme is tracked by the
 symlink `config/hyprkarl/current/theme` (plus `theme.name`).
@@ -102,6 +103,24 @@ each theme directory. Themes can also be generated from a single color palette
 with the companion
 [theme generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
 (locally at `../theme-generator/`).
+
+### Quickshell Prototype Configuration
+
+AGS remains the active bar. The replacement under `config/quickshell/` reads
+the upstream-owned `defaults/shell.json` and applies the optional sparse
+`user/shell.json` override. Objects merge recursively, arrays replace as
+complete ordered values, and `bar.layoutEdits` provides explicit widget-ID
+operations for surgical layout changes. Widget instances are defined inline
+in the default layout, and version 1 accepts top and bottom bars only. Keep
+appearance in each theme's `quickshell.json`; shell JSON owns placement and
+behavior. Each bar owns one `FeaturePanelHost`; audio, network, Bluetooth,
+battery/power, and clock/calendar panels compose shared panel controls inside
+that host, while feature directories own service-specific state. Bluetooth
+and network use feature singletons for adapter-global discovery/scan
+ownership; clock uses one application-wide current-time owner. See
+`config/quickshell/AGENTS.md` before changing the prototype. Use `hk-shell` to
+start, stop, restart, inspect, or read logs from the prototype; this does not
+replace AGS session startup.
 
 ### `hk-*` Commands
 

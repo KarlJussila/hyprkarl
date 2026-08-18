@@ -12,7 +12,8 @@ deploy step. Full command reference: `docs/commands.md`.
   subcommand lives as its own top-level command in the form
   `hk-<noun>-<action>`; the dispatcher is a thin router that `exec`s it.
 - **`bin/lib/`** — sourced helpers shared by two or more commands (`docker.sh`,
-  `update.sh`). Not for single-use logic; keep that in the command itself.
+  `shell.sh`, `update.sh`). Not for single-use logic; keep that in the command
+  itself.
 
 ## Naming
 

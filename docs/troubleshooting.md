@@ -117,6 +117,21 @@ hk-ags restart
 - if a widget config change caused the problem, restore the previous value and
   restart again
 
+### Quickshell prototype does not start
+
+The replacement bar is not started with the session yet. Manage and inspect it
+without disturbing AGS:
+
+```bash
+hk-shell status
+hk-shell logs --tail 100 --no-color
+hk-shell restart
+```
+
+`hk-shell start` prints a QML load error when Quickshell fails before
+registering the instance. For foreground development, stop the managed
+instance and run `qs -p "$HYPRKARL_PATH/config/quickshell"` in a terminal.
+
 ## Docker Is Not Ready
 
 Symptoms:

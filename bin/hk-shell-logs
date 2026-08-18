@@ -1,0 +1,19 @@
+#!/bin/bash
+# hk-shell-logs
+# Read logs from the newest Hyprkarl Quickshell instance.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/shell.sh
+source "$SCRIPT_DIR/lib/shell.sh"
+
+instance_id="$(hk_shell_latest_instance_id)"
+if [[ -z "$instance_id" ]]; then
+  echo "No shell logs are available."
+  exit 1
+fi
+
+if [[ $# -eq 0 ]]; then
+  exec qs log -i "$instance_id" -t 200
+fi
+
+exec qs log -i "$instance_id" "$@"

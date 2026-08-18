@@ -2,6 +2,9 @@
 
 The bar is Hyprkarl's AGS-based status bar. It is configured through TypeScript
 files in `config/ags/bar/config/` and styled through SCSS in the active theme.
+AGS remains the session-started production bar. The Quickshell replacement is
+documented in [Shell Configuration](shell-configuration.md) and can be run
+alongside AGS with `hk-shell start` while it is in development.
 
 ## Files That Matter
 

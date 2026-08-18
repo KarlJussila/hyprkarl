@@ -1,0 +1,11 @@
+module qs.components
+AudioIndicator 1.0 AudioIndicator.qml
+BatteryIndicator 1.0 BatteryIndicator.qml
+ExpandableReadout 1.0 ExpandableReadout.qml
+PanelAction 1.0 PanelAction.qml
+PanelHeader 1.0 PanelHeader.qml
+PanelRow 1.0 PanelRow.qml
+PanelSectionLabel 1.0 PanelSectionLabel.qml
+ShellButton 1.0 ShellButton.qml
+ShellTooltip 1.0 ShellTooltip.qml
+ToggleIndicator 1.0 ToggleIndicator.qml

@@ -1,0 +1,26 @@
+#!/bin/bash
+# hk-shell-start
+# Start the in-development Quickshell shell if it is not running.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/shell.sh
+source "$SCRIPT_DIR/lib/shell.sh"
+
+if hk_shell_is_running; then
+  echo "Shell is already running."
+  exit 0
+fi
+
+launch_output="$(uwsm app -- qs -d -p "$HK_SHELL_CONFIG" 2>&1)"
+
+# Daemonized qs exits successfully even when loading the QML configuration fails.
+if ! hk_shell_is_running; then
+  if [[ -n "$launch_output" ]]; then
+    printf '%s\n' "$launch_output" >&2
+  else
+    echo "Shell failed to start." >&2
+  fi
+  exit 1
+fi
+
+echo "Shell started."

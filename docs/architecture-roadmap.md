@@ -1,0 +1,753 @@
+# Architecture Roadmap: Extensible Shell and User-Owned Configuration
+
+This roadmap describes how Hyprkarl can adopt the strongest ideas from modern
+Omarchy without becoming a distribution or giving up its central model: install
+the repository once, then edit that repository directly.
+
+It is a plan, not a description of current behavior. The existing AGS bar
+remains the live shell until the Quickshell cutover work explicitly changes
+startup.
+
+The in-progress `config/quickshell/` tree is a prototype. Its working
+interactions, geometry, and service integrations are valuable evidence, but
+its file structure, configuration format, component boundaries, and internal
+APIs are not compatibility constraints. Implementation work may reorganize or
+replace it when that creates a simpler long-term shell.
+
+## Outcome
+
+The intended end state has four properties:
+
+1. Ordinary personalization lives in stable, user-owned paths that upstream
+   never edits, so routine updates do not require Git conflict resolution.
+2. Hyprkarl still runs from `~/.local/share/hyprkarl`; it does not become an
+   Arch package, a system image, or a distribution.
+3. One long-running Quickshell process owns shell integration, with small
+   public configuration and extension contracts rather than a general plugin
+   platform from the outset.
+4. Themes are palette-first, with common rendering logic owned once and
+   generated runtime state kept out of the Git working tree.
+
+## Product and Visual Direction
+
+The AGS bar is a useful aesthetic reference, not the product specification for
+the new shell. Preserve the qualities that make its bar feel like Hyprkarl:
+its restraint, compact density, island-based composition, typography, borders,
+and relationship to the active theme. The Quickshell bar should feel like a
+more capable continuation of that visual language rather than an Omarchy
+reskin.
+
+The AGS widget flyouts, popup shapes, and current feature depth are not the
+endgame. Do not preserve their component structure or use pixel-for-pixel AGS
+parity as the acceptance standard for new shell surfaces.
+
+The intended interaction model is closer to macOS quick settings and modern
+Omarchy:
+
+- compact, coherent control-center surfaces rather than isolated utility
+  popups;
+- clear grouping and visual hierarchy across related controls;
+- direct manipulation through tiles, sliders, toggles, device rows, and
+  expandable detail;
+- useful status and primary actions visible before drilling into details;
+- consistent anchoring and motion between bar triggers and their surfaces;
+- enough space for controls to feel intentional without losing Hyprkarl's
+  cleaner, denser character.
+
+Those products are references for interaction quality and surface scope, not
+layout templates. Hyprkarl should curate its own grouping, proportions,
+navigation, motion, iconography, and information density. When an Omarchy
+surface demonstrates a desired capability, specify the underlying user goal
+and design a Hyprkarl-native arrangement rather than copying its card tree.
+
+Before shared popup or panel primitives become stable, create a small visual
+and interaction brief covering:
+
+- bar appearance on top and bottom edges;
+- panel width, padding, radius, borders, and relationship to the bar;
+- reusable control forms such as tiles, sliders, toggles, rows, and sections;
+- keyboard, pointer, scroll, and touch-friendly interaction where applicable;
+- transitions between summary and detailed state;
+- responsive behavior at narrow monitors, without making later vertical bars
+  require a new panel-window architecture;
+- representative audio, network, Bluetooth, power, and clock/calendar panels.
+
+Screenshots and prototypes should be evaluated against that brief. Existing
+AGS and prototype behavior remains useful for discovering requirements, but it
+does not decide the final surface shape.
+
+### Resolved Product Decisions
+
+- Feature panels remain independent surfaces. Network/Wi-Fi, Bluetooth,
+  audio, battery/power, clock/calendar, and later display controls each have
+  enough distinct state and interaction depth to own their information
+  architecture.
+- Those panels share a visual and windowing vocabulary, not one combined
+  control-center layout. A bar widget opens its feature's panel directly.
+- A display panel is a desired later feature. It should not be designed until
+  one integration owns monitor discovery, live application, persistence, and
+  error reporting across Hyprland and the shell.
+- Top and bottom bars are first-class in the initial production shell.
+  Vertical bars are intentionally deferred. Orientation should remain an
+  explicit layout concern at the bar and panel-window boundaries where that
+  avoids a future rewrite, but unused left/right branches should not be spread
+  through every widget today.
+- AGS remains the active production bar until the Quickshell bar and its core
+  feature panels are solid enough for a deliberate cutover. The prototype can
+  be restructured freely while AGS remains live.
+- The AGS bar is the visual reference for the compact bar itself, not for its
+  flyout geometry or information architecture. Its complete palette is
+  theme-derived: text, fills, borders, accents, status colors, and interaction
+  states must continue to come from semantic theme values.
+
+The lasting product and public-data boundaries are developed further in the
+[Shell Product Brief](shell-product-brief.md) and
+[Shell Configuration and State Contract](shell-configuration.md).
+
+### Current Foundation Progress
+
+The Quickshell prototype now has a per-bar feature-panel host exercised by
+separate audio, network, Bluetooth, battery/power, and clock/calendar panels.
+The host owns monitor-local active state, anchoring, bounds, focus and
+dismissal, scrolling, transitions, and contact-aware corners. Header, section,
+row, and action controls have now survived five different feature compositions
+and form the stable baseline vocabulary; summaries, sliders, calendar cells,
+and navigation remain feature-owned. Network scanning and Bluetooth discovery
+each have a feature-owned, application-global request owner so multiple
+monitor panels compose correctly. Power composes UPower and PowerProfiles
+directly. Clock has one application-wide current-time owner and panel-local
+month navigation. The superseded flyout boundary has been deleted. `hk-shell`
+now provides the prototype's start, stop, restart, structured status, and log
+boundary. It launches under UWSM and verifies the registered instance so a
+daemonized QML load failure cannot masquerade as a successful start. AGS still
+owns session startup.
+
+## Constraints and Non-Goals
+
+- Keep CachyOS as the base system and GNU Stow as the dotfile installation
+  mechanism.
+- Keep the repository as the source-editing surface and allow advanced users
+  to modify implementation files on their own branches.
+- Do not adopt Omarchy's `/etc/skel`, package split, pacman guard, factory
+  reset, multi-user provisioning, or distribution migrations.
+- Do not add a generic override or merge engine for every application config.
+  Public override contracts belong only at surfaces where users actually need
+  them.
+- Do not add a manifest-based shell plugin system until independently
+  distributed extensions demonstrate a concrete need for it.
+- Do not silently rewrite curated user configuration to insert new defaults.
+  Show new capabilities and let the owner adopt them explicitly.
+- Do not target unpinned `quickshell-git` behavior. The supported Quickshell
+  and Qt versions must be explicit and tested.
+- Do not preserve prototype-only Quickshell configuration or internal APIs
+  through compatibility layers. There are no production users of that surface
+  yet.
+
+## Target Ownership Model
+
+Today, many files have four jobs at once:
+
+```text
+tracked file = upstream default = live config = user customization
+```
+
+The target model separates upstream-owned implementation from user intent
+without separating them into different installations:
+
+```text
+Hyprkarl checkout
+├── defaults/                 upstream-owned behavior and default data
+├── config/                   upstream-owned application entry points
+├── config/quickshell/        upstream-owned shell implementation
+├── themes/                   built-in theme sources
+└── user/                     reserved for the owner's configuration
+    ├── hypr/
+    ├── shell.json
+    ├── menu.jsonc
+    ├── hooks/
+    ├── quickshell/modules/
+    └── themes/
+```
+
+`user/` remains inside the repository. A user can commit it on their branch
+like any other customization, but upstream treats the namespace as reserved
+and does not add personal configuration files there. A tracked README and
+examples may document the contracts; runtime files belong to the user.
+
+This is not one universal overlay system. Each supported surface has a small,
+explicit rule:
+
+- Hyprland loads upstream defaults, then optional Lua files from `user/hypr/`.
+- Quickshell recursively merges ordinary objects from `user/shell.json` over
+  its shipped defaults, replaces arrays as complete ordered values, then
+  applies explicit widget-ID layout operations.
+- Menu entries are merged by stable entry ID from defaults and
+  `user/menu.jsonc`.
+- Hooks run scripts from the matching `user/hooks/<event>.d/` directory.
+- User Quickshell modules are loaded only when referenced by `user/shell.json`.
+- A user theme may be selected independently or overlay a built-in theme with
+  the same name through a documented theme-specific rule.
+
+Machine-local secrets and environment values remain in the existing
+gitignored `config/uwsm/env.local`; they do not move into `user/`.
+
+## Workstream 1: Stabilize and Cut Over the Quickshell Bar
+
+### Goal
+
+Replace AGS with a production Quickshell bar informed by the current prototype,
+without combining the cutover with the later expansion into notifications,
+menus, lock screens, and other shell surfaces.
+
+### Work
+
+1. Declare the supported Quickshell package and version in the package lists.
+2. Preserve the prototype's useful ownership findings unless a simpler tested
+   structure replaces them:
+   - `shell.qml` creates shared state and one bar per screen.
+   - `Bar.qml` alone owns each `PanelWindow` and exclusion zone.
+   - layout components own island geometry.
+   - features own service-specific panel state and content while widgets remain
+     compact status and entry points.
+3. Restructure the prototype before cutover where needed to establish the
+   lasting shell host, data-only configuration, and shared primitives. Prefer
+   deleting and replacing prototype machinery over wrapping it for
+   compatibility.
+4. Carry forward the AGS bar's intended aesthetic character through the
+   semantic theme and bar layout, without carrying forward its popup design.
+5. Complete the visual and interaction brief for shell panels and test the new
+   host against Bluetooth and power before treating popup layout or reusable
+   controls as stable architecture.
+6. Finish the baseline behavior required to remove AGS. This is a migration
+   floor, not the product end state:
+   - every configured widget works on top and bottom bar edges;
+   - feature panels anchor to the correct monitor and bar window;
+   - multi-monitor creation and removal do not leak windows or state;
+   - theme changes apply without a shell restart where practical;
+   - bar restart and failure reporting have an `hk-*` entry point.
+7. Keep the implemented `hk-shell` lifecycle boundary limited to `start`,
+   `stop`, `restart`, `status`, and `logs` unless a real interaction requires
+   another action. Keep its Quickshell implementation details out of
+   user-facing keybindings.
+8. Change Hyprland autostart from AGS to Quickshell only after the replacement
+   passes the cutover checks.
+9. Remove AGS packages, startup, commands, theme files, and documentation in
+   the same cutover change. Do not retain an unused compatibility layer.
+
+### Acceptance Criteria
+
+- `qmllint` completes with only documented Quickshell qmltypes warnings.
+- A cold `qs -p config/quickshell` launch has no runtime QML warnings owned by
+  Hyprkarl.
+- The shell survives monitor add/remove, theme switch, and Hyprland reload.
+- Top and bottom bars are exercised with every core feature panel.
+- The production bar retains the curated AGS visual character documented in
+  the design brief; visual comparison does not require retaining AGS popup
+  geometry or information architecture.
+- Popup primitives have been exercised against more than one representative
+  feature-panel composition, so the first implemented widget does not decide
+  the architecture for every later surface.
+- AGS is no longer installed or launched after cutover.
+- Human and agent documentation describes only the active bar architecture.
+
+### Migration Risk
+
+Medium. The main risks are popup geometry, per-monitor object ownership, and
+framework behavior that differs between the pinned package and upstream
+Quickshell examples. Because the prototype has no compatibility obligation,
+structural rewrite cost is not itself a risk; regression of already-demonstrated
+interactions is. Keep AGS live until one deliberate cutover commit rather than
+maintaining two selectable production shells.
+
+## Workstream 2: Make Shell Configuration Data-Only and Extensible
+
+### Goal
+
+Let users rearrange, configure, and extend the bar without editing QML
+implementation files.
+
+### Configuration Contract
+
+Use the versioned `defaults/shell.json` owned by the shell and an optional
+sparse `user/shell.json` override:
+
+```json
+{
+  "version": 1,
+  "bar": {
+    "edge": "top",
+    "exclusive": true,
+    "layout": {
+      "start": [
+        { "id": "menu", "kind": "menu" },
+        { "id": "workspaces", "kind": "workspaces" }
+      ],
+      "center": {
+        "before": [],
+        "anchor": {
+          "id": "clock",
+          "kind": "clock",
+          "primary": "ddd h:mm AP"
+        },
+        "after": []
+      },
+      "end": [
+        { "id": "audio", "kind": "audio" }
+      ]
+    }
+  }
+}
+```
+
+The schema preserves the useful concepts demonstrated by the former
+`BarConfig.qml` without preserving that file's shape.
+Avoid separate widget-definition and layout maps unless repeated references
+demonstrate that the indirection is useful. Each layout entry should normally
+contain the settings for that instance.
+
+Rules:
+
+- The shipped default is used verbatim when no user file exists.
+- Ordinary user objects merge recursively over the default. Scalars and arrays
+  replace their inherited value; arrays are never implicitly concatenated or
+  matched by position.
+- Ordered `bar.layoutEdits` apply `insert`, `move`, `override`, and `remove`
+  operations by stable widget ID after the ordinary merge. This makes layout
+  intent explicit while allowing new upstream widgets to flow through.
+- `version` is the only required compatibility boundary initially.
+- Validation reports the file, entry, and invalid field. It falls back to the
+  shipped default only for a real external boundary failure: missing,
+  unreadable, invalid JSON, or unsupported version.
+- The running shell watches both configuration files, recomputes the effective
+  document, and applies layout or setting changes without restarting when
+  Quickshell lifecycle contracts make that safe.
+
+### Extension Lanes
+
+Support three sources and no more in the first release:
+
+1. **Built-in widget** — `kind` selects a Hyprkarl-owned QML component.
+2. **Command widget** — a command produces plain text or a small documented
+   JSON result at a configured interval. The shell owns process lifetime and
+   ensures one poller per configured instance, not one per monitor.
+3. **QML widget** — `type: "qml"` loads an explicitly referenced file from
+  `user/quickshell/modules/` and injects a small context: theme, orientation,
+  bar window, instance settings, and shared tooltip/panel entry points.
+
+Do not scan the directory for plugins, execute install hooks, or invent enable
+state. A module exists because the canonical config references it.
+
+### Commands
+
+Add configuration commands only where they enable a supported UI or scripting
+workflow. Likely initial actions are:
+
+- `hk-shell config init` — create a minimal versioned sparse override.
+- `hk-shell config diff` — show the sparse override and its effect on the
+  current shipped default.
+- `hk-shell config reset` — require confirmation, back up the user file, then
+  return to shipped defaults.
+- `hk-shell reload` — ask the running process to reread configuration.
+
+Runtime gestures such as dragging widgets may persist through the same single
+config writer later. Do not add both gesture persistence and a second state
+store.
+
+### Acceptance Criteria
+
+- Reordering and configuring built-in widgets requires editing JSON only.
+- Two instances of the same built-in kind can carry independent settings.
+- One command widget and one user QML widget work on every monitor on top and
+  bottom edges.
+- Invalid external configuration produces an actionable error and a usable
+  default bar.
+- Config reload does not recreate unrelated shared services.
+- Updating shipped defaults never modifies `user/shell.json`.
+
+### Migration Risk
+
+Medium. This work has begun in the prototype: `BarConfig.qml` has been removed
+in favor of shipped and optional user JSON before it could become a production
+compatibility surface. Command and user-QML extension lanes remain before the
+final AGS cutover.
+
+## Workstream 3: Establish Upstream Defaults and User Overrides
+
+### Hyprland
+
+Move Hyprkarl-owned Hyprland behavior behind a stable bootstrap:
+
+1. `config/hypr/hyprland.lua` remains the live entry point.
+2. It adds `$HYPRKARL_PATH/defaults` and `user/` to the Lua module path.
+3. It loads the upstream-owned defaults in their intentional order.
+4. It loads documented optional user modules afterward.
+5. Theme overrides retain an explicit and documented position in that order.
+
+Prefer cohesive override files such as `user/hypr/monitors.lua`,
+`bindings.lua`, `input.lua`, `looknfeel.lua`, and `autostart.lua`. Do not
+require empty files and do not catch internal contract violations as though
+they were user input.
+
+The migration should preserve current behavior first. Moving files and
+changing ownership is enough; redesigning every binding and rule belongs in
+separate changes.
+
+### Menus
+
+Replace the need to edit numerous `hk-menu-*` branches for ordinary additions
+with data-defined entries:
+
+- one shipped menu definition owns built-in hierarchy, labels, icons, and
+  actions;
+- `user/menu.jsonc` adds or replaces entries by stable dotted ID;
+- a thin renderer may continue using rofi initially;
+- shell integration can replace the renderer later without changing the menu
+  data contract;
+- runtime `when` or checked state should be added only for entries that need
+  it, and evaluations should be batched if startup latency becomes measurable.
+
+Do not migrate commands whose interaction is better expressed as a dedicated
+script. Menu data should name actions, not absorb their implementation.
+
+### Hooks
+
+Add a small event runner for supported lifecycle points. Initial events should
+come only from existing public actions:
+
+- `post-boot`
+- `post-update`
+- `theme-set`
+- `wallpaper-set`
+
+Each event runs regular files from `user/hooks/<event>.d/` in lexical order.
+Hook failures should be reported without disguising failure of the owning
+public action. Avoid background retries and hook metadata until a real use
+case requires them.
+
+### Update Behavior
+
+`hk-update` continues to merge and apply the repository. Its new responsibility
+is to distinguish ownership in its review output:
+
+- changes under upstream-owned paths are implementation/default changes;
+- files under `user/` are never replaced or generated by an update;
+- when a shipped default changes, `hk-update check` may point to the relevant
+  user-vs-default diff command but does not edit the user file;
+- schema-breaking changes require a release note and a narrow explicit
+  migration command, not an accumulating general migration framework.
+
+### Acceptance Criteria
+
+- A user can override a default binding, input setting, monitor, and autostart
+  command without editing an upstream-owned Lua module.
+- A new menu entry and a theme-set hook can be added entirely under `user/`.
+- An upstream update that changes the corresponding defaults merges without a
+  conflict in those user files.
+- `Hyprland --verify-config` succeeds for both the default-only and example
+  overridden configuration.
+- Documentation identifies every file as upstream-owned, user-owned, or
+  generated state.
+
+### Migration Risk
+
+Medium-high. Hyprland load order is behavior, so the move needs a before/after
+configuration inventory and non-destructive verification before reload. Menu
+conversion should proceed one coherent subtree at a time or in one complete
+replacement; avoid leaving two authoritative definitions for the same entry.
+
+## Workstream 4: Grow the Bar into a Cohesive Shell Host
+
+### Goal
+
+Use one long-running Quickshell process for shell-native surfaces where shared
+services, theme state, IPC, and window lifecycle materially simplify the
+system.
+
+### Host Responsibilities
+
+The root shell should own only application-wide concerns:
+
+- the selected shell configuration;
+- semantic theme objects;
+- global service instances that must be unique;
+- per-screen surface construction;
+- IPC endpoint registration and routing;
+- on-demand loading of built-in panels and overlays.
+
+Feature directories own their views and feature-specific state. Do not create
+generic controllers between a Quickshell service and the feature that already
+owns all of the required information.
+
+### Surface Architecture
+
+Do not force every feature through the prototype's current flyout shape. The
+shell should provide a small visual vocabulary while each feature owns its
+information architecture:
+
+- one panel shell owns anchoring, monitor bounds, focus, dismissal, border,
+  background, and transition behavior;
+- shared controls own genuinely repeated interactions such as tiles, sliders,
+  toggles, section headers, device rows, and disclosure;
+- a feature composes those controls around its own user tasks;
+- network/Wi-Fi, Bluetooth, audio, battery/power, and clock/calendar remain
+  distinct panels rather than summaries inside a combined quick-settings
+  surface;
+- display controls become another distinct panel only after a cohesive monitor
+  integration owns discovery, live application, persistence, and failures;
+- bar widgets remain concise status and entry points, not compressed copies of
+  their full panels.
+
+The shared vocabulary should emerge from representative audio, network,
+Bluetooth, and power designs together. Do not generalize a one-off component
+after building only the first panel.
+
+### Candidate Migration Order
+
+Migrate one surface at a time, only when its replacement can delete the old
+process or integration path:
+
+1. OSD, because it shares audio/brightness state and has a narrow interface.
+2. Notifications, because a native service can share theme and monitor state.
+3. Main menu, once the data-defined menu contract is stable.
+4. Lock screen and polkit only after the installed Quickshell service APIs are
+   verified against the pinned release.
+5. Clipboard, emoji, and image-selection overlays as independent later
+   features.
+
+This order is not a feature commitment. Each migration needs its own behavior
+specification and must remove the superseded implementation in the same
+change.
+
+### IPC Contract
+
+`hk-shell` is the only public transport wrapper. QML owns target registration;
+shell scripts do not discover window internals. Keep endpoints feature-based,
+for example:
+
+```text
+hk-shell osd volume 42
+hk-shell menu toggle
+hk-shell notifications dismiss-all
+```
+
+IPC failure should be explicit for requested actions. Best-effort calls used
+only for optional presentation may have a documented quiet mode.
+
+### Plugin Threshold
+
+Do not add manifest discovery during these migrations. Reconsider a plugin
+contract only when all of the following are true:
+
+- at least two useful extensions are maintained outside Hyprkarl;
+- copying a QML module plus a config entry is insufficient;
+- the required lifecycle and injected capabilities are known from those real
+  extensions;
+- the security model for unsandboxed long-running code is documented;
+- validation, update, failure isolation, and removal have owners.
+
+Until then, built-in features, command widgets, and explicitly referenced user
+QML modules are the complete extension model.
+
+### Acceptance Criteria
+
+- There remains exactly one Quickshell process per session.
+- Global services are instantiated once; per-monitor windows are instantiated
+  through explicit screen models.
+- Every migrated surface has a written interaction outline or visual prototype
+  before its reusable component needs are finalized.
+- Audio, network, Bluetooth, power, clock/calendar, and future display panels
+  share a recognizable Hyprkarl design language without being forced into
+  identical layouts.
+- Disabled or unopened surfaces do not keep unnecessary windows or pollers.
+- Every migrated surface deletes its former daemon, autostart entry, package,
+  and command path where no longer public.
+- A cold start and a live Quickshell reload both produce correct ownership and
+  state.
+
+### Migration Risk
+
+High if attempted as a rewrite, moderate when migrated one feature at a time.
+The largest risks are lifetime differences between cold start and live reload,
+per-monitor popup routing, and accidental global state in QML singletons.
+
+## Workstream 5: Make Themes Palette-First
+
+### Goal
+
+Own common theme transformations once while preserving hand-written escape
+hatches and the repo's transparent editing model.
+
+### Source Model
+
+Move toward this source hierarchy:
+
+```text
+theme/
+├── templates/               shared consumer templates
+└── schema/                  palette and semantic-token documentation
+themes/<name>/
+├── palette.yaml             canonical colors and mode
+├── overrides/               exceptional hand-written consumer files
+├── wallpapers/
+├── icons/
+└── previews/
+user/themes/<name>/           user theme or documented overlay
+```
+
+The current companion theme generator should remain the rendering authority
+unless inspection shows that a small in-repo renderer would remove more
+coordination than it adds. Expose it through a Hyprkarl command rather than
+reimplementing Omarchy's templating machinery in shell.
+
+### Generated State
+
+Render the active theme into:
+
+```text
+${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/
+```
+
+Keep the current theme name and wallpaper selection in the same state tree.
+Application configs should import or point to that generated directory. Theme
+selection must stage output and swap it atomically so consumers never observe
+a half-rendered theme.
+
+### Semantic Shell Theme
+
+Replace the flat Quickshell JSON bag over time with a small semantic API:
+
+- palette roles such as foreground, background, accent, muted, and urgent;
+- surface roles for bar, popup, tooltip, and notification;
+- typography scale;
+- spacing, radius, and border metrics.
+
+Keep the public token set proportional to actual variation. Do not reproduce
+Omarchy's full theme surface before Hyprkarl has corresponding components.
+
+### User Extension
+
+Support two clear cases:
+
+1. A complete user theme selected by name.
+2. A documented overlay on a built-in theme for changed palette values,
+   wallpapers, or exceptional consumer output.
+
+User-wide templates may be added later if users need to theme applications
+Hyprkarl does not support. They should replace a named built-in template, not
+participate in an ambiguous multi-layer merge.
+
+### Acceptance Criteria
+
+- Adding one common themed consumer requires one template, not one file per
+  existing theme.
+- Every built-in theme renders all required consumers from a documented
+  palette plus explicit exceptions.
+- Switching themes does not dirty the Git worktree.
+- A failed render leaves the previous active theme intact.
+- Quickshell updates semantic theme values without rebuilding unrelated shell
+  state.
+- Existing custom themes have a documented conversion path.
+
+### Migration Risk
+
+Medium-high. The palette schema, companion generator, and checked-in outputs
+currently live across repository boundaries. First make one theme render
+identically, then convert the remaining themes and remove duplicated generated
+files in one intentional migration.
+
+## Delivery Sequence
+
+The workstreams have dependencies but should not become one long-lived mega
+branch. Deliver them as reviewable vertical changes:
+
+1. **Record contracts and pin the runtime.** Decide supported Quickshell/Qt
+   versions, target state paths, JSON versioning, and `user/` ownership.
+2. **Define the shell's visual and interaction direction.** Capture the AGS
+   bar qualities to retain, design representative feature-panel surfaces,
+   and document where Hyprkarl intentionally differs from Omarchy and macOS.
+3. **Reshape the Quickshell prototype around lasting ownership.** Introduce
+   shell JSON, lightweight modules, host-level state, and shared primitives
+   derived from multiple representative surfaces while AGS remains live;
+   freely remove prototype-only structure.
+4. **Complete the production Quickshell bar and cut over.** Preserve the
+   prototype's successful interactions, validate them against the new
+   structure, and remove AGS in the same release.
+5. **Introduce `user/` and split Hyprland defaults from overrides.** Preserve
+   behavior before adding new customization features.
+6. **Convert menus to data and add narrow lifecycle hooks.** Keep rofi as the
+   renderer until a shell-native menu is independently ready.
+7. **Move runtime theme state and adopt palette-first rendering.** Coordinate
+   this with the theme-generator repository.
+8. **Migrate shell-native surfaces individually.** Start with OSD; require each
+   feature to delete an older integration path and meet the visual brief.
+9. **Reassess plugins only after external extensions exist.** A decision to do
+   nothing is acceptable.
+
+Every delivered change must update the relevant human-facing and agent-facing
+documentation in the same commit.
+
+## Verification Strategy
+
+There is no repository-wide automated test suite, so each workstream needs a
+small, authoritative signal rather than a broad testing framework.
+
+- **Hyprland:** `Hyprland --verify-config`, followed by a controlled reload.
+- **Quickshell:** `qmllint`, a cold launch, live reload, runtime log inspection,
+  multi-monitor exercise, and top and bottom bar edges initially. Add left and
+  right edge coverage when vertical bars become supported.
+- **Surface design:** screenshot comparison against the visual brief at the
+  target scale, plus keyboard and pointer walkthroughs of summary, expanded,
+  and dismissed states. Omarchy and macOS references are evaluated for user
+  goals, not pixel similarity.
+- **Configuration:** parse and schema fixtures for default, user, missing,
+  malformed, and unsupported-version files; no tests that antagonistically
+  call internal functions.
+- **Menus:** pure data merge/search tests plus one real renderer invocation.
+- **Hooks:** one end-to-end public action per event, with success and reachable
+  script-failure behavior.
+- **Themes:** render comparison for every built-in theme, atomic-failure test,
+  and one live theme switch.
+- **Updates:** the existing sandbox harnesses must cover a branch containing
+  user-owned files and an upstream change to the corresponding default.
+
+For each phase, inspect the final diff for duplicated ownership, unused
+compatibility paths, and fallback behavior that no public action can reach.
+
+## Decisions to Make Before Implementation
+
+These choices materially affect the architecture and should be resolved in
+small design changes before dependent work begins:
+
+1. How Quickshell package updates are admitted after the initial 0.3.0-2.1 and
+   Qt 6.11.1 baseline.
+2. The exact set and order of optional Hyprland user modules.
+3. Whether the menu's first data-driven renderer remains rofi or lands with a
+   shell-native menu already ready for cutover.
+4. Whether the companion theme generator is invoked as an external sibling,
+   installed tool, submodule, or vendored library. Prefer the option with one
+   clear owner and reproducible versions.
+5. Which integration owns display discovery, live changes, persistence, and
+   recovery before the planned display feature panel is implemented.
+
+Questions such as plugin marketplaces, compatibility with arbitrary internal
+QML modules, multi-user provisioning, or cross-distribution packaging are
+outside the roadmap until the project requirements change.
+
+## Completion Definition
+
+This roadmap is complete when:
+
+- AGS has been replaced by the pinned Quickshell shell;
+- normal shell, Hyprland, menu, hook, and theme personalization can live under
+  `user/` without editing upstream-owned files;
+- update review clearly distinguishes upstream defaults from user intent;
+- built-in and user command/QML bar modules share one documented config
+  contract;
+- the bar preserves Hyprkarl's curated AGS-derived visual character while
+  feature panels follow the independently designed richer surface
+  model;
+- theme switching renders palette-driven state outside the repository;
+- additional shell surfaces run in the same process only where doing so
+  deletes older integration machinery; and
+- a plugin platform has either been justified by real external extensions or
+  explicitly deferred.

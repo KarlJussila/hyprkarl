@@ -1,0 +1,22 @@
+#!/bin/bash
+# hk-shell-status
+# Print JSON describing Hyprkarl Quickshell instances.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/shell.sh
+source "$SCRIPT_DIR/lib/shell.sh"
+
+instances="$(hk_shell_instances)"
+if [[ -z "$instances" ]]; then
+  printf '{"running":false,"instances":[]}\n'
+  exit 1
+fi
+
+jq '{
+  running: true,
+  instances: map({
+    id,
+    pid,
+    launchTime: .launch_time
+  })
+}' <<<"$instances"

@@ -1,0 +1,4 @@
+module qs.features.audio
+AudioLevel 1.0 AudioLevel.qml
+AudioPanel 1.0 AudioPanel.qml
+AudioSlider 1.0 AudioSlider.qml

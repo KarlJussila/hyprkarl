@@ -101,11 +101,21 @@ The full manual lives under `docs/`.
   Editing conventions, stowed-config model, stateful paths
 - [docs/shell-style.md](docs/shell-style.md)
   Hyprkarl's shell scripting style
+- [docs/architecture-roadmap.md](docs/architecture-roadmap.md)
+  Planned user-owned configuration model, Quickshell shell, and theme pipeline
+- [docs/shell-product-brief.md](docs/shell-product-brief.md)
+  Planned bar aesthetic, independent feature panels, and cutover criteria
+- [docs/shell-configuration.md](docs/shell-configuration.md)
+  Proposed shell JSON, extension lanes, and runtime-state ownership
 
 ## Themes
 
-Themes live under `themes/` and control the appearance of Hyprland, the AGS
-bar, rofi, terminals, mako, hyprlock, and other applications.
+Themes live under `themes/` and control the appearance of Hyprland, the bars,
+rofi, terminals, mako, hyprlock, and other applications. The in-development
+Quickshell bar reads `themes/<theme>/quickshell.json` directly through the
+active-theme symlink. AGS remains the session-started bar; developers can run
+the replacement alongside it with `hk-shell start` and inspect it with
+`hk-shell status` or `hk-shell logs`.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

@@ -114,6 +114,17 @@ process_file() {
 
 ---
 
+## Comments
+
+Comment the *why*, not the *what* — ordering constraints, non-obvious behavior,
+empirically verified gotchas — rather than restating the code. Exception: when
+the code itself is genuinely hard to read and can't reasonably be simplified
+(dense `jq`/`awk` pipelines, regexes, parameter-expansion tricks), a plain
+"what" comment is acceptable and helpful. Use `# --- Section ---` headers to
+break up longer scripts.
+
+---
+
 ## Dispatchers
 
 Dispatcher scripts route a subcommand to `hk-noun-action` implementations:

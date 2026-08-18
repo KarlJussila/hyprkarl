@@ -2,3 +2,10 @@ config/hyprkarl/current/wallpaper
 config/yazi/package.toml
 config/hyprkarl/update/
 config/uwsm/env.local
+
+# Machine-local Claude Code state (settings, hooks, worktrees) — never tracked
+.claude/
+
+# Locally added wallpapers (hk-wallpaper-add) stay out of the tree; each theme
+# ships only the wallpapers committed upstream
+themes/*/wallpapers/*

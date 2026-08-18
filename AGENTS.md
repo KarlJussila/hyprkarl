@@ -1,0 +1,134 @@
+# AGENTS.md
+
+Guidance for coding agents working in this repository.
+
+## What This Repo Is
+
+Hyprkarl is a desktop configuration repository for CachyOS + Hyprland. It is installed once, then edited directly — the live `~/.config/` files are symlinks back into this repo, so changes here take effect immediately without a deploy step.
+
+## Keeping Docs Current
+
+When you change behavior, structure, or conventions, **update the documentation
+in the same change** — both audiences:
+
+- **Human-facing docs** — `README.md` and `docs/` (getting-started, themes,
+  commands, configuration-map, extending, repo-conventions, shell-style,
+  updating, …).
+- **Agent-facing docs** — the three canonical `AGENTS.md` files: this one,
+  `bin/AGENTS.md` (command authoring), and `config/ags/AGENTS.md` (the bar).
+  Each adjacent `CLAUDE.md` only imports its `AGENTS.md` counterpart for Claude
+  Code compatibility; keep shared guidance in `AGENTS.md`.
+
+Out-of-date docs are worse than no docs. If a change adds an `hk-*` command,
+renames a config surface, alters the theme layout, or shifts a convention, find
+and update every doc that describes it. Keep the two audiences consistent with
+each other.
+
+## Setup Commands
+
+```bash
+./setup-all.sh          # Full setup: packages, dotfiles, system config
+./setup-packages.sh     # Install/update packages via pacman + paru
+./setup-dotfiles.sh     # Re-run GNU stow to update symlinks (refuses on a dirty config/ tree)
+./setup-system.sh       # System-level config (SDDM autologin, etc.)
+./uninstall.sh          # Remove all config symlinks (reverses setup-dotfiles.sh)
+```
+
+There are no build steps or package.json at the repo root — this is a pure
+shell/config repo. There is no automated test suite; `tests/` holds manual,
+interactive sandbox harnesses (e.g. `tests/hk-update-tui.sh`) for exercising a
+command end to end without touching the live system. See `tests/README.md`.
+
+## Releases
+
+Releases are annotated git tags `vX.Y.Z` on `main` with a hand-written entry in
+`CHANGELOG.md`; `develop` is the integration branch. See "Branches and
+Releases" in `docs/repo-conventions.md` for the cut procedure. Until v1.0.0,
+minor versions may include breaking changes — call them out in the changelog.
+
+## Architecture
+
+### Symlink Model
+
+`setup-dotfiles.sh` uses GNU stow to symlink:
+- `config/` → `~/.config/`
+- `applications/` → `~/.local/share/applications/`
+
+`bin/` is not stowed; it is added to `$PATH` directly via `config/uwsm/env`.
+
+Editing files in this repo edits the live running config directly. Renaming or
+deleting a config file leaves a **stale symlink** (a live link pointing at a
+now-missing repo file); `hk-update dotfiles` prunes them as part of its run,
+and `hk-update remove-stale` does just that step.
+
+### Hyprland Configuration
+
+Hyprland is configured in **Lua** (`hyprland.lua`), as required since Hyprland
+0.55 — hyprlang `.conf` is deprecated. The API is `hl.config{}`, `hl.bind()`,
+`hl.dsp.*` (dispatchers), `hl.window_rule{}` / `hl.layer_rule{}`, `hl.monitor{}`,
+`hl.env()`, `hl.gesture{}`, `hl.animation{}` / `hl.curve()`. See
+https://wiki.hypr.land/Configuring/Start/.
+
+`config/hypr/hyprland.lua` is the entry point; it `require()`s the rest (each
+module is a separate Lua scope, so an error in one file won't abort the others):
+
+```
+envs.lua, autostart.lua, monitors.lua, permissions.lua, looknfeel.lua,
+animations.lua, gum.lua, windows.lua, input.lua, bindings.lua
+```
+
+It then loads the active theme last (`loadfile` of
+`~/.config/hyprkarl/current/theme/hyprland.lua`), so the theme overrides win.
+
+Keybindings are split under `config/hypr/bindings/`: `apps.lua`, `media.lua`, `windows.lua` (window management), `workspaces.lua` (workspaces/monitors/scratchpad), `system.lua` (menus, notifications, panels, power). App-specific window rules are split under `config/hypr/windows/`: `browsers.lua`, `floating.lua`, `media.lua`, `terminals.lua`, `screenshots.lua` — each required by `windows.lua`, which owns the base rules and the final `default-opacity` application.
+
+Validate any change non-destructively with `Hyprland --verify-config` before
+relaunching — a broken `hyprland.lua` has no automatic fallback.
+
+### Theme System
+
+Themes live in `themes/{name}/` and control Hyprland, the AGS bar, rofi,
+terminals, mako, hyprlock, GTK, and Qt. Themes are meant to control **look** —
+colors, fonts, spacing — not behavior. The active theme is tracked by the
+symlink `config/hyprkarl/current/theme` (plus `theme.name`).
+
+Switch themes with:
+```bash
+hk-theme set <theme-name>    # hyprkarl, everforest, gruvbox
+```
+
+When adding a new component that needs theming, add a corresponding file to
+each theme directory. Themes can also be generated from a single color palette
+with the companion
+[theme generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
+(locally at `../theme-generator/`).
+
+### `hk-*` Commands
+
+All user-facing utilities are in `bin/` and follow the `hk-*` naming
+convention. See `bin/AGENTS.md` for command structure, naming rules, and
+authoring conventions before adding or editing one.
+
+### Session Environment
+
+`config/uwsm/env` sets session-wide environment variables (including
+`HYPRKARL_PATH` and `$PATH`). Changes require a new Hyprland session.
+`config/uwsm/default` controls `$TERMINAL`, `$EDITOR`, and `$SHELL`.
+`~/.config/uwsm/env.local` holds machine-local variables and is not tracked.
+
+## Shell Style
+
+`bin/` scripts follow `docs/shell-style.md` — read it before writing or editing
+a command. The one counterintuitive rule worth stating up front: the shebang is
+`#!/bin/bash` and Bash strict mode (`set -euo pipefail`) is **intentionally
+absent**, so don't add it reflexively.
+
+## Key Docs
+
+- `docs/configuration-map.md` — repo layout and main editing surfaces
+- `docs/themes.md` — theme structure and wallpaper layout
+- `docs/extending-hyprkarl.md` — adding commands, menus, keybindings, theme-aware config
+- `docs/shell-style.md` — shell scripting conventions
+- `docs/commands.md` — full `hk-*` command reference
+- `docs/repo-conventions.md` — editing conventions, stowed-config model, branches and releases
+- `docs/updating.md` — the `hk-update` model and workflows

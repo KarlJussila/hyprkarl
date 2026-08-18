@@ -13,6 +13,26 @@
   "fontWeight": 700,
   "fontStyle": "Bold",
   "radius": 8,
+  "islandRadius": 8,
+  "cornerCurveSize": 12,
+  "cornerCurveRadius": 4,
+  "islandCorners": {
+    "screenOuter": "square",
+    "screenInner": "curve",
+    "contentOuter": "square",
+    "contentInner": "round"
+  },
+  "islandBorders": {
+    "screen": false,
+    "content": true,
+    "outer": false,
+    "inner": true
+  },
+  "barMargin": {
+    "screen": 0,
+    "outer": 0,
+    "content": 0
+  },
   "borderWidth": 2,
   "showDividers": true,
   "barThickness": 22,

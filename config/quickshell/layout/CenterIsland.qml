@@ -1,6 +1,6 @@
 import QtQuick
 
-Rectangle {
+Item {
   id: root
 
   required property var before
@@ -13,16 +13,26 @@ Rectangle {
   required property var panelHost
 
   readonly property real visibleExtent: startGroup.visibleExtent + centerGroup.visibleExtent + endGroup.visibleExtent
-  readonly property real pivotOffset: centerGroup.visibleExtent > 0
-    ? startGroup.visibleExtent + centerGroup.visibleExtent / 2
-    : visibleExtent / 2
-  color: theme.surface
-  border.color: theme.border
-  border.width: theme.borderWidth
-  radius: theme.radius
+  readonly property bool hasContent: visibleExtent > 0
+  readonly property real pivotOffset: hasContent
+    ? surface.leftInset + (centerGroup.visibleExtent > 0
+      ? startGroup.visibleExtent + centerGroup.visibleExtent / 2
+      : visibleExtent / 2)
+    : 0
 
-  implicitWidth: visibleExtent
+  implicitWidth: hasContent
+    ? surface.leftInset + visibleExtent + surface.rightInset
+    : 0
   implicitHeight: theme.barThickness
+
+  IslandSurface {
+    id: surface
+    anchors.fill: parent
+    edge: root.edge
+    leftRole: "inner"
+    rightRole: "inner"
+    theme: root.theme
+  }
 
   WidgetGroup {
     id: startGroup
@@ -33,7 +43,7 @@ Rectangle {
     systemState: root.systemState
     panelHost: root.panelHost
 
-    x: 0
+    x: surface.leftInset
     y: 0
   }
 
@@ -47,7 +57,7 @@ Rectangle {
     panelHost: root.panelHost
     leadingDivider: startGroup.visibleExtent > 0
 
-    x: startGroup.width
+    x: surface.leftInset + startGroup.width
     y: 0
   }
 
@@ -61,7 +71,7 @@ Rectangle {
     panelHost: root.panelHost
     leadingDivider: centerGroup.visibleExtent > 0 || startGroup.visibleExtent > 0
 
-    x: startGroup.width + centerGroup.width
+    x: surface.leftInset + startGroup.width + centerGroup.width
     y: 0
   }
 }

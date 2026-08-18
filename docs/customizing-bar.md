@@ -49,6 +49,42 @@ sizing, and transition timing, comes from
 introducing a new required theme token. The running shell watches the selected
 theme and applies both theme switches and edits to its JSON without a restart.
 
+The island silhouette is theme-owned too. For example, the shipped themes use:
+
+```json
+{
+  "islandRadius": 8,
+  "cornerCurveSize": 12,
+  "cornerCurveRadius": 4,
+  "islandCorners": {
+    "screenOuter": "square",
+    "screenInner": "curve",
+    "contentOuter": "square",
+    "contentInner": "round"
+  },
+  "islandBorders": {
+    "screen": false,
+    "content": true,
+    "outer": false,
+    "inner": true
+  },
+  "barMargin": {
+    "screen": 0,
+    "outer": 0,
+    "content": 0
+  }
+}
+```
+
+These names are relative to the bar rather than fixed screen coordinates:
+`screen` faces the monitor edge, `content` faces the workspace, `outer` faces
+a horizontal monitor side, and `inner` faces another island. This makes one
+theme behave equivalently on top and bottom bars. A corner may be `square` or
+`round`; `screenInner` may also be `curve` to form a concave join. Setting all
+four border values to `false` makes islands borderless. The three margins move
+the bar away from the screen edge, monitor sides, or workspace respectively;
+screen and content margins are included in the reserved bar area.
+
 ## Manage and Inspect the Bar
 
 Hyprland starts the bar through the same public lifecycle commands used for

@@ -47,7 +47,9 @@ A live capture of the retired AGS bar establishes these qualities to retain:
   space;
 - dense typography and concise status readouts;
 - small, intentional gaps and dividers instead of bulky widget chrome; and
-- islands that read as a related set while preserving their separate roles.
+- islands that read as a related set while preserving their separate roles,
+  including configurable screen/content/outer/inner corners, borders, and
+  spacing rather than one pill treatment applied everywhere.
 
 The complete bar palette is theme-derived. Text, surfaces, transparent or
 opaque backgrounds, borders, accents, warnings, errors, hover states, pressed
@@ -131,6 +133,11 @@ Corner contact is already an intentional part of Hyprkarl's visual language.
 The theme owns the normal panel radius, while the shared panel shell owns the
 geometric decision to suppress that radius at a bar-and-screen-edge junction.
 Feature panels should not implement that rule independently.
+
+The bar uses the same ownership split. Themes select logical island corners,
+borders, radii, curve dimensions, and screen/outer/content margins. One shared
+island renderer maps those choices onto top and bottom geometry; individual
+widgets and islands do not draw their own surfaces.
 
 ## Interaction and Information Principles
 

@@ -41,10 +41,10 @@ PopupWindow {
 
     onAnchoring: {
       let x = root.anchorItem.width / 2 - root.width / 2
-      let y = root.anchorItem.height + root.gap
+      let y = root.anchorItem.height + root.theme.barMarginContent + root.gap
 
       if (root.edge === "bottom") {
-        y = -root.height - root.gap
+        y = -root.height - root.theme.barMarginContent - root.gap
       } else if (root.edge === "left") {
         x = root.anchorItem.width + root.gap
         y = root.anchorItem.height / 2 - root.height / 2

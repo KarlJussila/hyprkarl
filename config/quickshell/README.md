@@ -68,6 +68,16 @@ file directly, so both a theme switch and an edit to the active JSON apply to a
 running bar. This includes every color plus typography, bar thickness, spacing,
 radii, borders, dividers, panel sizing, and transition timing.
 
+Island geometry uses logical edges so the same theme works on top and bottom
+bars. `barMargin.screen`, `barMargin.content`, and `barMargin.outer` control the
+screen-side gap, workspace-side gap, and gaps at the monitor's horizontal
+ends. `islandCorners` selects `square` or `round` independently at the
+screen/content and outer/inner intersections; `screenInner` additionally
+accepts `curve` for the concave joins between islands. `islandBorders` toggles
+the corresponding four edges. `islandRadius`, `cornerCurveSize`, and
+`cornerCurveRadius` size those shapes. See `docs/customizing-bar.md` for a
+complete example.
+
 ## Structure
 
 - `shell.qml` creates one bar per Quickshell screen after configuration and
@@ -76,8 +86,9 @@ radii, borders, dividers, panel sizing, and transition timing.
 - `Bar.qml` owns the layer-shell window and exclusive zone.
 - `panels/FeaturePanelHost.qml` owns the one feature-panel window and active
   panel lifecycle for each monitor.
-- `layout/` owns island placement; it positions the center island at its
-  natural width around a center widget fixed to the monitor midpoint.
+- `layout/` owns island placement and the shared island surface; it positions
+  the center island at its natural width around a center widget fixed to the
+  monitor midpoint.
 - `widgets/WidgetHost.qml` loads widget kinds from the instance definitions.
 - `widgets/*.qml` provide compact status and panel entry points.
 - `features/` owns feature-specific panel state and composition. Audio,

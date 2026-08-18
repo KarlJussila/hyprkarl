@@ -14,7 +14,8 @@ controllers when a Quickshell singleton already owns the state.
 - `../../defaults/shell.json`: shipped bar behavior, widget order, and widget
   instances.
 - `../../user/shell.json`: optional sparse user override.
-- `../../themes/<theme>/quickshell.json`: colors, typography, and metrics.
+- `../../themes/<theme>/quickshell.json`: colors, typography, metrics, and
+  island geometry.
 - `widgets/*.qml`: one implementation per widget kind.
 
 Shell JSON is data-only. Widget definitions live inline in the layout; `id`
@@ -36,6 +37,15 @@ alone owns each bar window and its per-monitor `FeaturePanelHost`. Layout files
 own island geometry. Feature directories own feature-specific panel state and
 content; bar widgets remain concise status and entry points.
 
+`layout/IslandSurface.qml` is the single renderer for start, center, and end
+islands. Its corner and border names are logical rather than top/bottom
+coordinates: `screen` faces the output edge, `content` faces the workspace,
+`outer` faces a monitor side, and `inner` faces another island. Preserve that
+vocabulary for top and bottom bars. `curve` is the concave join supported at a
+`screenInner` corner; on other corners it intentionally resolves to square.
+The bar window and exclusive zone include screen- and content-side margins,
+while panel and tooltip anchors also account for the content margin.
+
 Version 1 deliberately accepts only top and bottom bars. Layout and widget
 code is horizontal until a vertical design exists; keep edge-dependent popup
 placement at the panel-window boundary so later vertical support does not need
@@ -48,6 +58,10 @@ the canonical `../hyprkarl/current/theme.name` selector, then reads the chosen
 `themes/<name>/quickshell.json` directly. Do not watch through the replaceable
 `current/theme` symlink: its target changes on a theme switch and can leave a
 file watcher attached to the old theme.
+
+Keep `barMargin`, `islandCorners`, `islandBorders`, `islandRadius`,
+`cornerCurveSize`, and `cornerCurveRadius` in every theme. Do not move these
+appearance decisions into shell JSON or individual island components.
 
 `panels/FeaturePanelHost.qml` is the lasting window boundary for feature
 panels. There is one host per bar/monitor. It owns the `PopupWindow`, trigger

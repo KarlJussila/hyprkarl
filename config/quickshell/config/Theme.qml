@@ -23,6 +23,25 @@ QtObject {
   readonly property int fontWeight: values.fontWeight ?? 700
   readonly property string fontStyle: values.fontStyle ?? "Bold"
   readonly property int radius: values.radius ?? 0
+  readonly property int islandRadius: values.islandRadius ?? radius
+  readonly property int cornerCurveSize: values.cornerCurveSize ?? 0
+  readonly property int cornerCurveRadius: values.cornerCurveRadius ?? 0
+  readonly property var islandCorners: values.islandCorners ?? ({
+    "screenOuter": "round",
+    "screenInner": "round",
+    "contentOuter": "round",
+    "contentInner": "round"
+  })
+  readonly property var islandBorders: values.islandBorders ?? ({
+    "screen": true,
+    "content": true,
+    "outer": true,
+    "inner": true
+  })
+  readonly property var barMargin: values.barMargin ?? ({})
+  readonly property int barMarginScreen: barMargin.screen ?? 0
+  readonly property int barMarginOuter: barMargin.outer ?? 0
+  readonly property int barMarginContent: barMargin.content ?? 0
   readonly property int borderWidth: values.borderWidth ?? 0
   readonly property bool showDividers: values.showDividers ?? true
   readonly property int barThickness: values.barThickness ?? 22

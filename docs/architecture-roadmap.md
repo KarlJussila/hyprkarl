@@ -123,6 +123,9 @@ theme-name file rather than retaining a watcher on an old symlink target.
 Monitor add/remove has also been exercised with a temporary headless output,
 including removing the output while its monitor-local feature panel was open;
 the shared shell process and remaining bar survived without a runtime warning.
+The shared island renderer now restores the retired AGS bar's theme-controlled
+logical corner shapes, selective borders, and screen/outer/content margins
+without making individual widgets own surface geometry.
 
 ## Constraints and Non-Goals
 

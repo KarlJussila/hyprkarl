@@ -228,7 +228,7 @@ running configuration and reports the new error.
 | --- | --- | --- |
 | Widget order and instance settings | Shipped defaults plus sparse `user/shell.json` edits | User override is versioned |
 | Bar edge and exclusion behavior | Shipped defaults plus `user/shell.json` | User override is versioned |
-| Colors, typography, spacing, borders, and interaction states | Active semantic theme | Theme-derived |
+| Colors, typography, spacing, island geometry, borders, and interaction states | Active semantic theme | Theme-derived |
 | Open panel, hover, focus, disclosure, and in-progress UI | Quickshell feature objects | Memory only |
 | Wi-Fi, Bluetooth, audio, battery, and power state | The corresponding system service | Service-owned |
 | Monitor modes and arrangement | Future display integration | Backend-owned, contract not yet chosen |

@@ -9,17 +9,22 @@ Item {
   required property var systemState
   required property var panelHost
 
+  readonly property int islandY: shellConfig.edge === "top"
+    ? theme.barMarginScreen
+    : theme.barMarginContent
+
   Island {
     id: startIsland
     instances: root.shellConfig.start
+    side: "start"
     edge: root.shellConfig.edge
     barWindow: root.barWindow
     theme: root.theme
     systemState: root.systemState
     panelHost: root.panelHost
 
-    x: 0
-    y: 0
+    x: root.theme.barMarginOuter
+    y: root.islandY
   }
 
   CenterIsland {
@@ -34,19 +39,20 @@ Item {
     panelHost: root.panelHost
 
     x: parent.width / 2 - centerIsland.pivotOffset
-    y: 0
+    y: root.islandY
   }
 
   Island {
     id: endIsland
     instances: root.shellConfig.end
+    side: "end"
     edge: root.shellConfig.edge
     barWindow: root.barWindow
     theme: root.theme
     systemState: root.systemState
     panelHost: root.panelHost
 
-    x: parent.width - width
-    y: 0
+    x: parent.width - root.theme.barMarginOuter - width
+    y: root.islandY
   }
 }

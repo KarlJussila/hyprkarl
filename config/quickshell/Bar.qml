@@ -11,18 +11,22 @@ PanelWindow {
   required property var theme
   required property var systemState
 
+  readonly property int totalThickness: theme.barMarginScreen
+    + theme.barThickness
+    + theme.barMarginContent
+
   color: theme.background
   aboveWindows: true
   focusable: false
   exclusionMode: shellConfig.exclusive ? ExclusionMode.Normal : ExclusionMode.Ignore
-  exclusiveZone: shellConfig.exclusive ? theme.barThickness : 0
+  exclusiveZone: shellConfig.exclusive ? totalThickness : 0
 
   anchors.top: shellConfig.edge === "top"
   anchors.bottom: shellConfig.edge === "bottom"
   anchors.left: true
   anchors.right: true
 
-  implicitHeight: theme.barThickness
+  implicitHeight: totalThickness
   implicitWidth: 0
 
   WlrLayershell.namespace: "hyprkarl-quickshell-bar"

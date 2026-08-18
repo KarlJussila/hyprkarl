@@ -114,8 +114,10 @@ Themes live under `themes/` and control the appearance of Hyprland, the bar,
 rofi, terminals, mako, hyprlock, and other applications. The Quickshell bar
 watches `config/hyprkarl/current/theme.name`, then reads the selected
 `themes/<theme>/quickshell.json` directly. Theme switches therefore apply
-without restarting the shell. Inspect or manage it with `hk-shell status`,
-`hk-shell logs`, and the other `hk-shell` lifecycle commands.
+without restarting the shell. The same file controls island corner shapes,
+selective borders, and screen/outer/content margins as well as colors and
+typography. Inspect or manage the bar with `hk-shell status`, `hk-shell logs`,
+and the other `hk-shell` lifecycle commands.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

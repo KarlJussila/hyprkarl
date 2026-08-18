@@ -19,7 +19,7 @@ Scope {
   property real reveal: open ? 1 : 0
   property real anchorX: 0
 
-  readonly property bool touchesBar: theme.panelGap === 0
+  readonly property bool touchesBar: theme.panelGap === 0 && theme.barMarginContent === 0
   readonly property bool touchesLeft: anchorX <= 0.5
   readonly property bool touchesRight: anchorX + panel.width >= barWindow.width - 0.5
   readonly property bool sharpTopLeft: touchesBar && edge === "top" && touchesLeft
@@ -126,8 +126,8 @@ Scope {
         if (!root.trigger) return
 
         const relativeY = root.edge === "top"
-          ? root.trigger.height + root.theme.panelGap - root.theme.borderWidth
-          : root.theme.borderWidth - root.theme.panelGap
+          ? root.trigger.height + root.theme.barMarginContent + root.theme.panelGap - root.theme.borderWidth
+          : root.theme.borderWidth - root.theme.barMarginContent - root.theme.panelGap
         const point = root.trigger.QsWindow.contentItem.mapFromItem(
           root.trigger,
           root.trigger.width / 2 - panel.width / 2,

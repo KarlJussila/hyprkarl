@@ -1,6 +1,15 @@
+aylurs-gtk-shell # Replaced with Quickshell
+dart-sass # No longer needed after the AGS removal
 dolphin # Replaced with nautilus
 kvantum # No longer needed
 kvantum-qt5 # No longer needed
+libastal-battery-git # No longer needed after the AGS removal
+libastal-bluetooth-git # No longer needed after the AGS removal
+libastal-hyprland-git # No longer needed after the AGS removal
+libastal-network-git # No longer needed after the AGS removal
+libastal-powerprofiles-git # No longer needed after the AGS removal
+libastal-tray-git # No longer needed after the AGS removal
+libastal-wireplumber-git # No longer needed after the AGS removal
+waybar # Replaced with Quickshell bar
 wifitui-bin # Replaced with wifitui
 wofi # Replaced with rofi
-waybar # Replaced with AGS bar

@@ -27,10 +27,9 @@ Hyprkarl:
 - updates the wallpaper state
 - updates GNOME and QT themes
 - reloads Hyprland, mako, terminals, and `btop`
-- restarts AGS (picks up the new `bar.scss`)
 
-When the Quickshell prototype is running, it watches `theme.name` and reads the
-selected `themes/<name>/quickshell.json` directly. It applies the new theme
+The Quickshell bar watches `theme.name` and reads the selected
+`themes/<name>/quickshell.json` directly. It applies the new theme
 without restarting and also watches the selected JSON for live edits. It does
 not watch through the replaceable `current/theme` symlink.
 
@@ -65,10 +64,8 @@ A full theme in this repo includes:
   Lock screen styling
 - `hyprtoolkit.conf`
   Hyprtoolkit styling
-- `bar.scss`
-  AGS bar colors, spacing, radii, and typography
 - `quickshell.json`
-  In-development Quickshell colors, typography, bar thickness, spacing, radii,
+  Quickshell colors, typography, bar thickness, spacing, radii,
   borders, dividers, tooltip radius, panel gap, preferred/max panel size, and
   transition timing. All Quickshell surface colors and interaction states must
   come from this semantic theme data.

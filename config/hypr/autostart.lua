@@ -3,7 +3,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("systemctl --user start hypridle.service")
     hl.exec_cmd("uwsm-app -- mako")
     hl.exec_cmd("uwsm app -- systemctl --user start hyprpolkitagent")
-    hl.exec_cmd("uwsm app -- ags run")
+    hl.exec_cmd("hk-shell start")
     hl.exec_cmd("uwsm app -- hyprpaper")
     hl.exec_cmd("hk-wallpaper init || hk-wallpaper cycle")
 

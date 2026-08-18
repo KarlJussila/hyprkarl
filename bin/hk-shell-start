@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-shell-start
-# Start the in-development Quickshell shell if it is not running.
+# Start the Hyprkarl Quickshell bar if it is not running.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 # shellcheck source=lib/shell.sh

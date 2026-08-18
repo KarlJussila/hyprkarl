@@ -102,21 +102,20 @@ The full manual lives under `docs/`.
 - [docs/shell-style.md](docs/shell-style.md)
   Hyprkarl's shell scripting style
 - [docs/architecture-roadmap.md](docs/architecture-roadmap.md)
-  Planned user-owned configuration model, Quickshell shell, and theme pipeline
+  Completed shell-foundation work and the remaining architecture roadmap
 - [docs/shell-product-brief.md](docs/shell-product-brief.md)
-  Planned bar aesthetic, independent feature panels, and cutover criteria
+  Bar aesthetic, independent feature panels, and product direction
 - [docs/shell-configuration.md](docs/shell-configuration.md)
-  Proposed shell JSON, extension lanes, and runtime-state ownership
+  Shell JSON, extension lanes, and runtime-state ownership
 
 ## Themes
 
-Themes live under `themes/` and control the appearance of Hyprland, the bars,
-rofi, terminals, mako, hyprlock, and other applications. The in-development
-Quickshell bar watches `config/hyprkarl/current/theme.name`, then reads the
-selected `themes/<theme>/quickshell.json` directly. Theme switches therefore
-apply without restarting the prototype. AGS remains the session-started bar;
-developers can run the replacement alongside it with `hk-shell start` and
-inspect it with `hk-shell status` or `hk-shell logs`.
+Themes live under `themes/` and control the appearance of Hyprland, the bar,
+rofi, terminals, mako, hyprlock, and other applications. The Quickshell bar
+watches `config/hyprkarl/current/theme.name`, then reads the selected
+`themes/<theme>/quickshell.json` directly. Theme switches therefore apply
+without restarting the shell. Inspect or manage it with `hk-shell status`,
+`hk-shell logs`, and the other `hk-shell` lifecycle commands.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

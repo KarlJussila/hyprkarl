@@ -36,9 +36,9 @@
 #      Writes the 124964f SHA (first hk-update commit, ~3 weeks before HEAD)
 #      as the packages baseline, then runs hk-update check and hk-update
 #      packages from current HEAD.  Exercises the multi-version package diff:
-#      ~20 packages to add, waybar to prompt for removal, libastal-* AUR adds.
-#      No checkout.  Interactive: gum will prompt for waybar removal if waybar
-#      is installed.
+#      many packages to add plus waybar and retired AGS packages to remove.
+#      No checkout. Interactive: gum prompts for each listed removal that is
+#      installed.
 #
 #   D  invalid-baseline
 #      Writes a nonexistent SHA to packages.commit and dotfiles.commit, runs
@@ -266,16 +266,16 @@ cmd_long_hop() {
   first_sha=$(git -C "$HK" rev-parse "$COMMIT_FIRST_UPDATE")
   cat <<'EOF'
 Scenario: user last ran hk-update at 124964f (first hk-update commit, before
-the waybar→AGS migration, before ~20 packages were added).  Baseline is valid
-but far behind HEAD.
+the two bar migrations and many package additions). Baseline is valid but far
+behind HEAD.
 
 Steps:
   1. Write 124964f as the packages baseline
-  2. hk-update check → shows full diff: many packages to add, waybar to remove
-  3. hk-update packages → installs missing packages, prompts for waybar
+  2. hk-update check → shows the full package and removal diff
+  3. hk-update packages → installs missing packages, prompts for removals
 
-Interactive: gum will ask to remove 'waybar' if it's installed on your system.
-No checkout. When done, baselines are at HEAD.
+Interactive: gum asks about each retired package that is still installed. No
+checkout. When done, baselines are at HEAD.
 EOF
   printf '\nPress Enter to begin, Ctrl-C to cancel.\n'; read -r
 
@@ -283,10 +283,10 @@ EOF
   write_baseline packages "$first_sha"
   note "baseline points to: $(git -C "$HK" log --oneline -1 --no-decorate "$first_sha")"
 
-  printf '\n[2] hk-update check (expect: many packages to add, waybar to remove)...\n\n'
+  printf '\n[2] hk-update check (expect: many additions and retired-shell removals)...\n\n'
   hk-update check
 
-  printf '\n[3] hk-update packages (interactive if waybar is installed)...\n\n'
+  printf '\n[3] hk-update packages (interactive for installed removals)...\n\n'
   hk-update packages
 
   printf '\nVerification:\n'

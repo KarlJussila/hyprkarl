@@ -119,8 +119,8 @@ tests/hk-update-live.sh B        # stale-waybar: checkout old commit → stow wa
                                   #   → advance → verify broken symlinks are pruned
                                   #   CAUTION: re-stows old config; run reset after
 tests/hk-update-live.sh C        # long-hop: write 124964f baseline → verify
-                                  #   ~20-package diff + waybar removal prompt
-                                  #   Interactive: gum prompts for waybar if installed
+                                  #   large package diff + retired-shell removals
+                                  #   Interactive: gum prompts for installed removals
 tests/hk-update-live.sh D        # invalid-baseline: write fake SHA → verify graceful
                                   #   fallback in check + packages
 tests/hk-update-live.sh E        # conflict: plant real file at hyprland.conf →

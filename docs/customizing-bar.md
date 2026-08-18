@@ -1,65 +1,74 @@
 # Customizing the Bar
 
-The bar is Hyprkarl's AGS-based status bar. It is configured through TypeScript
-files in `config/ags/bar/config/` and styled through SCSS in the active theme.
-AGS remains the session-started production bar. The Quickshell replacement is
-documented in [Shell Configuration](shell-configuration.md) and can be run
-alongside AGS with `hk-shell start` while it is in development.
+Hyprkarl's bar is built with Quickshell. Its shipped placement and behavior
+live in `defaults/shell.json`; personal changes belong in the optional
+`user/shell.json`. Appearance is entirely
+theme-derived from `themes/<theme>/quickshell.json`.
 
-## Files That Matter
+## Override the Shipped Configuration
 
-- `config/ags/bar/config/layout.config.ts`
-  Bar edge, widget order, corner curves, autohide, and exclusive mode
-- `config/ags/bar/config/widgets.config.ts`
-  Widget instances and configuration; each key is a widget ID, `kind` picks the
-  implementation
-- `themes/<theme>/bar.scss`
-  Theme-specific bar colors, spacing, radii, and typography
+Create `user/shell.json` with only the values you want to
+change. Objects merge recursively over the shipped defaults. Arrays replace as
+complete ordered values, so use `bar.layoutEdits` when you only need to move,
+insert, override, or remove one widget by its stable ID.
 
-`config/ags/bar/theme.scss` is a symlink managed by `hk-theme set`. It points
-to the active theme's `bar.scss`. Switching themes updates the symlink and
-restarts AGS.
+For example, this moves the bar to the bottom without copying any upstream
+layout:
+
+```json
+{
+  "version": 1,
+  "bar": {
+    "edge": "bottom"
+  }
+}
+```
+
+Deleting the user file returns to the shipped configuration. Valid edits apply
+live; an invalid edit is rejected and the last valid layout remains running.
+Version 1 supports top and bottom bars.
+
+See [Shell Configuration](shell-configuration.md) for the full merge contract,
+widget schema, and layout-edit examples.
 
 ## Reorder, Add, or Remove Widgets
 
-Widget placement lives in `config/ags/bar/config/layout.config.ts`. Each island
-(`start`, `center`, `end`) holds a list of widget IDs. Reordering the lists
-reorders the bar. Removing an ID from an island removes that widget from the
-bar; adding one shows it.
+Each layout entry defines a widget instance inline. `id` is the stable instance
+identity and `kind` selects its built-in implementation. The bar has `start`,
+`center`, and `end` islands; the center island uses `before`, an optional
+midpoint `anchor`, and `after` so its anchor can remain exactly centered.
 
-Widget behavior is configured in `config/ags/bar/config/widgets.config.ts`.
-Each entry is a widget ID mapped to a config block with a `kind` field and
-widget-specific fields. Two IDs with the same `kind` produce independently
-configured instances.
+Prefer `bar.layoutEdits` for focused personal changes. Replace a whole layout
+array only when you intend to own its complete ordering.
 
-## Restart the Bar
+## Change the Appearance
 
-To apply changes, run:
+Every bar color, plus typography, thickness, spacing, borders, radii, panel
+sizing, and transition timing, comes from
+`themes/<theme>/quickshell.json`. Add a corresponding value to every theme when
+introducing a new required theme token. The running shell watches the selected
+theme and applies both theme switches and edits to its JSON without a restart.
 
-```bash
-hk-ags restart
-```
+## Manage and Inspect the Bar
 
-Theme switches already restart the bar.
-
-## Runtime Control
-
-The bar can also be controlled without restarting:
+Hyprland starts the bar through the same public lifecycle commands used for
+development and troubleshooting:
 
 ```bash
-hk-ags autohide on|off|toggle   # change autohide mode
-hk-ags exclusive on|off|toggle  # change exclusive mode
-hk-ags show|hide|toggle         # force a visibility state
-hk-ags status                   # print JSON: {autohide, exclusive, hidden}
+hk-shell start
+hk-shell stop
+hk-shell restart
+hk-shell status
+hk-shell logs --tail 100 --no-color
 ```
 
-## Full Widget Reference
-
-See `config/ags/bar/README.md` for the complete widget configuration reference,
-tooltip token lists, the styling guide, and architecture notes.
+Use `qs -p config/quickshell` only when a foreground development process is
+useful. See `config/quickshell/README.md` for the implemented interactions,
+internal structure, and validation commands.
 
 ## Related Docs
 
 - [Using Hyprkarl](using-hyprkarl.md)
 - [Configuration Map](configuration-map.md)
 - [Themes](themes.md)
+- [Extending Hyprkarl](extending-hyprkarl.md)

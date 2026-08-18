@@ -221,38 +221,9 @@ does not try to document every internal script.
 - `hk-docker list`
   Print the supported Docker service ids.
 
-## AGS Bar
+## Quickshell Bar
 
-- `hk-menu-ags`
-  Open the AGS bar control menu. Shows current state for visibility, autohide,
-  and exclusive zone; selecting an item toggles it.
-
-- `hk-ags restart`
-  Gracefully quit AGS, wait for the process to exit, then restart it under
-  uwsm-app.
-- `hk-ags start`
-  Start AGS if it is not running.
-- `hk-ags stop`
-  Quit AGS if it is running.
-- `hk-ags autohide [on|off|toggle]`
-  Control bar autohide behavior. Defaults to `toggle`.
-- `hk-ags exclusive [on|off|toggle]`
-  Control whether the bar reserves an exclusive zone. Defaults to `toggle`.
-- `hk-ags show`
-  Force the bar visible.
-- `hk-ags hide`
-  Force the bar hidden.
-- `hk-ags toggle`
-  Toggle bar visibility.
-- `hk-ags status`
-  Print bar status as JSON (`autohide`, `exclusive`, `hidden`).
-- `hk-ags request [args...]`
-  Send an arbitrary request to the running AGS instance.
-
-## Quickshell Prototype
-
-These commands manage the replacement bar during development. They do not
-change session startup; AGS remains the active production bar.
+These commands manage the session-started production bar.
 
 - `hk-shell start`
   Start the Hyprkarl Quickshell configuration in a UWSM scope if it is not
@@ -260,10 +231,10 @@ change session startup; AGS remains the active production bar.
   instance and reports QML load failures.
 - `hk-shell stop`
   Stop every running instance of the Hyprkarl Quickshell configuration. It is
-  safe to run when the prototype is already stopped and does not return until
+  safe to run when the bar is already stopped and does not return until
   Quickshell has unregistered the stopped instances.
 - `hk-shell restart`
-  Stop and start the prototype after shutdown completes.
+  Stop and start the bar after shutdown completes.
 - `hk-shell status`
   Print JSON containing `running` and the registered instances' IDs, process
   IDs, and launch times. Exits nonzero when stopped.

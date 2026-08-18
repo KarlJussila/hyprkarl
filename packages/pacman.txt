@@ -3,7 +3,6 @@ bluetui
 brightnessctl
 btop
 curl
-dart-sass
 docker
 docker-compose
 ffmpeg
@@ -45,6 +44,7 @@ psmisc
 python-gobject
 qt5ct
 qt6ct
+quickshell
 resvg
 rofi
 rofi-calc

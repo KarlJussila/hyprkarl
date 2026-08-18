@@ -15,8 +15,8 @@ in the same change** — both audiences:
   commands, configuration-map, extending, repo-conventions, shell-style,
   updating, …).
 - **Agent-facing docs** — the canonical `AGENTS.md` files: this one,
-  `bin/AGENTS.md` (command authoring), `config/ags/AGENTS.md` (the current bar),
-  and `config/quickshell/AGENTS.md` (the replacement bar).
+  `bin/AGENTS.md` (command authoring), and `config/quickshell/AGENTS.md` (the
+  active bar).
   Each adjacent `CLAUDE.md` only imports its `AGENTS.md` counterpart for Claude
   Code compatibility; keep shared guidance in `AGENTS.md`.
 
@@ -104,9 +104,9 @@ with the companion
 [theme generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
 (locally at `../theme-generator/`).
 
-### Quickshell Prototype Configuration
+### Quickshell Bar Configuration
 
-AGS remains the active bar. The replacement under `config/quickshell/` reads
+The active bar under `config/quickshell/` reads
 the upstream-owned `defaults/shell.json` and applies the optional sparse
 `user/shell.json` override. Objects merge recursively, arrays replace as
 complete ordered values, and `bar.layoutEdits` provides explicit widget-ID
@@ -121,9 +121,8 @@ battery/power, and clock/calendar panels compose shared panel controls inside
 that host, while feature directories own service-specific state. Bluetooth
 and network use feature singletons for adapter-global discovery/scan
 ownership; clock uses one application-wide current-time owner. See
-`config/quickshell/AGENTS.md` before changing the prototype. Use `hk-shell` to
-start, stop, restart, inspect, or read logs from the prototype; this does not
-replace AGS session startup.
+`config/quickshell/AGENTS.md` before changing the shell. Use `hk-shell` to
+start, stop, restart, inspect, or read logs from the production bar.
 
 ### `hk-*` Commands
 

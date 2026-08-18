@@ -100,27 +100,13 @@ Symptoms:
 
 Cause:
 
-- a TypeScript error in `config/ags/bar/config/widgets.config.ts` or
-  `config/ags/bar/config/layout.config.ts`
-- a CSS error in the active theme's `bar.scss`
-- AGS is not running
+- invalid JSON in `user/shell.json`
+- invalid theme data in the active theme's `quickshell.json`
+- a QML load error or stopped Quickshell instance
 
 What to do:
 
-- run AGS directly in a terminal to see errors: `ags run`
-- resolve errors and restart the bar:
-
-```bash
-hk-ags restart
-```
-
-- if a widget config change caused the problem, restore the previous value and
-  restart again
-
-### Quickshell prototype does not start
-
-The replacement bar is not started with the session yet. Manage and inspect it
-without disturbing AGS:
+- inspect the managed instance and its logs:
 
 ```bash
 hk-shell status
@@ -131,6 +117,9 @@ hk-shell restart
 `hk-shell start` prints a QML load error when Quickshell fails before
 registering the instance. For foreground development, stop the managed
 instance and run `qs -p "$HYPRKARL_PATH/config/quickshell"` in a terminal.
+If a user override caused the problem, correct it or remove
+`user/shell.json`; the shell otherwise retains its last valid
+configuration during a live edit.
 
 ## Docker Is Not Ready
 

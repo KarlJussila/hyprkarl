@@ -39,5 +39,3 @@ case "${1:-toggle}" in
     exit 1
     ;;
 esac
-
-ags request caffeine-sync

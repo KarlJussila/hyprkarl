@@ -5,7 +5,6 @@ hl.bind("SUPER + ALT + SPACE", hl.dsp.exec_cmd("hk-menu || pkill rofi"), { descr
 hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("hk-menu-launcher || pkill rofi"), { description = "Launch apps" })
 hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("hk-menu-power || pkill rofi"), { description = "Power menu" })
 hl.bind("SUPER + K", hl.dsp.exec_cmd("hk-menu-keybindings || pkill rofi"), { description = "View keybinds" })
-hl.bind("SUPER + CTRL + SPACE", hl.dsp.exec_cmd("hk-menu-ags || pkill rofi"), { description = "AGS bar menu" })
 hl.bind("SUPER + CTRL + C", hl.dsp.exec_cmd("hk-menu-calculator || pkill rofi"), { description = "Calculator" })
 
 -- Notifications

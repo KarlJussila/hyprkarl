@@ -4,15 +4,11 @@ This roadmap describes how Hyprkarl can adopt the strongest ideas from modern
 Omarchy without becoming a distribution or giving up its central model: install
 the repository once, then edit that repository directly.
 
-It is a plan, not a description of current behavior. The existing AGS bar
-remains the live shell until the Quickshell cutover work explicitly changes
-startup.
-
-The in-progress `config/quickshell/` tree is a prototype. Its working
-interactions, geometry, and service integrations are valuable evidence, but
-its file structure, configuration format, component boundaries, and internal
-APIs are not compatibility constraints. Implementation work may reorganize or
-replace it when that creates a simpler long-term shell.
+This is a living roadmap rather than a complete description of current
+behavior. Workstream 1 is complete: `config/quickshell/` is the production bar,
+and AGS has been removed. Later workstreams build on its public configuration
+and ownership boundaries without treating every internal QML detail as a
+compatibility constraint.
 
 ## Outcome
 
@@ -72,7 +68,7 @@ and interaction brief covering:
   require a new panel-window architecture;
 - representative audio, network, Bluetooth, power, and clock/calendar panels.
 
-Screenshots and prototypes should be evaluated against that brief. Existing
+Screenshots and prototypes should be evaluated against that brief. Historical
 AGS and prototype behavior remains useful for discovering requirements, but it
 does not decide the final surface shape.
 
@@ -92,9 +88,8 @@ does not decide the final surface shape.
   explicit layout concern at the bar and panel-window boundaries where that
   avoids a future rewrite, but unused left/right branches should not be spread
   through every widget today.
-- AGS remains the active production bar until the Quickshell bar and its core
-  feature panels are solid enough for a deliberate cutover. The prototype can
-  be restructured freely while AGS remains live.
+- The deliberate Quickshell cutover is complete. `hk-shell` owns production
+  lifecycle, and there is no legacy bar selection or compatibility layer.
 - The AGS bar is the visual reference for the compact bar itself, not for its
   flyout geometry or information architecture. Its complete palette is
   theme-derived: text, fills, borders, accents, status colors, and interaction
@@ -106,7 +101,7 @@ The lasting product and public-data boundaries are developed further in the
 
 ### Current Foundation Progress
 
-The Quickshell prototype now has a per-bar feature-panel host exercised by
+The production Quickshell bar has a per-bar feature-panel host exercised by
 separate audio, network, Bluetooth, battery/power, and clock/calendar panels.
 The host owns monitor-local active state, anchoring, bounds, focus and
 dismissal, scrolling, transitions, and contact-aware corners. Header, section,
@@ -117,12 +112,12 @@ each have a feature-owned, application-global request owner so multiple
 monitor panels compose correctly. Power composes UPower and PowerProfiles
 directly. Clock has one application-wide current-time owner and panel-local
 month navigation. The superseded flyout boundary has been deleted. `hk-shell`
-now provides the prototype's start, stop, restart, structured status, and log
+now provides the bar's start, stop, restart, structured status, and log
 boundary. It launches under UWSM and verifies the registered instance so a
-daemonized QML load failure cannot masquerade as a successful start. AGS still
-owns session startup. Cutover hardening has exercised every feature panel on a
-top bar, the power and clock panels on a bottom bar, live theme switching, and
-Hyprland reloads. Bottom-bar popup gravity now expands panels inward instead
+daemonized QML load failure cannot masquerade as a successful start. Hyprland
+session startup now enters through that same boundary. Cutover hardening has
+exercised every feature panel on top and bottom bars, live theme switching,
+and Hyprland reloads. Bottom-bar popup gravity expands panels inward instead
 of clipping them at the output edge, and theme selection watches the canonical
 theme-name file rather than retaining a watcher on an old symlink target.
 Monitor add/remove has also been exercised with a temporary headless output,
@@ -200,6 +195,8 @@ gitignored `config/uwsm/env.local`; they do not move into `user/`.
 
 ## Workstream 1: Stabilize and Cut Over the Quickshell Bar
 
+Status: complete.
+
 ### Goal
 
 Replace AGS with a production Quickshell bar informed by the current prototype,
@@ -259,12 +256,10 @@ menus, lock screens, and other shell surfaces.
 
 ### Migration Risk
 
-Medium. The main risks are popup geometry, per-monitor object ownership, and
-framework behavior that differs between the pinned package and upstream
-Quickshell examples. Because the prototype has no compatibility obligation,
-structural rewrite cost is not itself a risk; regression of already-demonstrated
-interactions is. Keep AGS live until one deliberate cutover commit rather than
-maintaining two selectable production shells.
+The cutover resolved the main risks around popup geometry, per-monitor object
+ownership, and framework behavior that differs between the supported package
+and upstream Quickshell examples. Those remain regression areas for future
+changes.
 
 ## Workstream 2: Make Shell Configuration Data-Only and Extensible
 
@@ -373,10 +368,9 @@ store.
 
 ### Migration Risk
 
-Medium. This work has begun in the prototype: `BarConfig.qml` has been removed
-in favor of shipped and optional user JSON before it could become a production
-compatibility surface. Command and user-QML extension lanes remain before the
-final AGS cutover.
+Medium. This work has begun in the production bar: `BarConfig.qml` was removed
+in favor of shipped and optional user JSON before it could become a public
+compatibility surface. Command and user-QML extension lanes remain future work.
 
 ## Workstream 3: Establish Upstream Defaults and User Overrides
 
@@ -487,7 +481,7 @@ owns all of the required information.
 
 ### Surface Architecture
 
-Do not force every feature through the prototype's current flyout shape. The
+Do not force every feature through the current panels' shape. The
 shell should provide a small visual vocabulary while each feature owns its
 information architecture:
 
@@ -676,9 +670,9 @@ branch. Deliver them as reviewable vertical changes:
    shell JSON, lightweight modules, host-level state, and shared primitives
    derived from multiple representative surfaces while AGS remains live;
    freely remove prototype-only structure.
-4. **Complete the production Quickshell bar and cut over.** Preserve the
-   prototype's successful interactions, validate them against the new
-   structure, and remove AGS in the same release.
+4. **Complete the production Quickshell bar and cut over.** Complete. The bar
+   was validated against the new structure and AGS was removed in the same
+   change.
 5. **Introduce `user/` and split Hyprland defaults from overrides.** Preserve
    behavior before adding new customization features.
 6. **Convert menus to data and add narrow lifecycle hooks.** Keep rofi as the

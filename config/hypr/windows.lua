@@ -60,6 +60,3 @@ hl.window_rule({ match = { tag = "default-opacity" }, opacity = "1.0 0.8" })
 
 -- Dim around rofi
 hl.layer_rule({ match = { namespace = "rofi" }, dim_around = true })
-
--- Blur AGS bar
-hl.layer_rule({ match = { namespace = "ags" }, blur = true })

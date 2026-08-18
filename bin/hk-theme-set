@@ -43,9 +43,6 @@ else
   gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
 fi
 
-if pgrep -x ags >/dev/null; then
-  hk-ags restart
-fi
 hyprctl reload >/dev/null
 hk-mako-reload
 hk-terminal-reload

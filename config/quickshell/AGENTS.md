@@ -113,9 +113,8 @@ The live launch is authoritative because Quickshell's installed qmltypes omit
 some internal types used by its public QML API. Use `qs -p config/quickshell`
 only when a foreground development process is useful.
 
-`hk-shell` is the public lifecycle boundary for this prototype. Use it for
-normal start, stop, restart, status, and log access. Do not add more shell
-commands, change session startup or package ownership, or replace the existing
-AGS controls until a task explicitly includes that cutover. A successful stop
-must mean `qs list` no longer reports a live instance; restart relies on that
-observable boundary instead of racing a process that is still shutting down.
+`hk-shell` is the public lifecycle boundary for the production bar. Hyprland
+session startup calls `hk-shell start`; use the same command family for normal
+start, stop, restart, status, and log access. A successful stop must mean `qs
+list` no longer reports a live instance; restart relies on that observable
+boundary instead of racing a process that is still shutting down.

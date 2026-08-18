@@ -7,7 +7,6 @@ ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 CAFFEINE=" Caffeine"
 NIGHTLIGHT=" Nightlight"
 SCREEN_RECORD=" Screen Record"
-AGS=" AGS Bar"
 
 case "$(powerprofilesctl get)" in
     "power-saver")    POWER_PROFILE_ICON="󰌪" ;;
@@ -19,7 +18,7 @@ POWER_PROFILE="$POWER_PROFILE_ICON Power Profile"
 
 relaunch_menu() { exec "$0"; }
 
-CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE\n$AGS" \
+CHOICE=$(echo -e "$CAFFEINE\n$NIGHTLIGHT\n$SCREEN_RECORD\n$POWER_PROFILE" \
     | rofi -dmenu \
            -p "" \
            -no-custom \
@@ -31,7 +30,6 @@ case "$CHOICE" in
     "$NIGHTLIGHT")    hk-nightlight ;;
     "$SCREEN_RECORD") sleep 0.5 && hk-screen-record ;;
     "$POWER_PROFILE") hk-menu-power-profile || relaunch_menu ;;
-    "$AGS")           hk-menu-ags || relaunch_menu ;;
     "")               exit 1 ;;
 esac
 

@@ -1,12 +1,12 @@
 # Shell Configuration and State Contract
 
 This document defines the lasting public configuration boundary for the
-Quickshell shell. The prototype now implements default/user resolution, common
+Quickshell shell. The production bar implements default/user resolution, common
 version 1 structure validation, inline built-in widget instances, explicit
 layout edits, and live last-valid reloads. Widget-specific setting validation
 will land with each stable module contract.
 Command widgets, user QML modules, `hk-shell config` commands, and gesture
-persistence remain later work. AGS is still the active production bar.
+persistence remain later work.
 
 ## Files and Ownership
 
@@ -160,8 +160,8 @@ map when an instance is referenced only once.
 
 `center.anchor` is fixed to the monitor midpoint. `before` and `after` grow
 away from it. This preserves the deliberate centered-island composition of
-the current bar without encoding the prototype's QML object shape as a public
-API.
+the current bar without encoding the implementation's QML object shape as a
+public API.
 
 Version 1 accepts `top` and `bottom`. Left and right are added only when
 vertical layouts and panel behavior are implemented and tested. The current
@@ -181,7 +181,7 @@ The complete version 1 contract will support three ways to place a widget:
    renders its documented text or small JSON result.
 3. A QML widget explicitly names a file under `user/quickshell/modules/`.
 
-Only the built-in lane is implemented in the current prototype. Until the
+Only the built-in lane is implemented in the current shell. Until the
 other two land, validation rejects kinds that do not name a built-in widget.
 
 There is no directory scan, manifest, installation hook, dependency resolver,

@@ -1,1 +1,0 @@
-../../../hyprkarl/current/theme/bar-layout.ts

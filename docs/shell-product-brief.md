@@ -1,12 +1,11 @@
 # Shell Product Brief
 
-This brief defines the product direction for Hyprkarl's Quickshell bar and
-feature panels. It is a design input to implementation, not a description of
-the active shell. AGS remains the production bar until the Quickshell
-replacement meets the cutover criteria in the
-[architecture roadmap](architecture-roadmap.md).
+This brief defines the product direction for Hyprkarl's production Quickshell
+bar and feature panels. The structural foundation and cutover are complete;
+the brief remains the standard for continued visual and interaction
+refinement.
 
-The prototype has begun implementing this brief: audio, network, Bluetooth,
+The bar implements this brief's foundation: audio, network, Bluetooth,
 battery/power, and clock/calendar now use a shared per-monitor panel host and
 separate feature-owned compositions. Those five panels validate the host plus
 its header, section, row, and action baseline without forcing feature-specific
@@ -14,16 +13,16 @@ summaries, sliders, calendar cells, or navigation into generic controls.
 Visual refinement follows the structural foundation; the current panel styling
 is not the final aesthetic.
 
-Two service limitations remain explicit cutover gaps rather than invented UI
+Two service limitations remain explicit rather than becoming invented UI
 state. The installed Quickshell Bluetooth API does not expose pairing-agent
 prompts or device-action failure reasons, and PowerProfiles exposes confirmed
-profile state but no per-write result. The prototype keeps advanced Bluetooth
+profile state but no per-write result. The bar keeps advanced Bluetooth
 management reachable and shows only service-confirmed progress/state while a
 future supported boundary is evaluated for actionable failures.
 
 ## Design Position
 
-The replacement should keep the current AGS bar's compact, information-dense
+The Quickshell bar should keep the retired AGS bar's compact, information-dense
 character while replacing its flyouts with intentionally designed feature
 panels. Omarchy and macOS are references for control quality, hierarchy, and
 direct manipulation. They are not layout templates.
@@ -40,7 +39,7 @@ Hyprkarl should feel:
 
 ## What the AGS Bar Establishes
 
-A live capture of the current AGS bar establishes these qualities to retain:
+A live capture of the retired AGS bar establishes these qualities to retain:
 
 - a thin 22-logical-pixel bar;
 - strong start, centered, and end composition;
@@ -102,8 +101,8 @@ One panel shell should own the behavior that must be consistent:
 - switching cleanly when another feature trigger is activated.
 
 Only one feature panel should be open on a monitor at a time. Activating its
-trigger again closes it; activating another trigger replaces it. This is the
-initial interaction contract to validate in the prototype.
+trigger again closes it; activating another trigger replaces it. The production
+bar implements this interaction contract.
 
 Reusable controls should be extracted only after at least two panels need the
 same interaction. Likely shared forms are section headings, action tiles,
@@ -146,9 +145,9 @@ Feature panels should not implement that rule independently.
 - Do not make a panel imitate a mobile control center merely because both use
   tiles and sliders.
 
-## Cutover Bar
+## Production Baseline
 
-AGS remains active until the Quickshell implementation has:
+The Quickshell implementation reached its production baseline with:
 
 - the complete default bar layout and core widget behavior;
 - solid network, Bluetooth, audio, battery/power, and clock/calendar panels;
@@ -158,12 +157,12 @@ AGS remains active until the Quickshell implementation has:
 - clean cold-start, reload, and runtime logs on the supported Quickshell and Qt
   versions.
 
-The final cutover removes AGS startup and packages in the same change. There is
-no period with two selectable production bars.
+The cutover removed AGS startup, packages, controls, implementation, and theme
+files together. There is no second selectable production bar.
 
 ## AGS Visual Reference Inventory
 
-The current AGS audio, network, Bluetooth, battery/power, and clock/calendar
+The retired AGS audio, network, Bluetooth, battery/power, and clock/calendar
 flyouts have been captured and inspected. The screenshots remain temporary
 because they contain machine-local and device information; the durable design
 findings are recorded below. Build representative audio and network panels

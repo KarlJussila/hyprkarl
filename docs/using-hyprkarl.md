@@ -168,8 +168,7 @@ Common utility commands include:
 - `hk-nightlight`
 - `hk-caffeine`
 - `hk-playerctl`
-- `hk-ags restart`
-- `hk-shell start|stop|restart|status|logs` for the Quickshell prototype
+- `hk-shell start|stop|restart|status|logs` for the Quickshell bar
 - `hk-audio-restart`
 - `hk-wifi-restart`
 

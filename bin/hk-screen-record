@@ -230,7 +230,6 @@ start_screenrecording() {
 
   if kill -0 $pid 2>/dev/null; then
     echo "$filename" >"$RECORDING_FILE"
-    timeout 5 ags request recording-sync || true
     return 0
   fi
 
@@ -250,7 +249,6 @@ stop_screenrecording() {
     count=$((count + 1))
   done
 
-  timeout 5 ags request recording-sync || true
   cleanup_webcam
 
   if kill -0 "$pid" 2>/dev/null; then

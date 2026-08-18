@@ -145,35 +145,10 @@ a new session.
 keys and personal settings. It is gitignored and never tracked. `setup-dotfiles.sh`
 creates it from `config/uwsm/env.local.example` on first run if it doesn't exist.
 
-## AGS Bar
+## Quickshell Bar
 
-The AGS bar lives under `config/ags/bar/`. The main editing surfaces are:
-
-- `config/ags/bar/config/layout.config.ts`
-  Bar edge, widget order, corner curves, autohide, and exclusive mode
-- `config/ags/bar/config/widgets.config.ts`
-  Widget instances: each key is a widget ID, `kind` picks the implementation
-- `themes/<theme>/bar.scss`
-  Theme-specific bar colors, spacing, radii, and typography
-
-`config/ags/bar/theme.scss` is a symlink managed by `hk-theme set`; it points to the active theme's `bar.scss`. Switching themes with `hk-theme set` updates the symlink and restarts AGS.
-
-The bar can also be controlled at runtime via `hk-ags`:
-
-```bash
-hk-ags autohide on|off|toggle
-hk-ags exclusive on|off|toggle
-hk-ags show|hide|toggle
-hk-ags status
-```
-
-See `config/ags/bar/README.md` for full widget configuration reference.
-
-## Quickshell Bar Replacement
-
-The replacement bar is being developed under `config/quickshell/` without
-changing session startup or the existing `hk-ags` commands yet. Its main
-editing surfaces are:
+The production bar lives under `config/quickshell/`. Its main editing surfaces
+are:
 
 - `defaults/shell.json`
   Shipped bar edge, widget order, and inline widget instances
@@ -182,7 +157,7 @@ editing surfaces are:
 - `themes/<theme>/quickshell.json`
   Theme-specific colors, typography, bar thickness, borders, radii, and spacing
 
-The prototype watches both shell JSON paths. Ordinary user objects merge over
+The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are
 applied afterward. Deleting the user file returns to the default, while an
 invalid live edit keeps the last valid configuration running. Version 1
@@ -190,15 +165,15 @@ supports top and bottom bars and built-in widget kinds. See
 [Shell Configuration](shell-configuration.md) for the schema and extension
 roadmap.
 
-The prototype also watches `config/hyprkarl/current/theme.name`, then reads the
+The shell also watches `config/hyprkarl/current/theme.name`, then reads the
 selected `themes/<theme>/quickshell.json` directly. Theme switches and edits to
 the active theme apply without restarting the shell.
 
-Run it alongside AGS with `hk-shell start`; use `hk-shell status`,
-`hk-shell logs`, and `hk-shell stop` to inspect and manage it. A direct
-`qs -p config/quickshell` launch remains useful for foreground development.
+Hyprland starts it with `hk-shell start`; use `hk-shell status`, `hk-shell
+logs`, and `hk-shell stop` to inspect and manage it. A direct `qs -p
+config/quickshell` launch remains useful for foreground development.
 See `config/quickshell/README.md` for its structure, checks, and interactions.
-The in-progress audio, network, Bluetooth, battery/power, and clock/calendar
+The audio, network, Bluetooth, battery/power, and clock/calendar
 panels share a per-monitor host under `config/quickshell/panels/`; their
 feature-specific views and state live under `config/quickshell/features/`.
 Network scanning and Bluetooth discovery use feature-owned singletons because

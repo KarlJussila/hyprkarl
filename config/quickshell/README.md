@@ -1,11 +1,10 @@
 # Quickshell Bar
 
-This directory contains the Quickshell replacement for the AGS bar. It is
-self-contained and can be developed beside the live AGS bar. AGS still owns
-session startup and its existing controls; `hk-shell` manages the prototype
-without changing that production path.
+This directory contains Hyprkarl's production Quickshell bar. Hyprland starts
+it through `hk-shell`, which is also the public lifecycle and diagnostics
+boundary.
 
-Start and inspect the prototype from the repository root:
+Start and inspect the bar from the repository root:
 
 ```bash
 hk-shell start
@@ -35,7 +34,7 @@ check.
 ## Configuration
 
 `defaults/shell.json` is Hyprkarl's shipped configuration. To customize the
-prototype without editing that upstream default, create a sparse override at
+bar without editing that upstream default, create a sparse override at
 `user/shell.json`:
 
 ```json
@@ -59,9 +58,9 @@ full merge contract.
 Version 1 supports top and bottom bars. The shell watches both paths: default
 updates and valid user edits are resolved live, deleting the user file returns
 to the shipped default, and a rejected live edit leaves the last valid layout
-running with an actionable log message. The current prototype implements
-built-in widget kinds; the planned command and user-QML extension lanes have
-not landed yet.
+running with an actionable log message. The current bar implements built-in
+widget kinds; the planned command and user-QML extension lanes have not landed
+yet.
 
 Themes own appearance through `themes/<theme>/quickshell.json`. `Theme.qml`
 watches `config/hyprkarl/current/theme.name`, then reads the selected theme
@@ -119,7 +118,7 @@ multiple widgets genuinely use the same interaction or visual structure.
   provides one, energy rate, power profiles, profile holds/degradation, and
   the configured power-action menu without introducing a separate controller.
   The installed PowerProfiles API exposes confirmed profile state but no
-  per-write failure result, so the prototype does not invent one.
+  per-write failure result, so the bar does not invent one.
 - Clock/calendar binds the bar, date header, viewed month, and current-day
   highlight to one shared clock. Previous/next controls navigate real months,
   a return action appears away from the current month, and reopening resets to

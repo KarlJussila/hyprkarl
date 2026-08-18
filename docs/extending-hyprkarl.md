@@ -154,37 +154,32 @@ see https://wiki.hypr.land/Configuring/Basics/Dispatchers/.
 If the binding needs more than a short command, add a script in `bin/` and bind
 to that. After editing, validate with `Hyprland --verify-config`.
 
-## Add an AGS Bar Feature
+## Add a Quickshell Bar Feature
 
-The AGS bar has two casual editing surfaces and one advanced one:
+For personal placement or behavior changes, add a sparse `user/shell.json`
+override. Objects merge recursively, arrays
+replace, and `bar.layoutEdits` can target a widget by stable ID without copying
+the shipped layout. See [Shell Configuration](shell-configuration.md).
 
-- `config/ags/bar/config/layout.config.ts`: add widget IDs to `start`, `center`,
-  or `end`.
-- `config/ags/bar/config/widgets.config.ts`: add a widget definition keyed by ID;
-  `kind` picks the implementation.
-- `themes/<theme>/bar.scss`: add styling tokens. New styling knobs that affect
-  all themes belong in every `themes/*/bar.scss`.
+To add a built-in widget kind:
 
-To add a new widget kind, create a folder under `config/ags/bar/widgets/<name>/`
-with:
+1. Create `config/quickshell/widgets/<kind>.qml` and keep the compact bar
+   interaction in that widget.
+2. Register the kind in `config/quickshell/config/ShellConfig.qml` so invalid
+   configuration is rejected at the public boundary.
+3. If it opens a panel, put service-specific state and panel composition under
+   `config/quickshell/features/<kind>/` and use the existing per-monitor
+   `FeaturePanelHost` rather than creating another popup window.
+4. Add every required appearance token to each
+   `themes/<theme>/quickshell.json`.
 
-- `spec.tsx`: `createWidgetSpec` call with `kind`, `defaults`, `schema`, and
-  `render`.
-- `<Name>Widget.tsx`: top-level view component.
-- `normalize.ts`: field normalizers used as `schema` values (if needed).
+Add a shared component only when multiple widgets genuinely use the same
+interaction or visual structure. The command-widget and user-QML extension
+lanes described in the shell configuration contract are planned but not yet
+implemented.
 
-Register the new kind in `config/ags/bar/widgets/catalog.ts`.
-
-To control the bar at runtime without editing config:
-
-```bash
-hk-ags autohide on|off|toggle
-hk-ags exclusive on|off|toggle
-hk-ags show|hide|toggle
-hk-ags status
-```
-
-See `config/ags/bar/README.md` for the full widget reference and styling guide.
+See `config/quickshell/README.md` for current interactions, structure, and
+validation commands.
 
 ## Add a Theme-Aware Feature
 
@@ -200,7 +195,8 @@ the active theme into place. Use relative symlinks.
 
 Examples:
 
-- the AGS bar symlinks `theme.scss` to `current/theme/bar.scss`
+- Quickshell watches `theme.name` and reads the selected
+  `themes/<name>/quickshell.json` directly
 - terminal configs import from `current/theme/...`
 - Hyprland `loadfile`s `current/theme/hyprland.lua` at the end of its config
 - `hyprlock` points at `current/wallpaper`

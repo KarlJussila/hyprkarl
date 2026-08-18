@@ -29,6 +29,11 @@ Hyprkarl:
 - reloads Hyprland, mako, terminals, and `btop`
 - restarts AGS (picks up the new `bar.scss`)
 
+When the Quickshell prototype is running, it watches `theme.name` and reads the
+selected `themes/<name>/quickshell.json` directly. It applies the new theme
+without restarting and also watches the selected JSON for live edits. It does
+not watch through the replaceable `current/theme` symlink.
+
 ## Switch the Active Theme
 
 The usual way to switch themes is `Hyprkarl Menu -> Config -> Theme`, but you

@@ -17,8 +17,10 @@ hk-shell stop
 Use `qs -p config/quickshell` instead when a foreground process is useful for
 development. `hk-shell start` is idempotent, starts the shell in a UWSM scope,
 and reports a failed QML load even though daemonized `qs` itself exits
-successfully in that case. `hk-shell logs` reads the newest instance and
-accepts native `qs log` options such as `--follow` and `--tail 100`.
+successfully in that case. `hk-shell stop` waits until Quickshell unregisters
+the instance, so `hk-shell restart` cannot race a process that is still
+shutting down. `hk-shell logs` reads the newest instance and accepts native
+`qs log` options such as `--follow` and `--tail 100`.
 
 Validate all QML files without launching the bar:
 
@@ -62,14 +64,15 @@ built-in widget kinds; the planned command and user-QML extension lanes have
 not landed yet.
 
 Themes own appearance through `themes/<theme>/quickshell.json`. `Theme.qml`
-reads the active theme through `config/hyprkarl/current/theme`, so a running bar
-updates when that JSON file changes. This includes every color plus typography,
-bar thickness, spacing, radii, borders, dividers, panel sizing, and transition
-timing.
+watches `config/hyprkarl/current/theme.name`, then reads the selected theme
+file directly, so both a theme switch and an edit to the active JSON apply to a
+running bar. This includes every color plus typography, bar thickness, spacing,
+radii, borders, dividers, panel sizing, and transition timing.
 
 ## Structure
 
-- `shell.qml` creates one bar per Quickshell screen after configuration loads.
+- `shell.qml` creates one bar per Quickshell screen after configuration and
+  theme data load.
 - `config/ShellConfig.qml` selects, validates, and watches shell JSON.
 - `Bar.qml` owns the layer-shell window and exclusive zone.
 - `panels/FeaturePanelHost.qml` owns the one feature-panel window and active

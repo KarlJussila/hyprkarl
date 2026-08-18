@@ -76,7 +76,6 @@ Item {
     PanelRow {
       visible: root.connectedNetwork !== null
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       icon: root.connectedNetwork ? root.signalIcon(root.connectedNetwork.signalStrength) : ""
       title: root.connectedNetwork?.name ?? ""
@@ -88,7 +87,6 @@ Item {
 
     PanelSectionLabel {
       visible: Networking.wifiEnabled && root.wifiDevice !== null
-      height: visible ? implicitHeight : 0
       theme: root.theme
       text: root.wifiDevice?.scannerEnabled ? "Available networks · scanning" : "Available networks"
     }
@@ -96,7 +94,6 @@ Item {
     Text {
       visible: !Networking.wifiEnabled || root.wifiDevice === null || root.sortedNetworks.length === 0
       width: parent.width
-      height: visible ? implicitHeight : 0
       text: !Networking.wifiEnabled
         ? "Turn on Wi-Fi to view nearby networks."
         : root.wifiDevice === null ? "No Wi-Fi adapter is available." : "No networks found yet."
@@ -214,7 +211,6 @@ Item {
     PanelAction {
       visible: root.config.secondaryCommand?.length > 0
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       icon: "󰒓"
       text: "Open network settings"

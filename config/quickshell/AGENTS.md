@@ -28,7 +28,8 @@ not restore a separate widget-definition map.
 ## Architecture
 
 `shell.qml` creates shared configuration, theme, and system state objects, then
-uses `Variants` to create one `Bar` per screen after configuration is ready.
+uses `Variants` to create one `Bar` per screen after configuration and theme
+data are ready.
 `config/ShellConfig.qml` alone selects, validates, and watches shell JSON while
 retaining the last valid live configuration after a rejected edit. `Bar.qml`
 alone owns each bar window and its per-monitor `FeaturePanelHost`. Layout files
@@ -42,7 +43,11 @@ a new surface ownership model.
 
 Themes own the entire visual surface, including colors, typography, bar
 thickness, spacing, radii, borders, dividers, and the panel gap. Shell JSON
-owns placement and behavior, not visual metrics.
+owns placement and behavior, not visual metrics. `config/Theme.qml` watches
+the canonical `../hyprkarl/current/theme.name` selector, then reads the chosen
+`themes/<name>/quickshell.json` directly. Do not watch through the replaceable
+`current/theme` symlink: its target changes on a theme switch and can leave a
+file watcher attached to the old theme.
 
 `panels/FeaturePanelHost.qml` is the lasting window boundary for feature
 panels. There is one host per bar/monitor. It owns the `PopupWindow`, trigger
@@ -50,6 +55,8 @@ anchoring, cross-axis clamping, preferred and maximum size, focus grab, Escape
 and outside-click dismissal, one-active-panel state, transitions, scrolling,
 and contact-aware corner radii. It whitelists the bar and popup in one
 `HyprlandFocusGrab` so another panel trigger switches on the first click.
+It also owns edge-dependent popup gravity: top-bar panels expand downward and
+bottom-bar panels expand upward while anchoring within the bar surface.
 Panel contents must not create their own popup window or reproduce geometry.
 
 Audio, network, Bluetooth, battery/power, and clock/calendar now exercise this
@@ -109,4 +116,6 @@ only when a foreground development process is useful.
 `hk-shell` is the public lifecycle boundary for this prototype. Use it for
 normal start, stop, restart, status, and log access. Do not add more shell
 commands, change session startup or package ownership, or replace the existing
-AGS controls until a task explicitly includes that cutover.
+AGS controls until a task explicitly includes that cutover. A successful stop
+must mean `qs list` no longer reports a live instance; restart relies on that
+observable boundary instead of racing a process that is still shutting down.

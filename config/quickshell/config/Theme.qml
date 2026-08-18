@@ -5,26 +5,28 @@ import Quickshell.Io
 QtObject {
   id: root
 
+  property string activeName: ""
   property var values: ({})
+  readonly property bool ready: activeName.length > 0 && Object.keys(values).length > 0
 
-  readonly property color text: values.text
-  readonly property color surface: values.surface
-  readonly property color background: values.background
-  readonly property color accent: values.accent
-  readonly property color border: values.border
-  readonly property color error: values.error
-  readonly property color batteryLow: values.batteryLow
-  readonly property string fontUi: values.fontUi
-  readonly property string fontMono: values.fontMono
-  readonly property int fontSize: values.fontSize
-  readonly property int readoutFontSize: values.readoutFontSize
+  readonly property color text: values.text ?? "transparent"
+  readonly property color surface: values.surface ?? "transparent"
+  readonly property color background: values.background ?? "transparent"
+  readonly property color accent: values.accent ?? "transparent"
+  readonly property color border: values.border ?? "transparent"
+  readonly property color error: values.error ?? "transparent"
+  readonly property color batteryLow: values.batteryLow ?? "transparent"
+  readonly property string fontUi: values.fontUi ?? ""
+  readonly property string fontMono: values.fontMono ?? ""
+  readonly property int fontSize: values.fontSize ?? 0
+  readonly property int readoutFontSize: values.readoutFontSize ?? 0
   readonly property int fontWeight: values.fontWeight ?? 700
   readonly property string fontStyle: values.fontStyle ?? "Bold"
-  readonly property int radius: values.radius
-  readonly property int borderWidth: values.borderWidth
+  readonly property int radius: values.radius ?? 0
+  readonly property int borderWidth: values.borderWidth ?? 0
   readonly property bool showDividers: values.showDividers ?? true
   readonly property int barThickness: values.barThickness ?? 22
-  readonly property int widgetPadding: values.widgetPadding
+  readonly property int widgetPadding: values.widgetPadding ?? 0
   readonly property int tooltipRadius: values.tooltipRadius ?? radius
   readonly property int panelGap: values.panelGap ?? 0
   readonly property int panelWidth: values.panelWidth ?? 360
@@ -34,17 +36,31 @@ QtObject {
   readonly property int panelRadius: values.panelRadius ?? radius
   readonly property int panelTransitionDuration: values.panelTransitionDuration ?? 140
 
+  property FileView selector: FileView {
+    path: Quickshell.shellPath("../hyprkarl/current/theme.name")
+    blockLoading: true
+    watchChanges: true
+    onFileChanged: reload()
+    onLoaded: root.selectTheme()
+  }
+
   property FileView source: FileView {
-    path: Quickshell.shellPath("../hyprkarl/current/theme/quickshell.json")
+    path: root.activeName.length === 0
+      ? ""
+      : Quickshell.shellPath("../../themes/" + root.activeName + "/quickshell.json")
     blockLoading: true
     watchChanges: true
     onFileChanged: reload()
     onLoaded: root.load()
   }
 
+  function selectTheme(): void {
+    activeName = selector.text().trim()
+  }
+
   function load(): void {
     values = JSON.parse(source.text())
   }
 
-  Component.onCompleted: load()
+  Component.onCompleted: selectTheme()
 }

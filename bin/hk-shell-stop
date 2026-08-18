@@ -16,4 +16,14 @@ while read -r instance_id; do
   qs kill -i "$instance_id" >/dev/null || exit 1
 done < <(jq -r '.[].id' <<<"$instances")
 
-echo "Shell stopped."
+for _ in {1..40}; do
+  if ! hk_shell_is_running; then
+    echo "Shell stopped."
+    exit 0
+  fi
+
+  sleep 0.05
+done
+
+echo "Shell failed to stop." >&2
+exit 1

@@ -112,10 +112,11 @@ The full manual lives under `docs/`.
 
 Themes live under `themes/` and control the appearance of Hyprland, the bars,
 rofi, terminals, mako, hyprlock, and other applications. The in-development
-Quickshell bar reads `themes/<theme>/quickshell.json` directly through the
-active-theme symlink. AGS remains the session-started bar; developers can run
-the replacement alongside it with `hk-shell start` and inspect it with
-`hk-shell status` or `hk-shell logs`.
+Quickshell bar watches `config/hyprkarl/current/theme.name`, then reads the
+selected `themes/<theme>/quickshell.json` directly. Theme switches therefore
+apply without restarting the prototype. AGS remains the session-started bar;
+developers can run the replacement alongside it with `hk-shell start` and
+inspect it with `hk-shell status` or `hk-shell logs`.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

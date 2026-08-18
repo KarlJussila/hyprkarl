@@ -57,7 +57,6 @@ Item {
     PanelRow {
       visible: root.adapter !== null
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       icon: root.adapter?.enabled ? "󰂯" : "󰂲"
       title: "Bluetooth"
@@ -72,7 +71,6 @@ Item {
     Text {
       visible: root.adapter === null
       width: parent.width
-      height: visible ? implicitHeight : 0
       text: "No Bluetooth adapter is available."
       color: root.theme.text
       opacity: 0.65
@@ -83,7 +81,6 @@ Item {
 
     PanelSectionLabel {
       visible: root.connectedDevices.length > 0
-      height: visible ? implicitHeight : 0
       theme: root.theme
       text: "Connected"
     }
@@ -101,7 +98,6 @@ Item {
 
     PanelSectionLabel {
       visible: root.pairedDevices.length > 0
-      height: visible ? implicitHeight : 0
       theme: root.theme
       text: "Paired devices"
     }
@@ -119,7 +115,6 @@ Item {
 
     PanelSectionLabel {
       visible: root.adapter?.enabled ?? false
-      height: visible ? implicitHeight : 0
       theme: root.theme
       text: root.adapter?.discovering ? "Available devices · scanning" : "Available devices"
     }
@@ -127,7 +122,6 @@ Item {
     Text {
       visible: root.adapter?.enabled && root.availableDevices.length === 0
       width: parent.width
-      height: visible ? implicitHeight : 0
       text: "No nearby devices found yet."
       color: root.theme.text
       opacity: 0.65
@@ -150,7 +144,6 @@ Item {
     PanelAction {
       visible: root.config.secondaryCommand?.length > 0
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       icon: "󰒓"
       text: "Open Bluetooth settings"

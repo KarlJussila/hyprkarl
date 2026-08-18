@@ -146,7 +146,6 @@ Item {
     PanelAction {
       visible: root.monthOffset !== 0
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       icon: "󰃭"
       text: `Return to ${Qt.formatDate(ClockState.now, "MMMM")}`

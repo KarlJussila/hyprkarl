@@ -260,9 +260,10 @@ change session startup; AGS remains the active production bar.
   instance and reports QML load failures.
 - `hk-shell stop`
   Stop every running instance of the Hyprkarl Quickshell configuration. It is
-  safe to run when the prototype is already stopped.
+  safe to run when the prototype is already stopped and does not return until
+  Quickshell has unregistered the stopped instances.
 - `hk-shell restart`
-  Stop and start the prototype.
+  Stop and start the prototype after shutdown completes.
 - `hk-shell status`
   Print JSON containing `running` and the registered instances' IDs, process
   IDs, and launch times. Exits nonzero when stopped.

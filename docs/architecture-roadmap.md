@@ -120,7 +120,14 @@ month navigation. The superseded flyout boundary has been deleted. `hk-shell`
 now provides the prototype's start, stop, restart, structured status, and log
 boundary. It launches under UWSM and verifies the registered instance so a
 daemonized QML load failure cannot masquerade as a successful start. AGS still
-owns session startup.
+owns session startup. Cutover hardening has exercised every feature panel on a
+top bar, the power and clock panels on a bottom bar, live theme switching, and
+Hyprland reloads. Bottom-bar popup gravity now expands panels inward instead
+of clipping them at the output edge, and theme selection watches the canonical
+theme-name file rather than retaining a watcher on an old symlink target.
+Monitor add/remove has also been exercised with a temporary headless output,
+including removing the output while its monitor-local feature panel was open;
+the shared shell process and remaining bar survived without a runtime warning.
 
 ## Constraints and Non-Goals
 

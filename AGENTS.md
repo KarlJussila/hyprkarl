@@ -113,7 +113,10 @@ complete ordered values, and `bar.layoutEdits` provides explicit widget-ID
 operations for surgical layout changes. Widget instances are defined inline
 in the default layout, and version 1 accepts top and bottom bars only. Keep
 appearance in each theme's `quickshell.json`; shell JSON owns placement and
-behavior. Each bar owns one `FeaturePanelHost`; audio, network, Bluetooth,
+behavior. `Theme.qml` watches the canonical `current/theme.name` selector and
+then reads the selected theme file directly so replacing the active-theme
+symlink cannot strand its file watcher on the previous target. Each bar owns
+one `FeaturePanelHost`; audio, network, Bluetooth,
 battery/power, and clock/calendar panels compose shared panel controls inside
 that host, while feature directories own service-specific state. Bluetooth
 and network use feature singletons for adapter-global discovery/scan

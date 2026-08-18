@@ -79,7 +79,6 @@ Item {
     BatterySummary {
       visible: root.battery?.isPresent ?? false
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       battery: root.battery
       config: root.config
@@ -96,7 +95,6 @@ Item {
     Text {
       visible: PowerProfiles.holds.length > 0
       width: parent.width
-      height: visible ? implicitHeight : 0
       text: `${PowerProfiles.holds.length} application hold${PowerProfiles.holds.length === 1 ? "" : "s"} the current profile. Choosing another profile releases ${PowerProfiles.holds.length === 1 ? "it" : "them"}.`
       color: root.theme.text
       opacity: 0.65
@@ -128,7 +126,6 @@ Item {
     PanelRow {
       visible: PowerProfiles.hasPerformanceProfile
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       icon: "󰓅"
       title: "Performance"
@@ -140,7 +137,6 @@ Item {
     PanelAction {
       visible: root.config.powerCommand?.length > 0
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       icon: "󰐥"
       text: "Power actions"

@@ -190,6 +190,10 @@ supports top and bottom bars and built-in widget kinds. See
 [Shell Configuration](shell-configuration.md) for the schema and extension
 roadmap.
 
+The prototype also watches `config/hyprkarl/current/theme.name`, then reads the
+selected `themes/<theme>/quickshell.json` directly. Theme switches and edits to
+the active theme apply without restarting the shell.
+
 Run it alongside AGS with `hk-shell start`; use `hk-shell status`,
 `hk-shell logs`, and `hk-shell stop` to inspect and manage it. A direct
 `qs -p config/quickshell` launch remains useful for foreground development.

@@ -58,7 +58,6 @@ Item {
 
     PanelSectionLabel {
       visible: root.outputNodes.length > 1
-      height: visible ? implicitHeight : 0
       theme: root.theme
       text: "Output device"
     }
@@ -91,7 +90,6 @@ Item {
 
     PanelSectionLabel {
       visible: root.inputNodes.length > 1
-      height: visible ? implicitHeight : 0
       theme: root.theme
       text: "Input device"
     }
@@ -116,7 +114,6 @@ Item {
     PanelAction {
       visible: root.config.secondaryCommand?.length > 0
       width: parent.width
-      height: visible ? implicitHeight : 0
       theme: root.theme
       icon: "󰒓"
       text: "Open audio settings"

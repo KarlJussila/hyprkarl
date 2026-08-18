@@ -10,7 +10,7 @@ ShellRoot {
   SystemState { id: stateObject }
 
   Variants {
-    model: configObject.ready ? Quickshell.screens : []
+    model: configObject.ready && themeObject.ready ? Quickshell.screens : []
 
     Bar {
       required property var modelData

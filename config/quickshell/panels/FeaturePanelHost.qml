@@ -118,14 +118,16 @@ Scope {
     anchor {
       window: root.barWindow
       adjustment: PopupAdjustment.ResizeY
-      gravity: Edges.Bottom | Edges.Right
+      gravity: root.edge === "top"
+        ? Edges.Bottom | Edges.Right
+        : Edges.Top | Edges.Right
 
       onAnchoring: {
         if (!root.trigger) return
 
         const relativeY = root.edge === "top"
           ? root.trigger.height + root.theme.panelGap - root.theme.borderWidth
-          : -panel.height - root.theme.panelGap + root.theme.borderWidth
+          : root.theme.borderWidth - root.theme.panelGap
         const point = root.trigger.QsWindow.contentItem.mapFromItem(
           root.trigger,
           root.trigger.width / 2 - panel.width / 2,

@@ -12,12 +12,15 @@ Item {
   required property var panelHost
 
   readonly property string widgetId: definition.id
-  readonly property Item loadedItem: loader.item as Item
+  readonly property var loadedItem: loader.item
   readonly property int dividerExtent: showDivider && loadedItem?.visible ? theme.borderWidth : 0
+  readonly property int mainPadding: loadedItem && ("hostMainPadding" in loadedItem)
+    ? loadedItem.hostMainPadding
+    : theme.widgetMainPadding
   property bool initialized: false
 
   implicitWidth: loadedItem?.visible
-    ? loader.implicitWidth + dividerExtent + theme.widgetMainPadding * 2
+    ? loader.implicitWidth + dividerExtent + mainPadding * 2
     : 0
   implicitHeight: loadedItem?.visible
     ? loader.implicitHeight + theme.widgetCrossPadding * 2
@@ -35,7 +38,7 @@ Item {
   Loader {
     id: loader
     x: root.dividerExtent
-    width: implicitWidth + root.theme.widgetMainPadding * 2
+    width: implicitWidth + root.mainPadding * 2
     height: parent.height
   }
 

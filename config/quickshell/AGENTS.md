@@ -60,9 +60,12 @@ a new surface ownership model.
 
 `horizontalWidgetPadding` names the horizontal-bar design, not coordinate
 axes. Its `main` value pads along a top/bottom bar and its `cross` value pads
-across the bar's thickness. `WidgetHost.qml` owns both values so every built-in
-and future widget gets the same outer padding and clickable extent. Do not add
-padding to individual widgets. Add a separate vertical-bar padding object only
+across the bar's thickness. `WidgetHost.qml` owns both values by default so
+built-in and future widgets get the same outer padding and clickable extent.
+An asymmetric composite may expose `hostMainPadding` and own its main-axis
+geometry; the tray is the concrete exception because its compact trigger and
+revealed item row need different insets. Do not opt ordinary widgets out or
+duplicate cross-axis padding. Add a separate vertical-bar padding object only
 when vertical bars are supported. Panel internals use `controlPadding`; they
 are not bar-widget padding.
 
@@ -120,9 +123,10 @@ a second date owner.
 The three performance widgets share `ExpandableReadout`; the tray owns the
 same clipped horizontal expansion for its dynamic item list. Its divider lives
 inside that clipped panel so it reveals between the fixed trigger and items on
-top and bottom bars. The universal host padding provides the outer inset for
-the tray and workspace rows; the tray reuses the main-axis value between its
-internal divider and item row. Do not turn it into item-to-item spacing.
+top and bottom bars. The workspace row receives universal host padding. The
+tray opts out of host main-axis padding, uses `trayTriggerPadding` around its
+compact chevron, and applies the universal main-axis value beside the internal
+divider and beyond the item row. Do not turn it into item-to-item spacing.
 
 Component and feature directories have checked-in `qmldir` files where runtime
 loading or singleton registration requires them. Widget files are loaded from

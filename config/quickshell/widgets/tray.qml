@@ -15,8 +15,8 @@ Item {
   required property var systemState
   required property var panelHost
 
+  readonly property int hostMainPadding: 0
   readonly property bool towardEnd: config.direction !== "start"
-  readonly property real contentX: (width - implicitWidth) / 2
   property bool expanded: false
 
   implicitWidth: trigger.implicitWidth + trayPanel.width
@@ -49,7 +49,7 @@ Item {
   }
 
   component TrayTrigger: Item {
-    implicitWidth: 18
+    implicitWidth: 8 + root.theme.trayTriggerPadding * 2
     implicitHeight: 14
     height: root.height
 
@@ -99,11 +99,12 @@ Item {
     readonly property real innerPadding: trayRow.implicitWidth > 0
       ? root.theme.widgetMainPadding
       : 0
+    readonly property real outerPadding: innerPadding
 
-    x: root.contentX + (root.towardEnd ? trigger.width : 0)
+    x: root.towardEnd ? trigger.width : 0
     y: 0
     width: root.expanded
-      ? trayRow.implicitWidth + innerPadding + root.theme.borderWidth
+      ? trayRow.implicitWidth + innerPadding + outerPadding + root.theme.borderWidth
       : 0
     height: root.height
     clip: true
@@ -128,7 +129,7 @@ Item {
 
       x: root.towardEnd
         ? root.theme.borderWidth + trayPanel.innerPadding
-        : trayPanel.width - root.theme.borderWidth - trayPanel.innerPadding - width
+        : trayPanel.outerPadding
 
       Repeater {
         model: SystemTray.items
@@ -143,7 +144,7 @@ Item {
   TrayTrigger {
     id: trigger
 
-    x: root.contentX + (!root.towardEnd ? trayPanel.width : 0)
+    x: !root.towardEnd ? trayPanel.width : 0
     y: 0
   }
 }

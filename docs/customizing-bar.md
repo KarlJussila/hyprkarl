@@ -76,7 +76,8 @@ The island silhouette is theme-owned too. For example, the shipped themes use:
   "horizontalWidgetPadding": {
     "main": 6,
     "cross": 3
-  }
+  },
+  "trayTriggerPadding": 1
 }
 ```
 
@@ -92,9 +93,11 @@ screen and content margins are included in the reserved bar area.
 `horizontalWidgetPadding` applies to every widget on a top or bottom bar.
 `main` pads along the bar and `cross` pads across its thickness; “horizontal”
 describes the bar orientation rather than the x-axis. The shared widget host
-owns this padding, including its clickable area, so workspace and tray rows
-receive the same outer inset without gaining item-to-item spacing. Panel rows
-and actions use the separate `controlPadding` value.
+owns this padding, including its clickable area, by default. The tray handles
+its asymmetric layout itself: `trayTriggerPadding` controls the compact
+chevron button, while `main` still separates revealed items from their divider
+and the island edge. It does not add item-to-item spacing. Panel rows and
+actions use the separate `controlPadding` value.
 
 `barMinThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural

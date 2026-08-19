@@ -48,6 +48,7 @@ QtObject {
   readonly property var horizontalWidgetPadding: values.horizontalWidgetPadding ?? ({})
   readonly property int widgetMainPadding: horizontalWidgetPadding.main ?? 0
   readonly property int widgetCrossPadding: horizontalWidgetPadding.cross ?? 0
+  readonly property int trayTriggerPadding: values.trayTriggerPadding ?? 0
   readonly property int controlPadding: values.controlPadding ?? 0
   readonly property int tooltipRadius: values.tooltipRadius ?? radius
   readonly property int panelGap: values.panelGap ?? 0

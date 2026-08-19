@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import "config"
 import "features/menu"
+import "features/notifications"
 import "features/osd"
 import "state"
 
@@ -15,31 +16,9 @@ ShellRoot {
     id: osdStateObject
     shellConfig: configObject
   }
-
-  Variants {
-    model: configObject.ready && themeObject.ready ? Quickshell.screens : []
-
-    Bar {
-      required property var modelData
-
-      screen: modelData
-      shellConfig: configObject
-      theme: themeObject
-      systemState: stateObject
-    }
-  }
-
-  Variants {
-    model: configObject.ready && themeObject.ready ? Quickshell.screens : []
-
-    OsdWindow {
-      required property var modelData
-
-      output: modelData
-      osdState: osdStateObject
-      shellConfig: configObject
-      theme: themeObject
-    }
+  NotificationState {
+    id: notificationStateObject
+    shellConfig: configObject
   }
 
   Variants {
@@ -47,11 +26,15 @@ ShellRoot {
       ? Quickshell.screens
       : []
 
-    MenuWindow {
+    ScreenSurfaces {
       required property var modelData
 
       output: modelData
+      shellConfig: configObject
       theme: themeObject
+      systemState: stateObject
+      osdState: osdStateObject
+      notificationState: notificationStateObject
     }
   }
 }

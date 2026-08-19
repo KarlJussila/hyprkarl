@@ -244,6 +244,9 @@ shell.
 - `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`
   Open, toggle, or close the shell-native command menu. This is also described
   with the menu commands above.
+- `hk-shell notifications <dismiss|dismiss-all|toggle-silenced|restore>`
+  Control the shell-native notification service. `restore` brings back the
+  most recently dismissed or expired notification as a visual snapshot.
 - `hk-shell osd <surface> ...`
   Send semantic state to the shell-native OSD on the focused output. These
   narrow calls are public for custom keybindings and commands; the built-in
@@ -261,8 +264,6 @@ shell.
 
 ## UI Helpers
 
-- `hk-mako-reload`
-  Reload mako.
 - `hk-terminal-reload`
   Reload terminal configs for supported terminals.
 - `hk-workspace-swap <target_num>`

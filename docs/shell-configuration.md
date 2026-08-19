@@ -119,6 +119,25 @@ map when an instance is referenced only once.
     "timeout": 2000,
     "mediaTimeout": 3000
   },
+  "notifications": {
+    "edge": "bar",
+    "side": "right",
+    "gap": 0,
+    "sideMargin": 0,
+    "defaultTimeout": 5000,
+    "statusTimeout": 2000,
+    "maxVisible": 5,
+    "fallbackIcon": { "kind": "glyph", "value": "󰂚" },
+    "criticalIcon": { "kind": "glyph", "value": "󰀦" },
+    "ignoredApplications": ["spotify"],
+    "compactApplications": ["battery"],
+    "iconOverrides": {
+      "battery": {
+        "kind": "component",
+        "source": "builtin/BatteryIcon.qml"
+      }
+    }
+  },
   "bar": {
     "edge": "top",
     "exclusive": true,
@@ -170,6 +189,92 @@ while `mediaTimeout` controls track feedback. These placement and lifecycle
 values deep-merge like other ordinary objects, so a user override may set only
 one of them. OSD appearance is theme data under `osd` in `quickshell.json`, not
 shell configuration.
+
+`notifications.edge` accepts `bar`, `top`, or `bottom`; `bar` follows the
+configured bar edge. `side` accepts `left` or `right`. `gap` separates the
+stack from the bar (or explicit screen edge), while `sideMargin` separates it
+from the monitor side. With the shipped zero values, the stack overlaps the
+bar border, sits flush against the right screen edge, sharpens the one corner
+touching both, and reveals from the bar into the workspace. The shipped
+theme's zero `notification.stackSpacing` joins adjacent toasts along one border
+and sharpens only corners the neighboring toast actually reaches; overhanging
+corners stay rounded. A positive value restores separate rounded toasts. New
+notifications appear on the focused monitor.
+`defaultTimeout` applies when a sender does not request a timeout,
+`statusTimeout` applies to shell-owned status messages, and `maxVisible` caps
+each stack. A sender timeout of zero and every critical notification remain
+until dismissed. Hover pauses a running toast timer.
+
+`ignoredApplications` and `compactApplications` contain lowercase exact
+application names. Arrays replace in a user override, so supply the complete
+desired list. `iconOverrides` is an ordinary object and therefore deep-merges;
+its lowercase keys may match either the sender's application name or its icon
+name. Each value is an icon descriptor:
+
+```json
+{
+  "version": 1,
+  "notifications": {
+    "iconOverrides": {
+      "discord": { "kind": "icon", "value": "discord" },
+      "my mixer": {
+        "kind": "component",
+        "source": "builtin/AudioIcon.qml"
+      },
+      "my monitor": {
+        "kind": "component",
+        "source": "user/RingIcon.qml"
+      },
+      "backup job": { "kind": "glyph", "value": "󰁯" },
+      "noisy utility": { "kind": "none" }
+    }
+  }
+}
+```
+
+`icon` accepts an icon-theme name or file path, `glyph` uses the theme font,
+and `component` loads a small QML drawing. `builtin/<file>.qml` resolves under
+the shipped `features/notifications/icons/` directory;
+`user/<file>.qml` resolves under `user/quickshell/icons/`. The shipped audio
+and battery indicators use this same component path rather than special-case
+renderer branches. A component root is an `Item` with writable `progress` and
+`theme` properties. For example, `user/quickshell/icons/RingIcon.qml` can be:
+
+```qml
+import QtQuick
+import QtQuick.Window
+
+Item {
+  id: root
+
+  property real progress: -1
+  property var theme: null
+
+  onThemeChanged: drawing.requestPaint()
+
+  Canvas {
+    id: drawing
+
+    anchors.fill: parent
+    onPaint: {
+      const context = getContext("2d")
+      context.clearRect(0, 0, width, height)
+      context.strokeStyle = root.theme.foreground
+      context.lineWidth = 2 / Screen.devicePixelRatio
+      context.beginPath()
+      context.arc(width / 2, height / 2, Math.min(width, height) / 3, 0, Math.PI * 2)
+      context.stroke()
+    }
+  }
+}
+```
+
+For data-driven drawings, a standard `int:value` notification hint supplies
+`progress` from 0 through 100; notifications without it receive `-1`.
+A notification's content image takes priority over these application-icon
+rules; otherwise an override, the sender's application icon, and the normal or
+critical fallback are tried in that order. Appearance and sizing belong to the
+theme's `notification` object in `quickshell.json`.
 
 `center.anchor` is fixed to the monitor midpoint. `before` and `after` grow
 away from it. This preserves the deliberate centered-island composition of
@@ -244,6 +349,8 @@ running configuration and reports the new error.
 | Widget order and instance settings | Shipped defaults plus sparse `user/shell.json` edits | User override is versioned |
 | Bar edge and exclusion behavior | Shipped defaults plus `user/shell.json` | User override is versioned |
 | OSD edge, margin, and dismissal timeouts | Shipped defaults plus `user/shell.json` | User override is versioned |
+| Notification placement, timing, filters, compact apps, and icon selection | Shipped defaults plus `user/shell.json` | User override is versioned |
+| Visible notification stack, silence mode, and one restore snapshot | Application-wide `NotificationState` | Memory only |
 | Colors, typography, spacing, island geometry, borders, and interaction states | Active semantic theme | Theme-derived |
 | Open panel, hover, focus, disclosure, and in-progress UI | Quickshell feature objects | Memory only |
 | Wi-Fi, Bluetooth, audio, battery, and power state | The corresponding system service | Service-owned |

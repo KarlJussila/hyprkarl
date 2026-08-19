@@ -42,6 +42,18 @@ example:
 See [`docs/menu-configuration.md`](../docs/menu-configuration.md) for the menu
 schema, adding entries and submenus, and direct menu commands.
 
+## Notification Icon Drawings
+
+Personal notification drawings belong under `user/quickshell/icons/`. Point a
+lowercase application or icon-name override at one with a descriptor such as
+`{"kind":"component","source":"user/RingIcon.qml"}` in `shell.json`.
+The QML file's root `Item` exposes writable `progress` and `theme` properties;
+the shell gives it the configured icon-sized canvas, a 0–100 notification
+value (or `-1`), and the live semantic theme object. The shipped audio and
+battery drawings use the identical loader contract. See
+[`docs/shell-configuration.md`](../docs/shell-configuration.md) for a complete
+Canvas example.
+
 ## Themes
 
 Personal theme bundles and same-name overlays belong under

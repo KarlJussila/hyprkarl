@@ -1,0 +1,164 @@
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import Quickshell
+import Quickshell.Wayland
+
+PanelWindow {
+  id: root
+
+  required property var output
+  required property var barWindow
+  required property var notificationState
+  required property var shellConfig
+  required property var theme
+
+  readonly property string resolvedEdge: shellConfig.notificationEdge === "bar"
+    ? shellConfig.edge
+    : shellConfig.notificationEdge
+  readonly property var screenEntries:
+    notificationState.entriesForScreen(output.name)
+  readonly property var entries: resolvedEdge === "top"
+    ? screenEntries
+    : screenEntries.slice().reverse()
+  readonly property bool alignedWithBar: resolvedEdge === shellConfig.edge
+  readonly property bool touchesBar: alignedWithBar
+    && shellConfig.notificationGap === 0
+    && theme.barMarginContent === 0
+  readonly property bool touchesScreenSide:
+    shellConfig.notificationSideMargin === 0
+  readonly property bool touchesBarCorner: touchesBar
+    && touchesScreenSide
+    && theme.barMarginOuter === 0
+  readonly property int edgeOffset: (alignedWithBar ? barWindow.height : 0)
+    + shellConfig.notificationGap
+    - (touchesBar ? theme.borderWidth : 0)
+  readonly property bool connectedStack: theme.notificationStackSpacing === 0
+
+  visible: entries.length > 0
+  screen: output
+  color: "transparent"
+  focusable: false
+  aboveWindows: true
+  exclusionMode: ExclusionMode.Ignore
+  exclusiveZone: 0
+  implicitWidth: Math.min(
+    theme.notificationWidth,
+    output.width - shellConfig.notificationSideMargin)
+  implicitHeight: stack.implicitHeight
+
+  anchors.top: resolvedEdge === "top"
+  anchors.bottom: resolvedEdge === "bottom"
+  anchors.left: shellConfig.notificationSide === "left"
+  anchors.right: shellConfig.notificationSide === "right"
+  margins.top: anchors.top ? edgeOffset : 0
+  margins.bottom: anchors.bottom ? edgeOffset : 0
+  margins.left: anchors.left ? shellConfig.notificationSideMargin : 0
+  margins.right: anchors.right ? shellConfig.notificationSideMargin : 0
+
+  WlrLayershell.namespace: "hyprkarl-quickshell-notifications"
+  WlrLayershell.layer: WlrLayer.Overlay
+  WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+
+  Column {
+    id: stack
+
+    anchors.top: root.resolvedEdge === "top" ? parent.top : undefined
+    anchors.bottom: root.resolvedEdge === "bottom" ? parent.bottom : undefined
+    width: root.width
+    spacing: root.connectedStack
+      ? -root.theme.borderWidth
+      : root.theme.notificationStackSpacing
+
+    Repeater {
+      model: root.entries
+
+      Item {
+        required property var modelData
+        required property int index
+
+        readonly property bool barAdjacent: root.resolvedEdge === "top"
+          ? index === 0
+          : index === root.entries.length - 1
+        readonly property bool touchesPrevious: root.connectedStack && index > 0
+        readonly property bool touchesNext: root.connectedStack
+          && index < root.entries.length - 1
+        readonly property int toastWidth: root.notificationState.compactFor(modelData)
+          ? root.theme.notificationCompactWidth
+          : root.theme.notificationWidth
+        readonly property bool previousCoversOuterCorner: touchesPrevious
+          && (root.notificationState.compactFor(root.entries[index - 1])
+            ? root.theme.notificationCompactWidth
+            : root.theme.notificationWidth) >= toastWidth
+        readonly property bool nextCoversOuterCorner: touchesNext
+          && (root.notificationState.compactFor(root.entries[index + 1])
+            ? root.theme.notificationCompactWidth
+            : root.theme.notificationWidth) >= toastWidth
+        property real reveal: modelData.revealed ? 1 : 0
+
+        width: stack.width
+        height: reveal * toast.implicitHeight
+        clip: true
+
+        Behavior on reveal {
+          NumberAnimation {
+            duration: root.theme.notificationTransitionDuration
+            easing.type: Easing.OutCubic
+          }
+        }
+
+        Component.onCompleted: {
+          if (!modelData.revealed) {
+            modelData.revealed = true
+            reveal = 1
+          }
+        }
+
+        NotificationToast {
+          id: toast
+
+          anchors.top: root.resolvedEdge === "top" ? parent.top : undefined
+          anchors.bottom: root.resolvedEdge === "bottom" ? parent.bottom : undefined
+          anchors.left: root.shellConfig.notificationSide === "left"
+            ? parent.left
+            : undefined
+          anchors.right: root.shellConfig.notificationSide === "right"
+            ? parent.right
+            : undefined
+          entry: parent.modelData
+          notificationState: root.notificationState
+          theme: root.theme
+          opacity: parent.reveal
+          sharpTopLeft: (parent.touchesPrevious
+              && (root.shellConfig.notificationSide === "left"
+                || parent.previousCoversOuterCorner))
+            || (parent.barAdjacent
+              && root.touchesBarCorner
+              && root.resolvedEdge === "top"
+              && root.shellConfig.notificationSide === "left")
+          sharpTopRight: (parent.touchesPrevious
+              && (root.shellConfig.notificationSide === "right"
+                || parent.previousCoversOuterCorner))
+            || (parent.barAdjacent
+              && root.touchesBarCorner
+              && root.resolvedEdge === "top"
+              && root.shellConfig.notificationSide === "right")
+          sharpBottomLeft: (parent.touchesNext
+              && (root.shellConfig.notificationSide === "left"
+                || parent.nextCoversOuterCorner))
+            || (parent.barAdjacent
+              && root.touchesBarCorner
+              && root.resolvedEdge === "bottom"
+              && root.shellConfig.notificationSide === "left")
+          sharpBottomRight: (parent.touchesNext
+              && (root.shellConfig.notificationSide === "right"
+                || parent.nextCoversOuterCorner))
+            || (parent.barAdjacent
+              && root.touchesBarCorner
+              && root.resolvedEdge === "bottom"
+              && root.shellConfig.notificationSide === "right")
+        }
+      }
+    }
+  }
+}

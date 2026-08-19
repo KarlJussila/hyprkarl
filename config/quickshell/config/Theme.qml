@@ -23,6 +23,7 @@ QtObject {
   readonly property color barSurface: surfaces.bar ?? "transparent"
   readonly property color popupSurface: surfaces.popup ?? "transparent"
   readonly property color tooltipSurface: surfaces.tooltip ?? "transparent"
+  readonly property color notificationSurface: surfaces.notification ?? popupSurface
   readonly property color controlSurface: surfaces.control ?? "transparent"
 
   readonly property var typography: values.typography ?? ({})
@@ -79,6 +80,21 @@ QtObject {
   readonly property int osdProgressHeight: osd.progressHeight ?? 6
   readonly property int osdTransitionDuration: osd.transitionDuration
     ?? panelTransitionDuration
+
+  readonly property var notification: values.notification ?? ({})
+  readonly property int notificationWidth: notification.width ?? 420
+  readonly property int notificationCompactWidth: notification.compactWidth ?? 210
+  readonly property int notificationPadding: notification.padding ?? controlPadding
+  readonly property int notificationSpacing: notification.spacing ?? controlPadding
+  readonly property int notificationStackSpacing: notification.stackSpacing
+    ?? notificationSpacing
+  readonly property int notificationRadius: notification.radius ?? panelRadius
+  readonly property int notificationIconSize: notification.iconSize ?? 32
+  readonly property int notificationImageSize: notification.imageSize ?? 80
+  readonly property real notificationIndicatorScale: notification.indicatorScale ?? 1.5
+  readonly property int notificationProgressHeight: notification.progressHeight ?? 6
+  readonly property int notificationTransitionDuration:
+    notification.transitionDuration ?? panelTransitionDuration
 
   readonly property var menu: values.menu ?? ({})
   readonly property color menuBackground: menu.background ?? popupSurface

@@ -52,7 +52,6 @@ theme_validate_bundle() {
     hyprland.lua
     hyprlock.conf
     hyprtoolkit.conf
-    mako.ini
     btop.theme
     alacritty.toml
     foot.ini

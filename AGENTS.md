@@ -166,6 +166,16 @@ The same root owns one application-wide `OsdState` and one click-through OSD
 window per output. Typed `hk-shell osd` calls select the focused output and
 coalesce repeated volume, output, microphone, display-brightness,
 keyboard-brightness, and media updates into that one transient surface.
+It also owns one `NotificationState` and creates one non-focusable
+`NotificationWindow` per output. Quickshell is the freedesktop notification
+server; state owns tracking, filtering, silence mode, focused-monitor routing,
+and one-item visual restore. Notification icon selection is
+data-defined in shell JSON, while icon geometry and all other appearance live
+in the active theme. `ScreenSurfaces.qml` groups each output's bar and
+notification window so the default stack can share the real bar border and
+contact-aware corner geometry. User QML icon drawings use the same component
+loader as the shipped audio and battery drawings. `hk-shell notifications` is
+the only control transport.
 
 ### `hk-*` Commands
 

@@ -159,6 +159,23 @@ What to do:
 - check `/sys/class/backlight/` for a display backlight device
 - check `/sys/class/leds/` for a keyboard backlight device
 
+## Notifications Do Not Appear
+
+Check that the production shell is running and owns the desktop notification
+service:
+
+```bash
+hk-shell status
+hk-shell logs --tail 100 --no-color
+busctl --user status org.freedesktop.Notifications
+```
+
+Only one process can own `org.freedesktop.Notifications`. Stop an independently
+started notification daemon if the log reports that the name is already
+registered, then restart the shell. Hyprkarl no longer starts or configures
+Mako. If only one application's notifications are absent, inspect
+`notifications.ignoredApplications` in the effective shell configuration.
+
 ## A New Tracked Config File Is Not Exposed
 
 Symptoms:

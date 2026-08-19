@@ -124,7 +124,10 @@ widget determines one shared height for all islands. Inspect or manage the bar
 with `hk-shell status`, `hk-shell logs`, and the other `hk-shell` lifecycle
 commands. Volume, audio-output, microphone, display/keyboard brightness, and
 media-key feedback use the same shell through a focused-monitor, click-through
-OSD rather than notification-specific Mako styling.
+OSD. The shell also owns desktop notifications, including focused-monitor
+routing, progress, silence mode, one-item restore, bar-connected geometry, and
+data-defined application icon overrides with user QML drawings; Mako is no
+longer part of the session.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

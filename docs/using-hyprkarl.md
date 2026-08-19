@@ -84,7 +84,7 @@ bundle under `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl`, then:
 
 - updates the wallpaper state
 - updates GNOME and Qt themes
-- reloads Hyprland, mako, terminals, `btop`, and the bar
+- reloads Hyprland, terminals, `btop`, and the bar
 
 Some changes may not take effect everywhere immediately, but most of the theme
 switch happens right away.

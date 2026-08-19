@@ -8,11 +8,10 @@ hl.bind("SUPER + K", hl.dsp.exec_cmd("hk-shell menu toggle keybindings"), { desc
 hl.bind("SUPER + CTRL + C", hl.dsp.exec_cmd("hk-menu-calculator || pkill rofi"), { description = "Calculator" })
 
 -- Notifications
-hl.bind("SUPER + COMMA", hl.dsp.exec_cmd("makoctl dismiss"), { description = "Dismiss last notification" })
-hl.bind("SUPER + SHIFT + COMMA", hl.dsp.exec_cmd("makoctl dismiss --all"), { description = "Dismiss all notifications" })
-hl.bind("SUPER + CTRL + COMMA", hl.dsp.exec_cmd([[makoctl mode -t do-not-disturb && makoctl mode | grep -q 'do-not-disturb' && notify-send "Silenced notifications" || notify-send "Enabled notifications"]]), { description = "Toggle silencing notifications" })
-hl.bind("SUPER + ALT + COMMA", hl.dsp.exec_cmd("makoctl invoke"), { description = "Invoke last notification" })
-hl.bind("SUPER + SHIFT + ALT + COMMA", hl.dsp.exec_cmd("makoctl restore"), { description = "Restore last notification" })
+hl.bind("SUPER + COMMA", hl.dsp.exec_cmd("hk-shell notifications dismiss"), { description = "Dismiss last notification" })
+hl.bind("SUPER + SHIFT + COMMA", hl.dsp.exec_cmd("hk-shell notifications dismiss-all"), { description = "Dismiss all notifications" })
+hl.bind("SUPER + CTRL + COMMA", hl.dsp.exec_cmd("hk-shell notifications toggle-silenced"), { description = "Toggle silencing notifications" })
+hl.bind("SUPER + SHIFT + ALT + COMMA", hl.dsp.exec_cmd("hk-shell notifications restore"), { description = "Restore last notification" })
 
 -- Toggle nightlight
 hl.bind("SUPER + CTRL + N", hl.dsp.exec_cmd("hk-nightlight"), { description = "Toggle nightlight" })

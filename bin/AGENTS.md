@@ -45,6 +45,12 @@ the typed OSD calls. They do not resolve icons or send replacement Mako
 notifications. The shell owns indicator selection, timing, monitor routing,
 and presentation.
 
+`hk-shell notifications` is the only public transport for notification
+dismissal, silence mode, and one-item restore.
+Bindings and helpers must use that typed surface rather than call a daemon
+control tool or internal QML object. Notification producers continue to use
+the standard freedesktop service through `notify-send` or their toolkit.
+
 `hk-hook-run` is the only lifecycle-hook runner. It accepts exactly
 `post-boot`, `post-update`, `theme-set`, or `wallpaper-set`, then runs
 non-hidden executable regular files from `user/hooks/<event>.d/` in lexical

@@ -36,6 +36,23 @@ QtObject {
 
   readonly property var bar: values.bar ?? ({})
   readonly property var osd: values.osd ?? ({})
+  readonly property var notifications: values.notifications ?? ({})
+  readonly property string notificationEdge: notifications.edge ?? "top"
+  readonly property string notificationSide: notifications.side ?? "right"
+  readonly property int notificationGap: notifications.gap ?? 0
+  readonly property int notificationSideMargin: notifications.sideMargin ?? 0
+  readonly property int notificationDefaultTimeout: notifications.defaultTimeout ?? 5000
+  readonly property int notificationStatusTimeout: notifications.statusTimeout ?? 2000
+  readonly property int notificationMaxVisible: notifications.maxVisible ?? 5
+  readonly property var notificationIconOverrides: notifications.iconOverrides ?? ({})
+  readonly property var notificationFallbackIcon: notifications.fallbackIcon
+    ?? ({ "kind": "glyph", "value": "󰂚" })
+  readonly property var notificationCriticalIcon: notifications.criticalIcon
+    ?? ({ "kind": "glyph", "value": "󰀦" })
+  readonly property var notificationIgnoredApplications:
+    notifications.ignoredApplications ?? []
+  readonly property var notificationCompactApplications:
+    notifications.compactApplications ?? []
   readonly property string osdEdge: osd.edge ?? "bottom"
   readonly property int osdMargin: osd.margin ?? 40
   readonly property int osdTimeout: osd.timeout ?? 2000
@@ -164,6 +181,24 @@ QtObject {
     }
   }
 
+  function validateNotificationIcon(icon, path): void {
+    requireObject(icon, path)
+    const kinds = ["component", "glyph", "icon", "none"]
+    if (typeof icon.kind !== "string" || kinds.indexOf(icon.kind) === -1) {
+      fail(path + ".kind", "expected component, glyph, icon, or none")
+    }
+    if ((icon.kind === "glyph" || icon.kind === "icon")
+        && (typeof icon.value !== "string" || icon.value.length === 0)) {
+      fail(path + ".value", "expected a non-empty string")
+    }
+    if (icon.kind === "component"
+        && (typeof icon.source !== "string"
+          || !/^(builtin|user)\/[A-Za-z0-9._-]+\.qml$/.test(icon.source))) {
+      fail(path + ".source",
+        "expected builtin/<file>.qml or user/<file>.qml")
+    }
+  }
+
   function validate(document, path): void {
     requireObject(document, path)
     if (document.version !== 1) {
@@ -178,6 +213,57 @@ QtObject {
       const value = document.osd[field]
       if (!Number.isInteger(value) || value < 0) {
         fail(path + ".osd." + field, "expected a non-negative integer")
+      }
+    }
+
+    requireObject(document.notifications, path + ".notifications")
+    if (document.notifications.edge !== "bar"
+        && document.notifications.edge !== "top"
+        && document.notifications.edge !== "bottom") {
+      fail(path + ".notifications.edge", "expected 'bar', 'top', or 'bottom'")
+    }
+    if (document.notifications.side !== "left"
+        && document.notifications.side !== "right") {
+      fail(path + ".notifications.side", "expected 'left' or 'right'")
+    }
+    for (const field of ["gap", "sideMargin", "defaultTimeout", "statusTimeout"]) {
+      const value = document.notifications[field]
+      if (!Number.isInteger(value) || value < 0) {
+        fail(path + ".notifications." + field, "expected a non-negative integer")
+      }
+    }
+    if (!Number.isInteger(document.notifications.maxVisible)
+        || document.notifications.maxVisible < 1) {
+      fail(path + ".notifications.maxVisible", "expected a positive integer")
+    }
+    validateNotificationIcon(
+      document.notifications.fallbackIcon,
+      path + ".notifications.fallbackIcon")
+    validateNotificationIcon(
+      document.notifications.criticalIcon,
+      path + ".notifications.criticalIcon")
+    requireObject(
+      document.notifications.iconOverrides,
+      path + ".notifications.iconOverrides")
+    for (const key of Object.keys(document.notifications.iconOverrides)) {
+      if (key !== key.toLowerCase()) {
+        fail(path + ".notifications.iconOverrides",
+          "keys must be lowercase app or icon names")
+      }
+      validateNotificationIcon(
+        document.notifications.iconOverrides[key],
+        path + ".notifications.iconOverrides." + key)
+    }
+    for (const field of ["ignoredApplications", "compactApplications"]) {
+      const entries = document.notifications[field]
+      requireArray(entries, path + ".notifications." + field)
+      for (let index = 0; index < entries.length; index++) {
+        if (typeof entries[index] !== "string"
+            || entries[index].length === 0
+            || entries[index] !== entries[index].toLowerCase()) {
+          fail(path + ".notifications." + field + "[" + index + "]",
+            "expected a non-empty lowercase application name")
+        }
       }
     }
 
@@ -230,6 +316,9 @@ QtObject {
     }
     if (document.osd !== undefined) {
       requireObject(document.osd, userPath + ".osd")
+    }
+    if (document.notifications !== undefined) {
+      requireObject(document.notifications, userPath + ".notifications")
     }
     return document
   }

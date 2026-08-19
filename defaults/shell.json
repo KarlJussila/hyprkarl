@@ -6,6 +6,35 @@
     "timeout": 2000,
     "mediaTimeout": 3000
   },
+  "notifications": {
+    "edge": "bar",
+    "side": "right",
+    "gap": 0,
+    "sideMargin": 0,
+    "defaultTimeout": 5000,
+    "statusTimeout": 2000,
+    "maxVisible": 5,
+    "fallbackIcon": {
+      "kind": "glyph",
+      "value": "󰂚"
+    },
+    "criticalIcon": {
+      "kind": "glyph",
+      "value": "󰀦"
+    },
+    "ignoredApplications": [
+      "spotify"
+    ],
+    "compactApplications": [
+      "battery"
+    ],
+    "iconOverrides": {
+      "battery": {
+        "kind": "component",
+        "source": "builtin/BatteryIcon.qml"
+      }
+    }
+  },
   "bar": {
     "edge": "top",
     "exclusive": true,

@@ -31,9 +31,11 @@ not restore a separate widget-definition map.
 ## Architecture
 
 `shell.qml` creates shared configuration, theme, and system state objects, then
-uses `Variants` to create one `Bar` per screen after configuration and theme
-data are ready.
-It also creates one `MenuWindow` per screen after menu data are ready. The
+uses one `Variants` model to create a `ScreenSurfaces` group per screen after
+configuration, theme, and menu data are ready. That group owns the screen's
+bar, menu, OSD, and notification windows, allowing bar-relative surfaces to
+use the actual bar window geometry.
+It creates one `MenuWindow` per screen. The
 menu singleton selects exactly one requested monitor, owns navigation history,
 and exposes the public `menu` IPC target. Each inactive window stays hidden and
 does not request keyboard focus.
@@ -235,6 +237,33 @@ semantic state only. `OsdState` chooses fixed labels and indicators;
 for the remaining compact indicators. Do not restore icon-theme lookup or
 Mako OSD application rules. Placement and timeouts live under `osd` in shell
 JSON; appearance lives under `osd` in each theme's `quickshell.json`.
+
+`features/notifications/NotificationState.qml` is the one application-wide
+freedesktop notification server. It sets `tracked` only for notifications the
+shell will present, routes new entries to the focused Hyprland monitor,
+resolves expiry, synchronous replacement, filters, silence mode, and
+one visual restore snapshot, and exposes the `notifications` IPC target.
+There is one `NotificationWindow` per output; windows never request keyboard
+focus. Toast delegates own hover-paused timers, click-to-dismiss behavior,
+content images, and progress rendering. The default stack docks to the bar and
+right screen edge, overlaps the bar border, and joins adjacent toasts along a
+single shared border. Only corners reached by the adjacent toast sharpen;
+width overhangs remain rounded. It sharpens the outer corner that touches both
+surfaces, and reveals into the workspace. Do not restore a
+permanent close control or generic action-button row without a new interaction
+design.
+
+Icon presentation is data, not app-specific QML branching. Notification
+content images win because they are part of the message. Otherwise
+`notifications.iconOverrides` may match a lowercase application or icon name
+and select `icon`, `glyph`, `component`, or `none`; then the sender's
+application icon and the configured urgency fallback apply. A `component`
+names either a shipped file under `features/notifications/icons/` or a user
+file under `user/quickshell/icons/`. Both expose `progress` and `theme` on a
+root `Item`; the shipped audio and battery drawings use exactly this public
+loader path. Shell JSON owns selection and application filters; each theme's
+`notification` object owns surface color, geometry, image/icon sizes, and
+drawn-indicator scale.
 
 ## Checks
 

@@ -41,6 +41,15 @@ hk-shell osd keyboard-brightness 67
 hk-shell osd media playing 38 "Track title" "Artist"
 ```
 
+Notification controls use the same public command family:
+
+```bash
+hk-shell notifications dismiss
+hk-shell notifications dismiss-all
+hk-shell notifications toggle-silenced
+hk-shell notifications restore
+```
+
 Validate all QML files without launching the bar:
 
 ```bash
@@ -148,10 +157,21 @@ The sibling top-level `osd` object owns transient-surface behavior:
 `mediaTimeout`, all in milliseconds. Each theme's nested `osd` object owns
 widths, padding, spacing, radius, indicator size, progress height, and motion.
 
+The sibling `notifications` object owns bar-relative docking, timeouts, stack
+limit, exact application filters, compact applications, fallback icons, and
+data-defined application/icon-name overrides. An override descriptor may use
+an icon-theme name or path, a Nerd Font glyph, a built-in or user QML drawing,
+or no icon. Notification content images remain message content and take
+priority. Each theme's `notification` object owns surface color, widths,
+padding, spacing, radius, icon/image sizes, custom-indicator scale, progress
+height, and reveal timing. See `docs/shell-configuration.md` for the complete
+schema and override examples.
+
 ## Structure
 
 - `shell.qml` creates one bar per Quickshell screen after configuration and
-  theme data load.
+  theme data load. `ScreenSurfaces.qml` groups that screen's bar, menu, OSD,
+  and notification windows so bar-relative surfaces use the real bar geometry.
 - `config/ShellConfig.qml` selects, validates, and watches shell JSON.
 - `Bar.qml` owns the layer-shell window and exclusive zone.
 - `panels/FeaturePanelHost.qml` owns the one feature-panel window and active
@@ -167,6 +187,8 @@ widths, padding, spacing, radius, indicator size, progress height, and motion.
   per-screen overlay.
 - `features/osd/` owns one typed state/IPC object and the per-screen,
   click-through transient surface.
+- `features/notifications/` owns the freedesktop server, notification
+  lifecycle and IPC, icon presentation, and one non-focusable stack per screen.
 - `components/` contains shared buttons, tooltips, and panel controls.
 - `state/SystemState.qml` owns the one polling process used by CPU, GPU, RAM,
   and recording widgets.
@@ -235,3 +257,13 @@ multiple widgets genuinely use the same interaction or visual structure.
   media keys coalesce into one focused-monitor OSD. It reuses the bar's drawn
   audio indicator for audio and theme-font Nerd Font glyphs for the other
   semantic states; it never takes focus or pointer input.
+- Desktop notifications route to the focused output and support application
+  icons or content images, body text, progress, hover-paused expiry, critical
+  persistence, synchronous updates, silence mode, and one-item visual restore.
+  The default stack grows from the bar into the workspace at the right screen
+  edge, overlaps the bar border, and joins adjacent toasts along one shared
+  border. Corners square only where the neighboring toast reaches them, so
+  width overhangs remain rounded. The outer corner touching both the bar and
+  screen is sharp as well. Clicking a toast or using the notification binding
+  dismisses it; no permanent close button or action-button row is rendered.
+  Mako is not started or configured.

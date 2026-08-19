@@ -179,7 +179,7 @@ are:
 - `themes/<theme>/quickshell.json`
   Generated theme-specific semantic colors, typography, minimum bar thickness, natural widget
   padding, logical island corners and borders, radii, and
-  screen/outer/content spacing, plus menu and OSD appearance
+  screen/outer/content spacing, plus menu, OSD, and notification appearance
 
 The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are
@@ -221,6 +221,19 @@ state; the state owner selects the focused monitor and resets one dismissal
 timer. `defaults/shell.json` owns its edge, margin, and timeouts, while each
 theme's `quickshell.json` owns its size, spacing, radius, indicator size,
 progress height, and transition duration.
+
+The shell-native notification service uses one application-wide server and
+one non-focusable toast stack per output under `features/notifications/`.
+New notifications route to the focused output. `NotificationState.qml` owns
+tracking, timeout resolution, synchronous replacement, filtering, silence
+mode, the one-item visual restore snapshot, and the public IPC target;
+`NotificationWindow.qml` and `NotificationToast.qml` own presentation and
+interaction. `defaults/shell.json` owns placement, timing, limits, application
+filters, compact applications, and icon descriptors. `component` descriptors
+load shipped drawings or files under `user/quickshell/icons/` through one
+shared interface. `ScreenSurfaces.qml` supplies the actual bar window for
+border-connected placement. Theme JSON owns surface color and geometry. Mako
+has no runtime or theme path.
 
 ## Themes
 

@@ -37,7 +37,7 @@ result, and atomically activates it. Only after activation does it:
 
 - updates the wallpaper state
 - updates GNOME and Qt settings
-- reloads Hyprland, mako, terminals, and `btop`
+- reloads Hyprland, terminals, and `btop`
 
 If assembly or validation fails, the previous runtime bundle stays active.
 Quickshell watches `current/theme.json`, then follows its immutable artifact
@@ -83,7 +83,8 @@ A full theme in this repo includes:
   Hyprtoolkit styling
 - `quickshell.json`
   Quickshell's semantic `palette`, `surfaces`, `typography`, and `metrics`
-  roles, plus component-specific `bar`, `panel`, `tooltip`, `menu`, and `osd`
+  roles, plus component-specific `bar`, `panel`, `tooltip`, `menu`, `osd`, and
+  `notification`
   values.
   It controls minimum bar thickness, spacing, island corner
   and border geometry, radii, dividers, tooltip radius, panel gap,
@@ -103,14 +104,18 @@ A full theme in this repo includes:
   The nested `osd` object controls normal/media widths, padding, spacing,
   radius, indicator size, progress height, and transition duration; OSD
   placement and timeouts remain behavior in `shell.json`.
+  The nested `notification` object controls normal/compact widths, padding,
+  stack spacing (zero joins the stack into one bordered surface), radius,
+  application-icon and content-image sizes, custom
+  indicator scale, progress height, and reveal timing. Notification routing,
+  docking, timing, filtering, and icon selection remain behavior in
+  `shell.json`.
   All Quickshell surface colors and interaction states come from semantic
   theme data rather than consumer-specific color aliases. See
   [Customizing the Bar](customizing-bar.md#change-the-appearance) for the
   geometry schema.
 - `rofi.rasi`
   Rofi styling
-- `mako.ini`
-  Notification styling
 - `alacritty.toml`, `foot.ini`, `ghostty.conf`, `kitty.conf`
   Terminal colors
 - `btop.theme`
@@ -150,7 +155,7 @@ Optional theme files:
   Single-line file naming the icon theme. Applied via `gsettings` on theme
   switch and embedded in `gtk-theme/index.theme`.
 - `icons/`
-  Theme-local icons used by Hyprkarl helpers and notifications.
+  Theme-local icons used by Hyprkarl helpers and shell surfaces.
 
 ## Create a New Theme
 

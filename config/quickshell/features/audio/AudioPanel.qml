@@ -48,6 +48,9 @@ Item {
       theme: root.theme
       title: "Audio"
       subtitle: root.output ? root.nodeName(root.output) : "No output device"
+      action: root.config.secondaryCommand?.length > 0
+        ? () => root.externalCommandRequested(root.config.secondaryCommand)
+        : null
     }
 
     AudioLevel {
@@ -111,15 +114,6 @@ Item {
         busy: modelData === Pipewire.preferredDefaultAudioSource && !selected
         action: () => Pipewire.preferredDefaultAudioSource = modelData
       }
-    }
-
-    PanelAction {
-      visible: root.config.secondaryCommand?.length > 0
-      width: parent.width
-      theme: root.theme
-      icon: "󰒓"
-      text: "Open audio settings"
-      action: () => root.externalCommandRequested(root.config.secondaryCommand)
     }
   }
 }

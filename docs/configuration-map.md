@@ -179,9 +179,11 @@ The audio, network, Bluetooth, battery/power, and clock/calendar
 panels share a per-monitor host under `config/quickshell/panels/`; their
 feature-specific views and state live under `config/quickshell/features/`.
 Network scanning and Bluetooth discovery use feature-owned singletons because
-those operations are global to an adapter while panels are per monitor. Clock
-uses one application-wide current-time singleton while viewed-month navigation
-remains local to each panel. There is no separate feature-flyout boundary.
+those operations are global to an adapter while panels are per monitor.
+Network scanning follows panel activity; Bluetooth discovery begins only from
+the panel's explicit scan action. Clock uses one application-wide current-time
+singleton while viewed-month navigation remains local to each panel. There is
+no separate feature-flyout boundary.
 
 ## Themes
 

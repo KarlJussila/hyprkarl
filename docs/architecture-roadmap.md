@@ -109,9 +109,10 @@ row, and action controls have now survived five different feature compositions
 and form the stable baseline vocabulary; summaries, sliders, calendar cells,
 and navigation remain feature-owned. Network scanning and Bluetooth discovery
 each have a feature-owned, application-global request owner so multiple
-monitor panels compose correctly. Power composes UPower and PowerProfiles
-directly. Clock has one application-wide current-time owner and panel-local
-month navigation. The superseded flyout boundary has been deleted. `hk-shell`
+monitor panels compose correctly; Bluetooth panels register only after an
+explicit scan action. Power composes UPower and PowerProfiles directly. Clock
+has one application-wide current-time owner and panel-local month navigation.
+The superseded flyout boundary has been deleted. `hk-shell`
 now provides the bar's start, stop, restart, structured status, and log
 boundary. It launches under UWSM and verifies the registered instance so a
 daemonized QML load failure cannot masquerade as a successful start. Hyprland

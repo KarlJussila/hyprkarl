@@ -137,15 +137,16 @@ multiple widgets genuinely use the same interaction or visual structure.
   sharpens the bar-side corner when it also touches a monitor side. External
   launcher actions close their panel before opening the configured app.
 - Audio exposes output and microphone volume/mute, selectable default devices,
-  input activity, and an advanced-settings route. Network exposes Wi-Fi state,
+  input activity, and a header settings cog. Network exposes Wi-Fi state,
   scanning and sorted networks, inline passwords, connection progress/errors,
-  and an advanced-settings route. The connected network appears once as the
+  and its own header settings cog. The connected network appears once as the
   selected first row rather than being repeated above the list.
 - Bluetooth exposes adapter power, connected/paired/available device sections,
-  discovery, direct connect/pair actions, reported device battery, and an
-  advanced-settings route. Pairing that requires a PIN/passkey agent remains
-  in the advanced tool because the installed Quickshell API does not expose
-  that interaction or device-action failure reasons.
+  explicitly requested discovery, direct connect/pair actions, reported device
+  battery, and a header settings cog. Opening the panel alone does not start a
+  scan. Pairing that requires a PIN/passkey agent remains in the advanced tool
+  because the installed Quickshell API does not expose that interaction or
+  device-action failure reasons.
 - Battery/power composes charge state, a reliable time estimate when UPower
   provides one, energy rate, power profiles, profile holds/degradation, and
   the configured power-action menu without introducing a separate controller.

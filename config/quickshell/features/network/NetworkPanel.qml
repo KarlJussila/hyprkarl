@@ -56,6 +56,9 @@ Item {
       width: parent.width
       theme: root.theme
       title: "Network"
+      action: root.config.secondaryCommand?.length > 0
+        ? () => root.externalCommandRequested(root.config.secondaryCommand)
+        : null
     }
 
     PanelRow {
@@ -190,15 +193,6 @@ Item {
           }
         }
       }
-    }
-
-    PanelAction {
-      visible: root.config.secondaryCommand?.length > 0
-      width: parent.width
-      theme: root.theme
-      icon: "󰒓"
-      text: "Open network settings"
-      action: () => root.externalCommandRequested(root.config.secondaryCommand)
     }
   }
 }

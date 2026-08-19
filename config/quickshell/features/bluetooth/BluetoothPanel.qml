@@ -39,8 +39,14 @@ Item {
     return "Not connected"
   }
 
-  onActiveChanged: BluetoothState.requestDiscovery(root, active)
-  Component.onCompleted: BluetoothState.requestDiscovery(root, active)
+  function startDiscovery(): void {
+    BluetoothState.requestDiscovery(root, true)
+  }
+
+  onActiveChanged: {
+    if (active) return
+    BluetoothState.requestDiscovery(root, false)
+  }
   Component.onDestruction: BluetoothState.requestDiscovery(root, false)
 
   Column {
@@ -54,6 +60,9 @@ Item {
       theme: root.theme
       title: "Bluetooth"
       subtitle: root.adapterSubtitle()
+      action: root.config.secondaryCommand?.length > 0
+        ? () => root.externalCommandRequested(root.config.secondaryCommand)
+        : null
     }
 
     PanelRow {
@@ -121,6 +130,16 @@ Item {
       text: root.adapter?.discovering ? "Available devices · scanning" : "Available devices"
     }
 
+    PanelAction {
+      visible: root.adapter?.enabled ?? false
+      width: parent.width
+      theme: root.theme
+      icon: "󰑓"
+      text: root.adapter?.discovering ? "Scanning for devices" : "Scan for devices"
+      enabled: !(root.adapter?.discovering ?? false)
+      action: () => root.startDiscovery()
+    }
+
     Text {
       visible: root.adapter?.enabled && root.availableDevices.length === 0
       width: parent.width
@@ -141,15 +160,6 @@ Item {
         theme: root.theme
         device: modelData
       }
-    }
-
-    PanelAction {
-      visible: root.config.secondaryCommand?.length > 0
-      width: parent.width
-      theme: root.theme
-      icon: "󰒓"
-      text: "Open Bluetooth settings"
-      action: () => root.externalCommandRequested(root.config.secondaryCommand)
     }
   }
 }

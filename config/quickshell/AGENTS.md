@@ -98,6 +98,9 @@ Audio, network, Bluetooth, battery/power, and clock/calendar now exercise this
 host with five different compositions. Their repeated header, section, row,
 and action controls are the stable baseline vocabulary; feature-specific
 summaries, sliders, calendar cells, and navigation remain with their features.
+`PanelHeader` owns the compact optional header action; audio, network, and
+Bluetooth place their advanced-settings cog there instead of adding a wide
+footer action.
 Feature-panel actions that launch an external command request it through their
 bar entry point, which closes the owning panel before spawning the command.
 There is no second feature-window or legacy flyout boundary. In the power and
@@ -129,7 +132,9 @@ requests are application-global while panels are per monitor; it reference
 counts panel requesters so closing one monitor's panel cannot stop another's
 scan. `features/bluetooth/BluetoothState.qml` owns the equivalent
 adapter-global discovery lifetime and stops discovery only when this shell
-started it. Bluetooth device and power-profile actions otherwise write the
+started it. Opening a Bluetooth panel does not request discovery; only its
+explicit scan action registers that panel as an owner, and closing the panel
+releases it. Bluetooth device and power-profile actions otherwise write the
 Quickshell service objects directly; do not add generic controllers around
 them. The installed Bluetooth API does not expose pairing-agent prompts or
 action failure reasons, so keep `hk-bluetooth-launch` as the advanced route

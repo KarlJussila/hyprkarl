@@ -75,11 +75,13 @@ A full theme in this repo includes:
   `trayMainPaddingOffset` adjusts the tray's main-axis inset with a zero floor,
   while `controlPadding` belongs to panel internals. `barMinThickness` is only a
   floor; the tallest naturally padded widget sets a shared island height.
-  The nested `menu` object owns the shell-native command menu's dedicated
-  palette, typography, square double-frame geometry, row spacing, selection
-  border, width, and backdrop. Its shipped values intentionally carry forward
-  the original Rofi menu style. All Quickshell surface colors and interaction
-  states must come from this semantic theme data. See
+  The shell-native command menu inherits this file's semantic palette,
+  typography, radii, and borders. Its nested `menu` object owns menu-specific
+  width, nested-frame geometry, row spacing, selection treatment, backdrop,
+  and optional semantic overrides. The shipped composition carries forward
+  the original Rofi menu's compact identity without reproducing it literally.
+  All Quickshell surface colors and interaction states must come from this
+  semantic theme data. See
   [Customizing the Bar](customizing-bar.md#change-the-appearance) for the
   geometry schema.
 - `rofi.rasi`

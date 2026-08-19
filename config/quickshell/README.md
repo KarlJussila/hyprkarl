@@ -74,9 +74,10 @@ The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
 `user/menu.json` adds or overrides menus and entries by stable ID. Ordinary
 objects recursively merge, `enabled: false` hides an entry, valid changes
 apply live, and invalid changes retain the last valid menu. Menu appearance
-uses the active theme's nested `menu` object. Its shipped palette, typography,
-square double-frame, centered rows, and bordered selection preserve the
-original Rofi menu rather than borrowing the rounded feature-panel shape. See
+uses the active shell theme plus its nested `menu` object. The compact width,
+centered rows, title band, nested frame, and bordered selection retain the old
+Rofi menu's identity; palette, typography, rounded geometry, borders, and
+accent states now belong to the shell's visual system. See
 `docs/menu-configuration.md` for the schema and examples.
 
 Themes own appearance through `themes/<theme>/quickshell.json`. `Theme.qml`

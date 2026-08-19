@@ -134,9 +134,11 @@ shell-native Quickshell surface. `defaults/menu.json` owns built-in navigation,
 `user/menu.json` deep-merges additions and overrides by stable entry ID, and
 the old static `hk-menu-*` names now route through the shell's menu IPC.
 Specialized searchable selectors remain dedicated commands. The renderer
-retains the original menu's narrow square double-frame, centered mono rows,
-accent title band, and bordered selection rather than adopting the rounded
-feature-panel aesthetic.
+retains the original menu's compact width, centered icon-and-label rows, title
+band, nested frame, and bordered selection. Its semantic palette, typography,
+rounded geometry, borders, and accent states now come from the shell theme, so
+the result shares the shell's visual language without becoming a generic
+feature panel.
 
 ## Constraints and Non-Goals
 

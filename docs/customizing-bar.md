@@ -109,9 +109,10 @@ remaining monitor height; scrolling begins only after content exceeds that
 physical limit, so there is no theme height cap to configure.
 
 The shell-native command menu uses the nested `menu` object in the same theme
-file. Its dedicated colors, font, width, square double-frame metrics, row
-spacing, and selection border preserve the earlier Rofi menu's visual
-identity; they do not inherit the rounded feature-panel shape. See
+file. Its width, nested-frame metrics, row spacing, and selection treatment
+preserve the earlier Rofi menu's compact visual identity. Colors, typography,
+radii, borders, and accent states inherit the shell's semantic theme tokens by
+default; the nested object can override them when needed. See
 [Menu Configuration](menu-configuration.md#appearance) for the full field
 list.
 

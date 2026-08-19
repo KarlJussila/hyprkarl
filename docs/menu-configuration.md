@@ -100,20 +100,21 @@ instead.
 ## Appearance
 
 Menu appearance is theme-owned rather than part of either menu JSON file. It
-uses the active Quickshell theme's nested `menu` object. The shipped values
-deliberately preserve Hyprkarl's original Rofi menu language: a narrow square
-double-frame, solid accent title band, centered regular-weight mono labels,
-and an accent-bordered alternate-background selection without a dimming
-scrim.
+uses the active Quickshell theme and its nested `menu` object. The shipped
+composition preserves Hyprkarl's original Rofi menu identity through its
+compact width, centered icon-and-label rows, title band, nested frame, row
+gaps, and bordered selection. Its palette, typography, rounded geometry,
+border treatment, translucent accent states, and subtle backdrop scrim make
+it part of the current shell instead of a literal reproduction.
 
-The object owns `background`, `backgroundAlt`, `foreground`, `accent`,
-`scrim`, `font`, `fontPointSize`, `fontWeight`, `width`, `radius`,
-`outerBorderWidth`,
-`outerPadding`, `innerBorderWidth`, `headerPadding`, `entryMargin`,
-`entryPadding`, and `selectionBorderWidth`. Keep these values in every theme
-when creating or converting one. They are separate from feature-panel tokens
-because the command menu intentionally retains its established visual
-identity.
+The object owns `scrim`, `fontSize`, `width`, `outerRadius`, `innerRadius`,
+`entryRadius`, `outerBorderWidth`, `outerPadding`, `innerBorderWidth`,
+`headerPadding`, `entryMargin`, `entryPadding`, `selectionBorderWidth`,
+`headerAccentOpacity`, and `selectionAccentOpacity`. It may also override the
+inherited `background`, `foreground`, `accent`, `border`, `font`, and
+`fontWeight` tokens when a theme needs a menu-specific treatment. Omitted
+semantic tokens fall back to the corresponding top-level shell theme values,
+so a new theme normally needs only the menu-specific metrics and modifiers.
 
 ## Opening Menus Directly
 

@@ -100,9 +100,9 @@ PanelWindow {
     height: Math.min(desiredHeight, root.height)
     opacity: root.reveal
     color: root.theme.menuBackground
-    border.color: root.theme.menuAccent
+    border.color: root.theme.menuBorder
     border.width: root.theme.menuOuterBorderWidth
-    radius: root.theme.menuRadius
+    radius: root.theme.menuOuterRadius
 
     MouseArea {
       anchors.fill: parent
@@ -113,10 +113,10 @@ PanelWindow {
 
       anchors.fill: parent
       anchors.margins: frame.frameInset
-      color: root.theme.menuAccent
-      border.color: root.theme.menuAccent
+      color: root.theme.menuBackground
+      border.color: root.theme.menuBorder
       border.width: root.theme.menuInnerBorderWidth
-      radius: root.theme.menuRadius
+      radius: root.theme.menuInnerRadius
 
       Rectangle {
         id: header
@@ -128,7 +128,15 @@ PanelWindow {
         anchors.rightMargin: root.theme.menuInnerBorderWidth
         anchors.topMargin: root.theme.menuInnerBorderWidth
         height: headerLabel.implicitHeight + root.theme.menuHeaderPadding * 2
-        color: root.theme.menuAccent
+        color: root.theme.menuBackground
+        radius: root.theme.menuInnerRadius
+
+        Rectangle {
+          anchors.fill: parent
+          color: root.theme.menuAccent
+          opacity: root.theme.menuHeaderAccentOpacity
+          radius: root.theme.menuInnerRadius
+        }
 
         Text {
           id: headerLabel
@@ -138,7 +146,7 @@ PanelWindow {
           text: MenuState.menus[MenuState.currentMenu]?.title ?? ""
           color: root.theme.menuForeground
           font.family: root.theme.menuFont
-          font.pointSize: root.theme.menuFontPointSize
+          font.pixelSize: root.theme.menuFontSize
           font.weight: root.theme.menuFontWeight
           horizontalAlignment: Text.AlignHCenter
           verticalAlignment: Text.AlignVCenter

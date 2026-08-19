@@ -138,10 +138,11 @@ start, stop, restart, inspect, or read logs from the production bar.
 The same shell renders the static command hierarchy from `defaults/menu.json`
 plus the optional deep-merged `user/menu.json`. Menu entries use stable IDs;
 the established static `hk-menu-*` commands are IPC wrappers while focused
-searchable selectors remain dedicated commands. The active theme's nested
-`menu` object preserves the original Rofi menu's square double-frame, accent
-title band, centered mono rows, and bordered selection; it intentionally does
-not reuse the rounded feature-panel silhouette.
+searchable selectors remain dedicated commands. The menu preserves the
+original Rofi surface's compact width, centered rows, title band, nested frame,
+and bordered selection, while inheriting the active shell theme's semantic
+palette, typography, rounded geometry, border treatment, and interaction
+states. The nested `menu` object owns menu-specific modifiers and metrics.
 
 ### `hk-*` Commands
 

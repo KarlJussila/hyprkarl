@@ -172,13 +172,14 @@ owns the full-monitor overlay, exclusive keyboard focus, history navigation,
 and outside-click dismissal. Existing static `hk-menu-*` entry points are thin
 IPC wrappers; specialized searchable selectors may remain separate Rofi
 commands until their own shell-native surfaces are designed.
-The theme's nested `menu` object intentionally preserves the retired Rofi
-menu's visual language: transparent backdrop, narrow square double-frame,
-accent title band, centered regular mono labels, background-colored row gaps,
-and alternate-background selection with an accent border. Do not replace it
-with the rounded feature-panel/card treatment. Outside-click and Escape go to
-the parent from a submenu and close only at the root, matching the old nested
-menu dismissal behavior.
+The command menu deliberately blends two visual sources. Preserve the retired
+Rofi menu's compact width, centered icon-and-label rows, title band, nested
+frame, row gaps, and bordered selection. Derive its palette, font, radii,
+border color, and translucent accent states from the current shell theme. The
+nested `menu` object may override those inherited tokens and owns its distinct
+geometry and opacity modifiers. Outside-click and Escape go to the parent from
+a submenu and close only at the root, matching the old nested menu dismissal
+behavior.
 
 ## Checks
 

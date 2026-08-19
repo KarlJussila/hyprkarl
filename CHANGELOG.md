@@ -14,6 +14,9 @@ surfaces) — they are called out explicitly.
   enrolled finger pickers—to Quickshell.
 - Added menu-level row alignment so table-like providers such as live
   keybindings retain stable columns without a specialized renderer.
+- Reworked dynamic menu providers around Python's standard JSON support and
+  established Python as the default for structured data and substantial text
+  processing, while retaining Bash for straightforward command orchestration.
 - Breaking: removed forwarding-only `hk-menu-*` commands. Custom bindings and
   scripts should call `hk-shell menu open <menu-id>` or
   `hk-shell menu toggle <menu-id>` directly. `hk-menu-keybindings --print` is

@@ -36,9 +36,20 @@ JSON shape rather than rebuilding them in a provider on every open.
 
 ## Style
 
-Follow `docs/shell-style.md`. Highlights: `#!/bin/bash` shebang, no
-`set -euo pipefail` (intentional), guard clauses as `if` blocks, 2-space
-indent, `gum log` for user-facing output in interactive commands.
+Follow `docs/shell-style.md`. Choose Python for structured data, JSON,
+substantial parsing, and heavy string transformation; choose Bash for clear
+command orchestration and simple pipelines. Dynamic menu providers should
+normally construct dictionaries and lists in Python and serialize them with
+the standard `json` module. A provider that only prints prebuilt JSON may stay
+in Bash. Do not bury a sizeable Python program in `python3 -c` inside a Bash
+wrapper.
+
+For Bash: use the `#!/bin/bash` shebang, no `set -euo pipefail` (intentional),
+guard clauses as `if` blocks, 2-space indentation, and `gum log` for
+user-facing output in interactive commands. For Python: use
+`#!/usr/bin/env python3`, a `main() -> int` entry point, and concise boundary
+errors on stderr. `bin/lib/*.sh` and `bin/lib/*.py` are both reserved for logic
+shared by multiple commands.
 `$HYPRKARL_PATH` is guaranteed by the session environment — no fallbacks
 outside `lib/update.sh` and the setup scripts, which must run from a TTY.
 

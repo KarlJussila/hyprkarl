@@ -1,20 +1,71 @@
-#!/bin/bash
-# hk-docker-menu-entries
-# Print Docker service actions for a dynamic Quickshell menu.
+#!/usr/bin/env python3
+"""Print Docker service actions for a dynamic Quickshell menu."""
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/docker.sh"
+from __future__ import annotations
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: hk-docker-menu-entries <install|uninstall>" >&2
-  exit 1
-fi
+import json
+import os
+import re
+import sys
+from pathlib import Path
 
-case "$1" in
-  install) docker_menu_entries missing install ;;
-  uninstall) docker_menu_entries installed uninstall ;;
-  *)
-    echo "Usage: hk-docker-menu-entries <install|uninstall>" >&2
-    exit 1
-    ;;
-esac
+SERVICE_ID = re.compile(r"^[a-z0-9-]+$")
+
+
+def service_entries(action: str) -> list[dict]:
+    service_root = Path(os.environ["HYPRKARL_PATH"]) / "templates/docker/services"
+    containers_root = Path.home() / ".docker-containers"
+    entries = []
+
+    for manifest_path in sorted(service_root.glob("*/service.json")):
+        manifest = json.loads(manifest_path.read_text())
+        service_id = manifest.get("id")
+        label = manifest.get("label")
+        compose_file = manifest.get("compose_file")
+        if (
+            not isinstance(service_id, str)
+            or SERVICE_ID.fullmatch(service_id) is None
+            or service_id != manifest_path.parent.name
+            or not isinstance(label, str)
+            or not label
+            or not isinstance(compose_file, str)
+            or not compose_file
+        ):
+            raise ValueError(f"invalid Docker service menu fields in {manifest_path}")
+
+        installed = (containers_root / service_id / compose_file).is_file()
+        if action == "install" and installed:
+            continue
+        if action == "uninstall" and not installed:
+            continue
+        entries.append(
+            {
+                "id": f"docker-{action}.{service_id}",
+                "label": label,
+                "action": {
+                    "type": "command",
+                    "command": f"hk-tui-launch hk-docker {action} {service_id}",
+                },
+            }
+        )
+    return entries
+
+
+def main() -> int:
+    if len(sys.argv) != 2 or sys.argv[1] not in {"install", "uninstall"}:
+        print("Usage: hk-docker-menu-entries <install|uninstall>", file=sys.stderr)
+        return 1
+
+    try:
+        entries = service_entries(sys.argv[1])
+    except (OSError, json.JSONDecodeError, ValueError) as error:
+        print(error, file=sys.stderr)
+        return 1
+
+    json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+    print()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

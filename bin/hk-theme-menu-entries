@@ -1,21 +1,33 @@
-#!/bin/bash
-# hk-theme-menu-entries
-# Print installed theme actions for a dynamic Quickshell menu.
+#!/usr/bin/env python3
+"""Print installed theme actions for a dynamic Quickshell menu."""
 
-THEMES_PATH="$HYPRKARL_PATH/themes"
+from __future__ import annotations
 
-find "$THEMES_PATH" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' \
-  | sort -u \
-  | jq -Rcn '
-      [inputs | select(length > 0) | . as $theme | {
-        id: ("theme." + $theme),
-        label: ($theme
-          | split("-")
-          | map((.[0:1] | ascii_upcase) + .[1:])
-          | join(" ")),
-        action: {
-          type: "command",
-          command: ("hk-theme set " + ($theme | @sh))
+import json
+import os
+import shlex
+import sys
+from pathlib import Path
+
+
+def main() -> int:
+    themes_path = Path(os.environ["HYPRKARL_PATH"]) / "themes"
+    themes = sorted(path.name for path in themes_path.iterdir() if path.is_dir())
+    entries = [
+        {
+            "id": f"theme.{theme}",
+            "label": theme.replace("-", " ").title(),
+            "action": {
+                "type": "command",
+                "command": f"hk-theme set {shlex.quote(theme)}",
+            },
         }
-      }]
-    '
+        for theme in themes
+    ]
+    json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+    print()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -12,8 +12,6 @@
 #
 # Public API:
 #   load_service SERVICE_ID              Load a service manifest into module globals
-#   list_services FILTER                 List service IDs (all|installed|missing)
-#   docker_menu_entries FILTER ACTION   Print dynamic Quickshell menu entries as JSON
 #   docker_install_service SERVICE_ID    Install and start a service
 #   docker_uninstall_service SERVICE_ID  Stop and remove a service
 #   set_substitution KEY VALUE           Register a template substitution (call from hooks)
@@ -164,77 +162,6 @@ load_service() {
   if [[ -f "$hooks_file" ]]; then
     source "$hooks_file"
   fi
-}
-
-# Filter is one of: all, installed, missing.
-list_services() {
-  local filter=$1
-  local compose_file
-  local install_dir
-  local service_id
-  local service_label
-  local service_rows
-
-  case "$filter" in
-    all|installed|missing) ;;
-    *)
-      gum log --level error "Unknown Docker service filter: $filter"
-      return 1
-      ;;
-  esac
-
-  service_rows=$(jq -er '
-    if (.id | type == "string" and test("^[a-z0-9-]+$"))
-        and (.label | type == "string" and length > 0)
-        and (.compose_file | type == "string" and length > 0)
-    then [.id, .label, .compose_file] | @tsv
-    else error("invalid Docker service menu fields in " + input_filename)
-    end
-  ' "$DOCKER_SERVICE_ROOT"/*/service.json) || return 1
-
-  while IFS=$'\t' read -r service_id service_label compose_file; do
-    install_dir="$DOCKER_CONTAINERS_DIR/$service_id"
-
-    case "$filter" in
-      installed)
-        [[ -f "$install_dir/$compose_file" ]] || continue
-        ;;
-      missing)
-        [[ -f "$install_dir/$compose_file" ]] && continue
-        ;;
-    esac
-
-    printf '%s\t%s\n' "$service_id" "$service_label"
-  done <<<"$service_rows"
-}
-
-docker_menu_entries() {
-  local filter=$1
-  local action=$2
-  local services
-  case "$action" in
-    install|uninstall) ;;
-    *)
-      gum log --level error "Unknown Docker menu action: $action"
-      return 1
-      ;;
-  esac
-
-  services=$(list_services "$filter") || return 1
-  jq -Rcn --arg action "$action" '
-    [inputs
-      | select(length > 0)
-      | split("\t")
-      | {
-          id: ("docker-" + $action + "." + .[0]),
-          label: .[1],
-          action: {
-            type: "command",
-            command: ("hk-tui-launch hk-docker " + $action + " " + .[0])
-          }
-        }
-    ]
-  ' <<<"$services"
 }
 
 # --- docker compose runtime ---

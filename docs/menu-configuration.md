@@ -88,6 +88,12 @@ when an update command runs, generate provider-ready JSON during that update
 and make `sourceCommand` print the finished file; the shipped icon picker uses
 this pattern. Runtime caching is not part of the menu contract.
 
+Write providers that construct or transform entries in Python. Lists and
+dictionaries map directly to the menu contract, and the standard `json` module
+handles quoting and Unicode without shell string manipulation. Bash remains a
+good fit when a provider only validates and prints an already-generated JSON
+file.
+
 For example, a personal searchable menu needs only a menu declaration, an
 entry that navigates to it, and a provider on `$PATH`:
 
@@ -114,19 +120,61 @@ entry that navigates to it, and a provider on `$PATH`:
 }
 ```
 
-`my-project-menu-entries` can discover rows at runtime or simply print a
-prebuilt file. Its entire output uses the same provider shape:
+The provider is an executable on `$PATH`. A typical provider uses Python's
+standard library directly:
 
-```json
-[
-  {
-    "id": "project.notes",
-    "label": "Notes",
-    "searchText": "writing markdown",
-    "action": { "type": "command", "command": "foot -D ~/Notes" }
-  }
-]
+```python
+#!/usr/bin/env python3
+"""Print project entries for the Quickshell menu."""
+
+import json
+from pathlib import Path
+import shlex
+import sys
+
+
+def project_entries() -> list[dict]:
+    projects_root = Path.home() / "Projects"
+    projects = (
+        sorted(
+            (path for path in projects_root.iterdir() if path.is_dir()),
+            key=lambda path: path.name.casefold(),
+        )
+        if projects_root.is_dir()
+        else []
+    )
+    return [
+        {
+            "id": f"project.{project.name}",
+            "label": project.name,
+            "searchText": f"{project.name} repository source code",
+            "action": {
+                "type": "command",
+                "command": f"foot --working-directory={shlex.quote(str(project))}",
+            },
+        }
+        for project in projects
+    ]
+
+
+def main() -> int:
+    json.dump(
+        project_entries(),
+        sys.stdout,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    print()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 ```
+
+Save it as `bin/my-project-menu-entries` and make it executable. Its stdout is
+the provider array; array order is row order. No Hyprkarl-specific Python
+package is required.
 
 ## Sparse User Overrides
 

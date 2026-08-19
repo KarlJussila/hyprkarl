@@ -293,4 +293,4 @@ shell it out the same way the existing callers do.
 ## Notes
 
 For editing conventions, see [Repo Conventions](repo-conventions.md) and
-[Shell Style](shell-style.md).
+[Command Script Style](shell-style.md).

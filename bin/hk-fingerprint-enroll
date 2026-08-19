@@ -1,71 +1,80 @@
-#!/bin/bash
-# hk-fingerprint-enroll
-# Enroll a specific fingerprint selected by the Quickshell menu.
-#
-# Usage:
-#   hk-fingerprint-enroll <finger-name>
+#!/usr/bin/env python3
+"""Enroll a specific fingerprint selected by the Quickshell menu."""
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/fingerprint.sh"
+from __future__ import annotations
 
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+import os
+import shutil
+import subprocess
+import sys
 
-print_success() { echo -e "${GREEN}$1${NC}"; }
-print_error()   { echo -e "${RED}$1${NC}"; }
-print_info()    { echo -e "${YELLOW}$1${NC}"; }
+from lib.fingerprint import (
+    FINGERPRINT_NAMES,
+    fingerprint_is_setup,
+    fingerprint_label,
+)
 
-is_valid_finger() {
-  local finger="$1"
-  local known_finger
+GREEN = "\033[0;32m"
+RED = "\033[0;31m"
+YELLOW = "\033[1;33m"
+NC = "\033[0m"
 
-  for known_finger in "${FINGERPRINT_NAMES[@]}"; do
-    [[ "$known_finger" == "$finger" ]] && return 0
-  done
-  return 1
-}
 
-if ! command -v fprintd-enroll &>/dev/null; then
-  print_error "fprintd is not installed."
-  print_info "Run 'hk-fingerprint setup' first."
-  hk-show-done && exit 1
-fi
+def print_color(color: str, message: str) -> None:
+    print(f"{color}{message}{NC}")
 
-if ! grep -q pam_fprintd.so /etc/pam.d/sudo 2>/dev/null; then
-  print_error "Fingerprint authentication is not configured."
-  print_info "Run 'hk-fingerprint setup' first."
-  hk-show-done && exit 1
-fi
 
-finger=${1:-}
-if [[ -z "$finger" ]]; then
-  echo "Usage: hk-fingerprint enroll <finger-name>" >&2
-  exit 1
-fi
-if ! is_valid_finger "$finger"; then
-  print_error "Invalid finger name: $finger"
-  print_info "Valid names: ${FINGERPRINT_NAMES[*]}"
-  hk-show-done && exit 1
-fi
+def finish_with_error(message: str) -> int:
+    print_color(RED, message)
+    print_color(YELLOW, "Run 'hk-fingerprint setup' first.")
+    subprocess.run(["hk-show-done"], check=False)
+    return 1
 
-display_name=$(fingerprint_label "$finger")
 
-print_success "\nEnrolling $display_name..."
-print_info "Keep moving your finger on the sensor until complete.\n"
+def main() -> int:
+    if len(sys.argv) != 2:
+        print("Usage: hk-fingerprint enroll <finger-name>", file=sys.stderr)
+        return 1
+    if shutil.which("fprintd-enroll") is None:
+        return finish_with_error("fprintd is not installed.")
+    if not fingerprint_is_setup():
+        return finish_with_error("Fingerprint authentication is not configured.")
 
-if fprintd-enroll -f "$finger" "$USER"; then
-  print_success "\n$display_name enrolled successfully!"
+    finger = sys.argv[1]
+    if finger not in FINGERPRINT_NAMES:
+        print_color(RED, f"Invalid finger name: {finger}")
+        print_color(YELLOW, f"Valid names: {' '.join(FINGERPRINT_NAMES)}")
+        subprocess.run(["hk-show-done"], check=False)
+        return 1
 
-  print_info "\nVerifying...\n"
-  if fprintd-verify -f "$finger" "$USER"; then
-    print_success "\n$display_name verified!"
-  else
-    print_error "\nVerification failed. Try enrolling again."
-  fi
-else
-  print_error "\nEnrollment failed for $display_name."
-fi
+    display_name = fingerprint_label(finger)
+    user = os.environ["USER"]
+    print_color(GREEN, f"\nEnrolling {display_name}...")
+    print_color(YELLOW, "Keep moving your finger on the sensor until complete.\n")
 
-hk-show-done
+    enrolled = (
+        subprocess.run(["fprintd-enroll", "-f", finger, user], check=False).returncode
+        == 0
+    )
+    if enrolled:
+        print_color(GREEN, f"\n{display_name} enrolled successfully!")
+        print_color(YELLOW, "\nVerifying...\n")
+        verified = (
+            subprocess.run(
+                ["fprintd-verify", "-f", finger, user], check=False
+            ).returncode
+            == 0
+        )
+        if verified:
+            print_color(GREEN, f"\n{display_name} verified!")
+        else:
+            print_color(RED, "\nVerification failed. Try enrolling again.")
+    else:
+        print_color(RED, f"\nEnrollment failed for {display_name}.")
+
+    subprocess.run(["hk-show-done"], check=False)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

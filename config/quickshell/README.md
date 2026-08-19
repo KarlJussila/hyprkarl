@@ -80,7 +80,9 @@ fingerprint state use this boundary. Menus may opt into in-process fuzzy
 search, theme-owned search/reference widths, and left, center, or right row
 alignment. Providers run without a login shell and dynamic destinations appear
 atomically after validation; static catalogs such as the icon list are
-preformatted when their data is generated.
+preformatted when their data is generated. Providers that construct entries
+use Python dictionaries and the standard `json` module; simple pass-through
+providers may remain Bash.
 Menu appearance
 uses the active shell theme plus its nested `menu` object. The compact width,
 centered rows, title band, nested frame, and bordered selection retain the old

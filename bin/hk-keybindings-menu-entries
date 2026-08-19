@@ -1,18 +1,33 @@
-#!/bin/bash
-# hk-keybindings-menu-entries
-# Print live Hyprland keybindings for a dynamic Quickshell menu.
+#!/usr/bin/env python3
+"""Print live Hyprland keybindings for a dynamic Quickshell menu."""
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/keybindings.sh"
+from __future__ import annotations
 
-keybindings=$(keybindings_list) || exit 1
-jq -Rcn '
-  [inputs
-    | select(length > 0)
-    | {
-        id: ("keybinding." + (. | @base64)),
-        label: .,
-        action: {type: "dismiss"}
-      }
-  ]
-' <<<"$keybindings"
+import base64
+import json
+import sys
+
+from lib.keybindings import keybinding_labels
+
+
+def main() -> int:
+    try:
+        entries = [
+            {
+                "id": "keybinding." + base64.b64encode(label.encode()).decode(),
+                "label": label,
+                "action": {"type": "dismiss"},
+            }
+            for label in keybinding_labels()
+        ]
+    except (RuntimeError, TypeError) as error:
+        print(error, file=sys.stderr)
+        return 1
+
+    json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+    print()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

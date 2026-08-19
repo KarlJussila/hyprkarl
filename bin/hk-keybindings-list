@@ -1,8 +1,21 @@
-#!/bin/bash
-# hk-keybindings-list
-# Print formatted live Hyprland keybindings.
+#!/usr/bin/env python3
+"""Print formatted live Hyprland keybindings."""
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/keybindings.sh"
+from __future__ import annotations
 
-keybindings_list
+import sys
+
+from lib.keybindings import keybinding_labels
+
+
+def main() -> int:
+    try:
+        print(*keybinding_labels(), sep="\n")
+    except (RuntimeError, TypeError) as error:
+        print(error, file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

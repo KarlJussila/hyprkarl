@@ -1,14 +1,33 @@
-# Shell Style
+# Command Script Style
 
 ## Goals
 
 Scripts in this repo run in a known, controlled environment: CachyOS + Hyprland, a single user session, with all Hyprkarl dependencies and the full suite of `hk-*` commands always available. There's no need to defend against a minimal POSIX shell or an absent dependency. The session environment is part of that guarantee: `HYPRKARL_PATH` (set in `config/uwsm/env`) is always present inside a Hyprkarl session, so scripts use it without fallbacks. Only the install/update path (`bin/lib/update.sh` and the `setup-*.sh` scripts), which must work from a TTY before any session exists, carries a default.
 
-The goal is readability over robustness theater. Scripts should read top-to-bottom like a clear sequence of steps. No strict mode, minimal defensive wrappers. Handle the errors you actually care about; ignore the ones you don't.
+The goal is readability over robustness theater. Scripts should read top-to-bottom like a clear sequence of steps. Handle the errors you actually care about; ignore the ones you don't.
+
+## Choosing Bash or Python
+
+Use Bash when the command is primarily a short sequence of other commands,
+redirections, or simple conditionals. Use Python when it owns structured data,
+JSON generation, substantial parsing, or nontrivial string transformation.
+Do not preserve a dense `jq`, `sed`, or `awk` pipeline merely to keep a command
+in Bash when ordinary Python data structures express the work directly.
+
+Dynamic menu providers should normally be Python executables using the standard
+library `json` module. Construct lists and dictionaries, then serialize them;
+do not assemble JSON strings by hand. No third-party JSON package is needed.
+A provider that only validates and prints an already-generated JSON file may
+remain Bash because Bash is cleanest for that job.
+
+Prefer making the whole command a small Python executable over embedding a
+large `python3 -c` program inside Bash. Shared Python logic used by multiple
+commands belongs in `bin/lib/*.py`, just as shared Bash logic belongs in
+`bin/lib/*.sh`.
 
 ---
 
-## Structure
+## Bash Structure
 
 ```bash
 #!/bin/bash
@@ -35,9 +54,43 @@ do_thing "$input"
 - Script body runs at the top level — no `main()` wrapper
 - For multi-phase scripts (parse → prompt → validate → run), a `main()` that calls named phase functions is appropriate: `main "$@"` at the bottom
 
+## Python Structure
+
+Use `#!/usr/bin/env python3`, standard Python data structures, and a
+`main() -> int` entry point:
+
+```python
+#!/usr/bin/env python3
+"""Print example dynamic menu entries."""
+
+import json
+import sys
+
+
+def main() -> int:
+    entries = [
+        {
+            "id": "example.notes",
+            "label": "Notes",
+            "action": {"type": "command", "command": "foot -D ~/Notes"},
+        }
+    ]
+    json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+    print()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+```
+
+Catch failures at real external boundaries and report concise errors to
+stderr. Let internal helpers rely on their contracts instead of wrapping every
+operation in broad exception handling.
+
 ---
 
-## Error Handling
+## Bash Error Handling
 
 No `set -euo pipefail`. Guard clauses use `if` blocks:
 
@@ -56,7 +109,7 @@ command -v ffmpeg &>/dev/null || exit 1
 
 ---
 
-## Output & Logging
+## Bash Output & Logging
 
 Use `gum log` for user-facing output:
 
@@ -71,7 +124,7 @@ Plain `echo` is fine for simple status lines. `printf` for structured/aligned ou
 
 ---
 
-## Variables
+## Bash Variables
 
 ```bash
 # Script-level constants: UPPER_SNAKE_CASE
@@ -97,7 +150,7 @@ required="${VAR:?VAR is required}"
 
 ---
 
-## Functions
+## Bash Functions
 
 ```bash
 process_file() {
@@ -125,7 +178,7 @@ break up longer scripts.
 
 ---
 
-## Dispatchers
+## Bash Dispatchers
 
 Dispatcher scripts route a subcommand to `hk-noun-action` implementations:
 
@@ -146,7 +199,7 @@ For usage display: a one-liner inline for simple scripts; a `usage()` heredoc fu
 
 ---
 
-## Quick Reference
+## Bash Quick Reference
 
 | | Do | Don't |
 |---|---|---|

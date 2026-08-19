@@ -56,7 +56,7 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - [Troubleshooting](troubleshooting.md)
 - [Command Reference](commands.md)
 - [Repo Conventions](repo-conventions.md)
-- [Shell Style](shell-style.md)
+- [Command Script Style](shell-style.md)
 - [Architecture Roadmap](architecture-roadmap.md)
 - [Shell Product Brief](shell-product-brief.md)
 - [Shell Configuration](shell-configuration.md)

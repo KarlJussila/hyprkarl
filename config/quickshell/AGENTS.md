@@ -182,7 +182,10 @@ navigating back. Providers and actions inherit the session environment through
 non-login `bash -c`. A dynamic destination is committed only after its provider
 returns a complete valid model; do not add per-menu loading branches or caches.
 Providers should query only the state their rows need, and static generated
-catalogs should already be in provider-ready JSON.
+catalogs should already be in provider-ready JSON. Providers that construct or
+transform entries should normally be Python executables using lists,
+dictionaries, and the standard `json` module. Bash remains appropriate for a
+provider that only validates and prints prebuilt data.
 Keep commands as leaf actions and static hierarchy in data. `MenuWindow.qml`
 owns the full-monitor overlay, exclusive keyboard focus, history navigation,
 search filtering, and outside-click dismissal. `hk-shell menu` is the only

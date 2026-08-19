@@ -1,68 +1,101 @@
-#!/bin/bash
-# hk-fingerprint-menu-entries
-# Print setup-aware fingerprint actions for dynamic Quickshell menus.
+#!/usr/bin/env python3
+"""Print setup-aware fingerprint actions for dynamic Quickshell menus."""
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR/lib/fingerprint.sh"
+from __future__ import annotations
 
-mode=${1:-root}
+import json
+import sys
 
-case "$mode" in
-  root)
-    if fingerprint_is_setup; then
-      jq -cn '[
-        {
-          id: "fingerprint.enroll", icon: "󰈷", label: "Add Fingerprint",
-          action: {type: "menu", menu: "fingerprint-enroll"}
-        },
-        {
-          id: "fingerprint.remove", icon: "", label: "Remove Fingerprint",
-          action: {type: "menu", menu: "fingerprint-remove"}
-        },
-        {
-          id: "fingerprint.uninstall", icon: "󱧖", label: "Uninstall",
-          action: {type: "command", command: "hk-tui-launch hk-fingerprint setup --remove"}
-        }
-      ]'
-    else
-      jq -cn '[{
-        id: "fingerprint.setup", icon: "󰈷", label: "Setup",
-        action: {type: "command", command: "hk-tui-launch hk-fingerprint setup"}
-      }]'
-    fi
-    ;;
-  enroll|remove)
-    enrolled=$(hk-fingerprint list) || exit 1
-    candidates=()
-    if [[ "$mode" == "enroll" ]]; then
-      declare -A enrolled_fingers=()
-      while IFS= read -r finger; do
-        [[ -n "$finger" ]] && enrolled_fingers["$finger"]=1
-      done <<<"$enrolled"
-      for finger in "${FINGERPRINT_NAMES[@]}"; do
-        [[ -n "${enrolled_fingers[$finger]}" ]] || candidates+=("$finger")
-      done
-    else
-      mapfile -t candidates <<<"$enrolled"
-    fi
+from lib.fingerprint import (
+    FINGERPRINT_NAMES,
+    enrolled_fingers,
+    fingerprint_is_setup,
+    fingerprint_label,
+)
 
-    printf '%s\n' "${candidates[@]}" \
-      | jq -Rcn --arg mode "$mode" '
-          [inputs | select(length > 0) | . as $finger | {
-            id: ("fingerprint-" + $mode + "." + $finger),
-            label: ($finger
-              | split("-")
-              | map((.[0:1] | ascii_upcase) + .[1:])
-              | join(" ")),
-            action: {
-              type: "command",
-              command: ("hk-tui-launch hk-fingerprint " + $mode + " " + $finger)
+
+def root_entries() -> list[dict]:
+    if not fingerprint_is_setup():
+        return [
+            {
+                "id": "fingerprint.setup",
+                "icon": "󰈷",
+                "label": "Setup",
+                "action": {
+                    "type": "command",
+                    "command": "hk-tui-launch hk-fingerprint setup",
+                },
             }
-          }]
-        '
-    ;;
-  *)
-    echo "Usage: hk-fingerprint-menu-entries [root|enroll|remove]" >&2
-    exit 1
-    ;;
-esac
+        ]
+    return [
+        {
+            "id": "fingerprint.enroll",
+            "icon": "󰈷",
+            "label": "Add Fingerprint",
+            "action": {"type": "menu", "menu": "fingerprint-enroll"},
+        },
+        {
+            "id": "fingerprint.remove",
+            "icon": "",
+            "label": "Remove Fingerprint",
+            "action": {"type": "menu", "menu": "fingerprint-remove"},
+        },
+        {
+            "id": "fingerprint.uninstall",
+            "icon": "󱧖",
+            "label": "Uninstall",
+            "action": {
+                "type": "command",
+                "command": "hk-tui-launch hk-fingerprint setup --remove",
+            },
+        },
+    ]
+
+
+def finger_entries(mode: str) -> list[dict]:
+    enrolled = enrolled_fingers()
+    enrolled_set = set(enrolled)
+    candidates = (
+        [finger for finger in FINGERPRINT_NAMES if finger not in enrolled_set]
+        if mode == "enroll"
+        else enrolled
+    )
+    return [
+        {
+            "id": f"fingerprint-{mode}.{finger}",
+            "label": fingerprint_label(finger),
+            "action": {
+                "type": "command",
+                "command": f"hk-tui-launch hk-fingerprint {mode} {finger}",
+            },
+        }
+        for finger in candidates
+    ]
+
+
+def main() -> int:
+    invalid_mode = len(sys.argv) == 2 and sys.argv[1] not in {
+        "root",
+        "enroll",
+        "remove",
+    }
+    if len(sys.argv) > 2 or invalid_mode:
+        print(
+            "Usage: hk-fingerprint-menu-entries [root|enroll|remove]", file=sys.stderr
+        )
+        return 1
+
+    mode = sys.argv[1] if len(sys.argv) == 2 else "root"
+    try:
+        entries = root_entries() if mode == "root" else finger_entries(mode)
+    except (OSError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        return 1
+
+    json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+    print()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

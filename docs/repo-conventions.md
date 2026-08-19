@@ -1,7 +1,7 @@
 # Repo Conventions
 
-This page covers Hyprkarl’s general editing conventions beyond the shell
-guidelines in [Shell Style](shell-style.md).
+This page covers Hyprkarl’s general editing conventions beyond the command
+script guidelines in [Command Script Style](shell-style.md).
 
 ## Readability First
 
@@ -28,7 +28,9 @@ That means:
 - `bin/`
   Commands meant to be run directly. Subcommands of a dispatcher (`hk-theme set`, `hk-pkg install`, …) live as their own top-level commands using the noun-first form `hk-<noun>-<action>`. The dispatcher is a thin router that `exec`s them.
 - `bin/lib/`
-  Shared sourced helpers used by more than one `bin/` command (`docker.sh`, `update.sh`). Single-use logic stays in the command itself.
+  Shared Bash or Python helpers used by more than one `bin/` command
+  (`docker.sh`, `update.sh`, `keybindings.py`). Single-use logic stays in the
+  command itself.
 - `templates/`
   Files copied or rendered by setup and install commands
 - `applications/`
@@ -86,6 +88,6 @@ the initial setup flow and is too aggressive for routine refreshes.
 
 ## Related Docs
 
-- [Shell Style](shell-style.md)
+- [Command Script Style](shell-style.md)
 - [Configuration Map](configuration-map.md)
 - [Extending Hyprkarl](extending-hyprkarl.md)

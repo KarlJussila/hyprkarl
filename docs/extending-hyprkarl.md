@@ -32,17 +32,16 @@ Use this rule of thumb:
 
 If a command is something a user would reasonably type, put it in `bin/`. If a
 helper would only ever be called from one command, keep it in that command
-inline. If it would genuinely be shared by two or more commands, extract it as
-a function into the appropriate `bin/lib/*.sh` file (or create a new one). If
-the thing exists to support something other than a `hk-*` command, put it
-under `scripts/`.
+inline. If it would genuinely be shared by two or more commands, extract it
+into the appropriate `bin/lib/*.sh` or `bin/lib/*.py` file. If the thing exists
+to support something other than a `hk-*` command, put it under `scripts/`.
 
-## Add a New Shell Command
+## Add a New Command
 
 Typical workflow:
 
 1. Add a new executable in `bin/`.
-2. Follow the repo shell conventions in [Shell Style](shell-style.md).
+2. Choose Bash or Python using [Command Script Style](shell-style.md).
 3. If the command shares enough logic with other `bin/` commands, extract or
    reuse a helper in `bin/lib/`.
 
@@ -83,8 +82,10 @@ either a submenu or command action:
 
 Keep nontrivial interaction in a dedicated `hk-*` command and name that
 command in the entry. A menu may declare a `sourceCommand` for dynamic entries
-and opt into in-process search; dedicated interfaces such as the launcher,
-calculator, and wallpaper thumbnail picker still use Rofi. See
+and opt into in-process search. Dynamic providers should normally use Python
+data structures and the standard `json` module; Bash is better reserved for
+providers that only print prebuilt JSON. Dedicated interfaces such as the
+launcher, calculator, and wallpaper thumbnail picker still use Rofi. See
 [Menu Configuration](menu-configuration.md) for the full contract, submenu
 example, live-reload behavior, and keyboard controls.
 

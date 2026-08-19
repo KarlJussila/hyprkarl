@@ -1,51 +1,89 @@
-#!/bin/bash
-# hk-icon-data-update
-# Download and regenerate provider-ready Nerd Font menu data.
+#!/usr/bin/env python3
+"""Download and regenerate provider-ready Nerd Font menu data."""
 
-ICON_DATA="${XDG_DATA_HOME:-$HOME/.local/share}/hyprkarl/data/nerdfont-menu.json"
-CSV_URL="https://raw.githubusercontent.com/8bitmcu/NerdFont-Cheat-Sheet/master/nerdfont.csv"
-TEMP_DATA=$(mktemp "${ICON_DATA}.tmp.XXXXXX") || exit 1
-trap 'rm -f "$TEMP_DATA"' EXIT
+from __future__ import annotations
 
-gum log --level info "Downloading Nerd Font glyph data..."
-
-if ! curl -sf "$CSV_URL" | python3 -c '
+import csv
+import io
 import json
+import os
 import shlex
-import sys
+import subprocess
+import tempfile
+from pathlib import Path
+from urllib.request import urlopen
 
-entries = []
-for line in sys.stdin:
-    parts = line.rstrip().split(",")
-    if len(parts) >= 2 and parts[1].strip():
-        try:
-            icon = chr(int(parts[1].strip(), 16))
-        except ValueError:
-            continue
-        name = parts[0]
-        entries.append({
-            "id": f"icon.{name}",
-            "icon": icon,
-            "label": name,
-            "action": {
-                "type": "command",
-                "command": f"hk-icon-copy {shlex.quote(icon)}",
-            },
-        })
+CSV_URL = (
+    "https://raw.githubusercontent.com/8bitmcu/NerdFont-Cheat-Sheet/master/nerdfont.csv"
+)
 
-json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
-' >"$TEMP_DATA"; then
-  gum log --level error "Could not download Nerd Font glyph data"
-  exit 1
-fi
 
-if ! jq -e 'type == "array" and length > 0' "$TEMP_DATA" >/dev/null; then
-  gum log --level error "Downloaded icon menu data is empty or invalid"
-  exit 1
-fi
+def log(level: str, message: str) -> None:
+    subprocess.run(["gum", "log", "--level", level, message], check=False)
 
-mv "$TEMP_DATA" "$ICON_DATA"
-trap - EXIT
 
-count=$(jq length "$ICON_DATA")
-gum log --level info "Saved $count icons to $ICON_DATA"
+def download_entries() -> list[dict]:
+    with urlopen(CSV_URL) as response:
+        rows = csv.reader(io.TextIOWrapper(response, encoding="utf-8"))
+        entries = []
+        for row in rows:
+            if len(row) < 2 or not row[1].strip():
+                continue
+            try:
+                icon = chr(int(row[1].strip(), 16))
+            except ValueError:
+                continue
+            name = row[0]
+            entries.append(
+                {
+                    "id": f"icon.{name}",
+                    "icon": icon,
+                    "label": name,
+                    "action": {
+                        "type": "command",
+                        "command": f"hk-icon-copy {shlex.quote(icon)}",
+                    },
+                }
+            )
+    return entries
+
+
+def main() -> int:
+    data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
+    icon_data = data_home / "hyprkarl/data/nerdfont-menu.json"
+    log("info", "Downloading Nerd Font glyph data...")
+
+    try:
+        entries = download_entries()
+    except OSError as error:
+        log("error", f"Could not download Nerd Font glyph data: {error}")
+        return 1
+    if not entries:
+        log("error", "Downloaded icon menu data is empty or invalid")
+        return 1
+
+    icon_data.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=icon_data.parent,
+            prefix=icon_data.name + ".tmp.",
+            delete=False,
+        ) as temporary:
+            temporary_path = Path(temporary.name)
+            json.dump(entries, temporary, ensure_ascii=False, separators=(",", ":"))
+        temporary_path.replace(icon_data)
+    except OSError as error:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+        log("error", f"Could not save Nerd Font glyph data: {error}")
+        return 1
+
+    log("info", f"Saved {len(entries)} icons to {icon_data}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

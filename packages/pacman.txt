@@ -41,6 +41,7 @@ pipewire-audio
 pipewire-pulse
 playerctl
 psmisc
+python
 python-gobject
 qt5ct
 qt6ct

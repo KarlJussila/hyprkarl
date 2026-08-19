@@ -35,10 +35,11 @@ each other.
 ./uninstall.sh          # Remove all config symlinks (reverses setup-dotfiles.sh)
 ```
 
-There are no build steps or package.json at the repo root — this is a pure
-shell/config repo. There is no automated test suite; `tests/` holds manual,
-interactive sandbox harnesses (e.g. `tests/hk-update-tui.sh`) for exercising a
-command end to end without touching the live system. See `tests/README.md`.
+There are no build steps or package.json at the repo root — this is a direct
+configuration and command-script repo. There is no automated test suite;
+`tests/` holds manual, interactive sandbox harnesses (e.g.
+`tests/hk-update-tui.sh`) for exercising a command end to end without touching
+the live system. See `tests/README.md`.
 
 ## Releases
 
@@ -165,19 +166,21 @@ authoring conventions before adding or editing one.
 `config/uwsm/default` controls `$TERMINAL`, `$EDITOR`, and `$SHELL`.
 `~/.config/uwsm/env.local` holds machine-local variables and is not tracked.
 
-## Shell Style
+## Command Script Style
 
 `bin/` scripts follow `docs/shell-style.md` — read it before writing or editing
-a command. The one counterintuitive rule worth stating up front: the shebang is
-`#!/bin/bash` and Bash strict mode (`set -euo pipefail`) is **intentionally
-absent**, so don't add it reflexively.
+a command. Use Python for structured data, JSON generation, substantial
+parsing, and heavy string manipulation; use Bash when command orchestration or
+a simple pipeline remains clearer. Bash commands use `#!/bin/bash` and
+intentionally omit strict mode (`set -euo pipefail`); Python commands use
+`#!/usr/bin/env python3` and ordinary standard-library data structures.
 
 ## Key Docs
 
 - `docs/configuration-map.md` — repo layout and main editing surfaces
 - `docs/themes.md` — theme structure and wallpaper layout
 - `docs/extending-hyprkarl.md` — adding commands, menus, keybindings, theme-aware config
-- `docs/shell-style.md` — shell scripting conventions
+- `docs/shell-style.md` — Bash/Python command scripting conventions
 - `docs/commands.md` — full `hk-*` command reference
 - `docs/repo-conventions.md` — editing conventions, stowed-config model, branches and releases
 - `docs/updating.md` — the `hk-update` model and workflows

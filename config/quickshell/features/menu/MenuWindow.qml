@@ -81,117 +81,101 @@ PanelWindow {
 
     MouseArea {
       anchors.fill: parent
-      onClicked: MenuState.close()
+      onClicked: MenuState.back()
     }
   }
 
   Rectangle {
     id: frame
 
-    readonly property real desiredHeight: root.theme.panelPadding * 2
+    readonly property real frameInset: root.theme.menuOuterBorderWidth
+      + root.theme.menuOuterPadding
+    readonly property real desiredHeight: frameInset * 2
+      + root.theme.menuInnerBorderWidth * 2
       + header.height
-      + root.theme.panelSpacing
-      + menuList.count * 42
+      + menuList.contentHeight
 
     anchors.centerIn: parent
-    width: Math.min(root.theme.menuWidth, root.width - root.theme.panelPadding * 2)
-    height: Math.min(desiredHeight, root.height - root.theme.panelPadding * 2)
-    scale: 0.96 + root.reveal * 0.04
+    width: Math.min(root.theme.menuWidth, root.width)
+    height: Math.min(desiredHeight, root.height)
     opacity: root.reveal
-    color: root.theme.surface
-    border.color: root.theme.border
-    border.width: root.theme.borderWidth
-    radius: root.theme.panelRadius
+    color: root.theme.menuBackground
+    border.color: root.theme.menuAccent
+    border.width: root.theme.menuOuterBorderWidth
+    radius: root.theme.menuRadius
 
     MouseArea {
       anchors.fill: parent
     }
 
-    Item {
-      id: header
+    Rectangle {
+      id: innerFrame
 
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.top: parent.top
-      anchors.leftMargin: root.theme.panelPadding
-      anchors.rightMargin: root.theme.panelPadding
-      anchors.topMargin: root.theme.panelPadding
-      height: 28
+      anchors.fill: parent
+      anchors.margins: frame.frameInset
+      color: root.theme.menuAccent
+      border.color: root.theme.menuAccent
+      border.width: root.theme.menuInnerBorderWidth
+      radius: root.theme.menuRadius
 
-      Item {
-        id: backButton
+      Rectangle {
+        id: header
 
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        width: 28
-        height: 28
-        visible: MenuState.history.length > 1
-
-        Rectangle {
-          anchors.fill: parent
-          color: root.theme.accent
-          opacity: backMouse.containsMouse ? 0.22 : 0.12
-          radius: root.theme.radius
-        }
-
-        Text {
-          anchors.centerIn: parent
-          text: "‹"
-          color: root.theme.text
-          font.family: root.theme.fontUi
-          font.pixelSize: root.theme.fontSize + 4
-        }
-
-        MouseArea {
-          id: backMouse
-
-          anchors.fill: parent
-          hoverEnabled: true
-          cursorShape: Qt.PointingHandCursor
-          onClicked: MenuState.back()
-        }
-      }
-
-      Text {
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        text: MenuState.menus[MenuState.currentMenu]?.title ?? ""
-        color: root.theme.text
-        font.family: root.theme.fontUi
-        font.pixelSize: root.theme.fontSize + 1
-        font.weight: root.theme.fontWeight
-        font.styleName: root.theme.fontStyle
-        horizontalAlignment: Text.AlignHCenter
+        anchors.top: parent.top
+        anchors.leftMargin: root.theme.menuInnerBorderWidth
+        anchors.rightMargin: root.theme.menuInnerBorderWidth
+        anchors.topMargin: root.theme.menuInnerBorderWidth
+        height: headerLabel.implicitHeight + root.theme.menuHeaderPadding * 2
+        color: root.theme.menuAccent
+
+        Text {
+          id: headerLabel
+
+          anchors.fill: parent
+          anchors.margins: root.theme.menuHeaderPadding
+          text: MenuState.menus[MenuState.currentMenu]?.title ?? ""
+          color: root.theme.menuForeground
+          font.family: root.theme.menuFont
+          font.pointSize: root.theme.menuFontPointSize
+          font.weight: root.theme.menuFontWeight
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
+        }
       }
-    }
 
-    ListView {
-      id: menuList
+      Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: header.bottom
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: root.theme.menuInnerBorderWidth
+        anchors.rightMargin: root.theme.menuInnerBorderWidth
+        anchors.bottomMargin: root.theme.menuInnerBorderWidth
+        color: root.theme.menuBackground
 
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.top: header.bottom
-      anchors.bottom: parent.bottom
-      anchors.leftMargin: root.theme.panelPadding
-      anchors.rightMargin: root.theme.panelPadding
-      anchors.topMargin: root.theme.panelSpacing
-      anchors.bottomMargin: root.theme.panelPadding
-      clip: true
-      boundsBehavior: Flickable.StopAtBounds
-      model: MenuState.entriesFor(MenuState.currentMenu)
-      currentIndex: count > 0 ? 0 : -1
+        ListView {
+          id: menuList
 
-      delegate: MenuEntry {
-        required property int index
-        required property var modelData
+          anchors.fill: parent
+          clip: true
+          boundsBehavior: Flickable.StopAtBounds
+          model: MenuState.entriesFor(MenuState.currentMenu)
+          currentIndex: count > 0 ? 0 : -1
 
-        width: menuList.width
-        theme: root.theme
-        entry: modelData
-        selected: ListView.isCurrentItem
-        onHovered: menuList.currentIndex = index
-        onChosen: MenuState.activate(modelData)
+          delegate: MenuEntry {
+            required property int index
+            required property var modelData
+
+            width: menuList.width
+            theme: root.theme
+            entry: modelData
+            selected: ListView.isCurrentItem
+            onHovered: menuList.currentIndex = index
+            onChosen: MenuState.activate(modelData)
+          }
+        }
       }
     }
   }

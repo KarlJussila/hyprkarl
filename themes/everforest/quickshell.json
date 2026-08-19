@@ -50,6 +50,23 @@
   "panelSpacing": 10,
   "panelRadius": 10,
   "panelTransitionDuration": 140,
-  "menuScrim": "#88000000",
-  "menuWidth": 320
+  "menu": {
+    "background": "#2d353b",
+    "backgroundAlt": "#3d484d",
+    "foreground": "#d3c6aa",
+    "accent": "#678140",
+    "scrim": "#00000000",
+    "font": "JetBrainsMonoNL Nerd Font Propo",
+    "fontPointSize": 12,
+    "fontWeight": 400,
+    "width": 280,
+    "radius": 0,
+    "outerBorderWidth": 3,
+    "outerPadding": 6,
+    "innerBorderWidth": 3,
+    "headerPadding": 4,
+    "entryMargin": 4,
+    "entryPadding": 8,
+    "selectionBorderWidth": 2
+  }
 }

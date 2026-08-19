@@ -58,8 +58,24 @@ QtObject {
   readonly property int panelSpacing: values.panelSpacing ?? 10
   readonly property int panelRadius: values.panelRadius ?? radius
   readonly property int panelTransitionDuration: values.panelTransitionDuration ?? 140
-  readonly property color menuScrim: values.menuScrim ?? "transparent"
-  readonly property int menuWidth: values.menuWidth ?? panelWidth
+  readonly property var menu: values.menu ?? ({})
+  readonly property color menuBackground: menu.background ?? surface
+  readonly property color menuBackgroundAlt: menu.backgroundAlt ?? surface
+  readonly property color menuForeground: menu.foreground ?? text
+  readonly property color menuAccent: menu.accent ?? accent
+  readonly property color menuScrim: menu.scrim ?? "transparent"
+  readonly property string menuFont: menu.font ?? fontUi
+  readonly property int menuFontPointSize: menu.fontPointSize ?? 12
+  readonly property int menuFontWeight: menu.fontWeight ?? 400
+  readonly property int menuWidth: menu.width ?? 280
+  readonly property int menuRadius: menu.radius ?? 0
+  readonly property int menuOuterBorderWidth: menu.outerBorderWidth ?? 3
+  readonly property int menuOuterPadding: menu.outerPadding ?? 6
+  readonly property int menuInnerBorderWidth: menu.innerBorderWidth ?? 3
+  readonly property int menuHeaderPadding: menu.headerPadding ?? 4
+  readonly property int menuEntryMargin: menu.entryMargin ?? 4
+  readonly property int menuEntryPadding: menu.entryPadding ?? 8
+  readonly property int menuSelectionBorderWidth: menu.selectionBorderWidth ?? 2
 
   property FileView selector: FileView {
     path: Quickshell.shellPath("../hyprkarl/current/theme.name")

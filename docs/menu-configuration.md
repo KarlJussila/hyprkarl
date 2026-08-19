@@ -100,10 +100,20 @@ instead.
 ## Appearance
 
 Menu appearance is theme-owned rather than part of either menu JSON file. It
-reuses the active Quickshell theme's text, surface, accent, border, typography,
-panel spacing, padding, and radii. `menuWidth` sets its preferred width and
-`menuScrim` sets the full-output backdrop color. Add both values to every theme
-when creating or converting one.
+uses the active Quickshell theme's nested `menu` object. The shipped values
+deliberately preserve Hyprkarl's original Rofi menu language: a narrow square
+double-frame, solid accent title band, centered regular-weight mono labels,
+and an accent-bordered alternate-background selection without a dimming
+scrim.
+
+The object owns `background`, `backgroundAlt`, `foreground`, `accent`,
+`scrim`, `font`, `fontPointSize`, `fontWeight`, `width`, `radius`,
+`outerBorderWidth`,
+`outerPadding`, `innerBorderWidth`, `headerPadding`, `entryMargin`,
+`entryPadding`, and `selectionBorderWidth`. Keep these values in every theme
+when creating or converting one. They are separate from feature-panel tokens
+because the command menu intentionally retains its established visual
+identity.
 
 ## Opening Menus Directly
 
@@ -123,4 +133,4 @@ Rofi navigation scripts.
 
 Keyboard navigation supports Up/Down (or J/K), Home/End, Enter/Space/Right (or
 L) to choose, and Escape/Left/Backspace to go back. Going back from the root
-closes the menu. A click outside the menu also closes it.
+closes the menu. Clicking outside goes back from a submenu and closes the root.

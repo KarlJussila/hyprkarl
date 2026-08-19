@@ -133,7 +133,10 @@ The old static Rofi menu tree has also been replaced directly by a
 shell-native Quickshell surface. `defaults/menu.json` owns built-in navigation,
 `user/menu.json` deep-merges additions and overrides by stable entry ID, and
 the old static `hk-menu-*` names now route through the shell's menu IPC.
-Specialized searchable selectors remain dedicated commands.
+Specialized searchable selectors remain dedicated commands. The renderer
+retains the original menu's narrow square double-frame, centered mono rows,
+accent title band, and bordered selection rather than adopting the rounded
+feature-panel aesthetic.
 
 ## Constraints and Non-Goals
 

@@ -108,9 +108,12 @@ audio surfaces. Panel height is content-driven and grows as far as the
 remaining monitor height; scrolling begins only after content exceeds that
 physical limit, so there is no theme height cap to configure.
 
-The shell-native command menu reuses these panel and typography tokens.
-`menuWidth` controls its preferred width, while `menuScrim` is the color drawn
-across the rest of the output while it is open.
+The shell-native command menu uses the nested `menu` object in the same theme
+file. Its dedicated colors, font, width, square double-frame metrics, row
+spacing, and selection border preserve the earlier Rofi menu's visual
+identity; they do not inherit the rounded feature-panel shape. See
+[Menu Configuration](menu-configuration.md#appearance) for the full field
+list.
 
 `barMinThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural

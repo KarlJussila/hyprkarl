@@ -41,27 +41,32 @@ does not try to document every internal script.
 ## Menus and Launching
 
 - `hk-menu`
-  Open the main Hyprkarl menu.
+  Open the shell-native main Hyprkarl menu.
+- `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`
+  Control the Quickshell menu through its public IPC boundary. The established
+  `hk-menu-*` navigation commands below are convenient wrappers around it.
 - `hk-menu-launcher`
   Open the rofi app launcher.
 - `hk-menu-config`
-  Open the configuration menu for themes, wallpapers, and defaults.
+  Open the shell-native configuration menu for themes, wallpapers, and
+  defaults.
 - `hk-menu-defaults`
   Open the defaults submenu (terminal, editor, shell).
 - `hk-menu-editor` / `hk-menu-shell` / `hk-menu-terminal`
   Pick a default editor, shell, or terminal directly without going through the
   defaults menu.
 - `hk-menu-install`
-  Open the install menu for packages and Docker services.
+  Open the shell-native install menu for packages and Docker services.
 - `hk-menu-uninstall`
-  Open the uninstall menu for packages and Docker services.
+  Open the shell-native uninstall menu for packages and Docker services.
 - `hk-menu-update`
-  Open the update menu: "Update Hyprkarl" launches the guided `hk-update tui`,
+  Open the shell-native update menu: "Update Hyprkarl" launches the guided `hk-update tui`,
   "Upgrade Packages" runs the system package upgrade (`hk-pkg-upgrade`).
 - `hk-menu-utils`
-  Open the utilities submenu (toggles, screen recording, and other actions).
+  Open the shell-native utilities submenu (toggles, screen recording, and
+  other actions).
 - `hk-menu-power`
-  Open the power menu.
+  Open the shell-native power menu.
 - `hk-menu-power-profile`
   Pick a `power-profiles-daemon` profile (performance / balanced / saver).
 - `hk-menu-keybindings`
@@ -222,9 +227,10 @@ does not try to document every internal script.
 - `hk-docker list`
   Print the supported Docker service ids.
 
-## Quickshell Bar
+## Quickshell Shell
 
-These commands manage the session-started production bar.
+These commands manage and communicate with the session-started production
+shell.
 
 - `hk-shell start`
   Start the Hyprkarl Quickshell configuration in a UWSM scope if it is not
@@ -244,6 +250,9 @@ These commands manage the session-started production bar.
   the shell is not running. With no options it shows the last 200 lines;
   native options such as `--follow`, `--tail 100`, and `--no-color` pass
   through to `qs log`.
+- `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`
+  Open, toggle, or close the shell-native command menu. This is also described
+  with the menu commands above.
 
 ## UI Helpers
 

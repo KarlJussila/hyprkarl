@@ -14,6 +14,8 @@ controllers when a Quickshell singleton already owns the state.
 - `../../defaults/shell.json`: shipped bar behavior, widget order, and widget
   instances.
 - `../../user/shell.json`: optional sparse user override.
+- `../../defaults/menu.json`: shipped static command-menu hierarchy.
+- `../../user/menu.json`: optional sparse menu additions and overrides.
 - `../../themes/<theme>/quickshell.json`: colors, typography, metrics, and
   island geometry.
 - `widgets/*.qml`: one implementation per widget kind.
@@ -31,6 +33,10 @@ not restore a separate widget-definition map.
 `shell.qml` creates shared configuration, theme, and system state objects, then
 uses `Variants` to create one `Bar` per screen after configuration and theme
 data are ready.
+It also creates one `MenuWindow` per screen after menu data are ready. The
+menu singleton selects exactly one requested monitor, owns navigation history,
+and exposes the public `menu` IPC target. Each inactive window stays hidden and
+does not request keyboard focus.
 `config/ShellConfig.qml` alone selects, validates, and watches shell JSON while
 retaining the last valid live configuration after a rejected edit. `Bar.qml`
 alone owns each bar window and its per-monitor `FeaturePanelHost`. Layout files
@@ -158,6 +164,14 @@ Component and feature directories have checked-in `qmldir` files where runtime
 loading or singleton registration requires them. Widget files are loaded from
 configuration, so Quickshell's static scanner cannot discover all relative
 imports on its own.
+
+`features/menu/MenuState.qml` alone reads, watches, recursively merges, and
+validates menu JSON. Entries merge by stable ID; `enabled: false` hides one.
+Keep commands as leaf actions and static hierarchy in data. `MenuWindow.qml`
+owns the full-monitor overlay, exclusive keyboard focus, history navigation,
+and outside-click dismissal. Existing static `hk-menu-*` entry points are thin
+IPC wrappers; specialized searchable selectors may remain separate Rofi
+commands until their own shell-native surfaces are designed.
 
 ## Checks
 

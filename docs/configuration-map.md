@@ -158,6 +158,10 @@ are:
   Shipped bar edge, widget order, and inline widget instances
 - `user/shell.json`
   Optional sparse user-owned override for the shipped shell configuration
+- `defaults/menu.json`
+  Shipped static command-menu hierarchy and actions
+- `user/menu.json`
+  Optional sparse user-owned menu additions and overrides
 - `themes/<theme>/quickshell.json`
   Theme-specific colors, typography, minimum bar thickness, natural widget
   padding, logical island corners and borders, radii, and
@@ -188,6 +192,12 @@ Network scanning follows panel activity; Bluetooth discovery begins only from
 the panel's explicit scan action. Clock uses one application-wide current-time
 singleton while viewed-month navigation remains local to each panel. There is
 no separate feature-flyout boundary.
+
+The shell-native command menu creates one full-screen overlay per output and
+shows only the requested monitor's instance. `features/menu/MenuState.qml`
+owns the watched, validated deep merge and navigation history;
+`MenuWindow.qml` owns keyboard focus, dismissal, and rendering. See
+[Menu Configuration](menu-configuration.md).
 
 ## Themes
 

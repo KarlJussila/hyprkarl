@@ -49,5 +49,7 @@
   "panelPadding": 12,
   "panelSpacing": 10,
   "panelRadius": 10,
-  "panelTransitionDuration": 140
+  "panelTransitionDuration": 140,
+  "menuScrim": "#88000000",
+  "menuWidth": 320
 }

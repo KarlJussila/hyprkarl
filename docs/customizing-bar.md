@@ -108,6 +108,10 @@ audio surfaces. Panel height is content-driven and grows as far as the
 remaining monitor height; scrolling begins only after content exceeds that
 physical limit, so there is no theme height cap to configure.
 
+The shell-native command menu reuses these panel and typography tokens.
+`menuWidth` controls its preferred width, while `menuScrim` is the color drawn
+across the rest of the output while it is open.
+
 `barMinThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural
 height; the tallest widget sets one shared height for all three islands. A

@@ -1,27 +1,5 @@
 #!/bin/bash
 # hk-menu-uninstall
-# Menu for uninstalling packages
+# Open the Quickshell uninstall menu.
 
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-SYSTEM="󰣇 System"
-FLATPAK="󰏖 Flatpak"
-DOCKER="󰡨 Docker"
-
-relaunch_menu() { exec "$0"; }
-
-CHOICE=$(echo -e "$SYSTEM\n$FLATPAK\n$DOCKER" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Uninstall Packages" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$SYSTEM")  hk-tui-launch hk-pkg-remove-tui ;;
-    "$FLATPAK") hk-tui-launch hk-pkg-remove-tui --flatpak ;;
-    "$DOCKER")  hk-menu-docker-uninstall || relaunch_menu ;;
-    "")         exit 1 ;;
-esac
-
-exit 0
+exec hk-shell menu open uninstall

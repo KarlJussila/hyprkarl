@@ -61,73 +61,31 @@ the dispatcher (`hk-theme set foo`).
 
 ## Add a Menu Action
 
-Most menu files live in `bin/hk-menu*`. To add a new action:
+The static menu hierarchy is data, not a tree of shell branches. Built-in
+entries live in `defaults/menu.json`; personal additions and overrides belong
+in `user/menu.json`. Add a stable entry ID, its parent menu, order, label, and
+either a submenu or command action:
 
-1. Find the right menu.
-2. Add a label constant and a new case branch.
-
-If you want to add a new menu, the easiest approach is usually to copy an
-existing `hk-menu-*` script and edit the labels, commands, and prompt
-text.
-
-Minimal example:
-
-Leaf menu (no submenus):
-
-```bash
-#!/bin/bash
-
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-FIRST="First action"
-SECOND="Second action"
-
-CHOICE=$(printf '%s\n' "$FIRST" "$SECOND" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Example" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$FIRST")  first-command ;;
-    "$SECOND") second-command ;;
-    "")        exit 1 ;;
-esac
-
-exit 0
+```json
+{
+  "version": 1,
+  "entries": {
+    "utilities.files": {
+      "parent": "utilities",
+      "order": 25,
+      "icon": "",
+      "label": "Files",
+      "action": { "type": "command", "command": "thunar" }
+    }
+  }
+}
 ```
 
-Dismissing exits 1 so a parent can detect it. Because these scripts run without
-`set -e`, a failed action branch still falls through to `exit 0` — only the
-explicit `exit 1` on dismiss signals the parent.
-
-Parent menu (has submenus) adds `relaunch_menu` and uses `|| relaunch_menu`
-on submenu calls:
-
-```bash
-relaunch_menu() { exec "$0"; }
-
-CHOICE=$(printf '%s\n' "$SUBMENU" "$ACTION" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Example" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$SUBMENU") hk-menu-sub || relaunch_menu ;;  # dismissed → re-show this menu
-    "$ACTION")  do-thing ;;
-    "")         exit 1 ;;
-esac
-
-exit 0
-```
-
-When a submenu exits 1 (dismissed), `|| relaunch_menu` execs the current script
-in-place, re-showing this menu. When an action completes, execution falls
-through to `exit 0`. Dismissing this menu exits 1 so its own parent can detect
-it. See `bin/hk-menu` for the canonical pattern.
+Keep nontrivial interaction in a dedicated `hk-*` command and name that
+command in the entry. Specialized searchable selectors may still use Rofi;
+the Quickshell data surface owns static navigation only. See
+[Menu Configuration](menu-configuration.md) for the full contract, submenu
+example, live-reload behavior, and keyboard controls.
 
 ## Customize Hyprland
 

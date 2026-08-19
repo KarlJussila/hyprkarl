@@ -1,31 +1,5 @@
 #!/bin/bash
 # hk-menu-config
-# Menu for accessing/editing configs
+# Open the Quickshell configuration menu.
 
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-THEME=" Theme"
-WALLPAPER=" Wallpaper"
-DEFAULTS="󰆓 Defaults"
-TIMEZONE="󰇧 Timezone"
-FINGERPRINT="󰈷 Fingerprint"
-
-relaunch_menu() { exec "$0"; }
-
-CHOICE=$(echo -e "$THEME\n$WALLPAPER\n$DEFAULTS\n$TIMEZONE\n$FINGERPRINT" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Config" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$THEME")       hk-menu-theme || relaunch_menu ;;
-    "$WALLPAPER")   hk-menu-wallpaper || relaunch_menu ;;
-    "$DEFAULTS")    hk-menu-defaults || relaunch_menu ;;
-    "$TIMEZONE")    hk-tui-launch hk-timezone-setup ;;
-    "$FINGERPRINT") hk-menu-fingerprint || relaunch_menu ;;
-    "")             exit 1 ;;
-esac
-
-exit 0
+exec hk-shell menu open config

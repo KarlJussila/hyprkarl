@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import "config"
+import "features/menu"
 import "state"
 
 ShellRoot {
@@ -19,6 +20,19 @@ ShellRoot {
       shellConfig: configObject
       theme: themeObject
       systemState: stateObject
+    }
+  }
+
+  Variants {
+    model: configObject.ready && themeObject.ready && MenuState.ready
+      ? Quickshell.screens
+      : []
+
+    MenuWindow {
+      required property var modelData
+
+      output: modelData
+      theme: themeObject
     }
   }
 }

@@ -1,0 +1,247 @@
+{
+  "version": 1,
+  "root": "main",
+  "menus": {
+    "main": { "title": "Main Menu" },
+    "install": { "title": "Install" },
+    "uninstall": { "title": "Uninstall" },
+    "utilities": { "title": "Utilities" },
+    "config": { "title": "Config" },
+    "defaults": { "title": "Defaults" },
+    "update": { "title": "Update" },
+    "power": { "title": "Power" }
+  },
+  "entries": {
+    "main.launch": {
+      "parent": "main",
+      "order": 10,
+      "icon": "󱓟",
+      "label": "Launch",
+      "action": { "type": "command", "command": "hk-menu-launcher" }
+    },
+    "main.install": {
+      "parent": "main",
+      "order": 20,
+      "icon": "",
+      "label": "Install",
+      "action": { "type": "menu", "menu": "install" }
+    },
+    "main.uninstall": {
+      "parent": "main",
+      "order": 30,
+      "icon": "󱧖",
+      "label": "Uninstall",
+      "action": { "type": "menu", "menu": "uninstall" }
+    },
+    "main.utilities": {
+      "parent": "main",
+      "order": 40,
+      "icon": "",
+      "label": "Utilities",
+      "action": { "type": "menu", "menu": "utilities" }
+    },
+    "main.config": {
+      "parent": "main",
+      "order": 50,
+      "icon": "",
+      "label": "Config",
+      "action": { "type": "menu", "menu": "config" }
+    },
+    "main.update": {
+      "parent": "main",
+      "order": 60,
+      "icon": "󰧇",
+      "label": "Update",
+      "action": { "type": "menu", "menu": "update" }
+    },
+    "main.power": {
+      "parent": "main",
+      "order": 70,
+      "icon": "",
+      "label": "Power",
+      "action": { "type": "menu", "menu": "power" }
+    },
+
+    "install.pacman": {
+      "parent": "install",
+      "order": 10,
+      "icon": "󰣇",
+      "label": "Pacman",
+      "action": { "type": "command", "command": "hk-tui-launch hk-pkg-install-tui" }
+    },
+    "install.aur": {
+      "parent": "install",
+      "order": 20,
+      "icon": "",
+      "label": "AUR",
+      "action": { "type": "command", "command": "hk-tui-launch hk-pkg-install-tui --aur" }
+    },
+    "install.flatpak": {
+      "parent": "install",
+      "order": 30,
+      "icon": "󰏖",
+      "label": "Flatpak",
+      "action": { "type": "command", "command": "hk-tui-launch hk-pkg-install-tui --flatpak" }
+    },
+    "install.docker": {
+      "parent": "install",
+      "order": 40,
+      "icon": "󰡨",
+      "label": "Docker",
+      "action": { "type": "command", "command": "hk-menu-docker-install || hk-shell menu open install" }
+    },
+
+    "uninstall.system": {
+      "parent": "uninstall",
+      "order": 10,
+      "icon": "󰣇",
+      "label": "System",
+      "action": { "type": "command", "command": "hk-tui-launch hk-pkg-remove-tui" }
+    },
+    "uninstall.flatpak": {
+      "parent": "uninstall",
+      "order": 20,
+      "icon": "󰏖",
+      "label": "Flatpak",
+      "action": { "type": "command", "command": "hk-tui-launch hk-pkg-remove-tui --flatpak" }
+    },
+    "uninstall.docker": {
+      "parent": "uninstall",
+      "order": 30,
+      "icon": "󰡨",
+      "label": "Docker",
+      "action": { "type": "command", "command": "hk-menu-docker-uninstall || hk-shell menu open uninstall" }
+    },
+
+    "utilities.caffeine": {
+      "parent": "utilities",
+      "order": 10,
+      "icon": "",
+      "label": "Caffeine",
+      "action": { "type": "command", "command": "hk-caffeine" }
+    },
+    "utilities.nightlight": {
+      "parent": "utilities",
+      "order": 20,
+      "icon": "",
+      "label": "Nightlight",
+      "action": { "type": "command", "command": "hk-nightlight" }
+    },
+    "utilities.screen-record": {
+      "parent": "utilities",
+      "order": 30,
+      "icon": "",
+      "label": "Screen Record",
+      "action": { "type": "command", "command": "sleep 0.5 && hk-screen-record" }
+    },
+    "utilities.power-profile": {
+      "parent": "utilities",
+      "order": 40,
+      "icon": "󰗑",
+      "label": "Power Profile",
+      "action": { "type": "command", "command": "hk-menu-power-profile || hk-shell menu open utilities" }
+    },
+
+    "config.theme": {
+      "parent": "config",
+      "order": 10,
+      "icon": "",
+      "label": "Theme",
+      "action": { "type": "command", "command": "hk-menu-theme || hk-shell menu open config" }
+    },
+    "config.wallpaper": {
+      "parent": "config",
+      "order": 20,
+      "icon": "",
+      "label": "Wallpaper",
+      "action": { "type": "command", "command": "hk-menu-wallpaper || hk-shell menu open config" }
+    },
+    "config.defaults": {
+      "parent": "config",
+      "order": 30,
+      "icon": "󰆓",
+      "label": "Defaults",
+      "action": { "type": "menu", "menu": "defaults" }
+    },
+    "config.timezone": {
+      "parent": "config",
+      "order": 40,
+      "icon": "󰇧",
+      "label": "Timezone",
+      "action": { "type": "command", "command": "hk-tui-launch hk-timezone-setup" }
+    },
+    "config.fingerprint": {
+      "parent": "config",
+      "order": 50,
+      "icon": "󰈷",
+      "label": "Fingerprint",
+      "action": { "type": "command", "command": "hk-menu-fingerprint || hk-shell menu open config" }
+    },
+
+    "defaults.terminal": {
+      "parent": "defaults",
+      "order": 10,
+      "icon": "",
+      "label": "Terminal",
+      "action": { "type": "command", "command": "hk-menu-terminal || hk-shell menu open defaults" }
+    },
+    "defaults.editor": {
+      "parent": "defaults",
+      "order": 20,
+      "icon": "",
+      "label": "Editor",
+      "action": { "type": "command", "command": "hk-menu-editor || hk-shell menu open defaults" }
+    },
+    "defaults.shell": {
+      "parent": "defaults",
+      "order": 30,
+      "icon": "",
+      "label": "Shell",
+      "action": { "type": "command", "command": "hk-menu-shell || hk-shell menu open defaults" }
+    },
+
+    "update.hyprkarl": {
+      "parent": "update",
+      "order": 10,
+      "icon": "󰚰",
+      "label": "Update Hyprkarl",
+      "action": { "type": "command", "command": "hk-tui-launch hk-update-tui" }
+    },
+    "update.packages": {
+      "parent": "update",
+      "order": 20,
+      "icon": "󰏕",
+      "label": "Upgrade Packages",
+      "action": { "type": "command", "command": "hk-tui-launch hk-pkg-upgrade" }
+    },
+
+    "power.lock": {
+      "parent": "power",
+      "order": 10,
+      "icon": "",
+      "label": "Lock",
+      "action": { "type": "command", "command": "hk-lock" }
+    },
+    "power.suspend": {
+      "parent": "power",
+      "order": 20,
+      "icon": "",
+      "label": "Suspend",
+      "action": { "type": "command", "command": "hk-suspend" }
+    },
+    "power.reboot": {
+      "parent": "power",
+      "order": 30,
+      "icon": "",
+      "label": "Reboot",
+      "action": { "type": "command", "command": "hk-reboot" }
+    },
+    "power.shutdown": {
+      "parent": "power",
+      "order": 40,
+      "icon": "",
+      "label": "Shutdown",
+      "action": { "type": "command", "command": "hk-shutdown" }
+    }
+  }
+}

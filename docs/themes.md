@@ -74,9 +74,10 @@ A full theme in this repo includes:
   provide universal padding along and across top/bottom bar widgets;
   `trayMainPaddingOffset` adjusts the tray's main-axis inset with a zero floor,
   while `controlPadding` belongs to panel internals. `barMinThickness` is only a
-  floor; the tallest naturally padded widget sets a shared island height. All
-  Quickshell surface colors and interaction states must come from this semantic
-  theme data. See
+  floor; the tallest naturally padded widget sets a shared island height.
+  `menuWidth` and `menuScrim` control the shell-native command menu's width and
+  full-output backdrop. All Quickshell surface colors and interaction states
+  must come from this semantic theme data. See
   [Customizing the Bar](customizing-bar.md#change-the-appearance) for the
   geometry schema.
 - `rofi.rasi`

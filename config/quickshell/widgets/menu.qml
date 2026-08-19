@@ -1,4 +1,5 @@
 import "../components"
+import "../features/menu"
 
 ShellButton {
   required property string widgetId
@@ -6,5 +7,9 @@ ShellButton {
   required property var systemState
 
   text: config.icon
-  primaryCommand: config.command
+  tooltip: "Main menu"
+  onPrimary: () => {
+    panelHost.close()
+    MenuState.toggleForScreen(barWindow.screen.name, MenuState.rootMenu)
+  }
 }

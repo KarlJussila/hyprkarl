@@ -21,6 +21,27 @@ explicit widget-ID operations. See
 [`docs/shell-configuration.md`](../docs/shell-configuration.md) for the schema
 and update contract.
 
+The Quickshell command menu uses `menu.json` here when it exists. It is also a
+sparse versioned override; menu and entry objects merge by stable ID. For
+example:
+
+```json
+{
+  "version": 1,
+  "entries": {
+    "main.launch": {
+      "label": "Applications"
+    },
+    "main.uninstall": {
+      "enabled": false
+    }
+  }
+}
+```
+
+See [`docs/menu-configuration.md`](../docs/menu-configuration.md) for the menu
+schema, adding entries and submenus, and direct menu commands.
+
 ## Hyprland
 
 Shipped Hyprland behavior lives under `defaults/hypr/`. To add or override

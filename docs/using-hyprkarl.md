@@ -29,8 +29,14 @@ Its top-level sections are:
 - `Power`
   Lock, suspend, reboot, and shutdown actions
 
-The menus can also be run directly through the `hk-menu-*` commands in
-`bin/`.
+The static hierarchy is a Quickshell surface. Escape, Left, or Backspace goes
+to the parent menu and closes the root; clicking outside also closes it. The
+menus can also be opened directly through the `hk-menu-*` commands in `bin/`
+or `hk-shell menu open <menu-id>`.
+
+The shipped hierarchy lives in `defaults/menu.json`. Add, reorder, rename, or
+hide entries without editing that default by creating `user/menu.json`; see
+[Menu Configuration](menu-configuration.md).
 
 ## Common Keybindings
 
@@ -169,7 +175,8 @@ Common utility commands include:
 - `hk-nightlight`
 - `hk-caffeine`
 - `hk-playerctl`
-- `hk-shell start|stop|restart|status|logs` for the Quickshell bar
+- `hk-shell start|stop|restart|status|logs` for Quickshell lifecycle and logs
+- `hk-shell menu` for direct command-menu control
 - `hk-audio-restart`
 - `hk-wifi-restart`
 

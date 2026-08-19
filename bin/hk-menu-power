@@ -1,27 +1,5 @@
 #!/bin/bash
 # hk-menu-power
-# Power Menu
+# Toggle the Quickshell power menu.
 
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-LOCK=" Lock"
-SUSPEND=" Suspend"
-REBOOT=" Reboot"
-SHUTDOWN=" Shutdown"
-
-CHOICE=$(echo -e "$LOCK\n$SUSPEND\n$REBOOT\n$SHUTDOWN" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Power Menu" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$LOCK")     hk-lock ;;
-    "$SUSPEND")  hk-suspend ;;
-    "$REBOOT")   hk-reboot ;;
-    "$SHUTDOWN") hk-shutdown ;;
-    "")          exit 1 ;;
-esac
-
-exit 0
+exec hk-shell menu toggle power

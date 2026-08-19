@@ -107,6 +107,8 @@ The full manual lives under `docs/`.
   Bar aesthetic, independent feature panels, and product direction
 - [docs/shell-configuration.md](docs/shell-configuration.md)
   Shell JSON, extension lanes, and runtime-state ownership
+- [docs/menu-configuration.md](docs/menu-configuration.md)
+  Shell-native menu entries, user overrides, and direct menu commands
 
 ## Themes
 

@@ -135,6 +135,10 @@ and network use feature singletons for adapter-global discovery/scan
 ownership; clock uses one application-wide current-time owner. See
 `config/quickshell/AGENTS.md` before changing the shell. Use `hk-shell` to
 start, stop, restart, inspect, or read logs from the production bar.
+The same shell renders the static command hierarchy from `defaults/menu.json`
+plus the optional deep-merged `user/menu.json`. Menu entries use stable IDs;
+the established static `hk-menu-*` commands are IPC wrappers while focused
+searchable selectors remain dedicated commands.
 
 ### `hk-*` Commands
 

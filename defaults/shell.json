@@ -8,8 +8,7 @@
         {
           "id": "menu",
           "kind": "menu",
-          "icon": "",
-          "command": "hk-menu"
+          "icon": ""
         },
         {
           "id": "workspaces",

@@ -23,8 +23,12 @@ noun-first form reads naturally: `hk-show-done`, `hk-open-with`,
 `hk-suggest-reboot`, `hk-notify-window-class`. Don't add new exceptions
 without good reason.
 
-`hk-menu-*` commands form the rofi menu tree. Membership is determined by UI
-pattern (a menu-like interface), not strictly by use of rofi.
+Static menu navigation is defined in `defaults/menu.json` and rendered by
+Quickshell. `hk-menu`, `hk-menu-config`, `hk-menu-defaults`, `hk-menu-install`,
+`hk-menu-uninstall`, `hk-menu-utils`, `hk-menu-update`, and `hk-menu-power` are
+thin public wrappers around `hk-shell menu`; do not rebuild hierarchy in those
+scripts. Other `hk-menu-*` commands remain dedicated searchable or interactive
+surfaces and may continue using Rofi.
 
 ## Style
 
@@ -34,9 +38,9 @@ indent, `gum log` for user-facing output in interactive commands.
 `$HYPRKARL_PATH` is guaranteed by the session environment — no fallbacks
 outside `lib/update.sh` and the setup scripts, which must run from a TTY.
 
-Several scripts embed Nerd Font glyphs in menu labels (rofi entries). These
-private-use-area characters are easy to drop silently when rewriting a whole
-file — prefer targeted edits to full-file rewrites in the `hk-menu-*` scripts.
+Several scripts and `defaults/menu.json` embed Nerd Font glyphs in labels.
+These private-use-area characters are easy to drop silently when rewriting a
+whole file; prefer targeted edits.
 
 `hk-update` treats `config/`, `applications/`, `defaults/`, and `themes/` as
 upstream-owned configuration. Files under `user/` are review-only: update

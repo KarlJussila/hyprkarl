@@ -1,27 +1,5 @@
 #!/bin/bash
 # hk-menu-defaults
-# Menu for setting default applications
+# Open the Quickshell defaults menu.
 
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-TERMINAL=" Terminal"
-EDITOR=" Editor"
-SHELL=" Shell"
-
-relaunch_menu() { exec "$0"; }
-
-CHOICE=$(echo -e "$TERMINAL\n$EDITOR\n$SHELL" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Defaults" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$TERMINAL") hk-menu-terminal || relaunch_menu ;;
-    "$EDITOR")   hk-menu-editor || relaunch_menu ;;
-    "$SHELL")    hk-menu-shell || relaunch_menu ;;
-    "")          exit 1 ;;
-esac
-
-exit 0
+exec hk-shell menu open defaults

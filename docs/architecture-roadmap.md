@@ -129,6 +129,11 @@ logical corner shapes, selective borders, and screen/outer/content margins
 without making individual widgets own surface geometry.
 Bar content height is resolved once from the tallest natural widget, subject
 to a theme minimum, then shared by all three islands and the exclusive zone.
+The old static Rofi menu tree has also been replaced directly by a
+shell-native Quickshell surface. `defaults/menu.json` owns built-in navigation,
+`user/menu.json` deep-merges additions and overrides by stable entry ID, and
+the old static `hk-menu-*` names now route through the shell's menu IPC.
+Specialized searchable selectors remain dedicated commands.
 
 ## Constraints and Non-Goals
 
@@ -171,7 +176,7 @@ Hyprkarl checkout
 └── user/                     reserved for the owner's configuration
     ├── hypr/
     ├── shell.json
-    ├── menu.jsonc
+    ├── menu.json
     ├── hooks/
     ├── quickshell/modules/
     └── themes/
@@ -189,8 +194,8 @@ explicit rule:
 - Quickshell recursively merges ordinary objects from `user/shell.json` over
   its shipped defaults, replaces arrays as complete ordered values, then
   applies explicit widget-ID layout operations.
-- Menu entries are merged by stable entry ID from defaults and
-  `user/menu.jsonc`.
+- Menu entries are merged by stable entry ID from `defaults/menu.json` and
+  `user/menu.json`.
 - Hooks run scripts from the matching `user/hooks/<event>.d/` directory.
 - User Quickshell modules are loaded only when referenced by `user/shell.json`.
 - A user theme may be selected independently or overlay a built-in theme with
@@ -237,8 +242,9 @@ menus, lock screens, and other shell surfaces.
    - bar restart and failure reporting have an `hk-*` entry point.
 7. Keep the implemented `hk-shell` lifecycle boundary limited to `start`,
    `stop`, `restart`, `status`, and `logs` unless a real interaction requires
-   another action. Keep its Quickshell implementation details out of
-   user-facing keybindings.
+   another action. The shell-native command menu is that first exception and
+   uses `hk-shell menu`; keep lower-level Quickshell details out of user-facing
+   keybindings.
 8. Change Hyprland autostart from AGS to Quickshell only after the replacement
    passes the cutover checks.
 9. Remove AGS packages, startup, commands, theme files, and documentation in
@@ -380,8 +386,9 @@ compatibility surface. Command and user-QML extension lanes remain future work.
 
 ## Workstream 3: Establish Upstream Defaults and User Overrides
 
-Status: partially complete. The Hyprland ownership split and ownership-aware
-update review are complete; data-defined menus and lifecycle hooks remain.
+Status: partially complete. The Hyprland ownership split, ownership-aware
+update review, and data-defined shell-native menus are complete; lifecycle
+hooks remain.
 
 ### Hyprland
 
@@ -410,20 +417,20 @@ separate changes.
 
 ### Menus
 
-Replace the need to edit numerous `hk-menu-*` branches for ordinary additions
-with data-defined entries:
+Implemented. Static navigation moved directly to Quickshell without an
+intermediate Rofi renderer:
 
-- one shipped menu definition owns built-in hierarchy, labels, icons, and
-  actions;
-- `user/menu.jsonc` adds or replaces entries by stable dotted ID;
-- a thin renderer may continue using rofi initially;
-- shell integration can replace the renderer later without changing the menu
-  data contract;
-- runtime `when` or checked state should be added only for entries that need
-  it, and evaluations should be batched if startup latency becomes measurable.
+- `defaults/menu.json` owns built-in hierarchy, labels, icons, and actions;
+- `user/menu.json` adds, replaces, or disables entries by stable dotted ID;
+- one per-screen overlay renders on the focused output with exclusive keyboard
+  focus, history navigation, and outside-click dismissal;
+- the bar, Hyprland bindings, and established static `hk-menu-*` commands all
+  use the same in-process state through the shell's IPC boundary;
+- specialized selectors remain dedicated Rofi or terminal commands where
+  search and richer interaction make that a better fit.
 
-Do not migrate commands whose interaction is better expressed as a dedicated
-script. Menu data should name actions, not absorb their implementation.
+Runtime `when` or checked state should be added only for entries that need it,
+and evaluations should be batched if startup latency becomes measurable.
 
 ### Hooks
 
@@ -525,15 +532,16 @@ after building only the first panel.
 
 ### Candidate Migration Order
 
-Migrate one surface at a time, only when its replacement can delete the old
+The main menu has now met this rule: its data contract and Quickshell renderer
+landed together and deleted the static Rofi navigation path. Migrate the
+remaining surfaces one at a time, only when a replacement can delete the old
 process or integration path:
 
 1. OSD, because it shares audio/brightness state and has a narrow interface.
 2. Notifications, because a native service can share theme and monitor state.
-3. Main menu, once the data-defined menu contract is stable.
-4. Lock screen and polkit only after the installed Quickshell service APIs are
+3. Lock screen and polkit only after the installed Quickshell service APIs are
    verified against the pinned release.
-5. Clipboard, emoji, and image-selection overlays as independent later
+4. Clipboard, emoji, and image-selection overlays as independent later
    features.
 
 This order is not a feature commitment. Each migration needs its own behavior
@@ -548,7 +556,7 @@ for example:
 
 ```text
 hk-shell osd volume 42
-hk-shell menu toggle
+hk-shell menu toggle main
 hk-shell notifications dismiss-all
 ```
 
@@ -697,8 +705,8 @@ branch. Deliver them as reviewable vertical changes:
 5. **Introduce `user/` and split Hyprland defaults from overrides.** Complete.
    The stable bootstrap preserves shipped behavior and loads optional user
    modules afterward; update review reports both ownership classes separately.
-6. **Convert menus to data and add narrow lifecycle hooks.** Keep rofi as the
-   renderer until a shell-native menu is independently ready.
+6. **Convert menus to data and add narrow lifecycle hooks.** Menu conversion
+   is complete with a direct Quickshell renderer; lifecycle hooks remain.
 7. **Move runtime theme state and adopt palette-first rendering.** Coordinate
    this with the theme-generator repository.
 8. **Migrate shell-native surfaces individually.** Start with OSD; require each
@@ -725,7 +733,9 @@ small, authoritative signal rather than a broad testing framework.
 - **Configuration:** parse and schema fixtures for default, user, missing,
   malformed, and unsupported-version files; no tests that antagonistically
   call internal functions.
-- **Menus:** pure data merge/search tests plus one real renderer invocation.
+- **Menus:** shipped JSON parsing, sparse live-merge and removal exercise,
+  invalid-ID IPC behavior, and pointer/keyboard walkthrough of the real
+  renderer.
 - **Hooks:** one end-to-end public action per event, with success and reachable
   script-failure behavior.
 - **Themes:** render comparison for every built-in theme, atomic-failure test,
@@ -743,12 +753,10 @@ small design changes before dependent work begins:
 
 1. How Quickshell package updates are admitted after the initial 0.3.0-2.1 and
    Qt 6.11.1 baseline.
-2. Whether the menu's first data-driven renderer remains rofi or lands with a
-   shell-native menu already ready for cutover.
-3. Whether the companion theme generator is invoked as an external sibling,
+2. Whether the companion theme generator is invoked as an external sibling,
    installed tool, submodule, or vendored library. Prefer the option with one
    clear owner and reproducible versions.
-4. Which integration owns display discovery, live changes, persistence, and
+3. Which integration owns display discovery, live changes, persistence, and
    recovery before the planned display feature panel is implemented.
 
 Questions such as plugin marketplaces, compatibility with arbitrary internal

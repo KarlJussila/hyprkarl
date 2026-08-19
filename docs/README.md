@@ -22,6 +22,8 @@ repo checked out at `~/.local/share/hyprkarl/`.
   feature-panel direction.
 - Read [Shell Configuration](shell-configuration.md) for the public JSON and
   runtime-state ownership contracts.
+- Read [Menu Configuration](menu-configuration.md) to add, reorder, rename, or
+  hide entries in the shell-native command menu.
 
 ## Common Tasks
 
@@ -35,6 +37,8 @@ repo checked out at `~/.local/share/hyprkarl/`.
   [Using Hyprkarl](using-hyprkarl.md#defaults-terminal-editor-shell)
 - Add a command, menu action, keybinding, or theme-aware config:
   [Extending Hyprkarl](extending-hyprkarl.md)
+- Customize the command menu:
+  [Menu Configuration](menu-configuration.md)
 - Look up the main `hk-*` commands:
   [Command Reference](commands.md)
 - Troubleshooting issues:
@@ -56,3 +60,4 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - [Architecture Roadmap](architecture-roadmap.md)
 - [Shell Product Brief](shell-product-brief.md)
 - [Shell Configuration](shell-configuration.md)
+- [Menu Configuration](menu-configuration.md)

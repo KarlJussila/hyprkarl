@@ -21,6 +21,14 @@ the instance, so `hk-shell restart` cannot race a process that is still
 shutting down. `hk-shell logs` reads the newest instance and accepts native
 `qs log` options such as `--follow` and `--tail 100`.
 
+The command menu uses the same running instance:
+
+```bash
+hk-shell menu toggle main
+hk-shell menu open utilities
+hk-shell menu close
+```
+
 Validate all QML files without launching the bar:
 
 ```bash
@@ -61,6 +69,13 @@ to the shipped default, and a rejected live edit leaves the last valid layout
 running with an actionable log message. The current bar implements built-in
 widget kinds; the planned command and user-QML extension lanes have not landed
 yet.
+
+The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
+`user/menu.json` adds or overrides menus and entries by stable ID. Ordinary
+objects recursively merge, `enabled: false` hides an entry, valid changes
+apply live, and invalid changes retain the last valid menu. Menu appearance
+uses the active theme's panel vocabulary plus `menuScrim` and `menuWidth`. See
+`docs/menu-configuration.md` for the schema and examples.
 
 Themes own appearance through `themes/<theme>/quickshell.json`. `Theme.qml`
 watches `config/hyprkarl/current/theme.name`, then reads the selected theme
@@ -109,6 +124,8 @@ will accompany vertical-bar support rather than being exposed speculatively.
 - `widgets/*.qml` provide compact status and panel entry points.
 - `features/` owns feature-specific panel state and composition. Audio,
   network, Bluetooth, power, and clock/calendar all use this boundary.
+- `features/menu/` owns menu configuration, navigation state, IPC, and the
+  per-screen overlay.
 - `components/` contains shared buttons, tooltips, and panel controls.
 - `state/SystemState.qml` owns the one polling process used by CPU, GPU, RAM,
   and recording widgets.
@@ -118,6 +135,10 @@ multiple widgets genuinely use the same interaction or visual structure.
 
 ## Current interactions
 
+- The bar menu button, `SUPER + ALT + SPACE`, and `hk-menu` toggle the
+  shell-native main menu on the focused output. `SUPER + ESCAPE` opens its
+  power section. Keyboard navigation supports arrows or H/J/K/L, Home/End,
+  Enter/Space, and Escape/Backspace; clicking outside dismisses the menu.
 - Left-click opens feature panels or performs a widget's primary action.
 - Right-click runs the configured secondary launcher.
 - Middle-click is reserved for an explicitly configured tertiary action.

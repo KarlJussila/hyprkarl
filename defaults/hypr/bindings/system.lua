@@ -1,9 +1,9 @@
 -- System controls: menus, notifications, hardware panels, screenshots, power.
 
 -- Menus
-hl.bind("SUPER + ALT + SPACE", hl.dsp.exec_cmd("hk-menu || pkill rofi"), { description = "Main menu" })
+hl.bind("SUPER + ALT + SPACE", hl.dsp.exec_cmd("hk-menu"), { description = "Main menu" })
 hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("hk-menu-launcher || pkill rofi"), { description = "Launch apps" })
-hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("hk-menu-power || pkill rofi"), { description = "Power menu" })
+hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("hk-menu-power"), { description = "Power menu" })
 hl.bind("SUPER + K", hl.dsp.exec_cmd("hk-menu-keybindings || pkill rofi"), { description = "View keybinds" })
 hl.bind("SUPER + CTRL + C", hl.dsp.exec_cmd("hk-menu-calculator || pkill rofi"), { description = "Calculator" })
 

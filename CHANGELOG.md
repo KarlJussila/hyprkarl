@@ -23,6 +23,8 @@ surfaces) — they are called out explicitly.
 - Enabled Quickshell's required `QApplication` mode so system-tray items can
   display their native menus; documented the left, middle, and right-click
   interaction contract.
+- Kept an open empty system tray fully collapsed while preserving its state so
+  newly appearing items reveal automatically.
 - Breaking: removed forwarding-only `hk-menu-*` commands. Custom bindings and
   scripts should call `hk-shell menu open <menu-id>` or
   `hk-shell menu toggle <menu-id>` directly. `hk-menu-keybindings --print` is

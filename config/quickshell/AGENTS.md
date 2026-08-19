@@ -159,6 +159,9 @@ top and bottom bars. Universal host padding supplies the outer inset for the
 workspace row. The tray applies `trayMainPaddingOffset` to its outer host inset
 and reuses the unmodified universal main-axis value between its internal
 divider and item row. Do not turn either into item-to-item spacing.
+The tray's open state is independent from item availability. An open empty tray
+reveals no panel or divider; when its first item appears, the reactive reveal
+width expands without requiring another trigger click.
 The root `shell.qml` must retain `//@ pragma UseQApplication`: Quickshell's
 installed platform-menu implementation requires `QApplication` for tray item
 menus. Tray delegates send primary activation on left click, secondary

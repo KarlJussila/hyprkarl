@@ -67,7 +67,8 @@ from Hyprland.
 Expand the tray from its chevron to reveal StatusNotifier items. Left click
 activates an item, middle click invokes its secondary action, and right click
 opens its native menu. An item that only provides a menu opens it on left click
-too.
+too. Opening an empty tray only flips the chevron; it expands automatically if
+an item appears while it remains open.
 
 ## Themes
 

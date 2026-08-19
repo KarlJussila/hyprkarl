@@ -103,7 +103,7 @@ Item {
 
     x: root.contentX + (root.towardEnd ? trigger.width : 0)
     y: 0
-    width: root.expanded
+    width: root.expanded && trayRow.implicitWidth > 0
       ? trayRow.implicitWidth + innerPadding + root.theme.borderWidth
       : 0
     height: root.height

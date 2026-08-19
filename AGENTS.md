@@ -117,7 +117,9 @@ behavior. Island corner shapes, selective borders, and
 screen/outer/content margins are theme data rendered once by
 `layout/IslandSurface.qml`. Widgets report natural heights, the bar resolves
 the tallest one against the theme minimum, and all islands receive that shared
-height. `Theme.qml` watches the canonical
+height. `WidgetHost.qml` applies universal `horizontalWidgetPadding.main` and
+`.cross` values along and across every top/bottom bar widget; panel internals
+use the separate `controlPadding` token. `Theme.qml` watches the canonical
 `current/theme.name` selector and
 then reads the selected theme file directly so replacing the active-theme
 symlink cannot strand its file watcher on the previous target. Each bar owns

@@ -14,7 +14,7 @@ Item {
   required property var systemState
   required property var panelHost
 
-  implicitWidth: workspaceRow.implicitWidth + theme.itemGroupPadding * 2
+  implicitWidth: workspaceRow.implicitWidth
   implicitHeight: workspaceRow.implicitHeight
 
   component WorkspaceButton: Item {
@@ -29,7 +29,7 @@ Item {
 
     visible: shown
     implicitWidth: shown ? content.implicitWidth : 0
-    implicitHeight: shown ? content.implicitHeight + root.theme.widgetVerticalPadding * 2 : 0
+    implicitHeight: shown ? content.implicitHeight : 0
     height: root.height
 
     Row {
@@ -76,7 +76,7 @@ Item {
 
   Row {
     id: workspaceRow
-    x: root.theme.itemGroupPadding
+    x: (parent.width - width) / 2
     width: implicitWidth
     height: parent.height
 

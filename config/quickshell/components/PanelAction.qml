@@ -9,7 +9,7 @@ Item {
   property var action: null
 
   activeFocusOnTab: enabled && action !== null
-  implicitWidth: parent?.width ?? label.implicitWidth + root.theme.widgetPadding * 2
+  implicitWidth: parent?.width ?? label.implicitWidth + root.theme.controlPadding * 2
   implicitHeight: 34
 
   Rectangle {

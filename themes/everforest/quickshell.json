@@ -36,9 +36,11 @@
   "borderWidth": 2,
   "showDividers": true,
   "barMinThickness": 22,
-  "widgetPadding": 8,
-  "widgetVerticalPadding": 3,
-  "itemGroupPadding": 6,
+  "horizontalWidgetPadding": {
+    "main": 6,
+    "cross": 3
+  },
+  "controlPadding": 8,
   "tooltipRadius": 6,
   "panelGap": 0,
   "panelWidth": 360,

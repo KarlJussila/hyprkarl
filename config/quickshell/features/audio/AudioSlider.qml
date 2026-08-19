@@ -25,7 +25,7 @@ Item {
 
     anchors.left: parent.left
     anchors.right: valueLabel.left
-    anchors.rightMargin: root.theme.widgetPadding
+    anchors.rightMargin: root.theme.controlPadding
     anchors.verticalCenter: parent.verticalCenter
     height: 6
     radius: 3

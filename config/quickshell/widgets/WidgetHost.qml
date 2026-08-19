@@ -16,8 +16,12 @@ Item {
   readonly property int dividerExtent: showDivider && loadedItem?.visible ? theme.borderWidth : 0
   property bool initialized: false
 
-  implicitWidth: loadedItem?.visible ? loader.implicitWidth + dividerExtent : 0
-  implicitHeight: loadedItem?.visible ? loader.implicitHeight : 0
+  implicitWidth: loadedItem?.visible
+    ? loader.implicitWidth + dividerExtent + theme.widgetMainPadding * 2
+    : 0
+  implicitHeight: loadedItem?.visible
+    ? loader.implicitHeight + theme.widgetCrossPadding * 2
+    : 0
   width: implicitWidth
   height: parent.height
 
@@ -31,6 +35,7 @@ Item {
   Loader {
     id: loader
     x: root.dividerExtent
+    width: implicitWidth + root.theme.widgetMainPadding * 2
     height: parent.height
   }
 

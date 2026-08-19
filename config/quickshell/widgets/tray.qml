@@ -16,6 +16,7 @@ Item {
   required property var panelHost
 
   readonly property bool towardEnd: config.direction !== "start"
+  readonly property real contentX: (width - implicitWidth) / 2
   property bool expanded: false
 
   implicitWidth: trigger.implicitWidth + trayPanel.width
@@ -25,7 +26,7 @@ Item {
     required property var trayItem
 
     implicitWidth: root.theme.barMinThickness
-    implicitHeight: 15 + root.theme.widgetVerticalPadding * 2
+    implicitHeight: 15
     height: root.height
 
     IconImage {
@@ -49,7 +50,7 @@ Item {
 
   component TrayTrigger: Item {
     implicitWidth: 18
-    implicitHeight: 14 + root.theme.widgetVerticalPadding * 2
+    implicitHeight: 14
     height: root.height
 
     Canvas {
@@ -95,14 +96,14 @@ Item {
   Item {
     id: trayPanel
 
-    readonly property real outerPadding: trayRow.implicitWidth > 0
-      ? root.theme.itemGroupPadding
+    readonly property real innerPadding: trayRow.implicitWidth > 0
+      ? root.theme.widgetMainPadding
       : 0
 
-    x: root.towardEnd ? trigger.width : 0
+    x: root.contentX + (root.towardEnd ? trigger.width : 0)
     y: 0
     width: root.expanded
-      ? trayRow.implicitWidth + outerPadding * 2 + root.theme.borderWidth
+      ? trayRow.implicitWidth + innerPadding + root.theme.borderWidth
       : 0
     height: root.height
     clip: true
@@ -126,8 +127,8 @@ Item {
       id: trayRow
 
       x: root.towardEnd
-        ? root.theme.borderWidth + trayPanel.outerPadding
-        : trayPanel.width - root.theme.borderWidth - trayPanel.outerPadding - width
+        ? root.theme.borderWidth + trayPanel.innerPadding
+        : trayPanel.width - root.theme.borderWidth - trayPanel.innerPadding - width
 
       Repeater {
         model: SystemTray.items
@@ -142,7 +143,7 @@ Item {
   TrayTrigger {
     id: trigger
 
-    x: !root.towardEnd ? trayPanel.width : 0
+    x: root.contentX + (!root.towardEnd ? trayPanel.width : 0)
     y: 0
   }
 }

@@ -15,7 +15,6 @@ ShellButton {
   readonly property int connectedCount: BluetoothState.devices.filter(device => device.connected).length
   readonly property bool panelOpen: panelHost.activeId === widgetId
 
-  implicitWidth: theme.widgetPadding * 2 + 8
   text: !adapter?.enabled ? "󰂲" : connectedCount > 0 ? "󰂱" : "󰂯"
   tooltip: !adapter?.enabled ? "Bluetooth off" : connectedCount > 0 ? `${connectedCount} Bluetooth device${connectedCount === 1 ? "" : "s"} connected` : "Bluetooth on"
   tooltipSuppressed: panelOpen

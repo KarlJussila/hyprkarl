@@ -27,7 +27,7 @@ Item {
     id: iconLabel
 
     anchors.left: parent.left
-    anchors.leftMargin: root.theme.widgetPadding
+    anchors.leftMargin: root.theme.controlPadding
     anchors.verticalCenter: rowArea.verticalCenter
     width: 22
     visible: root.icon.length > 0
@@ -48,9 +48,9 @@ Item {
 
     Text {
       anchors.left: parent.left
-      anchors.leftMargin: root.theme.widgetPadding + (root.icon.length > 0 ? 28 : 0)
+      anchors.leftMargin: root.theme.controlPadding + (root.icon.length > 0 ? 28 : 0)
       anchors.right: detailLabel.left
-      anchors.rightMargin: root.theme.widgetPadding
+      anchors.rightMargin: root.theme.controlPadding
       anchors.verticalCenter: parent.verticalCenter
       text: root.title
       color: root.enabled ? root.theme.text : root.theme.border
@@ -64,7 +64,7 @@ Item {
       id: detailLabel
 
       anchors.right: parent.right
-      anchors.rightMargin: root.theme.widgetPadding
+      anchors.rightMargin: root.theme.controlPadding
       anchors.verticalCenter: parent.verticalCenter
       width: Math.min(implicitWidth, parent.width * 0.46)
       text: root.busy ? "…" : root.detail
@@ -79,9 +79,9 @@ Item {
 
   Text {
     anchors.left: parent.left
-    anchors.leftMargin: root.theme.widgetPadding + (root.icon.length > 0 ? 28 : 0)
+    anchors.leftMargin: root.theme.controlPadding + (root.icon.length > 0 ? 28 : 0)
     anchors.right: parent.right
-    anchors.rightMargin: root.theme.widgetPadding
+    anchors.rightMargin: root.theme.controlPadding
     anchors.bottom: parent.bottom
     height: 20
     visible: root.error.length > 0

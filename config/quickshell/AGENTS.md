@@ -46,16 +46,25 @@ vocabulary for top and bottom bars. `curve` is the concave join supported at a
 The bar window and exclusive zone include screen- and content-side margins,
 while panel and tooltip anchors also account for the content margin.
 
-Bar height is intrinsic. Widgets report natural heights including
-`widgetVerticalPadding`; `barMinThickness` is only a floor. `BarLayout.qml`
-owns the maximum across all three islands and applies that resolved height to
-each island. Do not restore fixed `barThickness` bindings in widgets or let
-islands resolve their final heights independently.
+Bar height is intrinsic. `WidgetHost.qml` adds the theme's universal
+`horizontalWidgetPadding.cross` to each widget's natural height;
+`barMinThickness` is only a floor. `BarLayout.qml` owns the maximum across all
+three islands and applies that resolved height to each island. Do not restore
+fixed `barThickness` bindings in widgets or let islands resolve their final
+heights independently.
 
 Version 1 deliberately accepts only top and bottom bars. Layout and widget
 code is horizontal until a vertical design exists; keep edge-dependent popup
 placement at the panel-window boundary so later vertical support does not need
 a new surface ownership model.
+
+`horizontalWidgetPadding` names the horizontal-bar design, not coordinate
+axes. Its `main` value pads along a top/bottom bar and its `cross` value pads
+across the bar's thickness. `WidgetHost.qml` owns both values so every built-in
+and future widget gets the same outer padding and clickable extent. Do not add
+padding to individual widgets. Add a separate vertical-bar padding object only
+when vertical bars are supported. Panel internals use `controlPadding`; they
+are not bar-widget padding.
 
 Themes own the entire visual surface, including colors, typography, bar
 minimum thickness, spacing, radii, borders, dividers, and the panel gap. Shell
@@ -111,9 +120,9 @@ a second date owner.
 The three performance widgets share `ExpandableReadout`; the tray owns the
 same clipped horizontal expansion for its dynamic item list. Its divider lives
 inside that clipped panel so it reveals between the fixed trigger and items on
-top and bottom bars. The tray-item row and workspace row use
-`itemGroupPadding` only at their outer boundaries; do not turn that into
-item-to-item spacing.
+top and bottom bars. The universal host padding provides the outer inset for
+the tray and workspace rows; the tray reuses the main-axis value between its
+internal divider and item row. Do not turn it into item-to-item spacing.
 
 Component and feature directories have checked-in `qmldir` files where runtime
 loading or singleton registration requires them. Widget files are loaded from

@@ -78,11 +78,17 @@ the corresponding four edges. `islandRadius`, `cornerCurveSize`, and
 `cornerCurveRadius` size those shapes. See `docs/customizing-bar.md` for a
 complete example.
 
-`itemGroupPadding` is the outer-only horizontal inset for the workspace and
-tray-item rows. It does not add spacing between their adjacent items.
-`widgetVerticalPadding` contributes to each widget's natural height, while
+`horizontalWidgetPadding.main` and `.cross` are universal outer padding for
+every widget on a top or bottom bar. `main` follows the bar and `cross` follows
+its thickness; “horizontal” names the bar orientation, not a coordinate axis.
+The host applies both values, so workspace and tray rows receive the same
+outer inset without adding space between adjacent items. Panel internals use
+the separate `controlPadding` value.
+
+The cross-axis padding contributes to each widget's natural height, while
 `barMinThickness` only supplies a floor. The bar resolves the tallest widget
-and gives every island that same content height.
+and gives every island that same content height. A vertical-bar padding object
+will accompany vertical-bar support rather than being exposed speculatively.
 
 ## Structure
 

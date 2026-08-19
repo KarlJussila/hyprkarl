@@ -23,7 +23,7 @@ Rectangle {
     id: indicatorArea
 
     anchors.left: parent.left
-    anchors.leftMargin: root.theme.widgetPadding * 2
+    anchors.leftMargin: root.theme.controlPadding * 2
     anchors.top: parent.top
     anchors.topMargin: 16
     width: 38
@@ -46,7 +46,7 @@ Rectangle {
     id: percentageLabel
 
     anchors.left: indicatorArea.right
-    anchors.leftMargin: root.theme.widgetPadding
+    anchors.leftMargin: root.theme.controlPadding
     anchors.verticalCenter: indicatorArea.verticalCenter
     text: `${Math.round((root.battery?.percentage ?? 0) * 100)}%`
     color: root.theme.text
@@ -58,9 +58,9 @@ Rectangle {
 
   Text {
     anchors.left: percentageLabel.right
-    anchors.leftMargin: root.theme.widgetPadding
+    anchors.leftMargin: root.theme.controlPadding
     anchors.right: parent.right
-    anchors.rightMargin: root.theme.widgetPadding * 2
+    anchors.rightMargin: root.theme.controlPadding * 2
     anchors.verticalCenter: indicatorArea.verticalCenter
     text: root.estimate.length > 0 ? `${root.status} · ${root.estimate}` : root.status
     color: root.theme.text
@@ -73,9 +73,9 @@ Rectangle {
 
   Text {
     anchors.left: parent.left
-    anchors.leftMargin: root.theme.widgetPadding * 2
+    anchors.leftMargin: root.theme.controlPadding * 2
     anchors.right: parent.right
-    anchors.rightMargin: root.theme.widgetPadding * 2
+    anchors.rightMargin: root.theme.controlPadding * 2
     anchors.bottom: parent.bottom
     anchors.bottomMargin: 10
     visible: root.metrics.length > 0

@@ -24,8 +24,8 @@ Item {
   readonly property real contentWidth: contentComponent ? contentLoader.implicitWidth : label.implicitWidth
   readonly property real contentHeight: contentComponent ? contentLoader.implicitHeight : label.implicitHeight
 
-  implicitWidth: contentWidth + theme.widgetPadding * 2
-  implicitHeight: contentHeight + theme.widgetVerticalPadding * 2
+  implicitWidth: contentWidth
+  implicitHeight: contentHeight
 
   Text {
     id: label

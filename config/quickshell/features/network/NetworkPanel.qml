@@ -155,7 +155,7 @@ Item {
 
           Text {
             anchors.left: parent.left
-            anchors.leftMargin: root.theme.widgetPadding
+            anchors.leftMargin: root.theme.controlPadding
             anchors.verticalCenter: parent.verticalCenter
             visible: password.text.length === 0 && !password.activeFocus
             text: "Password"
@@ -169,7 +169,7 @@ Item {
             id: password
 
             anchors.fill: parent
-            anchors.margins: root.theme.widgetPadding
+            anchors.margins: root.theme.controlPadding
             color: root.theme.text
             font.family: root.theme.fontMono
             font.pixelSize: root.theme.fontSize

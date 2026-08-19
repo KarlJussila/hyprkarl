@@ -69,9 +69,10 @@ A full theme in this repo includes:
   and border geometry, radii, dividers, tooltip radius, panel gap,
   preferred/max panel size, and transition timing. `barMargin` controls the
   screen, outer, and content gaps; `islandCorners` and `islandBorders` control
-  the four logical island edges; `itemGroupPadding` controls the outer-only
-  inset for workspace and tray-item rows. `barMinThickness` is only a floor;
-  the tallest naturally padded widget sets a shared island height. All
+  the four logical island edges. `horizontalWidgetPadding.main` and `.cross`
+  provide universal padding along and across top/bottom bar widgets, while
+  `controlPadding` belongs to panel internals. `barMinThickness` is only a
+  floor; the tallest naturally padded widget sets a shared island height. All
   Quickshell surface colors and interaction states must come from this semantic
   theme data. See
   [Customizing the Bar](customizing-bar.md#change-the-appearance) for the

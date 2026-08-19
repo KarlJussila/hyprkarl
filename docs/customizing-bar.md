@@ -72,6 +72,10 @@ The island silhouette is theme-owned too. For example, the shipped themes use:
     "screen": 0,
     "outer": 0,
     "content": 0
+  },
+  "horizontalWidgetPadding": {
+    "main": 6,
+    "cross": 3
   }
 }
 ```
@@ -85,13 +89,18 @@ four border values to `false` makes islands borderless. The three margins move
 the bar away from the screen edge, monitor sides, or workspace respectively;
 screen and content margins are included in the reserved bar area.
 
-`itemGroupPadding` controls the horizontal inset before the first and after the
-last workspace or tray item. It deliberately does not affect item-to-item
-spacing or ordinary button padding.
+`horizontalWidgetPadding` applies to every widget on a top or bottom bar.
+`main` pads along the bar and `cross` pads across its thickness; “horizontal”
+describes the bar orientation rather than the x-axis. The shared widget host
+owns this padding, including its clickable area, so workspace and tray rows
+receive the same outer inset without gaining item-to-item spacing. Panel rows
+and actions use the separate `controlPadding` value.
 
 `barMinThickness` is the bar's minimum content height, not a forced height.
-Each widget's content plus `widgetVerticalPadding` establishes its natural
-height; the tallest widget sets one shared height for all three islands.
+Each widget's content plus the cross-axis padding establishes its natural
+height; the tallest widget sets one shared height for all three islands. A
+separate vertical-bar padding object will be introduced alongside vertical-bar
+support.
 
 ## Manage and Inspect the Bar
 

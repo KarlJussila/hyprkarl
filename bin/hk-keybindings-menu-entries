@@ -11,18 +11,14 @@ from lib.keybindings import keybinding_labels
 
 
 def main() -> int:
-    try:
-        entries = [
-            {
-                "id": "keybinding." + base64.b64encode(label.encode()).decode(),
-                "label": label,
-                "action": {"type": "dismiss"},
-            }
-            for label in keybinding_labels()
-        ]
-    except (RuntimeError, TypeError) as error:
-        print(error, file=sys.stderr)
-        return 1
+    entries = [
+        {
+            "id": "keybinding." + base64.b64encode(label.encode()).decode(),
+            "label": label,
+            "action": {"type": "dismiss"},
+        }
+        for label in keybinding_labels()
+    ]
 
     json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
     print()

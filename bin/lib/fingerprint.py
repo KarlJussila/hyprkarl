@@ -28,10 +28,7 @@ def fingerprint_label(finger: str) -> str:
 def fingerprint_is_setup() -> bool:
     if shutil.which("fprintd-list") is None:
         return False
-    try:
-        return "pam_fprintd.so" in Path("/etc/pam.d/sudo").read_text()
-    except OSError:
-        return False
+    return "pam_fprintd.so" in Path("/etc/pam.d/sudo").read_text()
 
 
 def enrolled_fingers() -> list[str]:
@@ -39,13 +36,8 @@ def enrolled_fingers() -> list[str]:
         ["fprintd-list", os.environ["USER"]],
         text=True,
         capture_output=True,
-        check=False,
+        check=True,
     )
-    if result.returncode != 0:
-        raise RuntimeError(
-            result.stderr.strip() or "could not list enrolled fingerprints"
-        )
-
     return [
         line.split(": ", 1)[1]
         for line in result.stdout.splitlines()

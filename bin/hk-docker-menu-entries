@@ -5,11 +5,8 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sys
 from pathlib import Path
-
-SERVICE_ID = re.compile(r"^[a-z0-9-]+$")
 
 
 def service_entries(action: str) -> list[dict]:
@@ -18,36 +15,30 @@ def service_entries(action: str) -> list[dict]:
     entries = []
 
     for manifest_path in sorted(service_root.glob("*/service.json")):
-        manifest = json.loads(manifest_path.read_text())
-        service_id = manifest.get("id")
-        label = manifest.get("label")
-        compose_file = manifest.get("compose_file")
-        if (
-            not isinstance(service_id, str)
-            or SERVICE_ID.fullmatch(service_id) is None
-            or service_id != manifest_path.parent.name
-            or not isinstance(label, str)
-            or not label
-            or not isinstance(compose_file, str)
-            or not compose_file
-        ):
-            raise ValueError(f"invalid Docker service menu fields in {manifest_path}")
-
-        installed = (containers_root / service_id / compose_file).is_file()
-        if action == "install" and installed:
-            continue
-        if action == "uninstall" and not installed:
-            continue
-        entries.append(
-            {
-                "id": f"docker-{action}.{service_id}",
-                "label": label,
-                "action": {
-                    "type": "command",
-                    "command": f"hk-tui-launch hk-docker {action} {service_id}",
-                },
-            }
-        )
+        try:
+            manifest = json.loads(manifest_path.read_text())
+            service_id = manifest["id"]
+            compose_file = manifest["compose_file"]
+            installed = (containers_root / service_id / compose_file).is_file()
+            if action == "install" and installed:
+                continue
+            if action == "uninstall" and not installed:
+                continue
+            entries.append(
+                {
+                    "id": f"docker-{action}.{service_id}",
+                    "label": manifest["label"],
+                    "action": {
+                        "type": "command",
+                        "command": f"hk-tui-launch hk-docker {action} {service_id}",
+                    },
+                }
+            )
+        except Exception as error:  # noqa: BLE001 - isolate authored manifests
+            print(
+                f"Skipping Docker service manifest {manifest_path}: {error}",
+                file=sys.stderr,
+            )
     return entries
 
 
@@ -56,13 +47,12 @@ def main() -> int:
         print("Usage: hk-docker-menu-entries <install|uninstall>", file=sys.stderr)
         return 1
 
-    try:
-        entries = service_entries(sys.argv[1])
-    except (OSError, json.JSONDecodeError, ValueError) as error:
-        print(error, file=sys.stderr)
-        return 1
-
-    json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+    json.dump(
+        service_entries(sys.argv[1]),
+        sys.stdout,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
     print()
     return 0
 

@@ -88,8 +88,8 @@ def main() -> int:
     mode = sys.argv[1] if len(sys.argv) == 2 else "root"
     try:
         entries = root_entries() if mode == "root" else finger_entries(mode)
-    except (OSError, RuntimeError) as error:
-        print(error, file=sys.stderr)
+    except Exception as error:  # noqa: BLE001 - public external-service boundary
+        print(f"Could not load fingerprint menu entries: {error}", file=sys.stderr)
         return 1
 
     json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))

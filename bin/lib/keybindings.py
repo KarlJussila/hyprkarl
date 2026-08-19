@@ -37,18 +37,9 @@ def live_bindings() -> list[dict]:
         ["hyprctl", "-j", "binds"],
         text=True,
         capture_output=True,
-        check=False,
+        check=True,
     )
-    if result.returncode != 0:
-        raise RuntimeError(result.stderr.strip() or "could not read Hyprland bindings")
-
-    try:
-        bindings = json.loads(result.stdout)
-    except json.JSONDecodeError as error:
-        raise RuntimeError("Hyprland returned invalid binding data") from error
-    if not isinstance(bindings, list):
-        raise TypeError("Hyprland returned invalid binding data")
-    return bindings
+    return json.loads(result.stdout)
 
 
 def binding_label(binding: dict) -> str | None:

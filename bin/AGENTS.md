@@ -33,6 +33,10 @@ do. Dynamic shell entries come from noun-owned provider commands such as
 open the shell menu themselves. Keep the open path proportional to the state
 actually needed for its rows. Generate large static catalogs directly in menu
 JSON shape rather than rebuilding them in a provider on every open.
+The Docker provider trusts Hyprkarl's authored manifest shape. It isolates each
+manifest load so one broken service is logged to stderr and skipped without
+hiding the remaining services; do not add a second manifest schema validator
+to the menu path.
 
 ## Style
 
@@ -50,6 +54,10 @@ user-facing output in interactive commands. For Python: use
 `#!/usr/bin/env python3`, a `main() -> int` entry point, and concise boundary
 errors on stderr. `bin/lib/*.sh` and `bin/lib/*.py` are both reserved for logic
 shared by multiple commands.
+Do not translate exceptions merely to catch them again one call later. When an
+external workflow needs a friendly failure, prefer one catch-all at the public
+command boundary. Catch per item only when the command can still return useful
+results from the remaining items, as the Docker menu provider does.
 `$HYPRKARL_PATH` is guaranteed by the session environment — no fallbacks
 outside `lib/update.sh` and the setup scripts, which must run from a TTY.
 

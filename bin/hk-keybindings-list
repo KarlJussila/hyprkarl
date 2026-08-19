@@ -3,17 +3,11 @@
 
 from __future__ import annotations
 
-import sys
-
 from lib.keybindings import keybinding_labels
 
 
 def main() -> int:
-    try:
-        print(*keybinding_labels(), sep="\n")
-    except (RuntimeError, TypeError) as error:
-        print(error, file=sys.stderr)
-        return 1
+    print(*keybinding_labels(), sep="\n")
     return 0
 
 

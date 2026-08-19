@@ -17,6 +17,9 @@ surfaces) — they are called out explicitly.
 - Reworked dynamic menu providers around Python's standard JSON support and
   established Python as the default for structured data and substantial text
   processing, while retaining Bash for straightforward command orchestration.
+- Simplified provider failure boundaries: trusted Hyprland data flows directly,
+  external workflows use one catch-all, and a malformed Docker manifest is
+  logged and skipped without suppressing the other services.
 - Breaking: removed forwarding-only `hk-menu-*` commands. Custom bindings and
   scripts should call `hk-shell menu open <menu-id>` or
   `hk-shell menu toggle <menu-id>` directly. `hk-menu-keybindings --print` is

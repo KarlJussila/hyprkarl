@@ -25,14 +25,10 @@ def log(level: str, message: str) -> None:
 def download_entries() -> list[dict]:
     with urlopen(CSV_URL) as response:
         rows = csv.reader(io.TextIOWrapper(response, encoding="utf-8"))
+        next(rows, None)
         entries = []
         for row in rows:
-            if len(row) < 2 or not row[1].strip():
-                continue
-            try:
-                icon = chr(int(row[1].strip(), 16))
-            except ValueError:
-                continue
+            icon = chr(int(row[1].strip(), 16))
             name = row[0]
             entries.append(
                 {
@@ -53,18 +49,12 @@ def main() -> int:
     icon_data = data_home / "hyprkarl/data/nerdfont-menu.json"
     log("info", "Downloading Nerd Font glyph data...")
 
-    try:
-        entries = download_entries()
-    except OSError as error:
-        log("error", f"Could not download Nerd Font glyph data: {error}")
-        return 1
-    if not entries:
-        log("error", "Downloaded icon menu data is empty or invalid")
-        return 1
-
-    icon_data.parent.mkdir(parents=True, exist_ok=True)
     temporary_path = None
     try:
+        entries = download_entries()
+        if not entries:
+            raise ValueError("downloaded icon menu data is empty")
+        icon_data.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.NamedTemporaryFile(
             "w",
             encoding="utf-8",
@@ -75,10 +65,10 @@ def main() -> int:
             temporary_path = Path(temporary.name)
             json.dump(entries, temporary, ensure_ascii=False, separators=(",", ":"))
         temporary_path.replace(icon_data)
-    except OSError as error:
+    except Exception as error:  # noqa: BLE001 - one atomic external workflow
         if temporary_path is not None:
             temporary_path.unlink(missing_ok=True)
-        log("error", f"Could not save Nerd Font glyph data: {error}")
+        log("error", f"Could not update Nerd Font glyph data: {error}")
         return 1
 
     log("info", f"Saved {len(entries)} icons to {icon_data}")

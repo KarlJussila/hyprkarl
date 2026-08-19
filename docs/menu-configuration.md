@@ -77,7 +77,9 @@ Sources refresh on every open and when returning to a dynamic parent, so
 filesystem, hardware, and service state do not go stale. Domain commands own
 discovery: for example, `hk-fingerprint menu-entries remove` supplies only
 enrolled fingers and `hk-docker menu-entries install` supplies only missing
-services.
+services. Docker service manifests are loaded independently; a broken shipped
+manifest is logged and skipped without preventing the other services from
+appearing.
 
 The shell runs both providers and command actions with `bash -c`, inheriting
 the session environment without starting a login shell. A dynamic destination

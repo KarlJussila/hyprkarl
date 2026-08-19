@@ -87,6 +87,10 @@ if __name__ == "__main__":
 Catch failures at real external boundaries and report concise errors to
 stderr. Let internal helpers rely on their contracts instead of wrapping every
 operation in broad exception handling.
+Prefer one exception boundary around a user-initiated external workflow over
+translating and re-catching individual exception types. Use a per-item boundary
+only when skipping one failed item lets the command return useful remaining
+results.
 
 ---
 

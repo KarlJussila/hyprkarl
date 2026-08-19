@@ -21,6 +21,7 @@ ShellButton {
       spacing: 4
 
       AudioIndicator {
+        anchors.verticalCenter: parent.verticalCenter
         volume: root.audio?.volume ?? 0
         muted: root.audio?.muted ?? false
         indicatorColor: root.theme.text
@@ -51,6 +52,7 @@ ShellButton {
       theme: root.theme
       config: root.config
       active: root.panelOpen
+      onExternalCommandRequested: command => root.launchPanelCommand(command)
     }
   }
 }

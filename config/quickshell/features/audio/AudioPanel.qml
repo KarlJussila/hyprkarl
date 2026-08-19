@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell
 import Quickshell.Services.Pipewire
 import "../../components"
 
@@ -12,6 +11,9 @@ Item {
   required property var config
   required property bool active
 
+  signal externalCommandRequested(string command)
+
+  readonly property real preferredWidth: theme.panelWidth
   readonly property var output: Pipewire.defaultAudioSink
   readonly property var input: Pipewire.defaultAudioSource
   readonly property var outputNodes: Pipewire.nodes.values.filter(node =>
@@ -117,7 +119,7 @@ Item {
       theme: root.theme
       icon: "󰒓"
       text: "Open audio settings"
-      action: () => Quickshell.execDetached(["bash", "-lc", root.config.secondaryCommand])
+      action: () => root.externalCommandRequested(root.config.secondaryCommand)
     }
   }
 }

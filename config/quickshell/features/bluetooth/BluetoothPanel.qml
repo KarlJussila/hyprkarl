@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell
 import Quickshell.Bluetooth
 import "../../components"
 
@@ -12,6 +11,9 @@ Item {
   required property var config
   required property bool active
 
+  signal externalCommandRequested(string command)
+
+  readonly property real preferredWidth: theme.panelWidth
   readonly property var adapter: BluetoothState.adapter
   readonly property var sortedDevices: BluetoothState.devices.slice().sort((left, right) => {
     return (left.name || left.deviceName || left.address).localeCompare(
@@ -147,7 +149,7 @@ Item {
       theme: root.theme
       icon: "󰒓"
       text: "Open Bluetooth settings"
-      action: () => Quickshell.execDetached(["bash", "-lc", root.config.secondaryCommand])
+      action: () => root.externalCommandRequested(root.config.secondaryCommand)
     }
   }
 }

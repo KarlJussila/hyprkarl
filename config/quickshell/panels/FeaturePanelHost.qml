@@ -94,14 +94,14 @@ Scope {
   PopupWindow {
     id: panel
 
-    readonly property Item loadedContent: contentLoader.item as Item
+    readonly property var loadedContent: contentLoader.item
     readonly property real contentHeight: loadedContent?.implicitHeight ?? 0
     readonly property real availableHeight: Math.max(0, root.barWindow.screen.height - root.barWindow.height)
 
     color: "transparent"
     grabFocus: false
     visible: root.open || root.reveal > 0
-    implicitWidth: Math.min(root.theme.panelWidth, root.barWindow.width)
+    implicitWidth: Math.min(loadedContent?.preferredWidth ?? root.theme.panelWidth, root.barWindow.width)
     implicitHeight: Math.min(
       contentHeight + root.theme.panelPadding * 2 + root.theme.borderWidth * 2,
       Math.min(root.theme.panelMaxHeight, availableHeight)

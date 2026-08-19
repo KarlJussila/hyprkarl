@@ -53,6 +53,7 @@ QtObject {
   readonly property int tooltipRadius: values.tooltipRadius ?? radius
   readonly property int panelGap: values.panelGap ?? 0
   readonly property int panelWidth: values.panelWidth ?? 360
+  readonly property int powerPanelWidth: values.powerPanelWidth ?? panelWidth
   readonly property int panelMaxHeight: values.panelMaxHeight ?? 520
   readonly property int panelPadding: values.panelPadding ?? 12
   readonly property int panelSpacing: values.panelSpacing ?? 10

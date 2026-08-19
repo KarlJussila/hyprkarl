@@ -14,6 +14,7 @@ ShellButton {
 
   readonly property var battery: UPower.displayDevice
   readonly property int percentage: Math.round((battery?.percentage ?? 0) * 100)
+  readonly property string percentageText: percentage >= 100 ? "MAX" : percentage + "%"
   readonly property bool charging: battery?.state === UPowerDeviceState.Charging
   readonly property bool panelOpen: panelHost.activeId === widgetId
 
@@ -35,7 +36,7 @@ ShellButton {
 
       Text {
         visible: root.config.showPercentage
-        text: `${root.percentage}%`
+        text: root.percentageText
         color: root.theme.text
         font.family: root.theme.fontMono
         font.pixelSize: root.theme.readoutFontSize
@@ -56,6 +57,7 @@ ShellButton {
       theme: root.theme
       config: root.config
       active: root.panelOpen
+      onExternalCommandRequested: command => root.launchPanelCommand(command)
     }
   }
 }

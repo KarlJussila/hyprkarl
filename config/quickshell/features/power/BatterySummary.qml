@@ -11,6 +11,8 @@ Rectangle {
   property string status: ""
   property string estimate: ""
   property string metrics: ""
+  readonly property int percentage: Math.round((battery?.percentage ?? 0) * 100)
+  readonly property string percentageText: percentage >= 100 ? "MAX" : percentage + "%"
 
   implicitWidth: parent?.width ?? 0
   implicitHeight: content.implicitHeight + root.theme.controlPadding * 2
@@ -18,6 +20,17 @@ Rectangle {
   border.color: theme.border
   border.width: theme.borderWidth
   radius: theme.radius
+
+  Text {
+    id: percentageMeasure
+
+    visible: false
+    text: "MAX"
+    font.family: root.theme.fontMono
+    font.pixelSize: root.theme.fontSize + 8
+    font.weight: root.theme.fontWeight
+    font.styleName: root.theme.fontStyle
+  }
 
   Column {
     id: content
@@ -38,12 +51,14 @@ Rectangle {
 
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        text: `${Math.round((root.battery?.percentage ?? 0) * 100)}%`
+        width: percentageMeasure.implicitWidth
+        text: root.percentageText
         color: root.theme.text
         font.family: root.theme.fontMono
         font.pixelSize: root.theme.fontSize + 8
         font.weight: root.theme.fontWeight
         font.styleName: root.theme.fontStyle
+        horizontalAlignment: Text.AlignHCenter
       }
 
       Text {
@@ -77,7 +92,7 @@ Rectangle {
 
         BatteryIndicator {
           anchors.centerIn: parent
-          scale: 1.8
+          nativeScale: indicatorArea.width / 18
           level: root.battery?.percentage ?? 0
           charging: root.battery?.state === UPowerDeviceState.Charging
           surfaceColor: root.theme.background

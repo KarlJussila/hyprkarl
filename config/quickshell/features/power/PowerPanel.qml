@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell
 import Quickshell.Services.UPower
 import "../../components"
 
@@ -12,7 +11,10 @@ Item {
   required property var config
   required property bool active
 
+  signal externalCommandRequested(string command)
+
   readonly property var battery: UPower.displayDevice
+  readonly property real preferredWidth: theme.powerPanelWidth
 
   implicitWidth: parent?.width ?? 0
   implicitHeight: content.implicitHeight
@@ -144,7 +146,7 @@ Item {
       theme: root.theme
       icon: "󰐥"
       text: "Power actions"
-      action: () => Quickshell.execDetached(["bash", "-lc", root.config.powerCommand])
+      action: () => root.externalCommandRequested(root.config.powerCommand)
     }
   }
 }

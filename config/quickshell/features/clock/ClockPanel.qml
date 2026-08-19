@@ -10,6 +10,7 @@ Item {
   required property var theme
   required property bool active
 
+  readonly property real preferredWidth: theme.panelWidth
   property int monthOffset: 0
   readonly property int currentYear: ClockState.now.getFullYear()
   readonly property int currentMonth: ClockState.now.getMonth()

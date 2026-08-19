@@ -27,6 +27,11 @@ Item {
   implicitWidth: contentWidth
   implicitHeight: contentHeight
 
+  function launchPanelCommand(command: string): void {
+    root.panelHost.close()
+    Quickshell.execDetached(["bash", "-lc", command])
+  }
+
   Text {
     id: label
     anchors.centerIn: parent

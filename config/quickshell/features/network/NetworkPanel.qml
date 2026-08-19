@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell
 import Quickshell.Networking
 import "../../components"
 
@@ -12,6 +11,9 @@ Item {
   required property var config
   required property bool active
 
+  signal externalCommandRequested(string command)
+
+  readonly property real preferredWidth: theme.panelWidth
   readonly property var wifiDevice: NetworkState.wifiDevice
   readonly property var sortedNetworks: NetworkState.networks.slice().sort((left, right) => {
     if (left.connected !== right.connected) return left.connected ? -1 : 1
@@ -196,7 +198,7 @@ Item {
       theme: root.theme
       icon: "󰒓"
       text: "Open network settings"
-      action: () => Quickshell.execDetached(["bash", "-lc", root.config.secondaryCommand])
+      action: () => root.externalCommandRequested(root.config.secondaryCommand)
     }
   }
 }

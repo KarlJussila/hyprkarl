@@ -101,6 +101,11 @@ revealed item row still uses the unmodified `main` value beside its divider,
 and neither value adds item-to-item spacing. Panel rows and actions use the
 separate `controlPadding` value.
 
+`panelWidth` sets the normal feature-panel width, while
+`powerPanelWidth` independently sizes the more compact power panel. Both are
+theme metrics; changing the latter does not squeeze the network, Bluetooth, or
+audio surfaces.
+
 `barMinThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural
 height; the tallest widget sets one shared height for all three islands. A

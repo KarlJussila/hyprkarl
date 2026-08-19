@@ -200,7 +200,9 @@ Bluetooth, power, and calendar all exercise the per-monitor host; no feature
 owns a second popup-window implementation. `secondaryCommand` supplies the
 advanced launcher used by audio, network, and Bluetooth. The battery widget's
 `powerCommand` supplies the power-actions launcher. These strings are
-behavior, while all panel colors and geometry remain theme data.
+behavior, while all panel colors and geometry remain theme data. Activating an
+external launcher from a feature panel closes that panel before starting the
+configured command.
 
 ## Validation and Resolution
 

@@ -28,6 +28,7 @@ ShellButton {
       theme: root.theme
       config: root.config
       active: root.panelOpen
+      onExternalCommandRequested: command => root.launchPanelCommand(command)
     }
   }
 }

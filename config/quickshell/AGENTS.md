@@ -96,12 +96,25 @@ Audio, network, Bluetooth, battery/power, and clock/calendar now exercise this
 host with five different compositions. Their repeated header, section, row,
 and action controls are the stable baseline vocabulary; feature-specific
 summaries, sliders, calendar cells, and navigation remain with their features.
+Feature-panel actions that launch an external command request it through their
+bar entry point, which closes the owning panel before spawning the command.
 There is no second feature-window or legacy flyout boundary. In the power and
 network panels, facts already owned by the primary content do not become
 decorative header subtitles: battery facts belong to `BatterySummary`, and the
 connected Wi-Fi network is the selected first entry in the sorted network list.
 `BatterySummary` aligns percentage/status above indicator/rate and marks the
-rate with an up arrow while charging or a down arrow while discharging.
+rate with an up arrow while charging or a down arrow while discharging. Its
+percentage column is three monospaced glyphs wide, uses `MAX` at full charge,
+and scales the indicator to the same width; the bar battery readout uses `MAX`
+too. Every panel content exposes a reactive `preferredWidth`; the host owns
+clamping and anchoring. Keep the default binding to `panelWidth` and the
+power variation bound to the theme-owned `powerPanelWidth`.
+`BatteryIndicator` keeps its original 18×10 primary-widget surface at the
+default `nativeScale` of 1. The panel sets `nativeScale` to allocate a larger
+canvas; do not use the item's transform scale, which blurs its texture.
+Small canvas strokes must resolve against `Screen.devicePixelRatio`; the audio
+indicator uses a two-physical-pixel stroke and is vertically centered in its
+bar row.
 
 Hover text uses `ShellTooltip`, a non-focusable `PopupWindow` with an empty
 input mask. Do not replace it with Qt Controls' attached `ToolTip`; that window

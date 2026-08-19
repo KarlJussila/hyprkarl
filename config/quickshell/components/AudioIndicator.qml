@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 
 Canvas {
   id: root
@@ -24,7 +25,7 @@ Canvas {
 
     context.clearRect(0, 0, width, height)
     context.strokeStyle = indicatorColor
-    context.lineWidth = 1.4
+    context.lineWidth = 2 / Screen.devicePixelRatio
     context.lineCap = "round"
     context.lineJoin = "round"
 

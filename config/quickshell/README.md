@@ -133,7 +133,8 @@ multiple widgets genuinely use the same interaction or visual structure.
   independent, stable-width feature panels through one per-monitor host. The
   host clamps to monitor bounds, scrolls dense content, switches between those
   triggers on the first click, dismisses on Escape or an outside click, and
-  sharpens the bar-side corner when it also touches a monitor side.
+  sharpens the bar-side corner when it also touches a monitor side. External
+  launcher actions close their panel before opening the configured app.
 - Audio exposes output and microphone volume/mute, selectable default devices,
   input activity, and an advanced-settings route. Network exposes Wi-Fi state,
   scanning and sorted networks, inline passwords, connection progress/errors,
@@ -150,7 +151,14 @@ multiple widgets genuinely use the same interaction or visual structure.
   Percentage and charge status appear once in the battery summary rather than
   being duplicated in the panel header. The percentage and status form its
   first row; the indicator and energy rate form its second, with an up/down
-  arrow showing whether power is entering or leaving the battery.
+  arrow showing whether power is entering or leaving the battery. The summary
+  gives its percentage and indicator matching three-character widths. Both
+  battery readouts use `MAX` instead of `100%`; the compact panel width
+  remains independently themeable through `powerPanelWidth`. The drawn
+  indicator keeps its original 18×10 canvas in the bar and allocates a larger
+  canvas for the panel rather than magnifying a small texture.
+  The audio indicator centers in its bar row and resolves its stroke to two
+  physical pixels so fractional output scaling does not soften it.
   The installed PowerProfiles API exposes confirmed profile state but no
   per-write failure result, so the bar does not invent one.
 - Clock/calendar binds the bar, date header, viewed month, and current-day

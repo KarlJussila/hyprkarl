@@ -13,6 +13,7 @@
 # Public API:
 #   load_service SERVICE_ID              Load a service manifest into module globals
 #   list_services FILTER                 List service IDs (all|installed|missing)
+#   docker_menu_entries FILTER ACTION   Print dynamic Quickshell menu entries as JSON
 #   docker_install_service SERVICE_ID    Install and start a service
 #   docker_uninstall_service SERVICE_ID  Stop and remove a service
 #   set_substitution KEY VALUE           Register a template substitution (call from hooks)
@@ -192,6 +193,40 @@ list_services() {
 
     printf '%s\t%s\n' "$service_id" "${DOCKER_SERVICE["label"]}"
   done < <(service_ids)
+}
+
+docker_menu_entries() {
+  local filter=$1
+  local action=$2
+  local services
+  local service_id
+  local service_label
+  local command
+  local separator=""
+
+  case "$action" in
+    install|uninstall) ;;
+    *)
+      gum log --level error "Unknown Docker menu action: $action"
+      return 1
+      ;;
+  esac
+
+  services=$(list_services "$filter") || return 1
+
+  printf '['
+  while IFS=$'\t' read -r service_id service_label; do
+    [[ -n "$service_id" ]] || continue
+    printf -v command 'hk-tui-launch hk-docker %s %q' "$action" "$service_id"
+    printf '%s' "$separator"
+    jq -cn \
+      --arg id "docker-$action.$service_id" \
+      --arg label "$service_label" \
+      --arg command "$command" \
+      '{id: $id, icon: "󰡨", label: $label, action: {type: "command", command: $command}}'
+    separator=','
+  done <<<"$services"
+  printf ']\n'
 }
 
 # --- docker compose runtime ---

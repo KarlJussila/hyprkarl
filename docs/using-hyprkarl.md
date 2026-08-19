@@ -153,6 +153,8 @@ container management interface.
 
 Docker services are managed with:
 
+- `hk-menu-docker-install`
+- `hk-menu-docker-uninstall`
 - `hk-docker setup`
 - `hk-docker install <service>`
 - `hk-docker uninstall <service>`

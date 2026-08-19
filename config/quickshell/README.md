@@ -73,7 +73,10 @@ yet.
 The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
 `user/menu.json` adds or overrides menus and entries by stable ID. Ordinary
 objects recursively merge, `enabled: false` hides an entry, valid changes
-apply live, and invalid changes retain the last valid menu. Menu appearance
+apply live, and invalid changes retain the last valid menu. A menu may use a
+short-lived `sourceCommand` for validated entries that must be rediscovered on
+open; the Docker install/uninstall menus use this for current service state.
+Menu appearance
 uses the active shell theme plus its nested `menu` object. The compact width,
 centered rows, title band, nested frame, and bordered selection retain the old
 Rofi menu's identity; palette, typography, rounded geometry, borders, and

@@ -40,7 +40,9 @@ shipped definition.
 ```
 
 `root` names the menu opened by `hk-menu` and the bar button. Each object in
-`menus` supplies a title. Each object in `entries` has a stable dotted ID and:
+`menus` supplies a title and may also define `sourceCommand` plus `emptyLabel`
+for entries discovered when that menu opens. Each object in `entries` has a
+stable dotted ID and:
 
 - `parent`: the menu containing the entry
 - `order`: numeric display order; IDs break ties deterministically
@@ -55,13 +57,23 @@ Commands run through `bash -lc` after the menu closes. Keep interaction-heavy
 work in a dedicated `hk-*` command and reference it from the data; the menu
 definition owns navigation, not application logic. The shipped definition
 still uses focused Rofi or terminal interfaces for dynamic and search-heavy
-selectors such as apps, themes, Docker services, wallpaper thumbnails,
-enrolled fingers, and packages. Static wallpaper management, fingerprint
-management, power profiles, and default-app choices remain in Quickshell.
+selectors such as apps, themes, wallpaper thumbnails, enrolled fingers, and
+packages. Docker service discovery feeds dynamic Quickshell menus instead;
+static wallpaper management, fingerprint management, power profiles, and
+default-app choices also remain in Quickshell.
 
 Use `checkedCommand` only for a cheap external state probe whose status belongs
 in the menu. Checks run when the menu opens; they are not long-running monitors
 and do not replace shell-native service state in feature panels.
+
+A `sourceCommand` must print one JSON array and exit. Each array item has a
+stable `id`, a `label`, an optional `icon`, and a command `action`; array order
+is display order. The shell validates the result before rendering it, shows
+`emptyLabel` for an empty array, and reports provider or schema failure in the
+menu and `hk-shell logs`. Sources are refreshed on every open so filesystem or
+service state does not go stale. The shipped Docker providers use this boundary
+to show only missing services under Install and installed services under
+Uninstall.
 
 ## Sparse User Overrides
 

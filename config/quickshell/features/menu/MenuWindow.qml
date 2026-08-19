@@ -90,11 +90,16 @@ PanelWindow {
 
     readonly property real frameInset: root.theme.menuOuterBorderWidth
       + root.theme.menuOuterPadding
+    readonly property real bodyHeight: menuList.count > 0
+      ? menuList.contentHeight
+      : emptyLabel.implicitHeight
+        + root.theme.menuEntryPadding * 2
+        + root.theme.menuEntryMargin * 2
     readonly property real desiredHeight: frameInset * 2
       + root.theme.menuInnerBorderWidth * 2
       + root.theme.menuInnerBorderWidth
       + header.height
-      + menuList.contentHeight
+      + bodyHeight
 
     anchors.centerIn: parent
     width: Math.min(root.theme.menuWidth, root.width)
@@ -172,6 +177,8 @@ PanelWindow {
       }
 
       Rectangle {
+        id: body
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: headerDivider.bottom
@@ -181,10 +188,28 @@ PanelWindow {
         anchors.bottomMargin: root.theme.menuInnerBorderWidth
         color: root.theme.menuBackground
 
+        Text {
+          id: emptyLabel
+
+          anchors.fill: parent
+          anchors.margins: root.theme.menuEntryPadding
+          visible: menuList.count === 0
+          text: MenuState.menuMessage(MenuState.currentMenu)
+          color: root.theme.menuForeground
+          opacity: 0.7
+          font.family: root.theme.menuFont
+          font.pixelSize: root.theme.menuFontSize
+          font.weight: root.theme.menuFontWeight
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
+          elide: Text.ElideRight
+        }
+
         ListView {
           id: menuList
 
           anchors.fill: parent
+          visible: count > 0
           clip: true
           boundsBehavior: Flickable.StopAtBounds
           model: MenuState.entriesFor(MenuState.currentMenu)

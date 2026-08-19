@@ -135,8 +135,10 @@ and network use feature singletons for adapter-global discovery/scan
 ownership; clock uses one application-wide current-time owner. See
 `config/quickshell/AGENTS.md` before changing the shell. Use `hk-shell` to
 start, stop, restart, inspect, or read logs from the production bar.
-The same shell renders the static command hierarchy from `defaults/menu.json`
-plus the optional deep-merged `user/menu.json`. Menu entries use stable IDs;
+The same shell renders the command hierarchy from `defaults/menu.json` plus
+the optional deep-merged `user/menu.json`. Menu entries use stable IDs; a
+menu's optional `sourceCommand` may provide validated command entries that
+must be rediscovered when it opens, as the Docker service menus do;
 the established static `hk-menu-*` commands are IPC wrappers while focused
 searchable selectors remain dedicated commands. The menu preserves the
 original Rofi surface's compact width, centered rows, title band, nested frame,

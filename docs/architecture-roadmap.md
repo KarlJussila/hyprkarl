@@ -433,11 +433,14 @@ intermediate Rofi renderer:
   use the same in-process state through the shell's IPC boundary;
 - wallpaper and fingerprint management, power profiles, and default-app
   choices are nested shell-native menus rather than secondary Rofi menus;
+- Docker install and uninstall menus refresh their filtered service entries
+  from a short-lived source command whenever they open;
 - specialized selectors remain dedicated Rofi or terminal commands where
   search and richer interaction make that a better fit.
 
-Runtime `when` or checked state should be added only for entries that need it,
-and evaluations should be batched if startup latency becomes measurable.
+The implemented `checkedCommand` remains limited to entries such as power
+profiles that need external state. Add runtime `when` only when a reachable
+entry needs it, and batch evaluations if startup latency becomes measurable.
 
 ### Hooks
 

@@ -1,36 +1,13 @@
 #!/bin/bash
 # hk-menu-docker-install
-# Menu for installing Docker service stacks.
+# Open or populate the shell-native Docker install menu.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/docker.sh"
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
 
-CHOICES=()
-CHOICE_IDS=()
-
-while IFS=$'\t' read -r service_id service_label; do
-    [[ -n "$service_id" ]] || continue
-    CHOICES+=("$service_label")
-    CHOICE_IDS+=("$service_id")
-done < <(list_services missing)
-
-if (( ${#CHOICE_IDS[@]} == 0 )); then
-    CHOICES=("(nothing to install)")
+if [[ "${1:-}" == "--entries" ]]; then
+  docker_menu_entries missing install
+  exit
 fi
 
-CHOICE=$(printf '%s\n' "${CHOICES[@]}" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Install Service" \
-           -theme "$ROFI_THEME")
-
-[[ -z "$CHOICE" ]] && exit 1
-
-for index in "${!CHOICE_IDS[@]}"; do
-    if [[ "$CHOICE" == "${CHOICES[$index]}" ]]; then
-        hk-tui-launch hk-docker install "${CHOICE_IDS[$index]}"
-        exit 0
-    fi
-done
+exec hk-shell menu open docker-install

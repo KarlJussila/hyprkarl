@@ -15,6 +15,16 @@
     "fingerprint": { "title": "Fingerprint" },
     "fingerprint-setup": { "title": "Fingerprint" },
     "power-profile": { "title": "Power Profile" },
+    "docker-install": {
+      "title": "Install Service",
+      "sourceCommand": "hk-menu-docker-install --entries",
+      "emptyLabel": "(nothing to install)"
+    },
+    "docker-uninstall": {
+      "title": "Uninstall Service",
+      "sourceCommand": "hk-menu-docker-uninstall --entries",
+      "emptyLabel": "No containers installed"
+    },
     "update": { "title": "Update" },
     "power": { "title": "Power" }
   },
@@ -95,7 +105,7 @@
       "order": 40,
       "icon": "󰡨",
       "label": "Docker",
-      "action": { "type": "command", "command": "hk-menu-docker-install || hk-shell menu open install" }
+      "action": { "type": "menu", "menu": "docker-install" }
     },
 
     "uninstall.system": {
@@ -117,7 +127,7 @@
       "order": 30,
       "icon": "󰡨",
       "label": "Docker",
-      "action": { "type": "command", "command": "hk-menu-docker-uninstall || hk-shell menu open uninstall" }
+      "action": { "type": "menu", "menu": "docker-uninstall" }
     },
 
     "utilities.caffeine": {

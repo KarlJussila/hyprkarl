@@ -28,9 +28,10 @@ Quickshell. The corresponding `hk-menu-*` commands are thin public wrappers
 around `hk-shell menu`; `hk-menu-fingerprint` only selects the applicable
 shell-native menu from real setup state, and `hk-menu-wallpaper` retains narrow
 action subcommands for the dedicated image and file pickers. Do not rebuild
-navigation hierarchy in those scripts. Dynamic or search-heavy selectors such
-as applications, themes, Docker services, keybindings, and icons may continue
-using Rofi.
+navigation hierarchy in those scripts. Docker menu wrappers expose
+`--entries` for the shell's dynamic source boundary; they do not render their
+own UI. Search-heavy selectors such as applications, themes, keybindings, and
+icons may continue using Rofi.
 
 ## Style
 

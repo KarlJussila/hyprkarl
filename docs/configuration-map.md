@@ -195,7 +195,8 @@ no separate feature-flyout boundary.
 
 The shell-native command menu creates one full-screen overlay per output and
 shows only the requested monitor's instance. `features/menu/MenuState.qml`
-owns the watched, validated deep merge and navigation history;
+owns the watched, validated deep merge, navigation history, checked-state
+probes, and short-lived dynamic menu sources;
 `MenuWindow.qml` owns keyboard focus, dismissal, and rendering. See
 [Menu Configuration](menu-configuration.md).
 

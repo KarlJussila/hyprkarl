@@ -217,9 +217,11 @@ does not try to document every internal script.
 ## Docker
 
 - `hk-menu-docker-install`
-  Open the Docker install menu.
+  Open the shell-native Docker install menu, populated with services that are
+  not installed.
 - `hk-menu-docker-uninstall`
-  Open the Docker uninstall menu.
+  Open the shell-native Docker uninstall menu, populated with installed
+  services.
 - `hk-docker setup`
   Install Docker and Docker Compose, enable Docker, and add the user to the
   `docker` group.

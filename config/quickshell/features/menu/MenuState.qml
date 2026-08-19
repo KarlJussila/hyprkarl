@@ -18,6 +18,10 @@ QtObject {
   property string currentMenu: ""
   property var history: []
   property int openRevision: 0
+  property string dynamicMenuId: ""
+  property var dynamicEntries: []
+  property bool dynamicLoading: false
+  property string dynamicError: ""
   property string lastError: ""
   property bool loading: false
   property bool defaultResolved: false
@@ -91,6 +95,12 @@ QtObject {
     }
   }
 
+  property Process dynamicSource: Process {
+    stdout: StdioCollector {
+      onStreamFinished: root.finishDynamicSource(text)
+    }
+  }
+
   function fail(path, message): void {
     throw new Error(path + ": " + message)
   }
@@ -157,6 +167,14 @@ QtObject {
       requireObject(menu, menuPath)
       if (typeof menu.title !== "string" || menu.title.length === 0) {
         fail(menuPath + ".title", "expected a non-empty string")
+      }
+      if (menu.sourceCommand !== undefined
+          && (typeof menu.sourceCommand !== "string" || menu.sourceCommand.length === 0)) {
+        fail(menuPath + ".sourceCommand", "expected a non-empty command")
+      }
+      if (menu.emptyLabel !== undefined
+          && (typeof menu.emptyLabel !== "string" || menu.emptyLabel.length === 0)) {
+        fail(menuPath + ".emptyLabel", "expected a non-empty string")
       }
     }
     if (!document.menus[document.root]) {
@@ -259,7 +277,83 @@ QtObject {
     result.sort((left, right) => left.order === right.order
       ? left.id.localeCompare(right.id)
       : left.order - right.order)
+    if (dynamicMenuId === menuId) result.push(...dynamicEntries)
     return result
+  }
+
+  function menuMessage(menuId: string): string {
+    if (dynamicMenuId === menuId) {
+      if (dynamicLoading) return "Loading…"
+      if (dynamicError.length > 0) return dynamicError
+    }
+    return menus[menuId]?.emptyLabel ?? "No entries"
+  }
+
+  function validateDynamicEntries(value, menuId): var {
+    if (!Array.isArray(value)) fail("dynamic menu '" + menuId + "'", "expected an array")
+
+    const result = []
+    const ids = new Set()
+    for (let index = 0; index < value.length; index++) {
+      const path = "dynamic menu '" + menuId + "'[" + index + "]"
+      const entry = value[index]
+      requireObject(entry, path)
+      if (typeof entry.id !== "string" || entry.id.length === 0) {
+        fail(path + ".id", "expected a non-empty string")
+      }
+      if (ids.has(entry.id)) fail(path + ".id", "duplicate id '" + entry.id + "'")
+      ids.add(entry.id)
+      if (typeof entry.label !== "string" || entry.label.length === 0) {
+        fail(path + ".label", "expected a non-empty string")
+      }
+      if (entry.icon !== undefined && typeof entry.icon !== "string") {
+        fail(path + ".icon", "expected a string")
+      }
+      requireObject(entry.action, path + ".action")
+      if (entry.action.type !== "command"
+          || typeof entry.action.command !== "string"
+          || entry.action.command.length === 0) {
+        fail(path + ".action", "expected a command action")
+      }
+      result.push(Object.assign({
+        "parent": menuId,
+        "order": (index + 1) * 10
+      }, clone(entry)))
+    }
+    return result
+  }
+
+  function loadDynamicMenu(menuId: string): void {
+    const sourceCommand = menus[menuId]?.sourceCommand
+    if (typeof sourceCommand !== "string") {
+      dynamicMenuId = ""
+      dynamicEntries = []
+      dynamicLoading = false
+      dynamicError = ""
+      return
+    }
+
+    dynamicMenuId = menuId
+    dynamicEntries = []
+    dynamicLoading = true
+    dynamicError = ""
+    dynamicSource.command = ["bash", "-lc",
+      `output=$(${sourceCommand}) || exit; printf '%s' "$output"`]
+    dynamicSource.running = true
+  }
+
+  function finishDynamicSource(output: string): void {
+    dynamicLoading = false
+    try {
+      dynamicEntries = validateDynamicEntries(
+        parse(output, "dynamic menu '" + dynamicMenuId + "'"),
+        dynamicMenuId)
+      dynamicError = ""
+    } catch (error) {
+      dynamicEntries = []
+      dynamicError = "Could not load entries"
+      console.error("Dynamic menu source rejected: " + String(error))
+    }
   }
 
   function focusedScreenName(): string {
@@ -273,6 +367,7 @@ QtObject {
     currentMenu = menu
     openRevision++
     requested = true
+    loadDynamicMenu(menu)
     return true
   }
 
@@ -311,6 +406,7 @@ QtObject {
       history = history.concat([entry.action.menu])
       currentMenu = entry.action.menu
       openRevision++
+      loadDynamicMenu(entry.action.menu)
       return
     }
 

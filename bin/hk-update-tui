@@ -251,8 +251,12 @@ phase_review() {
 
   DF_BASE=$(update_read_commit dotfiles)
   REVIEW_DF_FILES=""
+  REVIEW_USER_FILES=""
   if [[ -n "$DF_BASE" ]] && [[ "$DF_BASE" != "$head" ]]; then
-    REVIEW_DF_FILES=$(git -C "$HK" diff --name-only "$DF_BASE" HEAD -- config/ applications/)
+    REVIEW_DF_FILES=$(git -C "$HK" diff --name-only "$DF_BASE" HEAD \
+      -- config/ applications/ defaults/ themes/)
+    REVIEW_USER_FILES=$(git -C "$HK" diff --name-only "$DF_BASE" HEAD \
+      -- user/ ':(exclude)user/README.md')
   fi
 
   pkg_base=$(update_read_commit packages)
@@ -287,8 +291,9 @@ count_lines() {
 }
 
 show_review_summary() {
-  local df_n sys_n pac_add pac_rem aur_add aur_rem rem_add
+  local df_n user_n sys_n pac_add pac_rem aur_add aur_rem rem_add
   df_n=$(count_lines "$REVIEW_DF_FILES")
+  user_n=$(count_lines "$REVIEW_USER_FILES")
   sys_n=$(count_lines "$REVIEW_SYS_FILES")
   pac_add=$(count_lines "$ADDED_PAC")
   pac_rem=$(count_lines "$REMOVED_PAC")
@@ -299,7 +304,8 @@ show_review_summary() {
   printf '\n'
   gum format -- \
     "## Pending changes" \
-    "- **Dotfiles**: $df_n changed file(s)" \
+    "- **Upstream configuration**: $df_n changed file(s)" \
+    "- **User configuration**: $user_n changed file(s), review only" \
     "- **Packages**: +$((pac_add + aur_add)) to install, $((pac_rem + aur_rem + rem_add)) to prompt for removal" \
     "- **System**: $sys_n changed setup file(s)"
   printf '\n'
@@ -309,13 +315,15 @@ review_browse_loop() {
   local choice
   while true; do
     choice=$(gum choose --header $'\nReview (Esc / Continue to move on):' \
-      "Browse dotfiles diff" \
+      "Browse upstream configuration diff" \
+      "Browse user configuration diff" \
       "Browse system diff" \
       "Show package changes" \
       "Continue to apply" \
       "Quit")
     case "$choice" in
-      "Browse dotfiles diff") browse_changes "dotfiles" "$DF_BASE" "$REVIEW_DF_FILES" ;;
+      "Browse upstream configuration diff") browse_changes "upstream configuration" "$DF_BASE" "$REVIEW_DF_FILES" ;;
+      "Browse user configuration diff") browse_changes "user configuration" "$DF_BASE" "$REVIEW_USER_FILES" ;;
       "Browse system diff")   browse_changes "system" "$SYS_BASE" "$REVIEW_SYS_FILES" ;;
       "Show package changes") show_package_plan ;;
       "Continue to apply")    return 0 ;;

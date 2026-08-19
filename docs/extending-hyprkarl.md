@@ -18,6 +18,11 @@ Use this rule of thumb:
   Support scripts and backend logic
 - `config/`
   Application config and session behavior
+- `defaults/`
+  Hyprkarl-owned defaults; inspect these to understand behavior, but keep
+  personal overrides under `user/`
+- `user/`
+  Personal shell and Hyprland configuration that upstream does not replace
 - `themes/`
   Theme assets and per-theme overrides
 - `templates/`
@@ -124,18 +129,48 @@ in-place, re-showing this menu. When an action completes, execution falls
 through to `exit 0`. Dismissing this menu exits 1 so its own parent can detect
 it. See `bin/hk-menu` for the canonical pattern.
 
+## Customize Hyprland
+
+`config/hypr/hyprland.lua` is a stable bootstrap. Hyprkarl's implementation
+lives in `defaults/hypr/`, while personal modules live in `user/hypr/` and load
+after both the shipped configuration and active theme. Supported module names,
+in load order, are:
+
+```text
+envs, autostart, monitors, permissions, looknfeel,
+animations, gum, windows, input, bindings
+```
+
+Create only the modules you need. For example, `user/hypr/input.lua` can
+override selected input values without copying the shipped input configuration:
+
+```lua
+hl.config({
+    input = {
+        kb_layout = "us,fi",
+        sensitivity = 0,
+    },
+})
+```
+
+Calls that define collections remain additive. Personal bindings and window
+rules can therefore be added directly, while replacing an existing binding
+requires an `hl.unbind()` call first. Always run `Hyprland --verify-config`
+before reloading.
+
 ## Add a New Keybinding
 
 Hyprland is configured in Lua (see
-[configuration-map.md](configuration-map.md#hyprland)). Bindings live in:
+[configuration-map.md](configuration-map.md#hyprland)). The shipped bindings,
+useful as examples, live in:
 
-- `config/hypr/bindings/apps.lua` — app launchers
-- `config/hypr/bindings/media.lua` — hardware media/brightness/volume keys
-- `config/hypr/bindings/windows.lua` — focus, move, resize, float, fullscreen, close
-- `config/hypr/bindings/workspaces.lua` — workspace switching, monitor moves, scratchpad
-- `config/hypr/bindings/system.lua` — menus, notifications, panels, screenshots, power
+- `defaults/hypr/bindings/apps.lua` — app launchers
+- `defaults/hypr/bindings/media.lua` — hardware media/brightness/volume keys
+- `defaults/hypr/bindings/windows.lua` — focus, move, resize, float, fullscreen, close
+- `defaults/hypr/bindings/workspaces.lua` — workspace switching, monitor moves, scratchpad
+- `defaults/hypr/bindings/system.lua` — menus, notifications, panels, screenshots, power
 
-Put the binding in the file that matches its purpose. The form is
+Put personal bindings in `user/hypr/bindings.lua`. The form is
 `hl.bind(keys, dispatcher, flags?)`:
 
 ```lua

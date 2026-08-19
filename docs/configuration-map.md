@@ -12,7 +12,7 @@ would edit.
 - `config/`
   Application config and session behavior
 - `defaults/`
-  Upstream-owned data defaults used when no user replacement exists
+  Upstream-owned shell data and Hyprland behavior
 - `user/`
   Reserved user-owned configuration; upstream keeps only documentation here
 - `packages/`
@@ -54,9 +54,10 @@ regardless of whether anything changed.
 ## Hyprland
 
 Hyprland is configured in **Lua** (`hyprland.lua`), required since Hyprland 0.55
-(hyprlang `.conf` is deprecated). `config/hypr/hyprland.lua` is the main
-entrypoint. It only `require()`s the rest of the config (each module loads as a
-separate Lua scope, so an error in one does not abort the others):
+(hyprlang `.conf` is deprecated). `config/hypr/hyprland.lua` is the stable live
+bootstrap. Shipped behavior lives under `defaults/hypr/`; the bootstrap adds
+that directory and `user/hypr/` to Lua's module path, then loads the shipped
+modules in this order:
 
 - `envs.lua`
   Hyprland environment variables (`hl.env()`)
@@ -87,10 +88,11 @@ separate Lua scope, so an error in one does not abort the others):
 - `bindings.lua`
   Keybinding includes (`hl.bind()`)
 
-`hyprland.lua` then loads the active theme last, by absolute path
-(`loadfile` of `~/.config/hyprkarl/current/theme/hyprland.lua`), so theme colors
-override. The theme dir lives outside `config/hypr/`, so `require()`'s relative
-resolution can't reach it — hence `loadfile`.
+The bootstrap next loads the active theme from
+`config/hyprkarl/current/theme/hyprland.lua`, then loads matching optional files
+from `user/hypr/` in the same order. User calls therefore win over shipped and
+theme values. Missing user files are skipped; syntax, read, and runtime errors
+are reported.
 
 `bindings.lua` then requires:
 
@@ -112,8 +114,10 @@ Validate edits with `Hyprland --verify-config` (non-destructive: parses the conf
 and reports errors without launching). There is no automatic fallback if
 `hyprland.lua` is broken.
 
-For keybindings, start in `config/hypr/bindings/`. For app-specific window
-rules, start in `config/hypr/windows/`.
+For personal changes, create only the relevant `user/hypr/*.lua` files. The
+files under `defaults/hypr/` are upstream-owned references and should not be
+edited for ordinary personalization. See
+[Extending Hyprkarl](extending-hyprkarl.md#customize-hyprland).
 
 For Hyprland syntax and option reference, see the official Hyprland docs:
 [Configuring](https://wiki.hypr.land/Configuring/) and

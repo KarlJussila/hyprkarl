@@ -23,7 +23,7 @@
 # Check scenarios (read-only, no $HOME redirect):
 #   check-no-baseline        hk-update check with no .commit files (pre-hk-update)
 #   check-uptodate           hk-update check when all baselines equal HEAD
-#   check-pending            hk-update check with pending dotfiles + package changes
+#   check-pending            check ownership labels plus pending package changes
 #   check-invalid-baseline   hk-update check when .commit SHA not in git history
 #
 # Dotfiles scenarios ($HOME redirected to fake dir):
@@ -106,6 +106,17 @@ seed_dotfiles_change() {
   printf '\n# test: seed_dotfiles_change\n' >> "$CLONE/config/hypr/hyprland.conf"
   git -C "$CLONE" commit -q -am "test: dotfiles change"
   git -C "$CLONE" rev-parse HEAD~1 > "$CLONE/config/hyprkarl/update/dotfiles.commit"
+}
+
+seed_owned_config_changes() {
+  local baseline
+  baseline=$(git -C "$CLONE" rev-parse HEAD)
+  printf '\n-- test: upstream default change\n' >> "$CLONE/defaults/hypr/input.lua"
+  mkdir -p "$CLONE/user/hypr"
+  printf 'hl.config({ input = { sensitivity = 0 } })\n' > "$CLONE/user/hypr/input.lua"
+  git -C "$CLONE" add defaults/hypr/input.lua user/hypr/input.lua
+  git -C "$CLONE" commit -q -m "test: owned configuration changes"
+  printf '%s\n' "$baseline" > "$CLONE/config/hyprkarl/update/dotfiles.commit"
 }
 
 seed_packages_add() {
@@ -285,10 +296,10 @@ cmd_check_uptodate() {
 
 cmd_check_pending() {
   banner "check-pending"
-  printf 'Scenario: dotfiles + packages changed since last baseline.\n'
-  printf 'Expected: lists changed config files and new packages to install.\n\n'
+  printf 'Scenario: upstream defaults, user config, and packages changed.\n'
+  printf 'Expected: labels configuration by owner and lists new packages.\n\n'
   reset_sandbox
-  seed_dotfiles_change
+  seed_owned_config_changes
   seed_packages_add
   run_check
 }

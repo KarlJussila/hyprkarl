@@ -184,7 +184,8 @@ Provided themes:
 ## Keybindings
 
 These are the basic keybindings to get you started. You can search the rest in
-the keybindings menu or edit them in `config/hypr/bindings/`.
+the keybindings menu. Personal additions and overrides belong in
+`user/hypr/bindings.lua`; shipped bindings live under `defaults/hypr/bindings/`.
 
 ```
 SUPER + K              ->  Searchable list of keybinds
@@ -204,8 +205,9 @@ Releases are annotated git tags (`vX.Y.Z`) on `main`; see
 [CHANGELOG.md](CHANGELOG.md) for what changed in each.
 
 If you have customized Hyprkarl, update it like a normal git branch. Review
-upstream changes before merging them, and commit your own work first,
-especially changes under `config/` and `applications/`.
+upstream changes before merging them and commit your own work first. Shell and
+Hyprland personalization under `user/` is deliberately separate from
+Hyprkarl-owned defaults so routine upstream changes do not edit those files.
 
 For the full update workflow, including when to run `hk-update`,
 `setup-packages.sh`, `setup-system.sh`, or `setup-dotfiles.sh`, see

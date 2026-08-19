@@ -17,7 +17,12 @@ That means:
 ## Put Changes in the Right Layer
 
 - `config/`
-  Application config and session behavior
+  Stowed application config and stable live entry points
+- `defaults/`
+  Upstream-owned behavior and data defaults
+- `user/`
+  User-owned overrides. Upstream may document this namespace but does not add
+  or replace personal configuration files.
 - `themes/`
   Theme assets and per-theme overrides
 - `bin/`
@@ -67,6 +72,10 @@ update reads as a move between releases rather than between commit hashes.
 ## Stow Behavior
 
 Files under `config/` and `applications/` are exposed through GNU Stow.
+
+Files under `defaults/` and `user/` are read directly from the checkout by
+stable entry points. They are not stowed: updates own `defaults/`, while a
+user's branch owns their files under `user/`.
 
 - editing an existing tracked file needs no extra step
 - adding a new tracked file (or removing one) requires re-stowing with

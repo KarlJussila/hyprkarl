@@ -20,13 +20,22 @@ check_dotfiles() {
   elif [[ "$baseline" == "$HEAD" ]]; then
     printf '  Up to date.\n'
   else
-    local changed
-    changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD -- config/ applications/ 2>/dev/null)
-    if [[ -n "$changed" ]]; then
-      printf '  Changed since last dotfiles update:\n'
-      printf '%s\n' "$changed" | sed 's/^/    /'
-    else
-      printf '  No config file changes since last dotfiles update.\n'
+    local upstream_changed user_changed
+    upstream_changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD \
+      -- config/ applications/ defaults/ themes/ 2>/dev/null)
+    user_changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD \
+      -- user/ ':(exclude)user/README.md' 2>/dev/null)
+
+    if [[ -n "$upstream_changed" ]]; then
+      printf '  Upstream-owned configuration changes:\n'
+      printf '%s\n' "$upstream_changed" | sed 's/^/    /'
+    fi
+    if [[ -n "$user_changed" ]]; then
+      printf '  User-owned configuration changes (review only; never generated or replaced):\n'
+      printf '%s\n' "$user_changed" | sed 's/^/    /'
+    fi
+    if [[ -z "$upstream_changed" ]] && [[ -z "$user_changed" ]]; then
+      printf '  No configuration changes since last dotfiles update.\n'
     fi
   fi
 

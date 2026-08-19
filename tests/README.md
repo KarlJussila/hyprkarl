@@ -74,7 +74,7 @@ tests/hk-update.sh clean    # delete the sandbox
 # Check scenarios (read-only, no $HOME redirect):
 tests/hk-update.sh check-no-baseline       # no .commit files (pre-hk-update era)
 tests/hk-update.sh check-uptodate          # all baselines == HEAD
-tests/hk-update.sh check-pending           # pending dotfiles + package changes
+tests/hk-update.sh check-pending           # upstream/user ownership + package changes
 tests/hk-update.sh check-invalid-baseline  # .commit SHA not in git history
 
 # Dotfiles scenarios ($HOME redirected to fake dir):

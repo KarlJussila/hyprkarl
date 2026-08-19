@@ -53,8 +53,9 @@ Some common keybindings are:
 - `SUPER + CTRL + T`
   Open `btop`
 
-Keybindings are defined in `config/hypr/bindings/`. The keybindings menu reads
-them directly from those files.
+Shipped keybindings are defined in `defaults/hypr/bindings/`; personal bindings
+belong in `user/hypr/bindings.lua`. The keybindings menu reads the live bindings
+from Hyprland.
 
 ## Themes
 

@@ -67,8 +67,16 @@ hk-update check
 ```
 
 Prints a summary of what each category would do without touching anything:
-changed config files, packages to install or remove, whether system setup files
-changed. Useful for reviewing a merge before applying it.
+changed configuration, packages to install or remove, and whether system setup
+files changed. Configuration is divided by ownership:
+
+- upstream-owned paths (`config/`, `applications/`, `defaults/`, and `themes/`)
+  are implementation and default changes from Hyprkarl;
+- personal files under `user/` are shown separately for review and are never
+  generated, replaced, or reset by an update.
+
+The guided TUI exposes those as separate diffs. Useful for reviewing a merge
+before applying it.
 
 ## Dotfiles Update
 

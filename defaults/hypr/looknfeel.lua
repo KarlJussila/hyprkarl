@@ -1,6 +1,6 @@
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 
--- Border colors (the active theme overrides general.col.active_border last)
+-- Border colors (the active theme overrides these shipped values afterward)
 local activeBorderColor = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 }
 local inactiveBorderColor = "rgba(595959aa)"
 
@@ -112,4 +112,3 @@ hl.config({
         hide_on_key_press = false,
     },
 })
-

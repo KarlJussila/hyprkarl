@@ -70,18 +70,20 @@ Hyprland is configured in **Lua** (`hyprland.lua`), as required since Hyprland
 `hl.env()`, `hl.gesture{}`, `hl.animation{}` / `hl.curve()`. See
 https://wiki.hypr.land/Configuring/Start/.
 
-`config/hypr/hyprland.lua` is the entry point; it `require()`s the rest (each
-module is a separate Lua scope, so an error in one file won't abort the others):
+`config/hypr/hyprland.lua` is the stable entry point. It adds
+`defaults/hypr/` and `user/hypr/` to the Lua module path, then loads the
+upstream modules from `defaults/hypr/` in this order:
 
 ```
 envs.lua, autostart.lua, monitors.lua, permissions.lua, looknfeel.lua,
 animations.lua, gum.lua, windows.lua, input.lua, bindings.lua
 ```
 
-It then loads the active theme last (`loadfile` of
-`~/.config/hyprkarl/current/theme/hyprland.lua`), so the theme overrides win.
+It then loads the active theme and matching optional user modules in the same
+order. User values therefore win over shipped behavior and the theme. Missing
+user files are normal; other load failures must remain visible.
 
-Keybindings are split under `config/hypr/bindings/`: `apps.lua`, `media.lua`, `windows.lua` (window management), `workspaces.lua` (workspaces/monitors/scratchpad), `system.lua` (menus, notifications, panels, power). App-specific window rules are split under `config/hypr/windows/`: `browsers.lua`, `floating.lua`, `media.lua`, `terminals.lua`, `screenshots.lua` — each required by `windows.lua`, which owns the base rules and the final `default-opacity` application.
+Keybindings are split under `defaults/hypr/bindings/`: `apps.lua`, `media.lua`, `windows.lua` (window management), `workspaces.lua` (workspaces/monitors/scratchpad), `system.lua` (menus, notifications, panels, power). App-specific window rules are split under `defaults/hypr/windows/`: `browsers.lua`, `floating.lua`, `media.lua`, `terminals.lua`, `screenshots.lua` — each required by `windows.lua`, which owns the base rules and the final `default-opacity` application. Personal modules belong in `user/hypr/`; upstream must not add or modify a user's files there.
 
 Validate any change non-destructively with `Hyprland --verify-config` before
 relaunching — a broken `hyprland.lua` has no automatic fallback.

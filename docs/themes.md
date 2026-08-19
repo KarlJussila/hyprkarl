@@ -57,8 +57,9 @@ A full theme in this repo includes:
 
 - `hyprland.lua`
   Theme-specific Hyprland styling (Lua — Hyprland's config is Lua since 0.55).
-  The main Hyprland config loads it last via `loadfile`, so it overrides earlier
-  settings. Typically just the active border color, e.g.
+  The bootstrap loads it after shipped defaults and before optional
+  `user/hypr/*.lua` modules. Theme values override defaults; explicit personal
+  values can still override the theme. Typically it sets the active border, e.g.
   `hl.config({ general = { col = { active_border = "rgb(63005A)" } } })`.
 - `hyprlock.conf`
   Lock screen styling

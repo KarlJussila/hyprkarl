@@ -380,7 +380,16 @@ compatibility surface. Command and user-QML extension lanes remain future work.
 
 ## Workstream 3: Establish Upstream Defaults and User Overrides
 
+Status: partially complete. The Hyprland ownership split and ownership-aware
+update review are complete; data-defined menus and lifecycle hooks remain.
+
 ### Hyprland
+
+Implemented. `config/hypr/hyprland.lua` is now the stable bootstrap,
+`defaults/hypr/` owns the shipped modules, and matching optional modules under
+`user/hypr/` load after the active theme. The public module order is `envs`,
+`autostart`, `monitors`, `permissions`, `looknfeel`, `animations`, `gum`,
+`windows`, `input`, then `bindings`.
 
 Move Hyprkarl-owned Hyprland behavior behind a stable bootstrap:
 
@@ -432,6 +441,12 @@ public action. Avoid background retries and hook metadata until a real use
 case requires them.
 
 ### Update Behavior
+
+Implemented for the current ownership surfaces. `hk-update check` and the
+guided review distinguish upstream configuration under `config/`,
+`applications/`, `defaults/`, and `themes/` from review-only personal files
+under `user/`. Surface-specific default-vs-user diff commands can be added with
+their corresponding configuration contracts.
 
 `hk-update` continues to merge and apply the repository. Its new responsibility
 is to distinguish ownership in its review output:
@@ -679,8 +694,9 @@ branch. Deliver them as reviewable vertical changes:
 4. **Complete the production Quickshell bar and cut over.** Complete. The bar
    was validated against the new structure and AGS was removed in the same
    change.
-5. **Introduce `user/` and split Hyprland defaults from overrides.** Preserve
-   behavior before adding new customization features.
+5. **Introduce `user/` and split Hyprland defaults from overrides.** Complete.
+   The stable bootstrap preserves shipped behavior and loads optional user
+   modules afterward; update review reports both ownership classes separately.
 6. **Convert menus to data and add narrow lifecycle hooks.** Keep rofi as the
    renderer until a shell-native menu is independently ready.
 7. **Move runtime theme state and adopt palette-first rendering.** Coordinate
@@ -727,13 +743,12 @@ small design changes before dependent work begins:
 
 1. How Quickshell package updates are admitted after the initial 0.3.0-2.1 and
    Qt 6.11.1 baseline.
-2. The exact set and order of optional Hyprland user modules.
-3. Whether the menu's first data-driven renderer remains rofi or lands with a
+2. Whether the menu's first data-driven renderer remains rofi or lands with a
    shell-native menu already ready for cutover.
-4. Whether the companion theme generator is invoked as an external sibling,
+3. Whether the companion theme generator is invoked as an external sibling,
    installed tool, submodule, or vendored library. Prefer the option with one
    clear owner and reproducible versions.
-5. Which integration owns display discovery, live changes, persistence, and
+4. Which integration owns display discovery, live changes, persistence, and
    recovery before the planned display feature panel is implemented.
 
 Questions such as plugin marketplaces, compatibility with arbitrary internal

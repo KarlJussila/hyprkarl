@@ -6,15 +6,16 @@ does not try to document every internal script.
 ## Update
 
 - `hk-update check`
-  Report what would change across dotfiles, packages, and system without
-  making any changes.
+  Report what would change across configuration, packages, and system without
+  making any changes. Configuration output separates upstream-owned defaults
+  from user-owned files, which are review-only.
 - `hk-update all [--force|--adopt]`
   Run dotfiles, packages, and system updates in sequence. `--force` and
   `--adopt` are passed through to the dotfiles step.
 - `hk-update tui`
   Interactive guided update in a terminal: fetch and merge upstream (safe on a
-  dirty working tree, with conflict resolution), review pending dotfile,
-  package, and system changes as `delta` diffs, then apply the categories you
+  dirty working tree, with conflict resolution), review upstream and user
+  configuration separately from package and system changes, then apply the categories you
   select. Excludes the system package upgrade (`paru -Syu`) — see
   `hk-pkg-upgrade` for that. Launch via the update menu or
   `hk-tui-launch hk-update-tui`.

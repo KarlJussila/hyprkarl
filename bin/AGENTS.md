@@ -37,3 +37,8 @@ outside `lib/update.sh` and the setup scripts, which must run from a TTY.
 Several scripts embed Nerd Font glyphs in menu labels (rofi entries). These
 private-use-area characters are easy to drop silently when rewriting a whole
 file — prefer targeted edits to full-file rewrites in the `hk-menu-*` scripts.
+
+`hk-update` treats `config/`, `applications/`, `defaults/`, and `themes/` as
+upstream-owned configuration. Files under `user/` are review-only: update
+commands may display them but must never generate, replace, reset, or adopt
+them.

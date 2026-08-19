@@ -52,8 +52,10 @@ Hyprkarl is edited from `~/.local/share/hyprkarl/`.
 
 The files under `~/.config/` and `~/.local/share/applications/` are symlinks
 back into that tree, so the tracked files in Hyprkarl are the source of truth.
-Editing `~/.config/hypr/hyprland.lua` and editing
-`~/.local/share/hyprkarl/config/hypr/hyprland.lua` are the same operation.
+For example, `~/.config/hypr/hyprland.lua` points at the stable bootstrap in
+this checkout. Ordinary Hyprland personalization belongs in
+`~/.local/share/hyprkarl/user/hypr/`, not in that bootstrap or the shipped
+modules under `defaults/hypr/`.
 
 ## Editing Hyprkarl
 

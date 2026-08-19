@@ -77,9 +77,10 @@ apply live, and invalid changes retain the last valid menu. A menu may use a
 short-lived `sourceCommand` for validated entries that must be rediscovered on
 open. Themes, Docker services, live keybindings, Nerd Font icons, and
 fingerprint state use this boundary. Menus may opt into in-process fuzzy
-search and theme-owned search/reference widths. Providers run without a login
-shell and dynamic destinations appear atomically after validation; static
-catalogs such as the icon list are preformatted when their data is generated.
+search, theme-owned search/reference widths, and left, center, or right row
+alignment. Providers run without a login shell and dynamic destinations appear
+atomically after validation; static catalogs such as the icon list are
+preformatted when their data is generated.
 Menu appearance
 uses the active shell theme plus its nested `menu` object. The compact width,
 centered rows, title band, nested frame, and bordered selection retain the old

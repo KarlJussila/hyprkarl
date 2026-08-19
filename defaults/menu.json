@@ -33,7 +33,8 @@
       "sourceCommand": "hk-keybindings-menu-entries",
       "emptyLabel": "No keybindings",
       "searchable": true,
-      "widthRole": "reference"
+      "widthRole": "reference",
+      "entryAlignment": "left"
     },
     "icons": {
       "title": "Icons",

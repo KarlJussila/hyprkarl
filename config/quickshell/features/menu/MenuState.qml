@@ -187,6 +187,10 @@ QtObject {
           && !["default", "search", "reference"].includes(menu.widthRole)) {
         fail(menuPath + ".widthRole", "expected 'default', 'search', or 'reference'")
       }
+      if (menu.entryAlignment !== undefined
+          && !["left", "center", "right"].includes(menu.entryAlignment)) {
+        fail(menuPath + ".entryAlignment", "expected 'left', 'center', or 'right'")
+      }
     }
     if (!document.menus[document.root]) {
       fail(path + ".root", "unknown menu '" + document.root + "'")

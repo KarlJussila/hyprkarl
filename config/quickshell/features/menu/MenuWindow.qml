@@ -14,6 +14,13 @@ PanelWindow {
     && output.name === MenuState.screenName
   readonly property bool searchable: MenuState.menus[MenuState.currentMenu]?.searchable === true
   readonly property string widthRole: MenuState.menus[MenuState.currentMenu]?.widthRole ?? "default"
+  readonly property string entryAlignment: MenuState.menus[MenuState.currentMenu]?.entryAlignment
+    ?? "center"
+  readonly property int entryTextAlignment: entryAlignment === "left"
+    ? Text.AlignLeft
+    : entryAlignment === "right"
+      ? Text.AlignRight
+      : Text.AlignHCenter
   readonly property real requestedWidth: widthRole === "reference"
     ? theme.menuReferenceWidth
     : widthRole === "search"
@@ -317,6 +324,7 @@ PanelWindow {
             width: menuList.width
             theme: root.theme
             entry: modelData
+            textAlignment: root.entryTextAlignment
             refreshToken: MenuState.openRevision
             selected: ListView.isCurrentItem
             onHovered: menuList.currentIndex = index

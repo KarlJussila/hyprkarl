@@ -6,6 +6,7 @@ Item {
 
   required property var theme
   required property var entry
+  required property int textAlignment
   required property int refreshToken
   property bool selected: false
   property bool checked: false
@@ -66,7 +67,7 @@ Item {
       font.family: root.theme.menuFont
       font.pixelSize: root.theme.menuFontSize
       font.weight: root.theme.menuFontWeight
-      horizontalAlignment: Text.AlignHCenter
+      horizontalAlignment: root.textAlignment
       verticalAlignment: Text.AlignVCenter
       elide: Text.ElideRight
     }

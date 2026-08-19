@@ -44,7 +44,8 @@ Each object in `menus` supplies a title and may also define `sourceCommand`
 plus `emptyLabel` for entries discovered when that menu opens. Set
 `searchable` to `true` for an in-process fuzzy-search field. `widthRole` may be
 `default`, `search`, or `reference` and selects the corresponding themed menu
-width. Each object in `entries` has a stable dotted ID and:
+width. `entryAlignment` may be `left`, `center`, or `right`; it defaults to
+`center`. Each object in `entries` has a stable dotted ID and:
 
 - `parent`: the menu containing the entry
 - `order`: numeric display order; IDs break ties deterministically
@@ -56,7 +57,7 @@ width. Each object in `entries` has a stable dotted ID and:
 - `action`: a `menu` destination, shell `command`, or `dismiss` action for an
   informational row
 
-Commands run through `bash -lc` after the menu closes. Keep interaction-heavy
+Commands run through `bash -c` after the menu closes. Keep interaction-heavy
 work in a dedicated `hk-*` command and reference it from the data; the menu
 definition owns navigation, not application logic. Themes, live keybindings,
 Nerd Font icons, Docker services, and every fingerprint choice are dynamic

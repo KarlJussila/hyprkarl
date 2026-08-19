@@ -174,6 +174,8 @@ Menus with a `sourceCommand` load a fresh JSON entry array when opened. One
 application-wide `Process` in `MenuState` owns this short-lived load and
 validates its output; providers own discovery only, while the JSON menu object
 owns the title, empty-state label, optional search behavior, and width role.
+Menus may also choose left, center, or right entry alignment; keep this a
+general data property rather than branching the renderer for a specific menu.
 Dynamic entries may run a command, navigate to a declared submenu, or dismiss
 an informational menu; nested dynamic menus reload the restored parent when
 navigating back. Providers and actions inherit the session environment through

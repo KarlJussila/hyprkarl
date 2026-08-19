@@ -123,7 +123,7 @@ tests/hk-update-live.sh C        # long-hop: write 124964f baseline → verify
                                   #   Interactive: gum prompts for installed removals
 tests/hk-update-live.sh D        # invalid-baseline: write fake SHA → verify graceful
                                   #   fallback in check + packages
-tests/hk-update-live.sh E        # conflict: plant real file at hyprland.conf →
+tests/hk-update-live.sh E        # conflict: plant real file at hyprland.lua →
                                   #   verify failure → verify --force restores symlink
 ```
 

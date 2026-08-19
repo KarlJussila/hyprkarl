@@ -47,7 +47,7 @@
 #      No checkout.
 #
 #   E  conflict
-#      Removes ~/.config/hypr/hyprland.conf (currently a symlink), plants a
+#      Removes ~/.config/hypr/hyprland.lua (currently a symlink), plants a
 #      real file in its place, then runs hk-update dotfiles (expected: error)
 #      followed by hk-update dotfiles --force (expected: symlink restored).
 #      No checkout.
@@ -177,7 +177,7 @@ EOF
   printf '\nVerification:\n'
   verify_baseline dotfiles
   verify_baseline packages
-  verify_symlink "$HOME/.config/hypr/hyprland.conf"
+  verify_symlink "$HOME/.config/hypr/hyprland.lua"
 }
 
 # ─── Scenario B: stale-waybar ─────────────────────────────────────────────
@@ -340,17 +340,17 @@ EOF
 
 cmd_conflict() {
   banner "E: conflict"
-  local target="$HOME/.config/hypr/hyprland.conf"
+  local target="$HOME/.config/hypr/hyprland.lua"
   cat <<'EOF'
 Scenario: a real file exists where stow wants to create a symlink — the
 "user has locally edited a tracked config file" case.  Tests that conflict
 detection fires, and that --force cleanly resolves it.
 
 Steps:
-  1. Remove the current hyprland.conf symlink, plant a real file
+  1. Remove the current hyprland.lua symlink, plant a real file
   2. hk-update dotfiles     → should fail with conflict error
   3. hk-update dotfiles --force → should overwrite the real file with symlink
-  4. Verify hyprland.conf is a valid symlink again
+  4. Verify hyprland.lua is a valid symlink again
 
 No checkout.
 EOF
@@ -369,11 +369,11 @@ EOF
 
   printf '\nPress Enter to begin, Ctrl-C to cancel.\n'; read -r
 
-  printf '\n[1] Current state of hyprland.conf:\n'
+  printf '\n[1] Current state of hyprland.lua:\n'
   ls -la "$target" 2>/dev/null | sed 's/^/  /'
   printf '\nReplacing symlink with a real file...\n'
   rm -f "$target"
-  printf '# local edit — should be overwritten by --force\n' > "$target"
+  printf '%s\n' '-- local edit — should be overwritten by --force' > "$target"
   ls -la "$target" | sed 's/^/  /'
 
   printf '\n[2] hk-update dotfiles (expect: conflict error, exit 1)...\n\n'

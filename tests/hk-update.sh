@@ -69,6 +69,7 @@ reset_sandbox() {
   require_sandbox
   git -C "$CLONE" reset --hard "$(cat "$BASE_FILE")" -q
   git -C "$CLONE" clean -fd -q
+  mkdir -p "$CLONE/config/hyprkarl/update"
   reset_fakehome
 }
 
@@ -102,8 +103,8 @@ write_invalid_baseline() {
 }
 
 seed_dotfiles_change() {
-  # Add a comment to hyprland.conf, commit, set dotfiles baseline to HEAD~1
-  printf '\n# test: seed_dotfiles_change\n' >> "$CLONE/config/hypr/hyprland.conf"
+  # Add a comment to hyprland.lua, commit, set dotfiles baseline to HEAD~1
+  printf '\n-- test: seed_dotfiles_change\n' >> "$CLONE/config/hypr/hyprland.lua"
   git -C "$CLONE" commit -q -am "test: dotfiles change"
   git -C "$CLONE" rev-parse HEAD~1 > "$CLONE/config/hyprkarl/update/dotfiles.commit"
 }
@@ -146,7 +147,7 @@ seed_remove_txt_add() {
 plant_stow_conflict() {
   # Place a real file where stow wants to create a symlink.
   mkdir -p "$FAKEHOME/.config/hypr"
-  printf '# my hand-edited local file\n' > "$FAKEHOME/.config/hypr/hyprland.conf"
+  printf '%s\n' '-- my hand-edited local file' > "$FAKEHOME/.config/hypr/hyprland.lua"
 }
 
 # ─── run wrappers ─────────────────────────────────────────────────────────
@@ -325,7 +326,7 @@ cmd_dotfiles_clean() {
   run_dotfiles; local rc=$?
   printf '\nVerification:\n'
   verify_exit "$rc" 0
-  verify_symlink "$FAKEHOME/.config/hypr/hyprland.conf"
+  verify_symlink "$FAKEHOME/.config/hypr/hyprland.lua"
   verify_baseline dotfiles
 }
 
@@ -339,8 +340,8 @@ cmd_dotfiles_conflict() {
   run_dotfiles; local rc=$?
   printf '\nVerification:\n'
   verify_exit "$rc" 1
-  printf '  (hyprland.conf should still be a regular file:)\n'
-  ls -la "$FAKEHOME/.config/hypr/hyprland.conf" 2>/dev/null | sed 's/^/  /'
+  printf '  (hyprland.lua should still be a regular file:)\n'
+  ls -la "$FAKEHOME/.config/hypr/hyprland.lua" 2>/dev/null | sed 's/^/  /'
 }
 
 cmd_dotfiles_force() {
@@ -353,7 +354,7 @@ cmd_dotfiles_force() {
   run_dotfiles --force; local rc=$?
   printf '\nVerification:\n'
   verify_exit "$rc" 0
-  verify_symlink "$FAKEHOME/.config/hypr/hyprland.conf"
+  verify_symlink "$FAKEHOME/.config/hypr/hyprland.lua"
   verify_baseline dotfiles
 }
 
@@ -365,7 +366,7 @@ cmd_dotfiles_force_dirty() {
   seed_dotfiles_change
   plant_stow_conflict
   # Add an uncommitted change to the clone's config (on top of the test commit)
-  printf '# dirty sandbox change\n' >> "$CLONE/config/hypr/hyprland.conf"
+  printf '%s\n' '-- dirty sandbox change' >> "$CLONE/config/hypr/hyprland.lua"
   run_dotfiles --force; local rc=$?
   printf '\nVerification:\n'
   verify_exit "$rc" 1
@@ -379,13 +380,13 @@ cmd_dotfiles_adopt() {
   printf 'Expected: exits 0; git diff shows the adopted content differs from repo.\n\n'
   reset_sandbox
   seed_dotfiles_change
-  plant_stow_conflict  # plants hyprland.conf with content different from repo
+  plant_stow_conflict  # plants hyprland.lua with content different from repo
   run_dotfiles --adopt; local rc=$?
   printf '\nVerification:\n'
   verify_exit "$rc" 0
   printf '  Adopted files (clone git diff HEAD -- config/):\n'
   git -C "$CLONE" diff --name-only HEAD -- config/ applications/ | sed 's/^/    /'
-  printf '  (config/hypr/hyprland.conf should appear above)\n'
+  printf '  (config/hypr/hyprland.lua should appear above)\n'
 }
 
 cmd_dotfiles_adopt_clean() {
@@ -397,7 +398,7 @@ cmd_dotfiles_adopt_clean() {
   seed_dotfiles_change
   # Plant a conflict file with IDENTICAL content to the clone's version
   mkdir -p "$FAKEHOME/.config/hypr"
-  cat "$CLONE/config/hypr/hyprland.conf" > "$FAKEHOME/.config/hypr/hyprland.conf"
+  cat "$CLONE/config/hypr/hyprland.lua" > "$FAKEHOME/.config/hypr/hyprland.lua"
   run_dotfiles --adopt; local rc=$?
   printf '\nVerification:\n'
   verify_exit "$rc" 0
@@ -431,7 +432,7 @@ cmd_dotfiles_stale() {
   printf '\nVerification:\n'
   verify_exit "$rc" 0
   verify_gone "$FAKEHOME/.config/hypr/stale-test.conf"
-  verify_symlink "$FAKEHOME/.config/hypr/hyprland.conf"
+  verify_symlink "$FAKEHOME/.config/hypr/hyprland.lua"
   verify_baseline dotfiles
 }
 
@@ -455,7 +456,7 @@ cmd_remove_stale() {
   printf '\nVerification:\n'
   verify_gone "$FAKEHOME/.config/stale1.conf"
   verify_gone "$FAKEHOME/.config/stale2.conf"
-  verify_symlink "$FAKEHOME/.config/hypr/hyprland.conf"
+  verify_symlink "$FAKEHOME/.config/hypr/hyprland.lua"
 }
 
 # ─── packages scenarios ───────────────────────────────────────────────────

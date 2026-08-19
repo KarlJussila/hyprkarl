@@ -116,7 +116,7 @@ seed_pending_change() {
 
 plant_stow_conflict() {
   mkdir -p "$FAKEHOME/.config/hypr"
-  printf '# my hand-edited local file\n' > "$FAKEHOME/.config/hypr/hyprland.conf"
+  printf '%s\n' '-- my hand-edited local file' > "$FAKEHOME/.config/hypr/hyprland.lua"
 }
 
 cmd_setup() {
@@ -137,18 +137,18 @@ cmd_a() {
   require_sandbox
   reset_to_base
   # Upstream-only change to a config file so the Review diff browser has content.
-  printf '\n# upstream test tweak\n' >> "$CLONE/config/hypr/hyprland.conf"
-  git -C "$CLONE" add config/hypr/hyprland.conf
-  push_upstream_commit "upstream: hyprland.conf tweak"
+  printf '\n-- upstream test tweak\n' >> "$CLONE/config/hypr/hyprland.lua"
+  git -C "$CLONE" add config/hypr/hyprland.lua
+  push_upstream_commit "upstream: hyprland.lua tweak"
   run_tui
 }
 
 cmd_b() {
   require_sandbox
   reset_to_base
-  printf '\n# upstream test tweak\n' >> "$CLONE/config/hypr/hyprland.conf"
-  git -C "$CLONE" add config/hypr/hyprland.conf
-  push_upstream_commit "upstream: hyprland.conf tweak"
+  printf '\n-- upstream test tweak\n' >> "$CLONE/config/hypr/hyprland.lua"
+  git -C "$CLONE" add config/hypr/hyprland.lua
+  push_upstream_commit "upstream: hyprland.lua tweak"
   # Local UNcommitted change to a DIFFERENT file -> stash pops cleanly.
   printf 'sandbox scratch\n' >> "$CLONE/README.md"
   run_tui
@@ -181,11 +181,11 @@ cmd_d() {
 cmd_apply_dotfiles() {
   require_sandbox
   reset_to_base
-  seed_pending_change dotfiles config/hypr/hyprland.conf
+  seed_pending_change dotfiles config/hypr/hyprland.lua
   run_tui_fakehome
   echo
   echo "Result — these should be symlinks pointing into the clone:"
-  ls -l "$FAKEHOME/.config/hypr/hyprland.conf" 2>/dev/null
+  ls -l "$FAKEHOME/.config/hypr/hyprland.lua" 2>/dev/null
   echo "Baseline now equals clone HEAD?"
   echo "  baseline: $(cat "$CLONE/config/hyprkarl/update/dotfiles.commit" 2>/dev/null)"
   echo "  HEAD:     $(git -C "$CLONE" rev-parse HEAD)"
@@ -194,12 +194,12 @@ cmd_apply_dotfiles() {
 cmd_apply_dotfiles_conflict() {
   require_sandbox
   reset_to_base
-  seed_pending_change dotfiles config/hypr/hyprland.conf
+  seed_pending_change dotfiles config/hypr/hyprland.lua
   run_tui_fakehome plant_stow_conflict
   echo
   echo "After 'Keep repo versions': the file below should be a symlink again."
   echo "After 'Adopt my versions':  the clone repo is now dirty (git -C $CLONE status)."
-  ls -l "$FAKEHOME/.config/hypr/hyprland.conf" 2>/dev/null
+  ls -l "$FAKEHOME/.config/hypr/hyprland.lua" 2>/dev/null
 }
 
 cmd_apply_packages() {
@@ -220,14 +220,14 @@ cmd_apply_packages() {
 cmd_apply_dotfiles_dirty() {
   require_sandbox
   reset_to_base
-  seed_pending_change dotfiles config/hypr/hyprland.conf
+  seed_pending_change dotfiles config/hypr/hyprland.lua
   # Leave a second uncommitted change in config/ so the dirty-tree guard fires
   # when the user chooses "Keep repo versions" after the conflict is detected.
-  printf '# local scratch\n' >> "$CLONE/config/hypr/hyprland.conf"
+  printf '%s\n' '-- local scratch' >> "$CLONE/config/hypr/hyprland.lua"
   echo
   echo "Expected path: Sync (merge the dotfiles change) → Apply → Dotfiles"
   echo "  → conflict detected → 'Keep repo versions'"
-  echo "  → dirty-tree guard warns about uncommitted config/hypr/hyprland.conf"
+  echo "  → dirty-tree guard warns about uncommitted config/hypr/hyprland.lua"
   echo "  → offer to commit first so --force can proceed"
   run_tui_fakehome plant_stow_conflict
 }

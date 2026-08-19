@@ -117,6 +117,11 @@ outer side. The revealed tray keeps the unmodified universal padding beside
 its divider, without adding space between adjacent items. Panel internals use
 the separate `controlPadding` value.
 
+Tray icons use the StatusNotifierItem interaction contract: left click
+activates the item, middle click invokes its secondary action, and right click
+opens its native menu. Items that expose only a menu open it on left click as
+well. The root `UseQApplication` pragma is required for those Qt platform menus.
+
 The cross-axis padding contributes to each widget's natural height, while
 `barMinThickness` only supplies a floor. The bar resolves the tallest widget
 and gives every island that same content height. A vertical-bar padding object

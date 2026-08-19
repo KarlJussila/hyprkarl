@@ -62,6 +62,13 @@ Shipped keybindings are defined in `defaults/hypr/bindings/`; personal bindings
 belong in `user/hypr/bindings.lua`. The keybindings menu reads the live bindings
 from Hyprland.
 
+## System Tray
+
+Expand the tray from its chevron to reveal StatusNotifier items. Left click
+activates an item, middle click invokes its secondary action, and right click
+opens its native menu. An item that only provides a menu opens it on left click
+too.
+
 ## Themes
 
 The usual way to switch themes is `Hyprkarl Menu -> Config -> Theme`, but you

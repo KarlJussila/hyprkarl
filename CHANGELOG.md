@@ -20,6 +20,9 @@ surfaces) — they are called out explicitly.
 - Simplified provider failure boundaries: trusted Hyprland data flows directly,
   external workflows use one catch-all, and a malformed Docker manifest is
   logged and skipped without suppressing the other services.
+- Enabled Quickshell's required `QApplication` mode so system-tray items can
+  display their native menus; documented the left, middle, and right-click
+  interaction contract.
 - Breaking: removed forwarding-only `hk-menu-*` commands. Custom bindings and
   scripts should call `hk-shell menu open <menu-id>` or
   `hk-shell menu toggle <menu-id>` directly. `hk-menu-keybindings --print` is

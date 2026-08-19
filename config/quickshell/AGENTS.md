@@ -159,6 +159,11 @@ top and bottom bars. Universal host padding supplies the outer inset for the
 workspace row. The tray applies `trayMainPaddingOffset` to its outer host inset
 and reuses the unmodified universal main-axis value between its internal
 divider and item row. Do not turn either into item-to-item spacing.
+The root `shell.qml` must retain `//@ pragma UseQApplication`: Quickshell's
+installed platform-menu implementation requires `QApplication` for tray item
+menus. Tray delegates send primary activation on left click, secondary
+activation on middle click, and display the item's native menu on right click;
+an `onlyMenu` item displays that menu on left click too.
 
 Component and feature directories have checked-in `qmldir` files where runtime
 loading or singleton registration requires them. Widget files are loaded from

@@ -194,6 +194,13 @@ The same kind owns static command buttons: omit the provider command and
 interval, provide text or an icon plus a click command, and the widget creates
 no background timer or process. The shipped main-menu button uses this form.
 
+For a personal widget whose rendering or interaction cannot fit that data
+contract, add an explicitly referenced `kind: "qml"` module under
+`user/quickshell/modules/`. It receives only the documented per-bar context and
+can use the existing tooltip and feature-panel surfaces without editing
+Hyprkarl-owned QML. See
+[User QML widgets](shell-configuration.md#user-qml-widgets).
+
 To add a built-in widget kind:
 
 1. Create `config/quickshell/widgets/<kind>.qml` and keep the compact bar
@@ -208,8 +215,7 @@ To add a built-in widget kind:
    semantic QML property the component needs.
 
 Add a shared component only when multiple widgets genuinely use the same
-interaction or visual structure. The user-QML extension lane described in the
-shell configuration contract is planned but not yet implemented.
+interaction or visual structure.
 
 See `config/quickshell/README.md` for current interactions, structure, and
 validation commands.

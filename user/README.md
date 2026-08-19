@@ -31,6 +31,14 @@ main-menu button uses that form. See
 [`Command widgets`](../docs/shell-configuration.md#command-widgets) for the
 minimal example, semantic states, click actions, and failure behavior.
 
+Personal QML bar widgets belong under `user/quickshell/modules/`. Reference one
+explicitly from `shell.json` with `kind: "qml"`, a relative `source`, and an
+optional `settings` object. The module root receives the documented per-bar
+context; there is no directory discovery or plugin manifest. See
+[`User QML widgets`](../docs/shell-configuration.md#user-qml-widgets) for a
+complete config and module example. Restart the shell after changing a module
+source.
+
 The Quickshell command menu uses `menu.json` here when it exists. It is also a
 sparse versioned override; menu and entry objects merge by stable ID. For
 example:

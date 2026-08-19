@@ -130,7 +130,10 @@ data-defined application icon overrides with user QML drawings; Mako is no
 longer part of the session. Personal command widgets can add bar readouts
 without editing QML using one application-wide polling or persistent-stream
 provider per widget ID. Static command buttons such as the main-menu trigger
-use the same kind without starting a timer or process.
+use the same kind without starting a timer or process. More specialized
+personal bar widgets can be explicitly loaded from
+`user/quickshell/modules/` through a small per-bar context, without turning the
+shell into a plugin platform.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

@@ -84,6 +84,34 @@ an `icon` or `text`, and set a click command. This form creates no timer or
 process until it is clicked. Click commands receive the owning bar's output
 name as `HYPRKARL_OUTPUT`.
 
+## Add a QML Widget
+
+Use `kind: "qml"` only when the command-widget surface is not expressive
+enough. Put the implementation below `user/quickshell/modules/`, reference it
+explicitly with a relative `source`, and keep per-instance data in `settings`:
+
+```json
+{
+  "op": "insert",
+  "section": "end",
+  "before": "audio",
+  "widget": {
+    "id": "greeting",
+    "kind": "qml",
+    "source": "Greeting.qml",
+    "settings": { "text": "Hello" }
+  }
+}
+```
+
+The module root declares `required property var context`. That context supplies
+the live semantic theme, instance settings, bar edge and orientation, owning
+output/window, command helpers, and shared feature-panel entry points. Modules
+are instantiated once per rendered bar; they are not discovered or registered
+as plugins. See [User QML widgets](shell-configuration.md#user-qml-widgets) for
+the complete QML example and context contract. Restart the shell after editing
+a module source; JSON layout changes still apply live.
+
 ## Change the Appearance
 
 Every bar color, plus typography, thickness, spacing, borders, radii, panel

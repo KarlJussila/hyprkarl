@@ -79,7 +79,8 @@ Objects merge recursively over the shipped configuration; arrays replace as
 complete ordered values. Use `bar.layoutEdits` for explicit `insert`, `move`,
 `override`, and `remove` operations keyed by stable widget ID. Widget
 definitions live inline where they are placed; `id` identifies an instance and
-`kind` selects its built-in or command-backed implementation. The center layout
+`kind` selects its built-in, command-backed, or explicitly referenced user-QML
+implementation. The center layout
 has `before`, one optional midpoint `anchor`, and `after` entries so the clock
 can remain at the exact monitor midpoint. See `docs/shell-configuration.md` for
 examples and the full merge contract.
@@ -87,9 +88,11 @@ examples and the full merge contract.
 Version 1 supports top and bottom bars. The shell watches both paths: default
 updates and valid user edits are resolved live, deleting the user file returns
 to the shipped default, and a rejected live edit leaves the last valid layout
-running with an actionable log message. The current bar implements built-in
-and command widget kinds; the user-QML extension lane remains planned. A
-command widget can poll through `bash -c` or consume a persistent newline
+running with an actionable log message. The current bar implements built-in,
+command, and user-QML widget kinds. A user-QML instance names a relative file
+below `user/quickshell/modules/` and receives the documented per-bar context;
+modules are never discovered or registered implicitly. A command widget can
+poll through `bash -c` or consume a persistent newline
 stream. Polling starts a process on every tick, so short intervals carry a CPU
 and battery cost; stream mode is intended for frequent updates. Static command
 buttons omit the provider command and create no timer or process; the shipped
@@ -184,7 +187,9 @@ schema and override examples.
   the center island at its natural width around a center widget fixed to the
   monitor midpoint.
 - `widgets/WidgetHost.qml` loads widget kinds from the instance definitions.
-- `widgets/*.qml` provide compact status and panel entry points.
+- `widgets/*.qml` provide compact status and panel entry points;
+  `widgets/qml.qml` is the path-restricted host for explicitly referenced
+  modules under `user/quickshell/modules/`.
 - `features/` owns feature-specific panel state and composition. Audio,
   network, Bluetooth, power, and clock/calendar all use this boundary.
 - `features/menu/` owns menu configuration, navigation state, IPC, and the

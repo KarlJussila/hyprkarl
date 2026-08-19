@@ -5,10 +5,11 @@ Omarchy without becoming a distribution or giving up its central model: install
 the repository once, then edit that repository directly.
 
 This is a living roadmap rather than a complete description of current
-behavior. Workstream 1 is complete: `config/quickshell/` is the production bar,
-and AGS has been removed. Later workstreams build on its public configuration
-and ownership boundaries without treating every internal QML detail as a
-compatibility constraint.
+behavior. Workstreams 1 through 3 are complete: `config/quickshell/` is the
+production bar, its three explicit widget-extension lanes are implemented,
+AGS has been removed, and shipped/user ownership boundaries are established.
+Later workstreams build on those public contracts without treating every
+internal QML detail as a compatibility constraint.
 
 ## Outcome
 
@@ -282,6 +283,10 @@ changes.
 
 ## Workstream 2: Make Shell Configuration Data-Only and Extensible
 
+Status: complete. Built-in, application-wide command-provider, static command,
+and explicitly referenced user-QML widgets all use the versioned default/user
+configuration boundary.
+
 ### Goal
 
 Let users rearrange, configure, and extend the bar without editing QML
@@ -360,7 +365,7 @@ Support three sources and no more in the first release:
    but its process-per-tick CPU and battery cost is part of the public contract.
    The same kind supports a static icon/text action without a provider; the
    shipped main-menu button exercises that zero-process form.
-3. **QML widget** — `type: "qml"` loads an explicitly referenced file from
+3. **QML widget** — `kind: "qml"` loads an explicitly referenced file from
   `user/quickshell/modules/` and injects a small context: theme, orientation,
   bar window, instance settings, and shared tooltip/panel entry points.
 
@@ -396,9 +401,10 @@ store.
 
 ### Migration Risk
 
-Medium. This work has begun in the production bar: `BarConfig.qml` was removed
-in favor of shipped and optional user JSON before it could become a public
-compatibility surface. Command and user-QML extension lanes remain future work.
+Resolved. `BarConfig.qml` was removed in favor of shipped and optional user
+JSON before it could become a public compatibility surface. Command providers
+are application-wide, static commands create no provider runtime, and user QML
+is path-restricted to an explicit per-bar context without plugin discovery.
 
 ## Workstream 3: Establish Upstream Defaults and User Overrides
 

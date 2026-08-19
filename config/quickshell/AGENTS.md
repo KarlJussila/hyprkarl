@@ -28,6 +28,20 @@ changes use ordered `bar.layoutEdits` operations keyed by stable widget ID;
 do not infer deletion or array ordering from an ordinary deep merge, and do
 not restore a separate widget-definition map.
 
+`kind: "qml"` is the only user-code widget lane. Its `source` is a relative
+`.qml` path fixed below `user/quickshell/modules/`; do not widen it to arbitrary
+paths or add discovery, manifests, install hooks, or enable state. The module
+root declares `required property var context`. `widgets/qml.qml` owns that
+context and exposes only the documented per-bar values and operations: stable
+ID, settings, semantic theme, edge/orientation, output, owning bar window,
+command execution, and shared panel open/close helpers. It also adapts optional
+root `tooltip`, `tooltipSuppressed`, `widgetVisible`, and
+`hostMainPaddingOffset` properties to existing shell contracts. Do not inject
+`SystemState`, feature singletons, or the raw panel host. Each `WidgetHost`
+owns one module instance per rendered bar/output; application-wide state is not
+implicitly created for user modules. Dynamically referenced sources are outside
+Quickshell's static reload graph, so source edits require `hk-shell restart`.
+
 ## Architecture
 
 `shell.qml` creates shared configuration, theme, and system state objects, then

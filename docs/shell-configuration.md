@@ -3,9 +3,9 @@
 This document defines the lasting public configuration boundary for the
 Quickshell shell. The production bar implements default/user resolution, common
 version 1 structure validation, inline built-in and command widget instances,
-explicit layout edits, and live last-valid reloads. Widget-specific setting
-validation lands with each stable module contract. User QML modules,
-`hk-shell config` commands, and gesture persistence remain later work.
+explicit user-QML modules, explicit layout edits, and live last-valid reloads.
+Widget-specific setting validation lands with each stable module contract.
+`hk-shell config` commands and gesture persistence remain later work.
 
 ## Files and Ownership
 
@@ -297,15 +297,15 @@ selection and fallback rules.
 
 ## Extension Lanes
 
-Version 1 has three intended ways to place a widget:
+Version 1 has three supported ways to place a widget:
 
 1. A built-in widget uses `kind` to select a Hyprkarl-owned implementation.
 2. A command widget either polls an explicit command or reads a persistent
    command stream and renders its documented text or small JSON result.
 3. A QML widget explicitly names a file under `user/quickshell/modules/`.
 
-The built-in and command lanes are implemented. The user-QML lane remains
-future work; validation still rejects arbitrary QML references.
+All three lanes are implemented. User QML is intentionally explicit and
+path-restricted; there is no module discovery or plugin installation layer.
 
 ### Command widgets
 
@@ -419,14 +419,101 @@ registry. A configured stream has one long-running provider process. A
 configured poll widget has no running OS process between ticks and launches
 only when its timer fires.
 
-There is no directory scan, manifest, installation hook, dependency resolver,
-or implicit enable state. A user module exists in the running shell because a
-canonical config entry references it.
+### User QML widgets
 
-A QML widget receives only the context its supported contract needs: semantic
-theme values, orientation, its instance settings, the owning bar window, and
-shared tooltip and panel entry points. It does not receive internal singleton
-objects simply because they are convenient.
+Use `kind: "qml"` when a widget needs custom interaction or rendering that the
+command-widget presentation contract cannot express. `source` is a relative
+`.qml` path below `user/quickshell/modules/`; absolute paths and `.` or `..`
+segments are rejected. `settings` is an optional object owned entirely by that
+module.
+
+For example, this config entry inserts `user/quickshell/modules/Greeting.qml`:
+
+```json
+{
+  "op": "insert",
+  "section": "end",
+  "before": "audio",
+  "widget": {
+    "id": "greeting",
+    "kind": "qml",
+    "source": "Greeting.qml",
+    "settings": {
+      "text": "Hello",
+      "command": "notify-send 'Hello from Hyprkarl'"
+    }
+  }
+}
+```
+
+The module root must be an `Item` with `required property var context`:
+
+```qml
+import QtQuick
+
+Item {
+  id: root
+
+  required property var context
+  property string tooltip: "Run greeting"
+
+  implicitWidth: label.implicitWidth
+  implicitHeight: label.implicitHeight
+
+  Text {
+    id: label
+    anchors.centerIn: parent
+    text: root.context.settings.text
+    color: root.context.theme.foreground
+    font.family: root.context.theme.uiFontFamily
+    font.pixelSize: root.context.theme.bodyFontSize
+  }
+
+  MouseArea {
+    anchors.fill: parent
+    onClicked: root.context.runCommand(root.context.settings.command)
+  }
+}
+```
+
+Each bar/output owns its own module instance. The injected context is the
+complete supported shell boundary:
+
+| Member | Meaning |
+| --- | --- |
+| `widgetId` | Stable ID from the widget definition |
+| `settings` | The instance's optional JSON settings object |
+| `theme` | Live semantic shell theme object |
+| `edge` | `top` or `bottom` for the owning bar |
+| `orientation` | `horizontal` in version 1 |
+| `output` | Owning output name |
+| `barWindow` | Owning bar window for deliberate window-relative behavior |
+| `runCommand(command)` | Run non-login `bash -c` with `HYPRKARL_OUTPUT` set |
+| `togglePanel(trigger, component)` | Open or toggle content in the shared per-output panel host |
+| `closePanel()` | Close the shared panel |
+| `launchPanelCommand(command)` | Close the panel, then run a command |
+
+An optional root `tooltip` string uses the shared shell tooltip. Set an
+optional root `tooltipSuppressed` boolean while another surface is active.
+Expose `widgetVisible` to collapse the entire host reactively; the ordinary
+QML `visible` property only hides module content because child visibility is
+inherited from its parent. A concrete compactness requirement may expose
+`hostMainPaddingOffset`, which uses the same zero-floored universal-padding
+contract as built-in widgets.
+
+Panel content passed to `togglePanel` follows the same contract as built-in
+panel content: its root reports `implicitHeight` and may expose
+`preferredWidth`. The shared host owns the popup window, anchoring, focus,
+available-height scrolling, dismissal, animation, and contact-aware corners.
+Do not create another popup window for a bar-attached feature.
+
+The loader passes no Hyprkarl state singleton or service object. A module can
+import normal QML and Quickshell APIs, but it is trusted, unsandboxed code
+running inside the shell process. A missing or unloadable source logs the QML
+error and collapses that instance without taking down the rest of the bar.
+Changes to `user/shell.json` remain live; after editing a dynamically
+referenced QML source, run `hk-shell restart` because it is outside
+Quickshell's statically scanned reload graph.
 
 Feature panels remain separate surfaces. A built-in feature widget can declare
 its corresponding built-in panel; a user QML widget may use the shared panel
@@ -453,8 +540,8 @@ components rely on the parsed contract.
 - Duplicate widget IDs are invalid because IDs identify instances for runtime
   state and diagnostics.
 - Unknown widget kinds are invalid configuration. Command widget fields are
-  validated before a provider is created; user QML references are not accepted
-  until that extension lane lands.
+  validated before a provider is created. User-QML sources must be relative
+  `.qml` paths below `user/quickshell/modules/`, and settings must be an object.
 
 The shell watches both files and recomputes the effective configuration when
 either changes, without recreating unrelated services. `hk-shell reload` is

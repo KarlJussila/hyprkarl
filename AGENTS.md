@@ -149,7 +149,10 @@ persistent-stream provider per provider-backed command-widget ID. Static
 command widgets, including the main-menu button, create no provider runtime.
 Polling uses non-login `bash -c`, starts a process per tick, and has a
 documented CPU and battery cost; use stream mode or native services for
-frequent updates. See
+frequent updates. `config/quickshell/widgets/qml.qml` hosts explicitly
+referenced personal QML widgets below `user/quickshell/modules/`. Each module
+receives the narrow documented per-bar context and is instantiated once per
+output; there is no plugin discovery or implicit shared state. See
 `config/quickshell/AGENTS.md` before changing the shell. Use `hk-shell` to
 start, stop, restart, inspect, or read logs from the production bar.
 The same shell renders the command hierarchy from `defaults/menu.json` plus

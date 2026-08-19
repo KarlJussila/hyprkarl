@@ -431,6 +431,8 @@ intermediate Rofi renderer:
   focus, history navigation, and outside-click dismissal;
 - the bar, Hyprland bindings, and established static `hk-menu-*` commands all
   use the same in-process state through the shell's IPC boundary;
+- wallpaper and fingerprint management, power profiles, and default-app
+  choices are nested shell-native menus rather than secondary Rofi menus;
 - specialized selectors remain dedicated Rofi or terminal commands where
   search and richer interaction make that a better fit.
 

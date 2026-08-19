@@ -1,25 +1,5 @@
 #!/bin/bash
 # hk-menu-shell
-# Menu for selecting a default shell
+# Open the shell-native default-shell menu.
 
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-FISH=" Fish"
-ZSH="󰰶 Zsh"
-BASH="󱆃 Bash"
-
-CHOICE=$(echo -e "$FISH\n$ZSH\n$BASH" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Default Shell" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$FISH") hk-tui-launch hk-default-shell fish ;;
-    "$ZSH")  hk-tui-launch hk-default-shell zsh ;;
-    "$BASH") hk-tui-launch hk-default-shell bash ;;
-    "")      exit 1 ;;
-esac
-
-exit 0
+exec hk-shell menu open shell

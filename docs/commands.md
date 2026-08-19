@@ -53,8 +53,8 @@ does not try to document every internal script.
 - `hk-menu-defaults`
   Open the defaults submenu (terminal, editor, shell).
 - `hk-menu-editor` / `hk-menu-shell` / `hk-menu-terminal`
-  Pick a default editor, shell, or terminal directly without going through the
-  defaults menu.
+  Open the corresponding shell-native default chooser directly without going
+  through the defaults menu.
 - `hk-menu-install`
   Open the shell-native install menu for packages and Docker services.
 - `hk-menu-uninstall`
@@ -68,7 +68,8 @@ does not try to document every internal script.
 - `hk-menu-power`
   Open the shell-native power menu.
 - `hk-menu-power-profile`
-  Pick a `power-profiles-daemon` profile (performance / balanced / saver).
+  Open the shell-native `power-profiles-daemon` profile chooser. The active
+  profile is marked when the menu opens.
 - `hk-menu-keybindings`
   Open a searchable rofi menu of all Hyprland keybindings. Pass `--print` /
   `-p` to print them to stdout instead.
@@ -123,7 +124,7 @@ does not try to document every internal script.
 ## Themes and Wallpapers
 
 - `hk-menu-theme`
-  Open the theme menu.
+  Open the searchable theme selector.
 - `hk-theme set <theme>`
   Switch to a theme, update wallpaper state, update theme settings, and reload
   affected programs.
@@ -132,7 +133,8 @@ does not try to document every internal script.
 - `hk-theme current`
   Print the current theme name.
 - `hk-menu-wallpaper`
-  Open the wallpaper menu.
+  Open the shell-native wallpaper management menu. Select and Remove continue
+  into the thumbnail picker; Add opens the file picker in a terminal.
 - `hk-wallpaper set <filename>`
   Set the current wallpaper for the active theme.
 - `hk-wallpaper cycle`
@@ -152,7 +154,8 @@ does not try to document every internal script.
 ## Fingerprint
 
 - `hk-menu-fingerprint`
-  Open the fingerprint menu.
+  Open the shell-native fingerprint menu appropriate to current setup state.
+  Removing a fingerprint continues into the enrolled-finger selector.
 - `hk-fingerprint setup [--remove]`
   Configure fingerprint authentication for sudo and polkit, or remove it with
   `--remove`.

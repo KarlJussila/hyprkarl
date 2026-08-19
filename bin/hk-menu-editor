@@ -1,29 +1,5 @@
 #!/bin/bash
 # hk-menu-editor
-# Menu for selecting a default text editor
+# Open the shell-native default-editor menu.
 
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-NVIM=" Neovim"
-VIM=" Vim"
-NANO=" Nano"
-MICRO="μ Micro"
-VSCODIUM=" VSCodium"
-
-CHOICE=$(echo -e "$NVIM\n$VIM\n$NANO\n$MICRO\n$VSCODIUM" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Default Editor" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$NVIM")     hk-default-editor nvim ;;
-    "$VIM")      hk-default-editor vim ;;
-    "$NANO")     hk-default-editor nano ;;
-    "$MICRO")    hk-default-editor micro ;;
-    "$VSCODIUM") hk-default-editor vscodium ;;
-    "")          exit 1 ;;
-esac
-
-exit 0
+exec hk-shell menu open editor

@@ -24,11 +24,13 @@ noun-first form reads naturally: `hk-show-done`, `hk-open-with`,
 without good reason.
 
 Static menu navigation is defined in `defaults/menu.json` and rendered by
-Quickshell. `hk-menu`, `hk-menu-config`, `hk-menu-defaults`, `hk-menu-install`,
-`hk-menu-uninstall`, `hk-menu-utils`, `hk-menu-update`, and `hk-menu-power` are
-thin public wrappers around `hk-shell menu`; do not rebuild hierarchy in those
-scripts. Other `hk-menu-*` commands remain dedicated searchable or interactive
-surfaces and may continue using Rofi.
+Quickshell. The corresponding `hk-menu-*` commands are thin public wrappers
+around `hk-shell menu`; `hk-menu-fingerprint` only selects the applicable
+shell-native menu from real setup state, and `hk-menu-wallpaper` retains narrow
+action subcommands for the dedicated image and file pickers. Do not rebuild
+navigation hierarchy in those scripts. Dynamic or search-heavy selectors such
+as applications, themes, Docker services, keybindings, and icons may continue
+using Rofi.
 
 ## Style
 

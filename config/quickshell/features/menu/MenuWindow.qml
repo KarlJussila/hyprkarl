@@ -197,6 +197,7 @@ PanelWindow {
             width: menuList.width
             theme: root.theme
             entry: modelData
+            refreshToken: MenuState.openRevision
             selected: ListView.isCurrentItem
             onHovered: menuList.currentIndex = index
             onChosen: MenuState.activate(modelData)

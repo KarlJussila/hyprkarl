@@ -1,40 +1,14 @@
 #!/bin/bash
 # hk-menu-fingerprint
-# Menu for fingerprint management
-
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
+# Open the shell-native fingerprint menu appropriate to current setup state.
 
 # Check if fingerprint auth is set up
 is_setup() {
   command -v fprintd-list &>/dev/null && grep -q pam_fprintd.so /etc/pam.d/sudo 2>/dev/null
 }
 
-SETUP="󰈷 Setup"
-ENROLL="󰈷 Add Fingerprint"
-REMOVE=" Remove Fingerprint"
-UNINSTALL="󱧖 Uninstall"
-
-# Build menu based on setup state
 if is_setup; then
-  options=$(echo -e "$ENROLL\n$REMOVE\n$UNINSTALL")
+  exec hk-shell menu open fingerprint
 else
-  options=$(echo -e "$SETUP")
+  exec hk-shell menu open fingerprint-setup
 fi
-
-CHOICE=$(echo "$options" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Fingerprint" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$SETUP")     hk-tui-launch hk-fingerprint setup ;;
-    "$ENROLL")    hk-tui-launch hk-fingerprint enroll ;;
-    "$REMOVE")    hk-fingerprint remove \
-                  "$(hk-fingerprint select 'Remove Fingerprint')" ;;
-    "$UNINSTALL") hk-tui-launch hk-fingerprint setup --remove ;;
-    "")           exit 1 ;;
-esac
-
-exit 0

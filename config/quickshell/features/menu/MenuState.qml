@@ -17,6 +17,7 @@ QtObject {
   property string screenName: ""
   property string currentMenu: ""
   property var history: []
+  property int openRevision: 0
   property string lastError: ""
   property bool loading: false
   property bool defaultResolved: false
@@ -181,6 +182,10 @@ QtObject {
       if (entry.enabled !== undefined && typeof entry.enabled !== "boolean") {
         fail(entryPath + ".enabled", "expected a boolean")
       }
+      if (entry.checkedCommand !== undefined
+          && (typeof entry.checkedCommand !== "string" || entry.checkedCommand.length === 0)) {
+        fail(entryPath + ".checkedCommand", "expected a non-empty command")
+      }
 
       requireObject(entry.action, entryPath + ".action")
       if (entry.action.type === "command") {
@@ -266,6 +271,7 @@ QtObject {
     screenName = name
     history = [menu]
     currentMenu = menu
+    openRevision++
     requested = true
     return true
   }
@@ -304,6 +310,7 @@ QtObject {
     if (entry.action.type === "menu") {
       history = history.concat([entry.action.menu])
       currentMenu = entry.action.menu
+      openRevision++
       return
     }
 

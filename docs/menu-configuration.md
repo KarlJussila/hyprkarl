@@ -47,13 +47,21 @@ shipped definition.
 - `label`: displayed text
 - `icon`: optional displayed glyph
 - `enabled`: optional boolean; `false` removes the entry from rendering
+- `checkedCommand`: optional command evaluated when the menu opens; exit zero
+  replaces the icon with a check mark
 - `action`: either a `menu` destination or a shell `command`
 
 Commands run through `bash -lc` after the menu closes. Keep interaction-heavy
 work in a dedicated `hk-*` command and reference it from the data; the menu
 definition owns navigation, not application logic. The shipped definition
-still uses focused Rofi or terminal interfaces for selectors such as apps,
-themes, wallpapers, defaults, and packages.
+still uses focused Rofi or terminal interfaces for dynamic and search-heavy
+selectors such as apps, themes, Docker services, wallpaper thumbnails,
+enrolled fingers, and packages. Static wallpaper management, fingerprint
+management, power profiles, and default-app choices remain in Quickshell.
+
+Use `checkedCommand` only for a cheap external state probe whose status belongs
+in the menu. Checks run when the menu opens; they are not long-running monitors
+and do not replace shell-native service state in feature panels.
 
 ## Sparse User Overrides
 
@@ -130,9 +138,10 @@ hk-shell menu close
 
 The established `hk-menu`, `hk-menu-config`, `hk-menu-defaults`,
 `hk-menu-install`, `hk-menu-uninstall`, `hk-menu-utils`, `hk-menu-update`, and
-`hk-menu-power` commands remain as compatibility-friendly entry points, but
-they now open the corresponding Quickshell menu rather than owning separate
-Rofi navigation scripts.
+`hk-menu-power` commands remain as compatibility-friendly entry points. The
+wallpaper, fingerprint, power-profile, terminal, editor, and shell menu
+commands also open their corresponding Quickshell surfaces rather than owning
+separate Rofi navigation scripts.
 
 Keyboard navigation supports Up/Down (or J/K), Home/End, Enter/Space/Right (or
 L) to choose, and Escape/Left/Backspace to go back. Going back from the root

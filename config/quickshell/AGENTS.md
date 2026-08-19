@@ -167,6 +167,9 @@ imports on its own.
 
 `features/menu/MenuState.qml` alone reads, watches, recursively merges, and
 validates menu JSON. Entries merge by stable ID; `enabled: false` hides one.
+An optional `checkedCommand` is evaluated when its menu opens and replaces the
+entry icon with a check mark on success; keep it for cheap state probes such as
+the active power profile, not general application logic.
 Keep commands as leaf actions and static hierarchy in data. `MenuWindow.qml`
 owns the full-monitor overlay, exclusive keyboard focus, history navigation,
 and outside-click dismissal. Existing static `hk-menu-*` entry points are thin

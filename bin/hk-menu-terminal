@@ -1,27 +1,5 @@
 #!/bin/bash
 # hk-menu-terminal
-# Menu for selecting a default terminal emulator
+# Open the shell-native default-terminal menu.
 
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-ALACRITTY="Ａ Alacritty"
-GHOSTTY=" Ghostty"
-KITTY="󰄛 Kitty"
-FOOT="󰽒 Foot"
-
-CHOICE=$(echo -e "$ALACRITTY\n$GHOSTTY\n$KITTY\n$FOOT" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Default Terminal" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$ALACRITTY") hk-default-terminal alacritty ;;
-    "$GHOSTTY")   hk-default-terminal ghostty ;;
-    "$KITTY")     hk-default-terminal kitty ;;
-    "$FOOT")      hk-default-terminal foot ;;
-    "")           exit 1 ;;
-esac
-
-exit 0
+exec hk-shell menu open terminal

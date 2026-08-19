@@ -1,33 +1,5 @@
 #!/bin/bash
 # hk-menu-power-profile
-# Menu for setting the system power profile via power-profiles-daemon
+# Open the shell-native power-profile menu.
 
-ROFI_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/custom-menu.rasi"
-
-CURRENT=$(powerprofilesctl get)
-
-
-label() {
-    local profile="$1" icon="$2"
-    [[ "$profile" == "$CURRENT" ]] && echo "󰄬 ${2#* }" || echo "$icon"
-}
-
-POWER_SAVER=$(label power-saver "󰌪 Power Saver")
-BALANCED=$(label balanced "󰗑 Balanced")
-PERFORMANCE=$(label performance "󱐋 Performance")
-
-CHOICE=$(echo -e "$POWER_SAVER\n$BALANCED\n$PERFORMANCE" \
-    | rofi -dmenu \
-           -p "" \
-           -no-custom \
-           -mesg "Power Profile" \
-           -theme "$ROFI_THEME")
-
-case "$CHOICE" in
-    "$POWER_SAVER")   powerprofilesctl set power-saver ;;
-    "$BALANCED")      powerprofilesctl set balanced ;;
-    "$PERFORMANCE")   powerprofilesctl set performance ;;
-    "")               exit 1 ;;
-esac
-
-exit 0
+exec hk-shell menu open power-profile

@@ -8,6 +8,13 @@
     "utilities": { "title": "Utilities" },
     "config": { "title": "Config" },
     "defaults": { "title": "Defaults" },
+    "terminal": { "title": "Default Terminal" },
+    "editor": { "title": "Default Editor" },
+    "shell": { "title": "Default Shell" },
+    "wallpaper": { "title": "Wallpaper" },
+    "fingerprint": { "title": "Fingerprint" },
+    "fingerprint-setup": { "title": "Fingerprint" },
+    "power-profile": { "title": "Power Profile" },
     "update": { "title": "Update" },
     "power": { "title": "Power" }
   },
@@ -139,7 +146,7 @@
       "order": 40,
       "icon": "󰗑",
       "label": "Power Profile",
-      "action": { "type": "command", "command": "hk-menu-power-profile || hk-shell menu open utilities" }
+      "action": { "type": "menu", "menu": "power-profile" }
     },
 
     "config.theme": {
@@ -154,7 +161,7 @@
       "order": 20,
       "icon": "",
       "label": "Wallpaper",
-      "action": { "type": "command", "command": "hk-menu-wallpaper || hk-shell menu open config" }
+      "action": { "type": "menu", "menu": "wallpaper" }
     },
     "config.defaults": {
       "parent": "config",
@@ -183,21 +190,184 @@
       "order": 10,
       "icon": "",
       "label": "Terminal",
-      "action": { "type": "command", "command": "hk-menu-terminal || hk-shell menu open defaults" }
+      "action": { "type": "menu", "menu": "terminal" }
     },
     "defaults.editor": {
       "parent": "defaults",
       "order": 20,
       "icon": "",
       "label": "Editor",
-      "action": { "type": "command", "command": "hk-menu-editor || hk-shell menu open defaults" }
+      "action": { "type": "menu", "menu": "editor" }
     },
     "defaults.shell": {
       "parent": "defaults",
       "order": 30,
       "icon": "",
       "label": "Shell",
-      "action": { "type": "command", "command": "hk-menu-shell || hk-shell menu open defaults" }
+      "action": { "type": "menu", "menu": "shell" }
+    },
+
+    "terminal.alacritty": {
+      "parent": "terminal",
+      "order": 10,
+      "icon": "Ａ",
+      "label": "Alacritty",
+      "action": { "type": "command", "command": "hk-default-terminal alacritty" }
+    },
+    "terminal.ghostty": {
+      "parent": "terminal",
+      "order": 20,
+      "icon": "",
+      "label": "Ghostty",
+      "action": { "type": "command", "command": "hk-default-terminal ghostty" }
+    },
+    "terminal.kitty": {
+      "parent": "terminal",
+      "order": 30,
+      "icon": "󰄛",
+      "label": "Kitty",
+      "action": { "type": "command", "command": "hk-default-terminal kitty" }
+    },
+    "terminal.foot": {
+      "parent": "terminal",
+      "order": 40,
+      "icon": "󰽒",
+      "label": "Foot",
+      "action": { "type": "command", "command": "hk-default-terminal foot" }
+    },
+
+    "editor.neovim": {
+      "parent": "editor",
+      "order": 10,
+      "icon": "",
+      "label": "Neovim",
+      "action": { "type": "command", "command": "hk-default-editor nvim" }
+    },
+    "editor.vim": {
+      "parent": "editor",
+      "order": 20,
+      "icon": "",
+      "label": "Vim",
+      "action": { "type": "command", "command": "hk-default-editor vim" }
+    },
+    "editor.nano": {
+      "parent": "editor",
+      "order": 30,
+      "icon": "",
+      "label": "Nano",
+      "action": { "type": "command", "command": "hk-default-editor nano" }
+    },
+    "editor.micro": {
+      "parent": "editor",
+      "order": 40,
+      "icon": "μ",
+      "label": "Micro",
+      "action": { "type": "command", "command": "hk-default-editor micro" }
+    },
+    "editor.vscodium": {
+      "parent": "editor",
+      "order": 50,
+      "icon": "",
+      "label": "VSCodium",
+      "action": { "type": "command", "command": "hk-default-editor vscodium" }
+    },
+
+    "shell.fish": {
+      "parent": "shell",
+      "order": 10,
+      "icon": "",
+      "label": "Fish",
+      "action": { "type": "command", "command": "hk-tui-launch hk-default-shell fish" }
+    },
+    "shell.zsh": {
+      "parent": "shell",
+      "order": 20,
+      "icon": "󰰶",
+      "label": "Zsh",
+      "action": { "type": "command", "command": "hk-tui-launch hk-default-shell zsh" }
+    },
+    "shell.bash": {
+      "parent": "shell",
+      "order": 30,
+      "icon": "󱆃",
+      "label": "Bash",
+      "action": { "type": "command", "command": "hk-tui-launch hk-default-shell bash" }
+    },
+
+    "wallpaper.select": {
+      "parent": "wallpaper",
+      "order": 10,
+      "icon": "󰋹",
+      "label": "Select",
+      "action": { "type": "command", "command": "hk-menu-wallpaper select || hk-shell menu open wallpaper" }
+    },
+    "wallpaper.add": {
+      "parent": "wallpaper",
+      "order": 20,
+      "icon": "",
+      "label": "Add",
+      "action": { "type": "command", "command": "hk-menu-wallpaper add || hk-shell menu open wallpaper" }
+    },
+    "wallpaper.remove": {
+      "parent": "wallpaper",
+      "order": 30,
+      "icon": "",
+      "label": "Remove",
+      "action": { "type": "command", "command": "hk-menu-wallpaper remove || hk-shell menu open wallpaper" }
+    },
+
+    "fingerprint-setup.setup": {
+      "parent": "fingerprint-setup",
+      "order": 10,
+      "icon": "󰈷",
+      "label": "Setup",
+      "action": { "type": "command", "command": "hk-tui-launch hk-fingerprint setup" }
+    },
+    "fingerprint.enroll": {
+      "parent": "fingerprint",
+      "order": 10,
+      "icon": "󰈷",
+      "label": "Add Fingerprint",
+      "action": { "type": "command", "command": "hk-tui-launch hk-fingerprint enroll" }
+    },
+    "fingerprint.remove": {
+      "parent": "fingerprint",
+      "order": 20,
+      "icon": "",
+      "label": "Remove Fingerprint",
+      "action": { "type": "command", "command": "hk-fingerprint remove \"$(hk-fingerprint select 'Remove Fingerprint')\" || hk-shell menu open fingerprint" }
+    },
+    "fingerprint.uninstall": {
+      "parent": "fingerprint",
+      "order": 30,
+      "icon": "󱧖",
+      "label": "Uninstall",
+      "action": { "type": "command", "command": "hk-tui-launch hk-fingerprint setup --remove" }
+    },
+
+    "power-profile.saver": {
+      "parent": "power-profile",
+      "order": 10,
+      "icon": "󰌪",
+      "label": "Power Saver",
+      "checkedCommand": "test \"$(powerprofilesctl get)\" = power-saver",
+      "action": { "type": "command", "command": "powerprofilesctl set power-saver" }
+    },
+    "power-profile.balanced": {
+      "parent": "power-profile",
+      "order": 20,
+      "icon": "󰗑",
+      "label": "Balanced",
+      "checkedCommand": "test \"$(powerprofilesctl get)\" = balanced",
+      "action": { "type": "command", "command": "powerprofilesctl set balanced" }
+    },
+    "power-profile.performance": {
+      "parent": "power-profile",
+      "order": 30,
+      "icon": "󱐋",
+      "label": "Performance",
+      "checkedCommand": "test \"$(powerprofilesctl get)\" = performance",
+      "action": { "type": "command", "command": "powerprofilesctl set performance" }
     },
 
     "update.hyprkarl": {

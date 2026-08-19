@@ -82,11 +82,12 @@ complete example.
 every widget on a top or bottom bar. `main` follows the bar and `cross` follows
 its thickness; “horizontal” names the bar orientation, not a coordinate axis.
 The host applies both values to every widget. Widget natural sizes contain only
-their content, so the tray's 8-pixel chevron receives the same main-axis
-padding as other widgets instead of stacking it on a second built-in inset.
-The revealed tray keeps that padding beside its divider and after its last
-item, without adding space between adjacent items. Panel internals use the
-separate `controlPadding` value.
+their content, so padding is never stacked on a second built-in inset.
+`trayMainPaddingOffset` adjusts the tray's main-axis host padding and is added
+with a zero floor; the shipped `-2` turns the universal `6` into `4` pixels per
+outer side. The revealed tray keeps the unmodified universal padding beside
+its divider, without adding space between adjacent items. Panel internals use
+the separate `controlPadding` value.
 
 The cross-axis padding contributes to each widget's natural height, while
 `barMinThickness` only supplies a floor. The bar resolves the tallest widget

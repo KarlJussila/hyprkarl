@@ -61,12 +61,14 @@ a new surface ownership model.
 `horizontalWidgetPadding` names the horizontal-bar design, not coordinate
 axes. Its `main` value pads along a top/bottom bar and its `cross` value pads
 across the bar's thickness. `WidgetHost.qml` owns both values so built-in and
-future widgets get the same outer padding and clickable extent. Widget natural
-sizes must describe content, not include a second copy of host padding; the
-tray trigger is the concrete reference because its natural width matches its
-chevron. Add a separate vertical-bar padding object only when vertical bars are
-supported. Panel internals use `controlPadding`; they are not bar-widget
-padding.
+future widgets get the same outer padding and clickable extent by default.
+Widget natural sizes must describe content, not include a second copy of host
+padding. A widget may expose `hostMainPaddingOffset` for a concrete compactness
+requirement; the host resolves `max(0, main + offset)`. The tray binds that
+contract to the theme's `trayMainPaddingOffset`. Do not offset cross-axis
+padding or add an override without a real design requirement. Add a separate
+vertical-bar padding object only when vertical bars are supported. Panel
+internals use `controlPadding`; they are not bar-widget padding.
 
 Themes own the entire visual surface, including colors, typography, bar
 minimum thickness, spacing, radii, borders, dividers, and the panel gap. Shell
@@ -123,9 +125,9 @@ The three performance widgets share `ExpandableReadout`; the tray owns the
 same clipped horizontal expansion for its dynamic item list. Its divider lives
 inside that clipped panel so it reveals between the fixed trigger and items on
 top and bottom bars. Universal host padding supplies the outer inset for the
-workspace row and the compact tray trigger. The tray reuses the main-axis value
-between its internal divider and item row. Do not turn it into item-to-item
-spacing.
+workspace row. The tray applies `trayMainPaddingOffset` to its outer host inset
+and reuses the unmodified universal main-axis value between its internal
+divider and item row. Do not turn either into item-to-item spacing.
 
 Component and feature directories have checked-in `qmldir` files where runtime
 loading or singleton registration requires them. Widget files are loaded from

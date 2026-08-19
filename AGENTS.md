@@ -119,8 +119,10 @@ screen/outer/content margins are theme data rendered once by
 the tallest one against the theme minimum, and all islands receive that shared
 height. `WidgetHost.qml` applies universal `horizontalWidgetPadding.main` and
 `.cross` values along and across top/bottom bar widgets; widget natural sizes
-must not duplicate those insets. Panel internals use the separate
-`controlPadding` token. `Theme.qml` watches the canonical
+must not duplicate those insets. A concrete widget may request a main-axis
+offset, resolved with a zero floor; the tray binds this to
+`trayMainPaddingOffset`. Panel internals use the separate `controlPadding`
+token. `Theme.qml` watches the canonical
 `current/theme.name` selector and
 then reads the selected theme file directly so replacing the active-theme
 symlink cannot strand its file watcher on the previous target. Each bar owns

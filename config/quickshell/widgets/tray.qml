@@ -15,6 +15,7 @@ Item {
   required property var systemState
   required property var panelHost
 
+  readonly property int hostMainPaddingOffset: theme.trayMainPaddingOffset
   readonly property bool towardEnd: config.direction !== "start"
   readonly property real contentX: (width - implicitWidth) / 2
   property bool expanded: false

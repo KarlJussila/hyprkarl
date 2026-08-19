@@ -76,7 +76,8 @@ The island silhouette is theme-owned too. For example, the shipped themes use:
   "horizontalWidgetPadding": {
     "main": 6,
     "cross": 3
-  }
+  },
+  "trayMainPaddingOffset": -2
 }
 ```
 
@@ -93,11 +94,12 @@ screen and content margins are included in the reserved bar area.
 `main` pads along the bar and `cross` pads across its thickness; “horizontal”
 describes the bar orientation rather than the x-axis. The shared widget host
 owns this padding, including its clickable area. Widget natural sizes should
-therefore describe content without including another outer inset. The tray
-chevron follows that rule and receives the same `main` padding as other
-widgets; revealed items also keep it beside their divider and island edge. It
-does not add item-to-item spacing. Panel rows and actions use the separate
-`controlPadding` value.
+therefore describe content without including another outer inset.
+`trayMainPaddingOffset` is added to `main` for the tray's outer host padding,
+with a floor of zero. The shipped `-2` turns `6` into `4` pixels per side. The
+revealed item row still uses the unmodified `main` value beside its divider,
+and neither value adds item-to-item spacing. Panel rows and actions use the
+separate `controlPadding` value.
 
 `barMinThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural

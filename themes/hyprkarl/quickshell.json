@@ -59,7 +59,7 @@
     "entryRadius": 4,
     "outerBorderWidth": 2,
     "outerPadding": 6,
-    "innerBorderWidth": 1,
+    "innerBorderWidth": 2,
     "headerPadding": 6,
     "entryMargin": 4,
     "entryPadding": 7,

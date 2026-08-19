@@ -177,9 +177,10 @@ Rofi menu's compact width, centered icon-and-label rows, title band, nested
 frame, row gaps, and bordered selection. Derive its palette, font, radii,
 border color, and translucent accent states from the current shell theme. The
 nested `menu` object may override those inherited tokens and owns its distinct
-geometry and opacity modifiers. Outside-click and Escape go to the parent from
-a submenu and close only at the root, matching the old nested menu dismissal
-behavior.
+geometry and opacity modifiers. The title band has rounded top corners and a
+square lower edge; the inner frame's border continues beneath it as the title
+divider. Outside-click and Escape go to the parent from a submenu and close
+only at the root, matching the old nested menu dismissal behavior.
 
 ## Checks
 

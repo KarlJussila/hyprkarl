@@ -92,6 +92,7 @@ PanelWindow {
       + root.theme.menuOuterPadding
     readonly property real desiredHeight: frameInset * 2
       + root.theme.menuInnerBorderWidth * 2
+      + root.theme.menuInnerBorderWidth
       + header.height
       + menuList.contentHeight
 
@@ -129,13 +130,20 @@ PanelWindow {
         anchors.topMargin: root.theme.menuInnerBorderWidth
         height: headerLabel.implicitHeight + root.theme.menuHeaderPadding * 2
         color: root.theme.menuBackground
-        radius: root.theme.menuInnerRadius
+        topLeftRadius: Math.max(0,
+          root.theme.menuInnerRadius - root.theme.menuInnerBorderWidth)
+        topRightRadius: topLeftRadius
+        bottomLeftRadius: 0
+        bottomRightRadius: 0
 
         Rectangle {
           anchors.fill: parent
           color: root.theme.menuAccent
           opacity: root.theme.menuHeaderAccentOpacity
-          radius: root.theme.menuInnerRadius
+          topLeftRadius: parent.topLeftRadius
+          topRightRadius: parent.topRightRadius
+          bottomLeftRadius: 0
+          bottomRightRadius: 0
         }
 
         Text {
@@ -154,9 +162,19 @@ PanelWindow {
       }
 
       Rectangle {
+        id: headerDivider
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: header.bottom
+        height: root.theme.menuInnerBorderWidth
+        color: root.theme.menuBorder
+      }
+
+      Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: headerDivider.bottom
         anchors.bottom: parent.bottom
         anchors.leftMargin: root.theme.menuInnerBorderWidth
         anchors.rightMargin: root.theme.menuInnerBorderWidth

@@ -115,6 +115,8 @@ inherited `background`, `foreground`, `accent`, `border`, `font`, and
 `fontWeight` tokens when a theme needs a menu-specific treatment. Omitted
 semantic tokens fall back to the corresponding top-level shell theme values,
 so a new theme normally needs only the menu-specific metrics and modifiers.
+`innerBorderWidth` sets both the nested frame thickness and the divider that
+supports the title band; the band's lower corners stay square against it.
 
 ## Opening Menus Directly
 

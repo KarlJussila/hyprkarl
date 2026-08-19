@@ -116,8 +116,8 @@ category commands do not emit that event.
   `HYPRKARL_THEME_GENERATOR_PATH`.
 - `hk-theme set <theme>`
   Validate and atomically activate a built-in theme, a complete user theme, or
-  a same-name user overlay; then update wallpaper and application settings and
-  reload affected programs.
+  a same-name user overlay; refresh the installed real-file GTK payload; then
+  update wallpaper and application settings and reload affected programs.
 - `hk-theme list`
   List installed themes.
 - `hk-theme current`

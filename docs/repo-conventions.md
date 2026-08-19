@@ -53,6 +53,10 @@ overlays, wallpaper additions, and removal markers belong under `user/themes/`.
 Switching themes must stage and validate a complete bundle before atomically
 moving the XDG-state selector.
 
+`~/.local/share/themes/hyprkarl/` is derived runtime output, not an editing
+surface. It is a marked real-file copy of the active bundle's `gtk-theme/`
+payload because GTK does not reliably follow moving theme-directory symlinks.
+
 ## Branches and Releases
 
 - `main` is the released branch: what a fresh install clones and what

@@ -61,6 +61,10 @@ Personal executable lifecycle hooks live under
 `theme-set`, and `wallpaper-set`; files run in lexical order. See
 [Extending Hyprkarl](extending-hyprkarl.md#add-a-lifecycle-hook).
 
+The active bundle's `gtk-theme/` payload is materialized separately as a
+managed real-file copy at `~/.local/share/themes/hyprkarl/`. Theme switches
+replace that copy; GTK does not consume it through the runtime symlink tree.
+
 ## Hyprland
 
 Hyprland is configured in **Lua** (`hyprland.lua`), required since Hyprland 0.55

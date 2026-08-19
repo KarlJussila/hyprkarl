@@ -20,7 +20,12 @@ THEME_NAME=$(theme_normalize_name "$@")
 
 exec 9> "$HYPRKARL_THEME_LOCK"
 flock 9
+if ! theme_gtk_install_is_replaceable; then
+  printf 'GTK theme destination is not managed by Hyprkarl: %s\n' "$HYPRKARL_GTK_THEME_HOME" >&2
+  exit 1
+fi
 theme_activate_bundle "$THEME_NAME" || exit 1
+theme_install_gtk_payload || exit 1
 flock -u 9
 
 post_action_status=0

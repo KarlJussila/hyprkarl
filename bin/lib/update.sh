@@ -77,22 +77,7 @@ _stow_conflicts() {
   stow -n -v "$@" 2>&1 | grep -E '^(CONFLICT:|[[:space:]]+\* )'
 }
 
-_stow_gtk_theme() {
-  local force_clear="${1:-0}"
-  theme_ensure_active || return 1
-  if [[ "$force_clear" -eq 1 ]]; then
-    rm -rf "$HOME/.local/share/themes/hyprkarl"
-  fi
-  mkdir -p "$HOME/.local/share/themes/hyprkarl"
-  stow --restow --no-folding \
-    --dir="$HYPRKARL_CURRENT_THEME" \
-    --target="$HOME/.local/share/themes/hyprkarl" \
-    gtk-theme
-}
-
 check_config_conflicts() {
-  local gtk_theme_source
-  gtk_theme_source=$(theme_stow_source)
   _stow_conflicts --restow --no-folding \
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.config" \
@@ -101,11 +86,9 @@ check_config_conflicts() {
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.local/share/applications" \
     applications
-  mkdir -p "$HOME/.local/share/themes/hyprkarl"
-  _stow_conflicts --restow --no-folding \
-    --dir="$gtk_theme_source" \
-    --target="$HOME/.local/share/themes/hyprkarl" \
-    gtk-theme
+  if ! theme_gtk_install_is_replaceable; then
+    printf '  * cannot install GTK theme over unmanaged target %s\n' "$HYPRKARL_GTK_THEME_HOME"
+  fi
 }
 
 stow_adopt_config() {
@@ -116,7 +99,7 @@ stow_adopt_config() {
     --dir="$HYPRKARL_PATH" --target="$HOME/.config" config || return 1
   stow --adopt --no-folding \
     --dir="$HYPRKARL_PATH" --target="$HOME/.local/share/applications" applications || return 1
-  _stow_gtk_theme 1
+  theme_install_gtk_payload 1
 }
 
 stow_restow_config() {
@@ -129,7 +112,7 @@ stow_restow_config() {
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.local/share/applications" \
     applications || return 1
-  _stow_gtk_theme 0
+  theme_install_gtk_payload 0
 }
 
 remove_stale_symlinks() {

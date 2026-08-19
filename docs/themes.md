@@ -123,10 +123,16 @@ A full theme in this repo includes:
   GTK settings files (stowed to `~/.config/gtk-{3,4}.0/`); point GTK apps to
   the theme name and set the dark/light preference
 - `gtk-theme/`
-  The GTK theme bundle stowed to `~/.local/share/themes/hyprkarl/`.
+  The GTK theme payload copied to `~/.local/share/themes/hyprkarl/` on setup,
+  update, and every theme switch.
   Contains `index.theme` (theme metadata) and the GTK3/4 stylesheets under
   `gtk-3.0/` and `gtk-4.0/` (`gtk.css`, `gtk-dark.css`, and assets).
-  GTK apps read their colors from here.
+  GTK apps read their colors from this real directory. Hyprkarl deliberately
+  does not make the installed theme directory or its payload files symlinks;
+  GTK theme discovery and asset loading are less reliable through moving
+  symlink trees. `.hyprkarl-managed` marks the installed copy as safe to
+  replace. An unrelated existing directory at that name is rejected unless
+  setup is explicitly run with its force/adopt path.
 - `nvim/colorscheme.lua`, `nvim/custom-colors.lua`
   Neovim colors
 - `wallpapers/`

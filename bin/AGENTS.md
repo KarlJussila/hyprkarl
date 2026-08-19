@@ -86,3 +86,7 @@ XDG-state artifact, validate it, and atomically swap the selector before any
 reloads. The repository's `config/hyprkarl/current/` entries are fixed
 compatibility links. Wallpaper additions/removals persist under `user/themes/`;
 never mutate checked-in theme sources from a public command.
+The same library owns installation of the GTK payload as a marked real-file
+copy. `hk-theme-set` refreshes it while holding the theme lock; setup/update
+uses the same helper and may replace an unrelated destination only on the
+explicit force/adopt path.

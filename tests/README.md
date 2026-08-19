@@ -85,6 +85,8 @@ tests/hk-update.sh dotfiles-force-dirty    # --force with uncommitted config cha
 tests/hk-update.sh dotfiles-adopt          # --adopt absorbs a user-modified file
 tests/hk-update.sh dotfiles-adopt-clean    # --adopt when file already matches repo
 tests/hk-update.sh dotfiles-stale          # broken hyprkarl symlink removed during update
+tests/hk-update.sh dotfiles-gtk-migration  # old Stow GTK tree -> managed real copy
+tests/hk-update.sh dotfiles-gtk-conflict   # unrelated GTK directory is preserved
 
 # Stale-symlink scenario:
 tests/hk-update.sh remove-stale            # two stale symlinks removed; valid ones kept

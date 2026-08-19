@@ -16,8 +16,8 @@ if [[ -n "$dirty" ]]; then
   exit 1
 fi
 
-# Stow config/, applications/, and the GTK theme, replacing any conflicting
-# files with the repo versions. This refuses to run if the repo has uncommitted
+# Stow config/ and applications/, then install the active GTK payload as a
+# managed real-file copy. This refuses to run if the repo has uncommitted
 # config changes (the reset to HEAD would silently discard them) and records
 # the installed commit for update tracking.
 "$SCRIPT_DIR/bin/hk-update-dotfiles" --force || exit 1

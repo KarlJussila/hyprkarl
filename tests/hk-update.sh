@@ -34,6 +34,8 @@
 #   dotfiles-adopt           --adopt absorbs a user-modified file into the repo
 #   dotfiles-adopt-clean     --adopt when user file matches repo -> no-change path
 #   dotfiles-stale           broken hyprkarl symlink removed during update
+#   dotfiles-gtk-migration    old Stow GTK tree becomes a managed real-file copy
+#   dotfiles-gtk-conflict     unrelated GTK directory is preserved and rejected
 #
 # Remove-stale scenario:
 #   remove-stale             two stale symlinks removed; valid symlinks preserved
@@ -207,6 +209,18 @@ verify_symlink() {
   fi
 }
 
+verify_gtk_theme_copy() {
+  local target="$FAKEHOME/.local/share/themes/hyprkarl"
+  if [[ -d "$target" ]] && [[ ! -L "$target" ]] \
+    && [[ -f "$target/.hyprkarl-managed" ]] \
+    && [[ -f "$target/gtk-3.0/gtk.css" ]] \
+    && [[ ! -L "$target/gtk-3.0/gtk.css" ]]; then
+    printf '  ok  GTK payload is a managed real-file copy\n'
+  else
+    printf '  BAD GTK payload is not a managed real-file copy\n'
+  fi
+}
+
 verify_gone() {
   local path="$1"
   if [[ ! -e "$path" && ! -L "$path" ]]; then
@@ -327,6 +341,7 @@ cmd_dotfiles_clean() {
   printf '\nVerification:\n'
   verify_exit "$rc" 0
   verify_symlink "$FAKEHOME/.config/hypr/hyprland.lua"
+  verify_gtk_theme_copy
   verify_baseline dotfiles
 }
 
@@ -434,6 +449,41 @@ cmd_dotfiles_stale() {
   verify_gone "$FAKEHOME/.config/hypr/stale-test.conf"
   verify_symlink "$FAKEHOME/.config/hypr/hyprland.lua"
   verify_baseline dotfiles
+}
+
+cmd_dotfiles_gtk_migration() {
+  banner "dotfiles-gtk-migration"
+  printf 'Scenario: GTK theme uses the old Stow layout of real directories and leaf symlinks.\n'
+  printf 'Expected: it becomes a marked real-file copy that can follow theme switches.\n\n'
+  reset_sandbox
+  seed_dotfiles_change
+  mkdir -p "$FAKEHOME/.local/share/themes/hyprkarl/gtk-3.0"
+  ln -s "$CLONE/themes/hyprkarl/gtk-theme/index.theme" \
+    "$FAKEHOME/.local/share/themes/hyprkarl/index.theme"
+  ln -s "$CLONE/themes/hyprkarl/gtk-theme/gtk-3.0/gtk.css" \
+    "$FAKEHOME/.local/share/themes/hyprkarl/gtk-3.0/gtk.css"
+  run_dotfiles; local rc=$?
+  printf '\nVerification:\n'
+  verify_exit "$rc" 0
+  verify_gtk_theme_copy
+  verify_baseline dotfiles
+}
+
+cmd_dotfiles_gtk_conflict() {
+  banner "dotfiles-gtk-conflict"
+  printf 'Scenario: an unrelated real GTK theme already occupies the Hyprkarl name.\n'
+  printf 'Expected: normal update exits 1 and preserves the existing file.\n\n'
+  reset_sandbox
+  seed_dotfiles_change
+  printf 'personal theme\n' > "$FAKEHOME/.local/share/themes/hyprkarl/custom.css"
+  run_dotfiles; local rc=$?
+  printf '\nVerification:\n'
+  verify_exit "$rc" 1
+  if grep -q 'personal theme' "$FAKEHOME/.local/share/themes/hyprkarl/custom.css"; then
+    printf '  ok  unmanaged GTK theme was preserved\n'
+  else
+    printf '  BAD unmanaged GTK theme was changed\n'
+  fi
 }
 
 # ─── remove-stale scenario ────────────────────────────────────────────────
@@ -577,6 +627,8 @@ case "${1:-}" in
   dotfiles-adopt)           cmd_dotfiles_adopt ;;
   dotfiles-adopt-clean)     cmd_dotfiles_adopt_clean ;;
   dotfiles-stale)           cmd_dotfiles_stale ;;
+  dotfiles-gtk-migration)   cmd_dotfiles_gtk_migration ;;
+  dotfiles-gtk-conflict)    cmd_dotfiles_gtk_conflict ;;
 
   remove-stale)             cmd_remove_stale ;;
 

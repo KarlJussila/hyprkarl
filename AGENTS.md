@@ -110,6 +110,14 @@ regenerate every built-in instead of hand-copying one new file per theme.
 `hk-theme build <source> [name]` renders a personal bundle into
 `user/themes/<name>/`.
 
+GTK theme payloads are the deliberate exception to runtime symlink consumption.
+`theme_install_gtk_payload` materializes the active bundle's `gtk-theme/` as a
+marked real-file copy at `~/.local/share/themes/hyprkarl/` on setup, update,
+and theme switch. Do not replace it with a theme-directory or leaf-file symlink
+scheme; GTK discovery and asset loading have been unreliable through those
+paths. Normal updates migrate the old Hyprkarl-owned Stow tree but reject an
+unrelated directory at the same destination.
+
 ### Quickshell Bar Configuration
 
 The active bar under `config/quickshell/` reads

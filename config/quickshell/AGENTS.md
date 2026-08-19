@@ -96,7 +96,10 @@ Audio, network, Bluetooth, battery/power, and clock/calendar now exercise this
 host with five different compositions. Their repeated header, section, row,
 and action controls are the stable baseline vocabulary; feature-specific
 summaries, sliders, calendar cells, and navigation remain with their features.
-There is no second feature-window or legacy flyout boundary.
+There is no second feature-window or legacy flyout boundary. In the power and
+network panels, facts already owned by the primary content do not become
+decorative header subtitles: battery facts belong to `BatterySummary`, and the
+connected Wi-Fi network is the selected first entry in the sorted network list.
 
 Hover text uses `ShellTooltip`, a non-focusable `PopupWindow` with an empty
 input mask. Do not replace it with Qt Controls' attached `ToolTip`; that window

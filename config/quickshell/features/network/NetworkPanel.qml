@@ -13,7 +13,6 @@ Item {
   required property bool active
 
   readonly property var wifiDevice: NetworkState.wifiDevice
-  readonly property var connectedNetwork: NetworkState.connectedNetwork
   readonly property var sortedNetworks: NetworkState.networks.slice().sort((left, right) => {
     if (left.connected !== right.connected) return left.connected ? -1 : 1
     return right.signalStrength - left.signalStrength
@@ -55,11 +54,6 @@ Item {
       width: parent.width
       theme: root.theme
       title: "Network"
-      subtitle: !Networking.wifiHardwareEnabled
-        ? "Wi-Fi unavailable"
-        : root.connectedNetwork
-          ? `Connected to ${root.connectedNetwork.name}`
-          : Networking.wifiEnabled ? "Not connected" : "Wi-Fi is off"
     }
 
     PanelRow {
@@ -71,18 +65,6 @@ Item {
       selected: Networking.wifiEnabled
       enabled: Networking.wifiHardwareEnabled
       action: () => Networking.wifiEnabled = !Networking.wifiEnabled
-    }
-
-    PanelRow {
-      visible: root.connectedNetwork !== null
-      width: parent.width
-      theme: root.theme
-      icon: root.connectedNetwork ? root.signalIcon(root.connectedNetwork.signalStrength) : ""
-      title: root.connectedNetwork?.name ?? ""
-      detail: root.connectedNetwork ? `${Math.round(root.connectedNetwork.signalStrength * 100)}%` : ""
-      selected: true
-      busy: root.connectedNetwork?.stateChanging ?? false
-      action: root.connectedNetwork ? () => root.connectedNetwork.disconnect() : null
     }
 
     PanelSectionLabel {

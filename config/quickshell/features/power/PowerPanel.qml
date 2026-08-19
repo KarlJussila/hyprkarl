@@ -73,7 +73,6 @@ Item {
       width: parent.width
       theme: root.theme
       title: "Power"
-      subtitle: `${Math.round((root.battery?.percentage ?? 0) * 100)}% · ${root.batteryStatus()}`
     }
 
     BatterySummary {

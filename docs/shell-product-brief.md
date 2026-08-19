@@ -89,6 +89,10 @@ These are separate surfaces, not summaries inside one combined quick-settings
 window. A feature can link to another feature or system settings when useful,
 but it does not become their container.
 
+In the battery and network panels, charge and connection facts each have one
+visual owner. Their headers do not repeat state already shown by the battery
+summary or selectable network rows.
+
 ## Shared Panel Language
 
 One panel shell should own the behavior that must be consistent:

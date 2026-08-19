@@ -185,7 +185,11 @@ The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are
 applied afterward. Deleting the user file returns to the default, while an
 invalid live edit keeps the last valid configuration running. Version 1
-supports top and bottom bars and built-in widget kinds. See
+supports top and bottom bars plus built-in and command widget kinds. Command
+widgets are inert unless referenced in the effective layout; configured
+providers are application-wide rather than duplicated per monitor. Poll mode
+starts one process per tick, while stream mode holds one newline-producing
+process for frequent updates. See
 [Shell Configuration](shell-configuration.md) for the schema and extension
 roadmap.
 
@@ -206,6 +210,10 @@ Network scanning follows panel activity; Bluetooth discovery begins only from
 the panel's explicit scan action. Clock uses one application-wide current-time
 singleton while viewed-month navigation remains local to each panel. There is
 no separate feature-flyout boundary.
+
+`config/quickshell/features/command/` owns the corresponding application-wide
+command-widget registry and provider lifetime. The public poll/stream contract
+is documented in `docs/shell-configuration.md`.
 
 The shell-native command menu creates one full-screen overlay per output and
 shows only the requested monitor's instance. `features/menu/MenuState.qml`

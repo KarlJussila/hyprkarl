@@ -31,6 +31,7 @@ ShellButton {
       theme: root.theme
     }
   }
+  tooltip: `GPU: ${Math.round(systemState.gpuUsage)}% · VRAM ${gib(systemState.gpuVramUsed)}/${gib(systemState.gpuVramTotal)}`
   onPrimary: () => expanded = !expanded
   onSecondary: () => alternate = !alternate
 }

@@ -127,7 +127,10 @@ media-key feedback use the same shell through a focused-monitor, click-through
 OSD. The shell also owns desktop notifications, including focused-monitor
 routing, progress, silence mode, one-item restore, bar-connected geometry, and
 data-defined application icon overrides with user QML drawings; Mako is no
-longer part of the session.
+longer part of the session. Personal command widgets can add bar readouts
+without editing QML using one application-wide polling or persistent-stream
+provider per widget ID; an unused command-widget lane starts no timer or
+process.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

@@ -29,7 +29,7 @@ Item {
 
   function launchPanelCommand(command: string): void {
     root.panelHost.close()
-    Quickshell.execDetached(["bash", "-lc", command])
+    Quickshell.execDetached(["bash", "-c", command])
   }
 
   Text {
@@ -63,13 +63,13 @@ Item {
     onClicked: event => {
       if (event.button === Qt.LeftButton) {
         if (root.onPrimary) root.onPrimary()
-        else if (root.primaryCommand) Quickshell.execDetached(["bash", "-lc", root.primaryCommand])
+        else if (root.primaryCommand) Quickshell.execDetached(["bash", "-c", root.primaryCommand])
       } else if (event.button === Qt.RightButton) {
         if (root.onSecondary) root.onSecondary()
-        else if (root.secondaryCommand) Quickshell.execDetached(["bash", "-lc", root.secondaryCommand])
+        else if (root.secondaryCommand) Quickshell.execDetached(["bash", "-c", root.secondaryCommand])
       } else if (event.button === Qt.MiddleButton) {
         if (root.onTertiary) root.onTertiary()
-        else if (root.tertiaryCommand) Quickshell.execDetached(["bash", "-lc", root.tertiaryCommand])
+        else if (root.tertiaryCommand) Quickshell.execDetached(["bash", "-c", root.tertiaryCommand])
       }
     }
 

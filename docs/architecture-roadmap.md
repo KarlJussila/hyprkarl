@@ -349,8 +349,10 @@ Support three sources and no more in the first release:
 
 1. **Built-in widget** — `kind` selects a Hyprkarl-owned QML component.
 2. **Command widget** — a command produces plain text or a small documented
-   JSON result at a configured interval. The shell owns process lifetime and
-   ensures one poller per configured instance, not one per monitor.
+   JSON result either at a configured polling interval or over a persistent
+   newline stream. The shell owns process lifetime and ensures one provider per
+   configured instance, not one per monitor. Polling has no artificial minimum,
+   but its process-per-tick CPU and battery cost is part of the public contract.
 3. **QML widget** — `type: "qml"` loads an explicitly referenced file from
   `user/quickshell/modules/` and injects a small context: theme, orientation,
   bar window, instance settings, and shared tooltip/panel entry points.

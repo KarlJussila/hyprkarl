@@ -79,17 +79,20 @@ Objects merge recursively over the shipped configuration; arrays replace as
 complete ordered values. Use `bar.layoutEdits` for explicit `insert`, `move`,
 `override`, and `remove` operations keyed by stable widget ID. Widget
 definitions live inline where they are placed; `id` identifies an instance and
-`kind` selects its built-in implementation. The center layout has `before`, one
-optional midpoint `anchor`, and `after` entries so the clock can remain at the
-exact monitor midpoint. See `docs/shell-configuration.md` for examples and the
-full merge contract.
+`kind` selects its built-in or command-backed implementation. The center layout
+has `before`, one optional midpoint `anchor`, and `after` entries so the clock
+can remain at the exact monitor midpoint. See `docs/shell-configuration.md` for
+examples and the full merge contract.
 
 Version 1 supports top and bottom bars. The shell watches both paths: default
 updates and valid user edits are resolved live, deleting the user file returns
 to the shipped default, and a rejected live edit leaves the last valid layout
 running with an actionable log message. The current bar implements built-in
-widget kinds; the planned command and user-QML extension lanes have not landed
-yet.
+and command widget kinds; the user-QML extension lane remains planned. A
+command widget can poll through `bash -c` or consume a persistent newline
+stream. Polling starts a process on every tick, so short intervals carry a CPU
+and battery cost; stream mode is intended for frequent updates. With no
+command widgets in the effective layout, no command timers or processes exist.
 
 The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
 `user/menu.json` adds or overrides menus and entries by stable ID. Ordinary
@@ -189,6 +192,9 @@ schema and override examples.
   click-through transient surface.
 - `features/notifications/` owns the freedesktop server, notification
   lifecycle and IPC, icon presentation, and one non-focusable stack per screen.
+- `features/command/` owns one application-wide polling or persistent-stream
+  provider per configured command-widget ID. It owns no runtime work when the
+  effective layout contains no command widgets.
 - `components/` contains shared buttons, tooltips, and panel controls.
 - `state/SystemState.qml` owns the one polling process used by CPU, GPU, RAM,
   and recording widgets.
@@ -207,6 +213,9 @@ multiple widgets genuinely use the same interaction or visual structure.
 - Left-click opens feature panels or performs a widget's primary action.
 - Right-click runs the configured secondary launcher.
 - Middle-click is reserved for an explicitly configured tertiary action.
+- Command widgets render shared text or validated JSON results from one
+  application-wide provider per ID. Poll providers skip overlapping runs;
+  persistent providers consume one result per newline.
 - CPU, GPU, and RAM values start collapsed; left-click reveals the value and
   right-click switches between primary and alternate formats. Their readouts
   and the system tray expand horizontally instead of appearing immediately.

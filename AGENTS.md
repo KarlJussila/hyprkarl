@@ -143,7 +143,12 @@ one `FeaturePanelHost`; audio, network, Bluetooth,
 battery/power, and clock/calendar panels compose shared panel controls inside
 that host, while feature directories own service-specific state. Bluetooth
 and network use feature singletons for adapter-global discovery/scan
-ownership; clock uses one application-wide current-time owner. See
+ownership; clock uses one application-wide current-time owner.
+`config/quickshell/features/command/CommandState.qml` owns one polling or
+persistent-stream provider per configured command-widget ID and remains inert
+when none are configured. Polling uses non-login `bash -c`, starts a process
+per tick, and has a documented CPU and battery cost; use stream mode or native
+services for frequent updates. See
 `config/quickshell/AGENTS.md` before changing the shell. Use `hk-shell` to
 start, stop, restart, inspect, or read logs from the production bar.
 The same shell renders the command hierarchy from `defaults/menu.json` plus

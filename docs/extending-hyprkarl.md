@@ -179,6 +179,17 @@ override. Objects merge recursively, arrays
 replace, and `bar.layoutEdits` can target a widget by stable ID without copying
 the shipped layout. See [Shell Configuration](shell-configuration.md).
 
+For a personal readout, prefer a `kind: "command"` instance before adding a
+built-in QML implementation. Give it a stable ID, an explicit command, and
+either a polling interval or persistent stream mode, plus optional static icon,
+tooltip, semantic state, and click commands. It may return trimmed text or a
+small validated JSON object. Polling launches a process on every tick, so use a
+conservative interval to avoid needless CPU wakeups and battery drain; prefer a
+stream for frequent updates. The application-wide command registry runs one
+provider per ID even when several monitors render the widget. See
+[Command widgets](shell-configuration.md#command-widgets) for examples and the
+output schema.
+
 To add a built-in widget kind:
 
 1. Create `config/quickshell/widgets/<kind>.qml` and keep the compact bar
@@ -193,9 +204,8 @@ To add a built-in widget kind:
    semantic QML property the component needs.
 
 Add a shared component only when multiple widgets genuinely use the same
-interaction or visual structure. The command-widget and user-QML extension
-lanes described in the shell configuration contract are planned but not yet
-implemented.
+interaction or visual structure. The user-QML extension lane described in the
+shell configuration contract is planned but not yet implemented.
 
 See `config/quickshell/README.md` for current interactions, structure, and
 validation commands.

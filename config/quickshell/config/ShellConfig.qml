@@ -67,6 +67,10 @@ QtObject {
   readonly property var centerAnchorInstances: centerAnchor ? [centerAnchor] : []
   readonly property var centerAfter: center.after ?? []
   readonly property var end: layout.end ?? []
+  readonly property var widgetInstances: start.concat(
+    centerBefore, centerAnchorInstances, centerAfter, end)
+  readonly property var commandWidgets: widgetInstances.filter(
+    widget => widget.kind === "command")
 
   property FileView defaultSource: FileView {
     path: root.defaultPath
@@ -169,8 +173,50 @@ QtObject {
     }
     ids.push(widget.id)
 
-    if (typeof widget.kind !== "string" || builtInKinds.indexOf(widget.kind) === -1) {
-      fail(path + ".kind", "unknown built-in widget kind '" + widget.kind + "'")
+    if (widget.kind === "command") {
+      validateCommandWidget(widget, path)
+    } else if (typeof widget.kind !== "string"
+        || builtInKinds.indexOf(widget.kind) === -1) {
+      fail(path + ".kind", "unknown widget kind '" + widget.kind + "'")
+    }
+  }
+
+  function validateCommandWidget(widget, path): void {
+    if (typeof widget.command !== "string" || widget.command.length === 0) {
+      fail(path + ".command", "expected a non-empty string")
+    }
+    const mode = widget.mode ?? "poll"
+    if (mode !== "poll" && mode !== "stream") {
+      fail(path + ".mode", "expected 'poll' or 'stream'")
+    }
+    if (mode === "poll"
+        && (!Number.isInteger(widget.interval) || widget.interval <= 0)) {
+      fail(path + ".interval", "expected a positive integer in poll mode")
+    }
+    if (mode === "stream" && widget.interval !== undefined) {
+      fail(path + ".interval", "not used in stream mode")
+    }
+    if (widget.output !== undefined
+        && widget.output !== "text"
+        && widget.output !== "json") {
+      fail(path + ".output", "expected 'text' or 'json'")
+    }
+    for (const field of [
+      "icon",
+      "tooltip",
+      "primaryCommand",
+      "secondaryCommand",
+      "tertiaryCommand"
+    ]) {
+      if (widget[field] !== undefined && typeof widget[field] !== "string") {
+        fail(path + "." + field, "expected a string")
+      }
+    }
+    if (widget.state !== undefined
+        && ["normal", "muted", "accent", "warning", "urgent"]
+          .indexOf(widget.state) === -1) {
+      fail(path + ".state",
+        "expected 'normal', 'muted', 'accent', 'warning', or 'urgent'")
     }
   }
 

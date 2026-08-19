@@ -33,6 +33,7 @@ ShellButton {
       theme: root.theme
     }
   }
+  tooltip: `RAM: ${Math.round(systemState.ramUsedPercent)}% · ${gib(systemState.ramUsed)}/${gib(systemState.ramTotal)} · Swap ${gib(systemState.swapUsed)}/${gib(systemState.swapTotal)}`
   onPrimary: () => expanded = !expanded
   onSecondary: () => alternate = !alternate
 }

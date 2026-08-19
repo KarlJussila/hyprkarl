@@ -21,6 +21,15 @@ explicit widget-ID operations. See
 [`docs/shell-configuration.md`](../docs/shell-configuration.md) for the schema
 and update contract.
 
+A personal readout can be inserted with `kind: "command"`. The shell owns one
+polling or persistent-stream provider per widget ID, not one per monitor, and
+renders either trimmed text or a validated JSON presentation object. Polling
+starts a process on every tick, so short intervals can cost CPU and battery;
+use stream mode for frequent updates. With no configured command widgets, no
+provider timers or processes exist. See
+[`Command widgets`](../docs/shell-configuration.md#command-widgets) for the
+minimal example, semantic states, click actions, and failure behavior.
+
 The Quickshell command menu uses `menu.json` here when it exists. It is also a
 sparse versioned override; menu and entry objects merge by stable ID. For
 example:

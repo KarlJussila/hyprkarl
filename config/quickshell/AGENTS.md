@@ -49,6 +49,17 @@ alone owns each bar window and its per-monitor `FeaturePanelHost`. Layout files
 own island geometry. Feature directories own feature-specific panel state and
 content; bar widgets remain concise status and entry points.
 
+`features/command/CommandState.qml` owns the application-wide command-widget
+registry. It creates exactly one provider per configured widget ID rather than
+one per screen. Poll mode runs commands through non-login `bash -c`, starts one
+process per tick, and skips a tick while the prior process is still running.
+Stream mode owns one persistent process and accepts one text value or JSON
+object per newline. Do not impose a polling-rate policy in validation, but keep
+the CPU, wakeup, and battery cost prominent in user documentation. When no
+command widget exists in the effective layout, the registry model must remain
+empty so it creates no timers or processes. Prefer native Quickshell services
+or the shared `SystemState` process for shipped high-frequency widgets.
+
 `layout/IslandSurface.qml` is the single renderer for start, center, and end
 islands. Its corner and border names are logical rather than top/bottom
 coordinates: `screen` faces the output edge, `content` faces the workspace,

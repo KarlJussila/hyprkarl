@@ -2,11 +2,10 @@
 
 This document defines the lasting public configuration boundary for the
 Quickshell shell. The production bar implements default/user resolution, common
-version 1 structure validation, inline built-in widget instances, explicit
-layout edits, and live last-valid reloads. Widget-specific setting validation
-will land with each stable module contract.
-Command widgets, user QML modules, `hk-shell config` commands, and gesture
-persistence remain later work.
+version 1 structure validation, inline built-in and command widget instances,
+explicit layout edits, and live last-valid reloads. Widget-specific setting
+validation lands with each stable module contract. User QML modules,
+`hk-shell config` commands, and gesture persistence remain later work.
 
 ## Files and Ownership
 
@@ -292,15 +291,105 @@ selection and fallback rules.
 
 ## Extension Lanes
 
-The complete version 1 contract will support three ways to place a widget:
+Version 1 has three intended ways to place a widget:
 
 1. A built-in widget uses `kind` to select a Hyprkarl-owned implementation.
-2. A command widget runs an explicit command at a configured interval and
-   renders its documented text or small JSON result.
+2. A command widget either polls an explicit command or reads a persistent
+   command stream and renders its documented text or small JSON result.
 3. A QML widget explicitly names a file under `user/quickshell/modules/`.
 
-Only the built-in lane is implemented in the current shell. Until the
-other two land, validation rejects kinds that do not name a built-in widget.
+The built-in and command lanes are implemented. The user-QML lane remains
+future work; validation still rejects arbitrary QML references.
+
+### Command widgets
+
+A minimal command widget treats trimmed standard output as its text:
+
+```json
+{
+  "version": 1,
+  "bar": {
+    "layoutEdits": [
+      {
+        "op": "insert",
+        "section": "end",
+        "before": "audio",
+        "widget": {
+          "id": "load-average",
+          "kind": "command",
+          "command": "cut -d' ' -f1 /proc/loadavg",
+          "interval": 5000,
+          "icon": "󰓅",
+          "tooltip": "One-minute load average"
+        }
+      }
+    ]
+  }
+}
+```
+
+`command` is a non-empty command string run by the non-login shell
+`bash -c`. `mode` defaults to `poll`. In poll mode, `interval` is a required
+positive integer in milliseconds and the command runs immediately, then once
+per interval. There is intentionally no enforced minimum.
+
+Each poll starts a new Bash process and whatever processes the command itself
+launches. An unnecessarily short interval can waste CPU, reduce battery life,
+and repeatedly wake an otherwise idle system. Choose the slowest interval that
+still makes the readout useful. For frequent or event-driven updates, use
+`"mode": "stream"` and omit `interval`; the shell starts one persistent
+provider and consumes one result per newline instead of spawning a process for
+every sample. A stream provider must flush each emitted line and is not
+automatically restarted after it exits.
+
+```json
+{
+  "id": "vpn",
+  "kind": "command",
+  "mode": "stream",
+  "command": "my-vpn-status --follow",
+  "output": "json",
+  "icon": "󰖂"
+}
+```
+
+`output` defaults to `text`; set it to `json` when the producer needs to change
+presentation dynamically. A polled text command may use its complete standard
+output; a stream emits one text value or one complete JSON object on each line.
+Static `icon`, `tooltip`, and semantic `state` values provide defaults.
+Optional `primaryCommand`, `secondaryCommand`, and `tertiaryCommand` run through
+`bash -c` on left, right, and middle click respectively.
+
+A JSON producer prints one object with only these optional fields:
+
+```json
+{
+  "text": "VPN",
+  "icon": "󰖂",
+  "tooltip": "Connected to home",
+  "state": "accent",
+  "visible": true
+}
+```
+
+`text`, `icon`, and `tooltip` are strings. `visible` is a boolean. `state` is
+one of `normal`, `muted`, `accent`, `warning`, or `urgent` and selects the
+corresponding semantic theme color; providers do not inject literal colors.
+Omitted fields inherit the widget's static values. Construct nontrivial JSON
+with a small Python command using dictionaries and the standard `json` module,
+not shell string concatenation.
+
+One application-wide registry owns exactly one provider per command-widget ID,
+regardless of monitor count. Every bar view reads that shared result. A new
+poll is skipped while the previous invocation is still running. A nonzero exit
+or invalid JSON logs a concise warning and retains the last successful value;
+a widget remains hidden until its first valid result. Changing unrelated shell
+configuration does not restart unchanged providers.
+
+When no command widget is present in the effective layout, the registry model
+is empty: it creates no timers and starts no processes. A configured stream has
+one long-running provider process. A configured poll widget has no running OS
+process between ticks and launches only when its timer fires.
 
 There is no directory scan, manifest, installation hook, dependency resolver,
 or implicit enable state. A user module exists in the running shell because a
@@ -335,7 +424,9 @@ components rely on the parsed contract.
   not hidden behind another internal fallback.
 - Duplicate widget IDs are invalid because IDs identify instances for runtime
   state and diagnostics.
-- Unknown built-in kinds and missing user QML files are invalid configuration.
+- Unknown widget kinds are invalid configuration. Command widget fields are
+  validated before a provider is created; user QML references are not accepted
+  until that extension lane lands.
 
 The shell watches both files and recomputes the effective configuration when
 either changes, without recreating unrelated services. `hk-shell reload` is
@@ -351,6 +442,7 @@ running configuration and reports the new error.
 | OSD edge, margin, and dismissal timeouts | Shipped defaults plus `user/shell.json` | User override is versioned |
 | Notification placement, timing, filters, compact apps, and icon selection | Shipped defaults plus `user/shell.json` | User override is versioned |
 | Visible notification stack, silence mode, and one restore snapshot | Application-wide `NotificationState` | Memory only |
+| Command-widget results and provider processes | Application-wide `CommandState`, keyed by widget ID | Memory only |
 | Colors, typography, spacing, island geometry, borders, and interaction states | Active semantic theme | Theme-derived |
 | Open panel, hover, focus, disclosure, and in-progress UI | Quickshell feature objects | Memory only |
 | Wi-Fi, Bluetooth, audio, battery, and power state | The corresponding system service | Service-owned |

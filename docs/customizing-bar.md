@@ -41,6 +41,44 @@ midpoint `anchor`, and `after` so its anchor can remain exactly centered.
 Prefer `bar.layoutEdits` for focused personal changes. Replace a whole layout
 array only when you intend to own its complete ordering.
 
+## Add a Command Widget
+
+Use `kind: "command"` for a personal readout that can be produced by a small
+command. This example inserts the one-minute load average before the audio
+widget without copying the shipped layout:
+
+```json
+{
+  "version": 1,
+  "bar": {
+    "layoutEdits": [
+      {
+        "op": "insert",
+        "section": "end",
+        "before": "audio",
+        "widget": {
+          "id": "load-average",
+          "kind": "command",
+          "command": "cut -d' ' -f1 /proc/loadavg",
+          "interval": 5000,
+          "icon": "󰓅",
+          "tooltip": "One-minute load average"
+        }
+      }
+    ]
+  }
+}
+```
+
+The command runs once per interval for that ID even when several monitors
+render the bar. Polling starts a new process on every tick, so overly short
+intervals can waste CPU and battery. Use the persistent stream mode for
+high-frequency or event-driven values. The provider may return plain text or a
+small validated JSON presentation object. See
+[Shell Configuration](shell-configuration.md#command-widgets) for JSON output,
+stream mode, semantic states, click commands, failure behavior, and the
+complete contract.
+
 ## Change the Appearance
 
 Every bar color, plus typography, thickness, spacing, borders, radii, panel

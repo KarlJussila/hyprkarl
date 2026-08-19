@@ -30,13 +30,13 @@ ShellButton {
   }
 
   function toggle(): void {
-    Quickshell.execDetached(["bash", "-lc", active ? config.offCommand : config.onCommand])
+    Quickshell.execDetached(["bash", "-c", active ? config.offCommand : config.onCommand])
     active = !active
   }
 
   Process {
     id: syncProcess
-    command: ["bash", "-lc", `${root.config.syncCommand} >/dev/null 2>&1; printf '%s' $?`]
+    command: ["bash", "-c", `${root.config.syncCommand} >/dev/null 2>&1; printf '%s' $?`]
     stdout: StdioCollector {
       onStreamFinished: root.active = Number(text.trim()) === 0
     }

@@ -104,7 +104,7 @@ Scope {
     implicitWidth: Math.min(loadedContent?.preferredWidth ?? root.theme.panelWidth, root.barWindow.width)
     implicitHeight: Math.min(
       contentHeight + root.theme.panelPadding * 2 + root.theme.borderWidth * 2,
-      Math.min(root.theme.panelMaxHeight, availableHeight)
+      availableHeight
     )
     mask: Region {
       width: root.open ? panel.width : 0

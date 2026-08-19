@@ -104,7 +104,9 @@ separate `controlPadding` value.
 `panelWidth` sets the normal feature-panel width, while
 `powerPanelWidth` independently sizes the more compact power panel. Both are
 theme metrics; changing the latter does not squeeze the network, Bluetooth, or
-audio surfaces.
+audio surfaces. Panel height is content-driven and grows as far as the
+remaining monitor height; scrolling begins only after content exceeds that
+physical limit, so there is no theme height cap to configure.
 
 `barMinThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural

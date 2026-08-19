@@ -131,7 +131,8 @@ multiple widgets genuinely use the same interaction or visual structure.
   widgets use drawn indicators instead of font-dependent approximations.
 - Audio, network, Bluetooth, battery/power, and clock/calendar open
   independent, stable-width feature panels through one per-monitor host. The
-  host clamps to monitor bounds, scrolls dense content, switches between those
+  host expands each panel to its content height or the remaining monitor
+  height, scrolls only content that still cannot fit, switches between those
   triggers on the first click, dismisses on Escape or an outside click, and
   sharpens the bar-side corner when it also touches a monitor side. External
   launcher actions close their panel before opening the configured app.

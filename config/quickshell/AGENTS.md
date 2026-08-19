@@ -84,9 +84,11 @@ appearance decisions into shell JSON or individual island components.
 
 `panels/FeaturePanelHost.qml` is the lasting window boundary for feature
 panels. There is one host per bar/monitor. It owns the `PopupWindow`, trigger
-anchoring, cross-axis clamping, preferred and maximum size, focus grab, Escape
-and outside-click dismissal, one-active-panel state, transitions, scrolling,
-and contact-aware corner radii. It whitelists the bar and popup in one
+anchoring, cross-axis clamping, preferred width, available-height clamping,
+focus grab, Escape and outside-click dismissal, one-active-panel state,
+transitions, scrolling, and contact-aware corner radii. Panels grow to their
+content height or the remaining monitor height, whichever is smaller; do not
+restore an arbitrary theme height cap. It whitelists the bar and popup in one
 `HyprlandFocusGrab` so another panel trigger switches on the first click.
 It also owns edge-dependent popup gravity: top-bar panels expand downward and
 bottom-bar panels expand upward while anchoring within the bar surface.

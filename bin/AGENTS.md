@@ -38,6 +38,13 @@ manifest load so one broken service is logged to stderr and skipped without
 hiding the remaining services; do not add a second manifest schema validator
 to the menu path.
 
+`hk-shell osd` is the only public transport for transient shell status.
+Hardware and media commands own their system action and pass only semantic
+state—levels, mute state, output description, track text, and media action—to
+the typed OSD calls. They do not resolve icons or send replacement Mako
+notifications. The shell owns indicator selection, timing, monitor routing,
+and presentation.
+
 `hk-hook-run` is the only lifecycle-hook runner. It accepts exactly
 `post-boot`, `post-update`, `theme-set`, or `wallpaper-set`, then runs
 non-hidden executable regular files from `user/hooks/<event>.d/` in lexical

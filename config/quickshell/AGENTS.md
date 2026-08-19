@@ -37,6 +37,10 @@ It also creates one `MenuWindow` per screen after menu data are ready. The
 menu singleton selects exactly one requested monitor, owns navigation history,
 and exposes the public `menu` IPC target. Each inactive window stays hidden and
 does not request keyboard focus.
+The root also owns one `OsdState` and creates one `OsdWindow` per screen. The
+state exposes fixed typed IPC methods, routes each update to the focused
+Hyprland monitor, and restarts one dismissal timer so repeated changes
+coalesce. OSD windows are click-through and never request keyboard focus.
 `config/ShellConfig.qml` alone selects, validates, and watches shell JSON while
 retaining the last valid live configuration after a rejected edit. `Bar.qml`
 alone owns each bar window and its per-monitor `FeaturePanelHost`. Layout files
@@ -211,6 +215,15 @@ geometry and opacity modifiers. The title band has rounded top corners and a
 square lower edge; the inner frame's border continues beneath it as the title
 divider. Outside-click and Escape go to the parent from a submenu and close
 only at the root, matching the old nested menu dismissal behavior.
+
+`features/osd/` owns the shell-native volume, audio-output, microphone,
+display-brightness, keyboard-brightness, and media surface. Commands send
+semantic state only. `OsdState` chooses fixed labels and indicators;
+`OsdWindow` owns the shared geometry and transition. Reuse the drawn
+`AudioIndicator` for volume and output, and use theme-font Nerd Font glyphs
+for the remaining compact indicators. Do not restore icon-theme lookup or
+Mako OSD application rules. Placement and timeouts live under `osd` in shell
+JSON; appearance lives under `osd` in each theme's `quickshell.json`.
 
 ## Checks
 

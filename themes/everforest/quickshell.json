@@ -70,6 +70,16 @@
   "tooltip": {
     "radius": 6
   },
+  "osd": {
+    "width": 300,
+    "mediaWidth": 380,
+    "padding": 12,
+    "spacing": 10,
+    "radius": 10,
+    "iconSize": 20,
+    "progressHeight": 6,
+    "transitionDuration": 140
+  },
   "menu": {
     "scrim": "#22000000",
     "fontSize": 14,

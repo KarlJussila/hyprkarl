@@ -9,10 +9,10 @@ step="${1:-+5%}"
 
 device=""
 for backlight_path in \
-    /sys/class/backlight/amdgpu_bl* \
-    /sys/class/backlight/intel_backlight \
-    /sys/class/backlight/acpi_video* \
-    /sys/class/backlight/*; do
+  /sys/class/backlight/amdgpu_bl* \
+  /sys/class/backlight/intel_backlight \
+  /sys/class/backlight/acpi_video* \
+  /sys/class/backlight/*; do
   if [[ -d "$backlight_path" ]]; then
     device=$(basename "$backlight_path")
     break
@@ -20,17 +20,12 @@ for backlight_path in \
 done
 
 if [[ -z "$device" ]]; then
-    echo "No display backlight device found." >&2
-    exit 1
+  echo "No display backlight device found." >&2
+  exit 1
 fi
 
 brightnessctl -d "$device" set "$step" >/dev/null
 
 brightness="$(brightnessctl -d "$device" -m | cut -d',' -f4 | tr -d '%')"
 
-notify-send \
-    -h string:x-canonical-private-synchronous:brightness \
-    -h int:value:"$brightness" \
-    -a "osd-brightness" \
-    "Brightness" "${brightness}%" \
-    --icon="$(hk-icon-find "display-brightness-symbolic" status actions)"
+hk-shell osd display-brightness "$brightness"

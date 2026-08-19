@@ -35,6 +35,11 @@ QtObject {
   property bool userMissing: true
 
   readonly property var bar: values.bar ?? ({})
+  readonly property var osd: values.osd ?? ({})
+  readonly property string osdEdge: osd.edge ?? "bottom"
+  readonly property int osdMargin: osd.margin ?? 40
+  readonly property int osdTimeout: osd.timeout ?? 2000
+  readonly property int osdMediaTimeout: osd.mediaTimeout ?? 3000
   readonly property string edge: bar.edge ?? "top"
   readonly property bool exclusive: bar.exclusive ?? true
   readonly property var layout: bar.layout ?? ({})
@@ -165,6 +170,17 @@ QtObject {
       fail(path + ".version", "unsupported shell configuration version '" + document.version + "'")
     }
 
+    requireObject(document.osd, path + ".osd")
+    if (document.osd.edge !== "top" && document.osd.edge !== "bottom") {
+      fail(path + ".osd.edge", "expected 'top' or 'bottom'")
+    }
+    for (const field of ["margin", "timeout", "mediaTimeout"]) {
+      const value = document.osd[field]
+      if (!Number.isInteger(value) || value < 0) {
+        fail(path + ".osd." + field, "expected a non-negative integer")
+      }
+    }
+
     requireObject(document.bar, path + ".bar")
     if (document.bar.edge !== "top" && document.bar.edge !== "bottom") {
       fail(path + ".bar.edge", "version 1 supports only 'top' and 'bottom'")
@@ -211,6 +227,9 @@ QtObject {
     }
     if (document.bar !== undefined) {
       requireObject(document.bar, userPath + ".bar")
+    }
+    if (document.osd !== undefined) {
+      requireObject(document.osd, userPath + ".osd")
     }
     return document
   }

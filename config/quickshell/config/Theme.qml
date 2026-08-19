@@ -69,6 +69,17 @@ QtObject {
   readonly property var tooltip: values.tooltip ?? ({})
   readonly property int tooltipRadius: tooltip.radius ?? controlRadius
 
+  readonly property var osd: values.osd ?? ({})
+  readonly property int osdWidth: osd.width ?? 300
+  readonly property int osdMediaWidth: osd.mediaWidth ?? osdWidth
+  readonly property int osdPadding: osd.padding ?? controlPadding
+  readonly property int osdSpacing: osd.spacing ?? controlPadding
+  readonly property int osdRadius: osd.radius ?? panelRadius
+  readonly property int osdIconSize: osd.iconSize ?? 20
+  readonly property int osdProgressHeight: osd.progressHeight ?? 6
+  readonly property int osdTransitionDuration: osd.transitionDuration
+    ?? panelTransitionDuration
+
   readonly property var menu: values.menu ?? ({})
   readonly property color menuBackground: menu.background ?? popupSurface
   readonly property color menuForeground: menu.foreground ?? foreground

@@ -1,14 +1,9 @@
 #!/bin/bash
 # hk-playerctl
-# Controls media playback and shows track info via mako notification
+# Controls media playback and shows track info through the shell OSD
 #
 # Usage:
 #   hk-playerctl <play-pause|next|previous>
-
-ICON_PLAY=$(hk-icon-find "media-playback-start-symbolic")
-ICON_PAUSE=$(hk-icon-find "media-playback-pause-symbolic")
-ICON_NEXT=$(hk-icon-find "media-skip-forward-symbolic")
-ICON_PREV=$(hk-icon-find "media-skip-backward-symbolic")
 
 action="${1:-}"
 if [[ -z "$action" ]]; then
@@ -17,16 +12,16 @@ if [[ -z "$action" ]]; then
 fi
 
 if [[ "$action" == "next" || "$action" == "previous" ]]; then
-    old_title=$(playerctl metadata title 2>/dev/null)
-    playerctl "$action"
-    for i in $(seq 1 20); do
-        sleep 0.1
-        new_title=$(playerctl metadata title 2>/dev/null)
-        [[ "$new_title" != "$old_title" ]] && break
-    done
-else
-    playerctl "$action"
+  old_title=$(playerctl metadata title 2>/dev/null)
+  playerctl "$action"
+  for _ in {1..20}; do
     sleep 0.1
+    new_title=$(playerctl metadata title 2>/dev/null)
+    [[ "$new_title" != "$old_title" ]] && break
+  done
+else
+  playerctl "$action"
+  sleep 0.1
 fi
 
 status=$(playerctl status 2>/dev/null)
@@ -35,31 +30,18 @@ artist=$(playerctl metadata artist 2>/dev/null)
 
 [[ -n "$title" ]] || exit 0
 
-case "$action" in
-    play-pause)
-        [[ "$status" == "Playing" ]] && icon="$ICON_PLAY" || icon="$ICON_PAUSE"
-        ;;
-    next)
-        icon="$ICON_NEXT"
-        ;;
-    previous)
-        icon="$ICON_PREV"
-        ;;
-esac
-
-body="$artist"
-
 position=$(playerctl position 2>/dev/null)
 length=$(playerctl metadata mpris:length 2>/dev/null)
-progress=0
+progress=-1
 
 if [[ "$action" == "play-pause" && -n "$position" && -n "$length" && "$length" -gt 0 ]]; then
-    progress=$(awk -v pos="$position" -v len="$length" 'BEGIN { printf "%d", (pos / (len / 1000000)) * 100 }')
+  progress=$(awk -v pos="$position" -v len="$length" 'BEGIN { printf "%d", (pos / (len / 1000000)) * 100 }')
 fi
 
-notify-send \
-    -a "osd-player" \
-    -h string:x-canonical-private-synchronous:player \
-    -h int:value:"$progress" \
-    "${title:0:50}" "$body" \
-    --icon="$icon"
+if [[ "$action" == "play-pause" ]]; then
+  media_action="${status,,}"
+else
+  media_action="$action"
+fi
+
+hk-shell osd media "$media_action" "$progress" "${title:0:50}" "$artist"

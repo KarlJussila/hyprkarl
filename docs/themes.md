@@ -83,7 +83,8 @@ A full theme in this repo includes:
   Hyprtoolkit styling
 - `quickshell.json`
   Quickshell's semantic `palette`, `surfaces`, `typography`, and `metrics`
-  roles, plus component-specific `bar`, `panel`, `tooltip`, and `menu` values.
+  roles, plus component-specific `bar`, `panel`, `tooltip`, `menu`, and `osd`
+  values.
   It controls minimum bar thickness, spacing, island corner
   and border geometry, radii, dividers, tooltip radius, panel gap,
   preferred/max panel size, and transition timing. `bar.margin` controls the
@@ -99,6 +100,9 @@ A full theme in this repo includes:
   width, nested-frame geometry, row spacing, selection treatment, backdrop,
   and optional semantic overrides. The shipped composition carries forward
   the original Rofi menu's compact identity without reproducing it literally.
+  The nested `osd` object controls normal/media widths, padding, spacing,
+  radius, indicator size, progress height, and transition duration; OSD
+  placement and timeouts remain behavior in `shell.json`.
   All Quickshell surface colors and interaction states come from semantic
   theme data rather than consumer-specific color aliases. See
   [Customizing the Bar](customizing-bar.md#change-the-appearance) for the

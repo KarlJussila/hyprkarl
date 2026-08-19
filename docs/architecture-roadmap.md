@@ -547,16 +547,17 @@ after building only the first panel.
 
 ### Candidate Migration Order
 
-The main menu has now met this rule: its data contract and Quickshell renderer
-landed together and deleted the static Rofi navigation path. Migrate the
-remaining surfaces one at a time, only when a replacement can delete the old
-process or integration path:
+The main menu has met this rule: its data contract and Quickshell renderer
+landed together and deleted the static Rofi navigation path. The OSD has now
+done the same: one typed, focused-monitor Quickshell surface replaced the Mako
+application rules for volume, audio output, microphone, display/keyboard
+brightness, and media feedback. Migrate the remaining surfaces one at a time,
+only when a replacement can delete the old process or integration path:
 
-1. OSD, because it shares audio/brightness state and has a narrow interface.
-2. Notifications, because a native service can share theme and monitor state.
-3. Lock screen and polkit only after the installed Quickshell service APIs are
+1. Notifications, because a native service can share theme and monitor state.
+2. Lock screen and polkit only after the installed Quickshell service APIs are
    verified against the pinned release.
-4. Clipboard, emoji, and image-selection overlays as independent later
+3. Clipboard, emoji, and image-selection overlays as independent later
    features.
 
 This order is not a feature commitment. Each migration needs its own behavior
@@ -724,8 +725,10 @@ branch. Deliver them as reviewable vertical changes:
 7. **Move runtime theme state and adopt palette-first rendering.** Complete.
    The companion generator now owns palette-first production, while Hyprkarl
    stages built-in/user sources into atomic XDG-state artifacts.
-8. **Migrate shell-native surfaces individually.** Start with OSD; require each
-   feature to delete an older integration path and meet the visual brief.
+8. **Migrate shell-native surfaces individually.** In progress. The OSD is
+   complete and deleted its Mako integration path; notifications are the next
+   candidate. Require each feature to delete an older integration path and
+   meet the visual brief.
 9. **Reassess plugins only after external extensions exist.** A decision to do
    nothing is acceptable.
 

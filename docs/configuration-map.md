@@ -179,7 +179,7 @@ are:
 - `themes/<theme>/quickshell.json`
   Generated theme-specific semantic colors, typography, minimum bar thickness, natural widget
   padding, logical island corners and borders, radii, and
-  screen/outer/content spacing
+  screen/outer/content spacing, plus menu and OSD appearance
 
 The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are
@@ -213,6 +213,14 @@ owns the watched, validated deep merge, navigation history, checked-state
 probes, and short-lived dynamic menu sources; `MenuWindow.qml` owns keyboard
 focus, in-process search, dismissal, and rendering. See
 [Menu Configuration](menu-configuration.md).
+
+The shell-native OSD uses one application-wide state owner and one
+click-through window per output under `features/osd/`. `hk-shell osd` sends
+typed volume, audio-output, microphone, display/keyboard brightness, or media
+state; the state owner selects the focused monitor and resets one dismissal
+timer. `defaults/shell.json` owns its edge, margin, and timeouts, while each
+theme's `quickshell.json` owns its size, spacing, radius, indicator size,
+progress height, and transition duration.
 
 ## Themes
 

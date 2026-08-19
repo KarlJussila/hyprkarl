@@ -185,6 +185,8 @@ Common utility commands include:
 - `hk-playerctl`
 - `hk-shell start|stop|restart|status|logs` for Quickshell lifecycle and logs
 - `hk-shell menu` for direct command-menu control
+- `hk-shell osd` for typed custom volume, brightness, microphone, output, or
+  media feedback
 - `hk-audio-restart`
 - `hk-wifi-restart`
 

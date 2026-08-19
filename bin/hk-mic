@@ -11,24 +11,17 @@
 #   unmute    Unmute the microphone. No-op if already unmuted.
 
 case "${1:-}" in
-    toggle) wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle ;;
-    mute)   wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 1 ;;
-    unmute) wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0 ;;
-    "")     ;;
-    *)      echo "Usage: $(basename "$0") [toggle|mute|unmute]" >&2; exit 1 ;;
+  toggle) wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle ;;
+  mute)   wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 1 ;;
+  unmute) wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0 ;;
+  "")     ;;
+  *)      echo "Usage: $(basename "$0") [toggle|mute|unmute]" >&2; exit 1 ;;
 esac
 
 if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -q MUTED; then
-    icon=$(hk-icon-find "microphone-sensitivity-muted-symbolic" status actions devices)
-    summary="Mic Muted"
+  muted=true
 else
-    icon=$(hk-icon-find "audio-input-microphone-symbolic" status actions devices)
-    summary="Mic Active"
+  muted=false
 fi
 
-notify-send \
-    -h string:x-canonical-private-synchronous:microphone \
-    -h int:value:0 \
-    -a "osd-volume" \
-    "$summary" "" \
-    --icon="$icon"
+hk-shell osd microphone "$muted"

@@ -169,6 +169,12 @@ The Quickshell implementation reached its production baseline with:
 - clean cold-start, reload, and runtime logs on the supported Quickshell and Qt
   versions.
 
+The first post-baseline surface is a bottom-center OSD for volume and output,
+microphone mute, display and keyboard brightness, and media controls. Repeated
+updates coalesce on the focused monitor without taking focus or pointer input.
+It reuses the bar's drawn audio indicator and theme-font glyphs rather than
+depending on notification icon assets.
+
 The cutover removed AGS startup, packages, controls, implementation, and theme
 files together. There is no second selectable production bar.
 

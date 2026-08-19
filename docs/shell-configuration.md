@@ -113,6 +113,12 @@ map when an instance is referenced only once.
 ```json
 {
   "version": 1,
+  "osd": {
+    "edge": "bottom",
+    "margin": 40,
+    "timeout": 2000,
+    "mediaTimeout": 3000
+  },
   "bar": {
     "edge": "top",
     "exclusive": true,
@@ -157,6 +163,13 @@ map when an instance is referenced only once.
   }
 }
 ```
+
+`osd.edge` accepts `top` or `bottom`; `margin` is its distance from that output
+edge. `timeout` controls volume, output, microphone, and brightness feedback,
+while `mediaTimeout` controls track feedback. These placement and lifecycle
+values deep-merge like other ordinary objects, so a user override may set only
+one of them. OSD appearance is theme data under `osd` in `quickshell.json`, not
+shell configuration.
 
 `center.anchor` is fixed to the monitor midpoint. `before` and `after` grow
 away from it. This preserves the deliberate centered-island composition of
@@ -230,6 +243,7 @@ running configuration and reports the new error.
 | --- | --- | --- |
 | Widget order and instance settings | Shipped defaults plus sparse `user/shell.json` edits | User override is versioned |
 | Bar edge and exclusion behavior | Shipped defaults plus `user/shell.json` | User override is versioned |
+| OSD edge, margin, and dismissal timeouts | Shipped defaults plus `user/shell.json` | User override is versioned |
 | Colors, typography, spacing, island geometry, borders, and interaction states | Active semantic theme | Theme-derived |
 | Open panel, hover, focus, disclosure, and in-progress UI | Quickshell feature objects | Memory only |
 | Wi-Fi, Bluetooth, audio, battery, and power state | The corresponding system service | Service-owned |

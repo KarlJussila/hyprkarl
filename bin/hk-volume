@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-volume
-# Adjusts and displays volume via mako notification
+# Adjusts volume and shows the shell OSD
 #
 # Usage:
 #   hk-volume [raise|lower|toggle]
@@ -22,19 +22,9 @@ volume_raw=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
 volume=$(awk '{printf "%d", $2 * 100}' <<< "$volume_raw")
 
 if grep -q MUTED <<< "$volume_raw"; then
-  icon=$(hk-icon-find "audio-volume-muted-symbolic" status actions)
-  volume=0
-elif (( volume <= 33 )); then
-  icon=$(hk-icon-find "audio-volume-low-symbolic" status actions)
-elif (( volume <= 66 )); then
-  icon=$(hk-icon-find "audio-volume-medium-symbolic" status actions)
+  muted=true
 else
-  icon=$(hk-icon-find "audio-volume-high-symbolic" status actions)
+  muted=false
 fi
 
-notify-send \
-  -h string:x-canonical-private-synchronous:volume \
-  -h int:value:"$volume" \
-  -a "osd-volume" \
-  "Volume" "${volume}%" \
-  --icon="$icon"
+hk-shell osd volume "$volume" "$muted"

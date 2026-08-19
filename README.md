@@ -122,7 +122,9 @@ selective borders, and screen/outer/content margins as well as colors and
 typography. It also provides the minimum height and widget padding; the tallest
 widget determines one shared height for all islands. Inspect or manage the bar
 with `hk-shell status`, `hk-shell logs`, and the other `hk-shell` lifecycle
-commands.
+commands. Volume, audio-output, microphone, display/keyboard brightness, and
+media-key feedback use the same shell through a focused-monitor, click-through
+OSD rather than notification-specific Mako styling.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

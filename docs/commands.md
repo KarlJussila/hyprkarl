@@ -244,6 +244,20 @@ shell.
 - `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`
   Open, toggle, or close the shell-native command menu. This is also described
   with the menu commands above.
+- `hk-shell osd <surface> ...`
+  Send semantic state to the shell-native OSD on the focused output. These
+  narrow calls are public for custom keybindings and commands; the built-in
+  media and hardware helpers use the same interface. A media percentage of
+  `-1` omits its progress bar. Supported forms are:
+
+  ```text
+  hk-shell osd volume <percent> [muted]
+  hk-shell osd audio-output <percent> <muted> <description>
+  hk-shell osd microphone <muted>
+  hk-shell osd display-brightness <percent>
+  hk-shell osd keyboard-brightness <percent>
+  hk-shell osd media <playing|paused|next|previous> <percent|-1> <title> [artist]
+  ```
 
 ## UI Helpers
 
@@ -275,7 +289,7 @@ shell.
 - `hk-caffeine`
   Toggle idle behaviors (hypridle).
 - `hk-playerctl`
-  Control media playback and show track notifications.
+  Control media playback and show track state in the shell OSD.
 - `hk-volume`
   Adjust audio volume and show the current level.
 - `hk-mic`
@@ -300,7 +314,7 @@ completeness so they can be discovered with grep:
 - Launching glue: `hk-tui-launch`, `hk-app-restart`
 - Hardware actions bound to function keys: `hk-brightness-display`,
   `hk-brightness-keyboard`, `hk-audio-switch`, `hk-battery-monitor`
-- Notification and OSD helpers: `hk-battery-notify`, `hk-notify-window-class`,
+- Notification helpers: `hk-battery-notify`, `hk-notify-window-class`,
   `hk-show-done`, `hk-suggest-reboot`
 - Lookup helpers: `hk-battery-find`, `hk-icon-find`, `hk-cmd-present`,
   `hk-terminal-cwd`

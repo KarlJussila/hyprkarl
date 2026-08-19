@@ -29,6 +29,18 @@ hk-shell menu open utilities
 hk-shell menu close
 ```
 
+Hardware and media commands use the shell-native OSD. It can also be exercised
+directly:
+
+```bash
+hk-shell osd volume 42 false
+hk-shell osd audio-output 67 false "Built-in Audio Analog Stereo"
+hk-shell osd microphone true
+hk-shell osd display-brightness 55
+hk-shell osd keyboard-brightness 67
+hk-shell osd media playing 38 "Track title" "Artist"
+```
+
 Validate all QML files without launching the bar:
 
 ```bash
@@ -131,6 +143,11 @@ The cross-axis padding contributes to each widget's natural height, while
 and gives every island that same content height. A vertical-bar padding object
 will accompany vertical-bar support rather than being exposed speculatively.
 
+The sibling top-level `osd` object owns transient-surface behavior:
+`edge` (`top` or `bottom`), edge `margin`, ordinary `timeout`, and
+`mediaTimeout`, all in milliseconds. Each theme's nested `osd` object owns
+widths, padding, spacing, radius, indicator size, progress height, and motion.
+
 ## Structure
 
 - `shell.qml` creates one bar per Quickshell screen after configuration and
@@ -148,6 +165,8 @@ will accompany vertical-bar support rather than being exposed speculatively.
   network, Bluetooth, power, and clock/calendar all use this boundary.
 - `features/menu/` owns menu configuration, navigation state, IPC, and the
   per-screen overlay.
+- `features/osd/` owns one typed state/IPC object and the per-screen,
+  click-through transient surface.
 - `components/` contains shared buttons, tooltips, and panel controls.
 - `state/SystemState.qml` owns the one polling process used by CPU, GPU, RAM,
   and recording widgets.
@@ -212,3 +231,7 @@ multiple widgets genuinely use the same interaction or visual structure.
   highlight to one shared clock. Previous/next controls navigate real months,
   a return action appears away from the current month, and reopening resets to
   today without persisting transient navigation state.
+- Volume, output switching, microphone mute, display/keyboard brightness, and
+  media keys coalesce into one focused-monitor OSD. It reuses the bar's drawn
+  audio indicator for audio and theme-font Nerd Font glyphs for the other
+  semantic states; it never takes focus or pointer input.

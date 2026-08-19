@@ -12,6 +12,12 @@ Usage:
   hk-shell logs [qs log options]
   hk-shell menu [toggle|open] [menu-id]
   hk-shell menu close
+  hk-shell osd volume <percent> [muted]
+  hk-shell osd audio-output <percent> <muted> <description>
+  hk-shell osd microphone <muted>
+  hk-shell osd display-brightness <percent>
+  hk-shell osd keyboard-brightness <percent>
+  hk-shell osd media <playing|paused|next|previous> <percent|-1> <title> [artist]
 EOF
 }
 
@@ -19,7 +25,7 @@ action=${1:-}
 shift || true
 
 case "$action" in
-  start|stop|restart|status|logs|menu) exec "hk-shell-$action" "$@" ;;
+  start|stop|restart|status|logs|menu|osd) exec "hk-shell-$action" "$@" ;;
   ""|-h|--help|help) usage; exit 0 ;;
   *) usage >&2; exit 1 ;;
 esac

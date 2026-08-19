@@ -162,6 +162,10 @@ original Rofi surface's compact width, centered rows, title band, nested frame,
 and bordered selection, while inheriting the active shell theme's semantic
 palette, typography, rounded geometry, border treatment, and interaction
 states. The nested `menu` object owns menu-specific modifiers and metrics.
+The same root owns one application-wide `OsdState` and one click-through OSD
+window per output. Typed `hk-shell osd` calls select the focused output and
+coalesce repeated volume, output, microphone, display-brightness,
+keyboard-brightness, and media updates into that one transient surface.
 
 ### `hk-*` Commands
 

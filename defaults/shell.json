@@ -1,5 +1,11 @@
 {
   "version": 1,
+  "osd": {
+    "edge": "bottom",
+    "margin": 40,
+    "timeout": 2000,
+    "mediaTimeout": 3000
+  },
   "bar": {
     "edge": "top",
     "exclusive": true,

@@ -1,0 +1,69 @@
+#!/bin/bash
+# hk-shell-osd
+# Show transient shell status through the public OSD IPC target.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/shell.sh
+source "$SCRIPT_DIR/lib/shell.sh"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  hk-shell osd volume <percent> [muted]
+  hk-shell osd audio-output <percent> <muted> <description>
+  hk-shell osd microphone <muted>
+  hk-shell osd display-brightness <percent>
+  hk-shell osd keyboard-brightness <percent>
+  hk-shell osd media <playing|paused|next|previous> <percent|-1> <title> [artist]
+EOF
+}
+
+surface=${1:-}
+shift || true
+
+osd_call() {
+  local result
+  result="$(qs -p "$HK_SHELL_CONFIG" ipc call osd "$@")" || exit 1
+  if [[ "$result" != "true" ]]; then
+    printf 'Could not show shell OSD.\n' >&2
+    exit 1
+  fi
+}
+
+case "$surface" in
+  volume)
+    [[ $# -ge 1 && $# -le 2 ]] || { usage >&2; exit 1; }
+    osd_call volume "$1" "${2:-false}"
+    ;;
+  audio-output)
+    [[ $# -eq 3 ]] || { usage >&2; exit 1; }
+    osd_call output "$1" "$2" "$3"
+    ;;
+  microphone)
+    [[ $# -eq 1 ]] || { usage >&2; exit 1; }
+    osd_call microphone "$1"
+    ;;
+  display-brightness)
+    [[ $# -eq 1 ]] || { usage >&2; exit 1; }
+    osd_call display "$1"
+    ;;
+  keyboard-brightness)
+    [[ $# -eq 1 ]] || { usage >&2; exit 1; }
+    osd_call keyboard "$1"
+    ;;
+  media)
+    [[ $# -ge 3 && $# -le 4 ]] || { usage >&2; exit 1; }
+    case "$1" in
+      playing|paused|next|previous) ;;
+      *) usage >&2; exit 1 ;;
+    esac
+    osd_call media "$1" "$2" "$3" "${4:-}"
+    ;;
+  ""|-h|--help|help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac

@@ -114,8 +114,10 @@ their content, so padding is never stacked on a second built-in inset.
 `trayMainPaddingOffset` adjusts the tray's main-axis host padding and is added
 with a zero floor; the shipped `-2` turns the universal `6` into `4` pixels per
 outer side. The revealed tray keeps the unmodified universal padding beside
-its divider, without adding space between adjacent items. Panel internals use
-the separate `controlPadding` value.
+its divider, without adding space between adjacent items. It also mirrors the
+effective outer inset between the chevron and divider, keeping the trigger the
+same visible width when collapsed or expanded. Panel internals use the separate
+`controlPadding` value.
 
 Tray icons use the StatusNotifierItem interaction contract: left click
 activates the item, middle click invokes its secondary action, and right click

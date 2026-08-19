@@ -16,6 +16,10 @@ Item {
   required property var panelHost
 
   readonly property int hostMainPaddingOffset: theme.trayMainPaddingOffset
+  readonly property int triggerDividerPadding: Math.max(
+    0,
+    theme.widgetMainPadding + hostMainPaddingOffset
+  )
   readonly property bool towardEnd: config.direction !== "start"
   readonly property real contentX: (width - implicitWidth) / 2
   property bool expanded: false
@@ -104,7 +108,10 @@ Item {
     x: root.contentX + (root.towardEnd ? trigger.width : 0)
     y: 0
     width: root.expanded && trayRow.implicitWidth > 0
-      ? trayRow.implicitWidth + innerPadding + root.theme.borderWidth
+      ? trayRow.implicitWidth
+        + root.triggerDividerPadding
+        + innerPadding
+        + root.theme.borderWidth
       : 0
     height: root.height
     clip: true
@@ -117,7 +124,9 @@ Item {
     }
 
     Rectangle {
-      x: !root.towardEnd ? trayPanel.width - width : 0
+      x: root.towardEnd
+        ? root.triggerDividerPadding
+        : trayPanel.width - root.triggerDividerPadding - width
       y: 0
       width: root.theme.borderWidth
       height: parent.height
@@ -128,8 +137,12 @@ Item {
       id: trayRow
 
       x: root.towardEnd
-        ? root.theme.borderWidth + trayPanel.innerPadding
-        : trayPanel.width - root.theme.borderWidth - trayPanel.innerPadding - width
+        ? root.triggerDividerPadding + root.theme.borderWidth + trayPanel.innerPadding
+        : trayPanel.width
+          - root.triggerDividerPadding
+          - root.theme.borderWidth
+          - trayPanel.innerPadding
+          - width
 
       Repeater {
         model: SystemTray.items

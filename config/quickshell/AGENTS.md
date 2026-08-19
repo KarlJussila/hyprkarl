@@ -100,6 +100,8 @@ There is no second feature-window or legacy flyout boundary. In the power and
 network panels, facts already owned by the primary content do not become
 decorative header subtitles: battery facts belong to `BatterySummary`, and the
 connected Wi-Fi network is the selected first entry in the sorted network list.
+`BatterySummary` aligns percentage/status above indicator/rate and marks the
+rate with an up arrow while charging or a down arrow while discharging.
 
 Hover text uses `ShellTooltip`, a non-focusable `PopupWindow` with an empty
 input mask. Do not replace it with Qt Controls' attached `ToolTip`; that window

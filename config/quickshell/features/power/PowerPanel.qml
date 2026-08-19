@@ -49,7 +49,12 @@ Item {
   function batteryMetrics(): string {
     if (!battery) return ""
     const values = []
-    if (battery.changeRate > 0) values.push(`${battery.changeRate.toFixed(1)} W`)
+    if (battery.changeRate > 0) {
+      const direction = battery.state === UPowerDeviceState.Charging
+        ? "↑ "
+        : battery.state === UPowerDeviceState.Discharging ? "↓ " : ""
+      values.push(`${direction}${battery.changeRate.toFixed(1)} W`)
+    }
     if (battery.healthSupported) values.push(`${Math.round(battery.healthPercentage)}% health`)
     return values.join("  ·  ")
   }

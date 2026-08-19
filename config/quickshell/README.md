@@ -148,7 +148,9 @@ multiple widgets genuinely use the same interaction or visual structure.
   provides one, energy rate, power profiles, profile holds/degradation, and
   the configured power-action menu without introducing a separate controller.
   Percentage and charge status appear once in the battery summary rather than
-  being duplicated in the panel header.
+  being duplicated in the panel header. The percentage and status form its
+  first row; the indicator and energy rate form its second, with an up/down
+  arrow showing whether power is entering or leaving the battery.
   The installed PowerProfiles API exposes confirmed profile state but no
   per-write failure result, so the bar does not invent one.
 - Clock/calendar binds the bar, date header, viewed month, and current-day

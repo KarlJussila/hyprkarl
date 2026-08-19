@@ -5,13 +5,20 @@
 # Usage:
 #   hk-wallpaper-set <filename>
 
-WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
-CURRENT_WALLPAPER_LINK="$HYPRKARL_PATH/config/hyprkarl/current/wallpaper"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
+
+WALLPAPER_DIR="$HYPRKARL_CURRENT_THEME/wallpapers"
+CURRENT_WALLPAPER_LINK="$HYPRKARL_CURRENT_WALLPAPER"
 
 wallpaper_name="$1"
 
 if [[ -z "$wallpaper_name" ]]; then
   echo "Usage: hk-wallpaper-set <filename>" >&2
+  exit 1
+fi
+if [[ "$wallpaper_name" != "$(basename "$wallpaper_name")" ]]; then
+  echo "Invalid wallpaper name: $wallpaper_name" >&2
   exit 1
 fi
 

@@ -20,7 +20,7 @@ Item {
     anchors.fill: parent
     color: root.theme.accent
     opacity: root.activeFocus ? 0.24 : mouse.containsMouse ? 0.16 : root.selected ? 0.10 : 0
-    radius: root.theme.radius
+    radius: root.theme.controlRadius
   }
 
   Text {
@@ -32,9 +32,9 @@ Item {
     width: 22
     visible: root.icon.length > 0
     text: root.icon
-    color: root.selected ? root.theme.accent : root.theme.text
-    font.family: root.theme.fontUi
-    font.pixelSize: root.theme.fontSize
+    color: root.selected ? root.theme.accent : root.theme.foreground
+    font.family: root.theme.uiFontFamily
+    font.pixelSize: root.theme.bodyFontSize
     horizontalAlignment: Text.AlignHCenter
   }
 
@@ -53,9 +53,9 @@ Item {
       anchors.rightMargin: root.theme.controlPadding
       anchors.verticalCenter: parent.verticalCenter
       text: root.title
-      color: root.enabled ? root.theme.text : root.theme.border
-      font.family: root.theme.fontUi
-      font.pixelSize: root.theme.fontSize
+      color: root.enabled ? root.theme.foreground : root.theme.border
+      font.family: root.theme.uiFontFamily
+      font.pixelSize: root.theme.bodyFontSize
       font.weight: root.selected ? root.theme.fontWeight : Font.Normal
       elide: Text.ElideRight
     }
@@ -68,9 +68,9 @@ Item {
       anchors.verticalCenter: parent.verticalCenter
       width: Math.min(implicitWidth, parent.width * 0.46)
       text: root.busy ? "…" : root.detail
-      color: root.selected ? root.theme.accent : root.theme.text
+      color: root.selected ? root.theme.accent : root.theme.foreground
       opacity: root.selected ? 1 : 0.65
-      font.family: root.theme.fontMono
+      font.family: root.theme.monoFontFamily
       font.pixelSize: root.theme.readoutFontSize
       horizontalAlignment: Text.AlignRight
       elide: Text.ElideRight
@@ -86,8 +86,8 @@ Item {
     height: 20
     visible: root.error.length > 0
     text: root.error
-    color: root.theme.error
-    font.family: root.theme.fontUi
+    color: root.theme.urgent
+    font.family: root.theme.uiFontFamily
     font.pixelSize: root.theme.readoutFontSize
     elide: Text.ElideRight
   }

@@ -22,6 +22,8 @@
 
 export HYPRKARL_PATH="${HYPRKARL_PATH:-$HOME/.local/share/hyprkarl}"
 UPDATE_STATE_DIR="$HYPRKARL_PATH/config/hyprkarl/update"
+UPDATE_LIB_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$UPDATE_LIB_DIR/theme.sh"
 
 # --- baseline commit state ---
 
@@ -77,17 +79,20 @@ _stow_conflicts() {
 
 _stow_gtk_theme() {
   local force_clear="${1:-0}"
+  theme_ensure_active || return 1
   if [[ "$force_clear" -eq 1 ]]; then
     rm -rf "$HOME/.local/share/themes/hyprkarl"
   fi
   mkdir -p "$HOME/.local/share/themes/hyprkarl"
   stow --restow --no-folding \
-    --dir="$HYPRKARL_PATH/config/hyprkarl/current/theme" \
+    --dir="$HYPRKARL_CURRENT_THEME" \
     --target="$HOME/.local/share/themes/hyprkarl" \
     gtk-theme
 }
 
 check_config_conflicts() {
+  local gtk_theme_source
+  gtk_theme_source=$(theme_stow_source)
   _stow_conflicts --restow --no-folding \
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.config" \
@@ -98,12 +103,13 @@ check_config_conflicts() {
     applications
   mkdir -p "$HOME/.local/share/themes/hyprkarl"
   _stow_conflicts --restow --no-folding \
-    --dir="$HYPRKARL_PATH/config/hyprkarl/current/theme" \
+    --dir="$gtk_theme_source" \
     --target="$HOME/.local/share/themes/hyprkarl" \
     gtk-theme
 }
 
 stow_adopt_config() {
+  theme_ensure_active || return 1
   stow -D --no-folding \
     --dir="$HYPRKARL_PATH" --target="$HOME/.config" config
   stow --adopt --no-folding \
@@ -114,6 +120,7 @@ stow_adopt_config() {
 }
 
 stow_restow_config() {
+  theme_ensure_active || return 1
   stow --restow --no-folding \
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.config" \

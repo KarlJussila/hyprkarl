@@ -12,7 +12,7 @@ deploy step. Full command reference: `docs/commands.md`.
   subcommand lives as its own top-level command in the form
   `hk-<noun>-<action>`; the dispatcher is a thin router that `exec`s it.
 - **`bin/lib/`** — sourced helpers shared by two or more commands (`docker.sh`,
-  `shell.sh`, `update.sh`). Not for single-use logic; keep that in the command
+  `shell.sh`, `theme.sh`, `update.sh`). Not for single-use logic; keep that in the command
   itself.
 
 ## Naming
@@ -79,3 +79,10 @@ whole file; prefer targeted edits.
 upstream-owned configuration. Files under `user/` are review-only: update
 commands may display them but must never generate, replace, reset, or adopt
 them.
+
+`lib/theme.sh` owns the theme source-to-runtime boundary. Theme selection must
+copy a built-in plus an optional same-name `user/themes/` overlay into a new
+XDG-state artifact, validate it, and atomically swap the selector before any
+reloads. The repository's `config/hyprkarl/current/` entries are fixed
+compatibility links. Wallpaper additions/removals persist under `user/themes/`;
+never mutate checked-in theme sources from a public command.

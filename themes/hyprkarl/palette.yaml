@@ -1,0 +1,81 @@
+mode: dark
+
+base:
+  # deepest color in the palette (terminal background)
+  background: "#1b1519"
+
+  # layered surfaces
+  layer0: "{{base.background}}"
+  layer1: "{{lighten(base.layer0,3)}}"
+  layer2: "{{lighten(base.layer0,7)}}"
+  layer3: "{{lighten(base.layer0,10)}}"
+  layer4: "{{lighten(base.layer0,14)}}"
+
+  # semantic aliases
+  surface_soft: "{{base.layer1}}"
+  surface: "{{base.layer2}}"
+  surface_alt: "{{base.layer4}}"
+
+  # text
+  foreground: "#d2ccd2"
+  foreground_muted: "{{darken(base.foreground,13)}}"
+  foreground_dim: "{{darken(base.foreground,30)}}"
+
+ansi:
+  black: "#2e2329"
+  red: "#cc5555"
+  green: "#96708e"
+  yellow: "#d7937d"
+  blue: "#6843ae"
+  magenta: "#63005A"
+  cyan: "#a46fd6"
+  white: "#d2ccd2"
+
+bright:
+  black: "#42333b"
+  red: "#dd6666"
+  green: "#c7a3bf"
+  yellow: "#f4b39e"
+  blue: "#9877dc"
+  magenta: "#8a1a80"
+  cyan: "#dea6f5"
+  white: "#e8e8e8"
+
+accent:
+  primary:
+    base: "{{ansi.magenta}}"
+    soft: "{{darken(ansi.magenta,8)}}"
+    bright: "{{bright.magenta}}"
+
+  secondary:
+    base: "{{ansi.cyan}}"
+    soft: "{{darken(ansi.cyan,25)}}"
+    bright: "{{bright.cyan}}"
+
+  tertiary:
+    base: "{{ansi.green}}"
+    soft: "{{darken(ansi.green,25)}}"
+    bright: "{{bright.green}}"
+
+status:
+  success: "{{bright.green}}"
+  warning: "{{bright.yellow}}"
+  error: "{{ansi.red}}"
+  urgent: "{{bright.red}}"
+
+ui:
+  cursor: "#e3a16f"
+
+  text: "{{base.foreground}}"
+  text_secondary: "{{accent.tertiary.bright}}"
+
+  selection_bg: "{{ui.cursor}}"
+  selection_fg: "{{base.background}}"
+
+  panel: "{{base.surface}}"
+
+  border: "{{accent.primary.base}}"
+  border_inner: "{{accent.tertiary.base}}"
+  border_soft: "{{accent.primary.soft}}"
+
+  highlight: "{{accent.primary.bright}}"

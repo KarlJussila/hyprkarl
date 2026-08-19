@@ -61,7 +61,7 @@ PopupWindow {
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.surface
+    color: root.theme.tooltipSurface
     border.color: root.theme.border
     border.width: root.theme.borderWidth
     radius: root.theme.tooltipRadius
@@ -70,9 +70,9 @@ PopupWindow {
       id: label
       anchors.centerIn: parent
       text: root.text
-      color: root.theme.text
-      font.family: root.theme.fontUi
-      font.pixelSize: root.theme.fontSize
+      color: root.theme.foreground
+      font.family: root.theme.uiFontFamily
+      font.pixelSize: root.theme.bodyFontSize
     }
   }
 }

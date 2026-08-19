@@ -16,8 +16,8 @@ controllers when a Quickshell singleton already owns the state.
 - `../../user/shell.json`: optional sparse user override.
 - `../../defaults/menu.json`: shipped static command-menu hierarchy.
 - `../../user/menu.json`: optional sparse menu additions and overrides.
-- `../../themes/<theme>/quickshell.json`: colors, typography, metrics, and
-  island geometry.
+- the active XDG-state bundle's `quickshell.json`: semantic colors, typography,
+  metrics, and island geometry.
 - `widgets/*.qml`: one implementation per widget kind.
 
 Shell JSON is data-only. Widget definitions live inline in the layout; `id`
@@ -53,8 +53,8 @@ The bar window and exclusive zone include screen- and content-side margins,
 while panel and tooltip anchors also account for the content margin.
 
 Bar height is intrinsic. `WidgetHost.qml` adds the theme's universal
-`horizontalWidgetPadding.cross` to each widget's natural height;
-`barMinThickness` is only a floor. `BarLayout.qml` owns the maximum across all
+`bar.widgetPadding.cross` to each widget's natural height;
+`bar.minimumThickness` is only a floor. `BarLayout.qml` owns the maximum across all
 three islands and applies that resolved height to each island. Do not restore
 fixed `barThickness` bindings in widgets or let islands resolve their final
 heights independently.
@@ -64,28 +64,28 @@ code is horizontal until a vertical design exists; keep edge-dependent popup
 placement at the panel-window boundary so later vertical support does not need
 a new surface ownership model.
 
-`horizontalWidgetPadding` names the horizontal-bar design, not coordinate
+`bar.widgetPadding` describes the horizontal-bar design, not coordinate
 axes. Its `main` value pads along a top/bottom bar and its `cross` value pads
 across the bar's thickness. `WidgetHost.qml` owns both values so built-in and
 future widgets get the same outer padding and clickable extent by default.
 Widget natural sizes must describe content, not include a second copy of host
 padding. A widget may expose `hostMainPaddingOffset` for a concrete compactness
 requirement; the host resolves `max(0, main + offset)`. The tray binds that
-contract to the theme's `trayMainPaddingOffset`. Do not offset cross-axis
+contract to the theme's `bar.trayPaddingOffset`. Do not offset cross-axis
 padding or add an override without a real design requirement. Add a separate
 vertical-bar padding object only when vertical bars are supported. Panel
-internals use `controlPadding`; they are not bar-widget padding.
+internals use `metrics.controlPadding`; they are not bar-widget padding.
 
 Themes own the entire visual surface, including colors, typography, bar
 minimum thickness, spacing, radii, borders, dividers, and the panel gap. Shell
 JSON owns placement and behavior, not visual metrics. `config/Theme.qml` watches
-the canonical `../hyprkarl/current/theme.name` selector, then reads the chosen
-`themes/<name>/quickshell.json` directly. Do not watch through the replaceable
-`current/theme` symlink: its target changes on a theme switch and can leave a
-file watcher attached to the old theme.
+the XDG-state `current/theme.json` selector, then reads the immutable artifact
+named there. The selector changes atomically on a theme switch, so the theme
+file watcher always follows a stable file.
 
-Keep `barMargin`, `islandCorners`, `islandBorders`, `islandRadius`,
-`cornerCurveSize`, and `cornerCurveRadius` in every theme. Do not move these
+Keep `bar.margin`, `bar.island.corners`, `bar.island.borders`,
+`bar.island.radius`, `bar.island.curveSize`, and `bar.island.curveRadius` in
+every theme. Do not move these
 appearance decisions into shell JSON or individual island components.
 
 `panels/FeaturePanelHost.qml` is the lasting window boundary for feature
@@ -118,8 +118,8 @@ rate with an up arrow while charging or a down arrow while discharging. Its
 percentage column is three monospaced glyphs wide, uses `MAX` at full charge,
 and scales the indicator to the same width; the bar battery readout uses `MAX`
 too. Every panel content exposes a reactive `preferredWidth`; the host owns
-clamping and anchoring. Keep the default binding to `panelWidth` and the
-power variation bound to the theme-owned `powerPanelWidth`.
+  clamping and anchoring. Keep the default binding to `panel.width` and the
+  power variation bound to the theme-owned `panel.powerWidth`.
 `BatteryIndicator` keeps its original 18×10 primary-widget surface at the
 default `nativeScale` of 1. The panel sets `nativeScale` to allocate a larger
 canvas; do not use the item's transform scale, which blurs its texture.
@@ -156,7 +156,7 @@ The three performance widgets share `ExpandableReadout`; the tray owns the
 same clipped horizontal expansion for its dynamic item list. Its divider lives
 inside that clipped panel so it reveals between the fixed trigger and items on
 top and bottom bars. Universal host padding supplies the outer inset for the
-workspace row. The tray applies `trayMainPaddingOffset` to its outer host inset
+workspace row. The tray applies `bar.trayPaddingOffset` to its outer host inset
 and reuses the unmodified universal main-axis value between its internal
 divider and item row. When items are revealed, it also mirrors the resolved
 host inset between the fixed trigger and that divider so the trigger's visible

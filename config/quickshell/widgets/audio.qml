@@ -24,14 +24,14 @@ ShellButton {
         anchors.verticalCenter: parent.verticalCenter
         volume: root.audio?.volume ?? 0
         muted: root.audio?.muted ?? false
-        indicatorColor: root.theme.text
+        indicatorColor: root.theme.foreground
       }
 
       Text {
         visible: root.config.showPercentage
         text: `${root.percentage}%`
-        color: root.theme.text
-        font.family: root.theme.fontMono
+        color: root.theme.foreground
+        font.family: root.theme.monoFontFamily
         font.pixelSize: root.theme.readoutFontSize
         font.weight: root.theme.fontWeight
         font.styleName: root.theme.fontStyle

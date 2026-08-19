@@ -44,7 +44,7 @@ Item {
       width: root.activeFocus ? 12 : 10
       height: width
       radius: width / 2
-      color: root.theme.text
+      color: root.theme.foreground
     }
 
     MouseArea {
@@ -67,8 +67,8 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
     width: 38
     text: `${Math.round(root.value * 100)}%`
-    color: root.theme.text
-    font.family: root.theme.fontMono
+    color: root.theme.foreground
+    font.family: root.theme.monoFontFamily
     font.pixelSize: root.theme.readoutFontSize
     horizontalAlignment: Text.AlignRight
   }

@@ -18,9 +18,9 @@ Item {
     anchors.rightMargin: headerAction.visible ? root.theme.panelSpacing : 0
     anchors.top: parent.top
     text: root.title
-    color: root.theme.text
-    font.family: root.theme.fontUi
-    font.pixelSize: root.theme.fontSize + 1
+    color: root.theme.foreground
+    font.family: root.theme.uiFontFamily
+    font.pixelSize: root.theme.bodyFontSize + 1
     font.weight: root.theme.fontWeight
     font.styleName: root.theme.fontStyle
     elide: Text.ElideRight
@@ -40,15 +40,15 @@ Item {
       anchors.fill: parent
       color: root.theme.accent
       opacity: headerAction.activeFocus ? 0.30 : actionMouse.containsMouse ? 0.22 : 0.14
-      radius: root.theme.radius
+      radius: root.theme.controlRadius
     }
 
     Text {
       anchors.centerIn: parent
       text: root.actionIcon
-      color: root.theme.text
-      font.family: root.theme.fontUi
-      font.pixelSize: root.theme.fontSize
+      color: root.theme.foreground
+      font.family: root.theme.uiFontFamily
+      font.pixelSize: root.theme.bodyFontSize
       font.weight: root.theme.fontWeight
     }
 
@@ -74,9 +74,9 @@ Item {
     anchors.bottom: parent.bottom
     visible: root.subtitle.length > 0
     text: root.subtitle
-    color: root.theme.text
+    color: root.theme.foreground
     opacity: 0.65
-    font.family: root.theme.fontUi
+    font.family: root.theme.uiFontFamily
     font.pixelSize: root.theme.readoutFontSize
     elide: Text.ElideRight
   }

@@ -42,6 +42,18 @@ example:
 See [`docs/menu-configuration.md`](../docs/menu-configuration.md) for the menu
 schema, adding entries and submenus, and direct menu commands.
 
+## Themes
+
+Personal theme bundles and same-name overlays belong under
+`user/themes/<name>/`. Build a complete palette-derived bundle with
+`hk-theme build <source> [name]`, or place a complete hand-authored bundle
+there. A directory sharing a built-in name overlays that built-in during
+staging; a unique name is a standalone personal theme.
+
+Wallpaper additions and built-in wallpaper removal markers also persist in
+this namespace. The active assembled bundle and selectors live under XDG
+state, not here. See [`docs/themes.md`](../docs/themes.md).
+
 ## Lifecycle Hooks
 
 Personal lifecycle hooks live under `user/hooks/<event>.d/`. Supported events

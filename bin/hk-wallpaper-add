@@ -7,7 +7,11 @@
 #
 #   path   Path to the image file. Supported formats: jpg, jpeg, png, webp
 
-WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
+
+THEME_NAME=$(theme_current_name)
+USER_THEME_DIR="$HYPRKARL_PATH/user/themes/$THEME_NAME"
 
 source_path="$1"
 
@@ -29,6 +33,19 @@ if ! echo "$wallpaper_name" | grep -qiE '\.(jpg|jpeg|png|webp)$'; then
   exit 1
 fi
 
-cp -L "$source_path" "$WALLPAPER_DIR/$wallpaper_name"
+mkdir -p "$USER_THEME_DIR/wallpapers"
+cp -L "$source_path" "$USER_THEME_DIR/wallpapers/$wallpaper_name"
+
+if [[ -f "$USER_THEME_DIR/.wallpapers-disabled" ]]; then
+  grep -Fxv "$wallpaper_name" "$USER_THEME_DIR/.wallpapers-disabled" \
+    > "$USER_THEME_DIR/.wallpapers-disabled.next"
+  mv "$USER_THEME_DIR/.wallpapers-disabled.next" "$USER_THEME_DIR/.wallpapers-disabled"
+fi
+
+exec 9> "$HYPRKARL_THEME_LOCK"
+flock 9
+theme_activate_bundle "$THEME_NAME" || exit 1
+flock -u 9
+
 hk-wallpaper-cache --single "$wallpaper_name"
 hk-wallpaper-set "$wallpaper_name"

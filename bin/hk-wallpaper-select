@@ -8,8 +8,11 @@
 #   highlight-color   Optional hex color for the selection border (e.g. #cc5555).
 #                     Defaults to the theme's highlight color if omitted.
 
-THEME_NAME=$(cat "$HYPRKARL_PATH/config/hyprkarl/current/theme.name")
-WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
+
+THEME_NAME=$(theme_current_name)
+WALLPAPER_DIR="$HYPRKARL_CURRENT_THEME/wallpapers"
 CACHE_DIR="$HOME/.cache/hyprkarl/wallpapers/$THEME_NAME"
 
 if [[ -n "$1" ]]; then

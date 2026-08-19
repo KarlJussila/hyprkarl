@@ -2,4 +2,4 @@
 # hk-btop-reload
 # Reload btop configuration
 
-pkill -SIGUSR2 btop
+pkill -x -SIGUSR2 btop 2>/dev/null || true

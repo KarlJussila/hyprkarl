@@ -53,11 +53,11 @@ Item {
         width: parent.width - 68
         height: 34
         text: Qt.formatDate(root.viewedMonth, "MMMM yyyy")
-        color: root.theme.text
+        color: root.theme.foreground
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.family: root.theme.fontUi
-        font.pixelSize: root.theme.fontSize + 1
+        font.family: root.theme.uiFontFamily
+        font.pixelSize: root.theme.bodyFontSize + 1
         font.weight: root.theme.fontWeight
         font.styleName: root.theme.fontStyle
       }
@@ -85,11 +85,11 @@ Item {
         width: weekdayRow.width / 7
         height: weekdayRow.height
         text: model.shortName
-        color: root.theme.text
+        color: root.theme.foreground
         opacity: 0.65
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.family: root.theme.fontMono
+        font.family: root.theme.monoFontFamily
         font.pixelSize: root.theme.readoutFontSize
         font.capitalization: Font.AllUppercase
       }
@@ -133,11 +133,11 @@ Item {
         Text {
           anchors.fill: parent
           text: dayCell.model.day
-          color: dayCell.isToday ? root.theme.accent : root.theme.text
+          color: dayCell.isToday ? root.theme.accent : root.theme.foreground
           opacity: dayCell.inViewedMonth ? 1 : 0.35
           horizontalAlignment: Text.AlignHCenter
           verticalAlignment: Text.AlignVCenter
-          font.family: root.theme.fontMono
+          font.family: root.theme.monoFontFamily
           font.pixelSize: root.theme.readoutFontSize
           font.weight: dayCell.isToday ? root.theme.fontWeight : Font.Normal
         }

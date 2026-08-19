@@ -15,7 +15,7 @@ PanelWindow {
     + barLayout.contentHeight
     + theme.barMarginContent
 
-  color: theme.background
+  color: theme.windowSurface
   aboveWindows: true
   focusable: false
   exclusionMode: shellConfig.exclusive ? ExclusionMode.Normal : ExclusionMode.Ignore

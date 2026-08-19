@@ -18,9 +18,9 @@ Item {
     anchors.left: parent.left
     anchors.top: parent.top
     text: root.icon
-    color: root.theme.text
-    font.family: root.theme.fontUi
-    font.pixelSize: root.theme.fontSize
+    color: root.theme.foreground
+    font.family: root.theme.uiFontFamily
+    font.pixelSize: root.theme.bodyFontSize
     font.weight: root.theme.fontWeight
     font.styleName: root.theme.fontStyle
     horizontalAlignment: Text.AlignHCenter
@@ -51,8 +51,8 @@ Item {
       x: root.gap
       y: 0
       text: root.text
-      color: root.theme.text
-      font.family: root.theme.fontMono
+      color: root.theme.foreground
+      font.family: root.theme.monoFontFamily
       font.pixelSize: root.theme.readoutFontSize
       font.weight: root.theme.fontWeight
       font.styleName: root.theme.fontStyle

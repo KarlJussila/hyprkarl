@@ -102,10 +102,10 @@ Item {
       visible: PowerProfiles.holds.length > 0
       width: parent.width
       text: `${PowerProfiles.holds.length} application hold${PowerProfiles.holds.length === 1 ? "" : "s"} the current profile. Choosing another profile releases ${PowerProfiles.holds.length === 1 ? "it" : "them"}.`
-      color: root.theme.text
+      color: root.theme.foreground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.fontUi
+      font.family: root.theme.uiFontFamily
       font.pixelSize: root.theme.readoutFontSize
     }
 

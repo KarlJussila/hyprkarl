@@ -624,12 +624,12 @@ hatches and the repo's transparent editing model.
 
 ### Source Model
 
-Move toward this source hierarchy:
+Implemented. The companion generator owns palette resolution, shared Jinja
+templates, explicit per-theme overrides, assets, validation, and reproducible
+built-in output. Its source hierarchy is:
 
 ```text
-theme/
-├── templates/               shared consumer templates
-└── schema/                  palette and semantic-token documentation
+templates/                    shared consumer templates
 themes/<name>/
 ├── palette.yaml             canonical colors and mode
 ├── overrides/               exceptional hand-written consumer files
@@ -639,27 +639,25 @@ themes/<name>/
 user/themes/<name>/           user theme or documented overlay
 ```
 
-The current companion theme generator should remain the rendering authority
-unless inspection shows that a small in-repo renderer would remove more
-coordination than it adds. Expose it through a Hyprkarl command rather than
-reimplementing Omarchy's templating machinery in shell.
+The companion remains the rendering authority and is exposed for personal
+themes through `hk-theme build`; Hyprkarl does not duplicate its renderer.
 
 ### Generated State
 
-Render the active theme into:
+The active theme now renders into generation-named artifacts under:
 
 ```text
-${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/
+${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/<name>.<generation>/
 ```
 
-Keep the current theme name and wallpaper selection in the same state tree.
-Application configs should import or point to that generated directory. Theme
-selection must stage output and swap it atomically so consumers never observe
-a half-rendered theme.
+The current theme name, artifact selector, and wallpaper selection share that
+state tree. Selection stages and validates the complete source/overlay result,
+then swaps the active link and selector atomically so consumers never observe
+a half-assembled bundle.
 
 ### Semantic Shell Theme
 
-Replace the flat Quickshell JSON bag over time with a small semantic API:
+The flat Quickshell JSON bag has been replaced with a small semantic API:
 
 - palette roles such as foreground, background, accent, muted, and urgent;
 - surface roles for bar, popup, tooltip, and notification;
@@ -671,7 +669,7 @@ Omarchy's full theme surface before Hyprkarl has corresponding components.
 
 ### User Extension
 
-Support two clear cases:
+The runtime supports two clear cases:
 
 1. A complete user theme selected by name.
 2. A documented overlay on a built-in theme for changed palette values,
@@ -723,8 +721,9 @@ branch. Deliver them as reviewable vertical changes:
 6. **Convert menus to data and add narrow lifecycle hooks.** Complete. Static
    and dynamic menus use the direct Quickshell renderer, while four public
    actions own the narrow user hook events.
-7. **Move runtime theme state and adopt palette-first rendering.** Coordinate
-   this with the theme-generator repository.
+7. **Move runtime theme state and adopt palette-first rendering.** Complete.
+   The companion generator now owns palette-first production, while Hyprkarl
+   stages built-in/user sources into atomic XDG-state artifacts.
 8. **Migrate shell-native surfaces individually.** Start with OSD; require each
    feature to delete an older integration path and meet the visual brief.
 9. **Reassess plugins only after external extensions exist.** A decision to do
@@ -769,9 +768,9 @@ small design changes before dependent work begins:
 
 1. How Quickshell package updates are admitted after the initial 0.3.0-2.1 and
    Qt 6.11.1 baseline.
-2. Whether the companion theme generator is invoked as an external sibling,
-   installed tool, submodule, or vendored library. Prefer the option with one
-   clear owner and reproducible versions.
+2. Resolved: the companion theme generator remains an external sibling by
+   default, with `HYPRKARL_THEME_GENERATOR_PATH` as an explicit relocation
+   override. `hk-theme build` is the narrow integration boundary.
 3. Which integration owns display discovery, live changes, persistence, and
    recovery before the planned display feature panel is implemented.
 

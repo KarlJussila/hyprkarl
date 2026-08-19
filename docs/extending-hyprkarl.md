@@ -188,8 +188,9 @@ To add a built-in widget kind:
 3. If it opens a panel, put service-specific state and panel composition under
    `config/quickshell/features/<kind>/` and use the existing per-monitor
    `FeaturePanelHost` rather than creating another popup window.
-4. Add every required appearance token to each
-   `themes/<theme>/quickshell.json`.
+4. Add required appearance tokens to the companion generator's shared
+   `templates/quickshell.json`, regenerate every built-in, and expose only the
+   semantic QML property the component needs.
 
 Add a shared component only when multiple widgets genuinely use the same
 interaction or visual structure. The command-widget and user-QML extension
@@ -201,8 +202,11 @@ validation commands.
 
 ## Add a Theme-Aware Feature
 
-Hyprkarl switches themes by pointing `config/hyprkarl/current/theme` at a theme
-directory and `config/hyprkarl/current/wallpaper` at the selected wallpaper.
+Hyprkarl assembles a built-in theme plus an optional `user/themes/<name>/`
+overlay into an immutable XDG-state artifact. It atomically points
+`current/theme` at that artifact and `current/wallpaper` at the selection.
+The paths under `config/hyprkarl/current/` are fixed compatibility links into
+that state tree.
 
 If a feature should vary by theme, read through those paths instead of
 hardcoding a specific theme.
@@ -213,8 +217,8 @@ the active theme into place. Use relative symlinks.
 
 Examples:
 
-- Quickshell watches `theme.name` and reads the selected
-  `themes/<name>/quickshell.json` directly
+- Quickshell watches the XDG-state `theme.json` selector and reads the selected
+  artifact's `quickshell.json`
 - terminal configs import from `current/theme/...`
 - Hyprland `loadfile`s `current/theme/hyprland.lua` at the end of its config
 - `hyprlock` points at `current/wallpaper`

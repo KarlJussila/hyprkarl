@@ -90,34 +90,34 @@ Rofi menu's identity; palette, typography, rounded geometry, borders, and
 accent states now belong to the shell's visual system. See
 `docs/menu-configuration.md` for the schema and examples.
 
-Themes own appearance through `themes/<theme>/quickshell.json`. `Theme.qml`
-watches `config/hyprkarl/current/theme.name`, then reads the selected theme
-file directly, so both a theme switch and an edit to the active JSON apply to a
-running bar. This includes every color plus typography, minimum bar thickness,
+Themes own appearance through the active runtime bundle's `quickshell.json`.
+`Theme.qml` watches the XDG-state `current/theme.json` selector, then reads the
+immutable artifact named there, so a theme switch applies to a running bar.
+This includes every color plus typography, minimum bar thickness,
 spacing, radii, borders, dividers, panel sizing, and transition timing.
 
 Island geometry uses logical edges so the same theme works on top and bottom
-bars. `barMargin.screen`, `barMargin.content`, and `barMargin.outer` control the
+bars. `bar.margin.screen`, `.content`, and `.outer` control the
 screen-side gap, workspace-side gap, and gaps at the monitor's horizontal
-ends. `islandCorners` selects `square` or `round` independently at the
+ends. `bar.island.corners` selects `square` or `round` independently at the
 screen/content and outer/inner intersections; `screenInner` additionally
-accepts `curve` for the concave joins between islands. `islandBorders` toggles
-the corresponding four edges. `islandRadius`, `cornerCurveSize`, and
-`cornerCurveRadius` size those shapes. See `docs/customizing-bar.md` for a
+accepts `curve` for the concave joins between islands. `bar.island.borders`
+toggles the corresponding four edges. `bar.island.radius`, `.curveSize`, and
+`.curveRadius` size those shapes. See `docs/customizing-bar.md` for a
 complete example.
 
-`horizontalWidgetPadding.main` and `.cross` are universal outer padding for
+`bar.widgetPadding.main` and `.cross` are universal outer padding for
 every widget on a top or bottom bar. `main` follows the bar and `cross` follows
 its thickness; “horizontal” names the bar orientation, not a coordinate axis.
 The host applies both values to every widget. Widget natural sizes contain only
 their content, so padding is never stacked on a second built-in inset.
-`trayMainPaddingOffset` adjusts the tray's main-axis host padding and is added
+`bar.trayPaddingOffset` adjusts the tray's main-axis host padding and is added
 with a zero floor; the shipped `-2` turns the universal `6` into `4` pixels per
 outer side. The revealed tray keeps the unmodified universal padding beside
 its divider, without adding space between adjacent items. It also mirrors the
 effective outer inset between the chevron and divider, keeping the trigger the
 same visible width when collapsed or expanded. Panel internals use the separate
-`controlPadding` value.
+`metrics.controlPadding` value.
 
 Tray icons use the StatusNotifierItem interaction contract: left click
 activates the item, middle click invokes its secondary action, and right click
@@ -127,7 +127,7 @@ Opening an empty tray only flips the chevron. Its open state is retained, so
 the tray expands automatically if an item appears later.
 
 The cross-axis padding contributes to each widget's natural height, while
-`barMinThickness` only supplies a floor. The bar resolves the tallest widget
+`bar.minimumThickness` only supplies a floor. The bar resolves the tallest widget
 and gives every island that same content height. A vertical-bar padding object
 will accompany vertical-bar support rather than being exposed speculatively.
 
@@ -201,7 +201,7 @@ multiple widgets genuinely use the same interaction or visual structure.
   arrow showing whether power is entering or leaving the battery. The summary
   gives its percentage and indicator matching three-character widths. Both
   battery readouts use `MAX` instead of `100%`; the compact panel width
-  remains independently themeable through `powerPanelWidth`. The drawn
+  remains independently themeable through `panel.powerWidth`. The drawn
   indicator keeps its original 18×10 canvas in the bar and allocates a larger
   canvas for the panel rather than magnifying a small texture.
   The audio indicator centers in its bar row and resolves its stroke to two

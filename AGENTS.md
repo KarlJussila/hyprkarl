@@ -91,21 +91,24 @@ relaunching — a broken `hyprland.lua` has no automatic fallback.
 
 ### Theme System
 
-Themes live in `themes/{name}/` and control Hyprland, the bars, rofi,
-terminals, mako, hyprlock, GTK, and Qt. Themes are meant to control **look** —
-colors, fonts, spacing — not behavior. The active theme is tracked by the
-symlink `config/hyprkarl/current/theme` (plus `theme.name`).
+Shipped theme sources live in `themes/{name}/`; personal themes and overlays
+live in `user/themes/{name}/`. Themes control **look** — colors, fonts, spacing
+— not behavior. `hk-theme set` stages and validates an immutable bundle under
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/`, then atomically swaps
+the XDG-state selector. The tracked paths under `config/hyprkarl/current/` are
+fixed compatibility links into that state, never the state itself.
 
 Switch themes with:
 ```bash
 hk-theme set <theme-name>    # hyprkarl, everforest, gruvbox
 ```
 
-When adding a new component that needs theming, add a corresponding file to
-each theme directory. Themes can also be generated from a single color palette
-with the companion
+Built-ins are generated from `palette.yaml` plus explicit overrides with the companion
 [theme generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
-(locally at `../theme-generator/`).
+(locally at `../theme-generator/`). Add a consumer template there and
+regenerate every built-in instead of hand-copying one new file per theme.
+`hk-theme build <source> [name]` renders a personal bundle into
+`user/themes/<name>/`.
 
 ### Quickshell Bar Configuration
 
@@ -120,15 +123,14 @@ behavior. Island corner shapes, selective borders, and
 screen/outer/content margins are theme data rendered once by
 `layout/IslandSurface.qml`. Widgets report natural heights, the bar resolves
 the tallest one against the theme minimum, and all islands receive that shared
-height. `WidgetHost.qml` applies universal `horizontalWidgetPadding.main` and
-`.cross` values along and across top/bottom bar widgets; widget natural sizes
+height. `WidgetHost.qml` applies universal `bar.widgetPadding.main` and `.cross`
+values along and across top/bottom bar widgets; widget natural sizes
 must not duplicate those insets. A concrete widget may request a main-axis
 offset, resolved with a zero floor; the tray binds this to
-`trayMainPaddingOffset`. Panel internals use the separate `controlPadding`
-token. `Theme.qml` watches the canonical
-`current/theme.name` selector and
-then reads the selected theme file directly so replacing the active-theme
-symlink cannot strand its file watcher on the previous target. Each bar owns
+`bar.trayPaddingOffset`. Panel internals use the separate
+`metrics.controlPadding` token. `Theme.qml` watches the canonical XDG-state
+`current/theme.json` selector, then reads the immutable artifact named there.
+Each bar owns
 one `FeaturePanelHost`; audio, network, Bluetooth,
 battery/power, and clock/calendar panels compose shared panel controls inside
 that host, while feature directories own service-specific state. Bluetooth

@@ -9,7 +9,7 @@ Item {
   required property var theme
 
   property real progress: active ? 1 : 0
-  property color trackColor: active ? theme.accent : theme.surface
+  property color trackColor: active ? theme.accent : theme.barSurface
   property color borderColor: active ? theme.accent : theme.border
 
   implicitWidth: 28
@@ -54,7 +54,7 @@ Item {
         context.stroke()
 
         roundedRect(thumbX, 1, 16, 16, 8)
-        context.fillStyle = root.theme.surface
+        context.fillStyle = root.theme.barSurface
         context.fill()
         context.strokeStyle = root.borderColor
         context.stroke()
@@ -69,8 +69,8 @@ Item {
       horizontalAlignment: Text.AlignHCenter
       verticalAlignment: Text.AlignVCenter
       text: root.active ? root.onGlyph : root.offGlyph
-      color: root.theme.text
-      font.family: root.theme.fontUi
+      color: root.theme.foreground
+      font.family: root.theme.uiFontFamily
       font.pixelSize: 9
     }
   }

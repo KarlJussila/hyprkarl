@@ -7,8 +7,11 @@
 #   hk-wallpaper-cache --regenerate             Wipe and regenerate entire cache
 #   hk-wallpaper-cache --single <filename>      Regenerate one thumbnail
 
-THEME_NAME=$(cat "$HYPRKARL_PATH/config/hyprkarl/current/theme.name")
-WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
+
+THEME_NAME=$(theme_current_name)
+WALLPAPER_DIR="$HYPRKARL_CURRENT_THEME/wallpapers"
 CACHE_DIR="$HOME/.cache/hyprkarl/wallpapers/$THEME_NAME"
 
 mkdir -p "$CACHE_DIR"

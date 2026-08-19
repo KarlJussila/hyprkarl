@@ -109,9 +109,15 @@ category commands do not emit that event.
 
 ## Themes and Wallpapers
 
+- `hk-theme build <source> [name]`
+  Render a palette source with the companion generator into the user-owned
+  `user/themes/<name>/` bundle. The generator defaults to the sibling
+  `../theme-generator` checkout and can be relocated with
+  `HYPRKARL_THEME_GENERATOR_PATH`.
 - `hk-theme set <theme>`
-  Switch to a theme, update wallpaper state, update theme settings, and reload
-  affected programs.
+  Validate and atomically activate a built-in theme, a complete user theme, or
+  a same-name user overlay; then update wallpaper and application settings and
+  reload affected programs.
 - `hk-theme list`
   List installed themes.
 - `hk-theme current`

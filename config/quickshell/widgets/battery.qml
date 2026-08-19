@@ -27,9 +27,9 @@ ShellButton {
         anchors.verticalCenter: parent.verticalCenter
         level: root.percentage / 100
         charging: root.charging
-        surfaceColor: root.theme.surface
-        indicatorColor: root.theme.text
-        lowColor: root.theme.batteryLow
+        surfaceColor: root.theme.barSurface
+        indicatorColor: root.theme.foreground
+        lowColor: root.theme.warning
         accentColor: root.theme.accent
         lowThreshold: root.config.lowThreshold
       }
@@ -37,8 +37,8 @@ ShellButton {
       Text {
         visible: root.config.showPercentage
         text: root.percentageText
-        color: root.theme.text
-        font.family: root.theme.fontMono
+        color: root.theme.foreground
+        font.family: root.theme.monoFontFamily
         font.pixelSize: root.theme.readoutFontSize
         font.weight: root.theme.fontWeight
         font.styleName: root.theme.fontStyle

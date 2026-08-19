@@ -83,11 +83,11 @@ Item {
       visible: root.adapter === null
       width: parent.width
       text: "No Bluetooth adapter is available."
-      color: root.theme.text
+      color: root.theme.foreground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.fontUi
-      font.pixelSize: root.theme.fontSize
+      font.family: root.theme.uiFontFamily
+      font.pixelSize: root.theme.bodyFontSize
     }
 
     PanelSectionLabel {
@@ -144,11 +144,11 @@ Item {
       visible: root.adapter?.enabled && root.availableDevices.length === 0
       width: parent.width
       text: "No nearby devices found yet."
-      color: root.theme.text
+      color: root.theme.foreground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.fontUi
-      font.pixelSize: root.theme.fontSize
+      font.family: root.theme.uiFontFamily
+      font.pixelSize: root.theme.bodyFontSize
     }
 
     Repeater {

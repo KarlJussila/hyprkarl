@@ -1,55 +1,75 @@
 {
-  "text": "#dbbc7f",
-  "surface": "#2d353b",
-  "background": "#00000000",
-  "accent": "#a7c080",
-  "border": "#4f585e",
-  "error": "#e67e80",
-  "batteryLow": "#dbbc7f",
-  "fontUi": "JetBrains Mono Nerd Font Propo",
-  "fontMono": "JetBrains Mono Nerd Font",
-  "fontSize": 13,
-  "readoutFontSize": 13,
-  "fontWeight": 700,
-  "fontStyle": "Bold",
-  "radius": 8,
-  "islandRadius": 8,
-  "cornerCurveSize": 12,
-  "cornerCurveRadius": 4,
-  "islandCorners": {
-    "screenOuter": "square",
-    "screenInner": "curve",
-    "contentOuter": "square",
-    "contentInner": "round"
+  "palette": {
+    "foreground": "#dbbc7f",
+    "muted": "#9DA9A0",
+    "accent": "#a7c080",
+    "border": "#4F585E",
+    "urgent": "#e67e80",
+    "warning": "#dbbc7f"
   },
-  "islandBorders": {
-    "screen": false,
-    "content": true,
-    "outer": false,
-    "inner": true
+  "surfaces": {
+    "window": "#00000000",
+    "bar": "#2d353b",
+    "popup": "#2d353b",
+    "tooltip": "#2d353b",
+    "control": "#00000000"
   },
-  "barMargin": {
-    "screen": 0,
-    "outer": 0,
-    "content": 0
+  "typography": {
+    "uiFamily": "JetBrains Mono Nerd Font Propo",
+    "monoFamily": "JetBrains Mono Nerd Font",
+    "bodySize": 13,
+    "readoutSize": 13,
+    "weight": 700,
+    "style": "Bold"
   },
-  "borderWidth": 2,
-  "showDividers": true,
-  "barMinThickness": 22,
-  "horizontalWidgetPadding": {
-    "main": 6,
-    "cross": 3
+  "metrics": {
+    "radius": 8,
+    "borderWidth": 2,
+    "controlPadding": 8
   },
-  "trayMainPaddingOffset": -2,
-  "controlPadding": 8,
-  "tooltipRadius": 6,
-  "panelGap": 0,
-  "panelWidth": 360,
-  "powerPanelWidth": 300,
-  "panelPadding": 12,
-  "panelSpacing": 10,
-  "panelRadius": 10,
-  "panelTransitionDuration": 140,
+  "bar": {
+    "minimumThickness": 22,
+    "showDividers": true,
+    "widgetPadding": {
+      "main": 6,
+      "cross": 3
+    },
+    "trayPaddingOffset": -2,
+    "margin": {
+      "screen": 0,
+      "outer": 0,
+      "content": 0
+    },
+    "island": {
+      "radius": 8,
+      "curveSize": 12,
+      "curveRadius": 4,
+      "corners": {
+        "screenOuter": "square",
+        "screenInner": "curve",
+        "contentOuter": "square",
+        "contentInner": "round"
+      },
+      "borders": {
+        "screen": false,
+        "content": true,
+        "outer": false,
+        "inner": true
+      }
+    }
+  },
+  "panel": {
+    "gap": 0,
+    "width": 360,
+    "powerWidth": 300,
+    "padding": 12,
+    "spacing": 10,
+    "radius": 10,
+    "transitionDuration": 140
+  },
+  "tooltip": {
+    "radius": 6
+  },
   "menu": {
     "scrim": "#22000000",
     "fontSize": 14,

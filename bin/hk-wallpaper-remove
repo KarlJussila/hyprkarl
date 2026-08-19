@@ -5,8 +5,12 @@
 # Usage:
 #   hk-wallpaper-remove <filename>
 
-THEME_NAME=$(cat "$HYPRKARL_PATH/config/hyprkarl/current/theme.name")
-WALLPAPER_DIR="$HYPRKARL_PATH/config/hyprkarl/current/theme/wallpapers"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
+
+THEME_NAME=$(theme_current_name)
+WALLPAPER_DIR="$HYPRKARL_CURRENT_THEME/wallpapers"
+USER_THEME_DIR="$HYPRKARL_PATH/user/themes/$THEME_NAME"
 CACHE_DIR="$HOME/.cache/hyprkarl/wallpapers/$THEME_NAME"
 
 wallpaper_name="$1"
@@ -15,6 +19,26 @@ if [[ -z "$wallpaper_name" ]]; then
   echo "Usage: hk-wallpaper-remove <filename>" >&2
   exit 1
 fi
+if [[ "$wallpaper_name" != "$(basename "$wallpaper_name")" ]]; then
+  echo "Invalid wallpaper name: $wallpaper_name" >&2
+  exit 1
+fi
 
-rm -f "$WALLPAPER_DIR/$wallpaper_name"
+if [[ ! -f "$WALLPAPER_DIR/$wallpaper_name" ]]; then
+  echo "Wallpaper not found: $wallpaper_name" >&2
+  exit 1
+fi
+
+mkdir -p "$USER_THEME_DIR"
+rm -f "$USER_THEME_DIR/wallpapers/$wallpaper_name"
+if [[ -f "$HYPRKARL_PATH/themes/$THEME_NAME/wallpapers/$wallpaper_name" ]] \
+  && ! grep -Fxq "$wallpaper_name" "$USER_THEME_DIR/.wallpapers-disabled" 2>/dev/null; then
+  printf '%s\n' "$wallpaper_name" >> "$USER_THEME_DIR/.wallpapers-disabled"
+fi
+
+exec 9> "$HYPRKARL_THEME_LOCK"
+flock 9
+theme_activate_bundle "$THEME_NAME" || exit 1
+flock -u 9
+
 rm -f "$CACHE_DIR/$wallpaper_name"

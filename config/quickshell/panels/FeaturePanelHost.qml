@@ -145,7 +145,7 @@ Scope {
 
       anchors.fill: parent
       opacity: root.reveal
-      color: root.theme.surface
+      color: root.theme.popupSurface
       border.color: root.theme.border
       border.width: root.theme.borderWidth
       radius: root.theme.panelRadius

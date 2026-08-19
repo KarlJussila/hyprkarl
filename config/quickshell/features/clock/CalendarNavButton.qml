@@ -15,15 +15,15 @@ Item {
     anchors.fill: parent
     color: root.theme.accent
     opacity: root.activeFocus ? 0.30 : mouse.containsMouse ? 0.22 : 0.10
-    radius: root.theme.radius
+    radius: root.theme.controlRadius
   }
 
   Text {
     anchors.centerIn: parent
     text: root.text
-    color: root.theme.text
-    font.family: root.theme.fontUi
-    font.pixelSize: root.theme.fontSize
+    color: root.theme.foreground
+    font.family: root.theme.uiFontFamily
+    font.pixelSize: root.theme.bodyFontSize
     font.weight: root.theme.fontWeight
   }
 

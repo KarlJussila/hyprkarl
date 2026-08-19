@@ -79,12 +79,11 @@ can also run:
 hk-theme set <theme-name>
 ```
 
-When the theme changes, Hyprkarl:
+When the theme changes, Hyprkarl atomically assembles and validates a runtime
+bundle under `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl`, then:
 
-- updates `config/hyprkarl/current/theme`
-- updates `config/hyprkarl/current/theme.name`
 - updates the wallpaper state
-- updates GNOME and QT themes
+- updates GNOME and Qt themes
 - reloads Hyprland, mako, terminals, `btop`, and the bar
 
 Some changes may not take effect everywhere immediately, but most of the theme
@@ -95,7 +94,8 @@ See [Themes](themes.md) for the full architecture.
 ## Wallpapers
 
 Each theme has its own `wallpapers/` directory. The current wallpaper is tracked
-through `config/hyprkarl/current/wallpaper`.
+in XDG state; `config/hyprkarl/current/wallpaper` is a stable compatibility link
+to it.
 
 The usual way to manage wallpapers is `Hyprkarl Menu -> Config -> Wallpaper`, but you can also run:
 

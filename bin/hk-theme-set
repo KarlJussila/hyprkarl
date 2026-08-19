@@ -13,17 +13,15 @@ if [[ -z "$1" ]]; then
   exit 1
 fi
 
-THEMES_PATH="$HYPRKARL_PATH/themes"
-THEME_LINK="$HYPRKARL_PATH/config/hyprkarl/current/theme"
-THEME_NAME=$(echo "$*" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
 
-if [[ ! -d "$THEMES_PATH/$THEME_NAME" ]]; then
-  echo "Theme '$THEME_NAME' does not exist" >&2
-  exit 1
-fi
+THEME_NAME=$(theme_normalize_name "$@")
 
-ln -sfn "../../../themes/$THEME_NAME" "$THEME_LINK"
-echo "$THEME_NAME" > "$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
+exec 9> "$HYPRKARL_THEME_LOCK"
+flock 9
+theme_activate_bundle "$THEME_NAME" || exit 1
+flock -u 9
 
 post_action_status=0
 if ! hk-wallpaper-init; then
@@ -31,13 +29,13 @@ if ! hk-wallpaper-init; then
 fi
 
 # Apply matching GTK color scheme and icon theme.
-if [[ -f ~/.config/hyprkarl/current/theme/light.mode ]]; then
+if [[ -f "$HYPRKARL_CURRENT_THEME/light.mode" ]]; then
   gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
 else
   gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
 fi
 
-GNOME_ICONS_THEME=~/.config/hyprkarl/current/theme/icons.theme
+GNOME_ICONS_THEME="$HYPRKARL_CURRENT_THEME/icons.theme"
 if [[ -f "$GNOME_ICONS_THEME" ]]; then
   gsettings set org.gnome.desktop.interface icon-theme "$(<"$GNOME_ICONS_THEME")"
 else

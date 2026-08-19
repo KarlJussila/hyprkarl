@@ -22,7 +22,7 @@ Item {
     edge,
     leftRole,
     rightRole,
-    theme.surface,
+    theme.barSurface,
     theme.border,
     theme.borderWidth,
     theme.islandRadius,
@@ -121,7 +121,7 @@ Item {
       const bottomRight = bottomRightStyle === "round" ? maxRadius : 0
       const bottomLeft = bottomLeftStyle === "round" ? maxRadius : 0
 
-      context.fillStyle = root.theme.surface
+      context.fillStyle = root.theme.barSurface
       roundedBody(context, root.bodyLeft, 0, root.bodyRight, height, topLeft, topRight, bottomRight, bottomLeft)
       context.fill()
 

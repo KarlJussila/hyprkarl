@@ -1,0 +1,80 @@
+mode: dark
+
+base:
+  background: "#2d353b"
+
+  layer0: "{{base.background}}"
+  layer1: "#343F44"
+  layer2: "#3D484D"
+  layer3: "#475258"
+  layer4: "#4F585E"
+
+  surface_soft: "{{base.layer1}}"
+  surface: "{{base.layer2}}"
+  surface_alt: "{{base.layer4}}"
+
+  foreground: "#d3c6aa"
+  foreground_muted: "#9DA9A0"
+  foreground_dim: "#7A8478"
+
+ansi:
+  black: "#343f44"
+  red: "#e67e80"
+  green: "#a7c080"
+  yellow: "#dbbc7f"
+  blue: "#7fbbb3"
+  magenta: "#d699b6"
+  cyan: "#83c092"
+  white: "#859289"
+
+bright:
+  black: "#868d80"
+  red: "{{ansi.red}}"
+  green: "{{ansi.green}}"
+  yellow: "{{ansi.yellow}}"
+  blue: "{{ansi.blue}}"
+  magenta: "{{ansi.magenta}}"
+  cyan: "{{ansi.cyan}}"
+  white: "#9da9a0"
+
+accent:
+  primary:
+    base: "{{ansi.green}}"
+    soft: "{{darken(ansi.green,25)}}"
+    bright: "{{bright.green}}"
+
+  secondary:
+    base: "{{ansi.blue}}"
+    soft: "{{darken(ansi.blue,25)}}"
+    bright: "{{bright.blue}}"
+
+  # NEW — fits naturally into palette
+  tertiary:
+    base: "{{ansi.yellow}}"
+    soft: "{{darken(ansi.yellow,25)}}"
+    bright: "{{bright.yellow}}"
+
+status:
+  success: "{{ansi.green}}"
+  warning: "{{ansi.yellow}}"
+  error: "{{ansi.red}}"
+  urgent: "{{bright.red}}"
+
+ui:
+  cursor: "{{base.foreground}}"
+
+  text: "{{base.foreground}}"
+
+  # unchanged behavior, just routed through system
+  text_secondary: "{{accent.tertiary.base}}"
+
+  selection_bg: "#505A60"
+  selection_fg: "{{bright.white}}"
+
+  panel: "{{base.surface}}"
+
+  border: "{{accent.primary.base}}"
+  border_inner: "#56635F"
+  border_soft: "{{accent.primary.soft}}"
+
+  highlight: "{{accent.primary.bright}}"

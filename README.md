@@ -113,11 +113,11 @@ The full manual lives under `docs/`.
 
 ## Themes
 
-Themes live under `themes/` and control the appearance of Hyprland, the bar,
-rofi, terminals, mako, hyprlock, and other applications. The Quickshell bar
-watches `config/hyprkarl/current/theme.name`, then reads the selected
-`themes/<theme>/quickshell.json` directly. Theme switches therefore apply
-without restarting the shell. The same file controls island corner shapes,
+Shipped themes live under `themes/`; personal themes and overlays live under
+`user/themes/`. Selection atomically assembles an immutable runtime bundle
+under `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl`, so switching never
+edits tracked files. Quickshell watches the runtime selector and applies theme
+switches without restarting. Its semantic `quickshell.json` controls island corner shapes,
 selective borders, and screen/outer/content margins as well as colors and
 typography. It also provides the minimum height and widget padding; the tallest
 widget determines one shared height for all islands. Inspect or manage the bar
@@ -130,9 +130,10 @@ Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 hk-theme set <theme-name>
 ```
 
-To build your own theme, either generate one from a color palette with
+To build your own theme, generate one into `user/themes/` with
+`hk-theme build <source> [name]` and the adjacent
 [hyprkarl-theme-generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
-(recommended) or copy an existing theme directory and edit it. See
+(recommended), or copy an existing bundle there and edit it. See
 [docs/themes.md](docs/themes.md) for both approaches and the full theme layout.
 
 Provided themes:

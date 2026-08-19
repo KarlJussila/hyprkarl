@@ -16,7 +16,7 @@ Item {
     anchors.fill: parent
     color: root.theme.accent
     opacity: root.activeFocus ? 0.30 : mouse.containsMouse ? 0.22 : 0.14
-    radius: root.theme.radius
+    radius: root.theme.controlRadius
   }
 
   Text {
@@ -24,9 +24,9 @@ Item {
 
     anchors.centerIn: parent
     text: root.icon.length > 0 ? `${root.icon}  ${root.text}` : root.text
-    color: root.theme.text
-    font.family: root.theme.fontUi
-    font.pixelSize: root.theme.fontSize
+    color: root.theme.foreground
+    font.family: root.theme.uiFontFamily
+    font.pixelSize: root.theme.bodyFontSize
     font.weight: root.theme.fontWeight
   }
 

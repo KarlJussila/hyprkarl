@@ -30,14 +30,19 @@ would edit.
 
 ## Stateful Runtime Files
 
-`config/hyprkarl/current/` holds the active theme and wallpaper state:
+Authoritative theme and wallpaper state lives under
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/`. `current/theme` selects an
+immutable generated bundle under `themes/`; `current/theme.name`,
+`current/theme.json`, and `current/wallpaper` carry the small selectors.
+
+`config/hyprkarl/current/` contains fixed compatibility links to that state:
 
 - `config/hyprkarl/current/theme`
-  Symlink to the active theme directory
+  Link to the XDG-state active-theme link
 - `config/hyprkarl/current/theme.name`
-  Active theme name
+  Link to the XDG-state theme name
 - `config/hyprkarl/current/wallpaper`
-  Symlink to the current wallpaper
+  Link to the XDG-state wallpaper
 
 If theme or wallpaper behavior looks wrong, check this directory first.
 
@@ -168,7 +173,7 @@ are:
 - `user/menu.json`
   Optional sparse user-owned menu additions and overrides
 - `themes/<theme>/quickshell.json`
-  Theme-specific colors, typography, minimum bar thickness, natural widget
+  Generated theme-specific semantic colors, typography, minimum bar thickness, natural widget
   padding, logical island corners and borders, radii, and
   screen/outer/content spacing
 
@@ -180,9 +185,9 @@ supports top and bottom bars and built-in widget kinds. See
 [Shell Configuration](shell-configuration.md) for the schema and extension
 roadmap.
 
-The shell also watches `config/hyprkarl/current/theme.name`, then reads the
-selected `themes/<theme>/quickshell.json` directly. Theme switches and edits to
-the active theme apply without restarting the shell.
+The shell watches the XDG-state `current/theme.json` selector, then reads the
+named immutable artifact's `quickshell.json`. Theme switches apply without
+restarting the shell.
 
 Hyprland starts it with `hk-shell start`; use `hk-shell status`, `hk-shell
 logs`, and `hk-shell stop` to inspect and manage it. A direct `qs -p
@@ -207,10 +212,12 @@ focus, in-process search, dismissal, and rendering. See
 
 ## Themes
 
-Theme files live under `themes/<theme-name>/`.
+Shipped bundles live under `themes/<theme-name>/`; complete personal themes and
+same-name overlays live under `user/themes/<theme-name>/`.
 
 See [Themes](themes.md) for the full theme layout and how
-`config/hyprkarl/current/` selects the active theme.
+XDG state selects the active bundle; `config/hyprkarl/current/` provides stable
+compatibility links for existing consumers.
 
 ## Scripts and Commands
 

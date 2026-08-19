@@ -3,7 +3,7 @@
 Hyprkarl's bar is built with Quickshell. Its shipped placement and behavior
 live in `defaults/shell.json`; personal changes belong in the optional
 `user/shell.json`. Appearance is entirely
-theme-derived from `themes/<theme>/quickshell.json`.
+theme-derived from the active bundle's `quickshell.json`.
 
 ## Override the Shipped Configuration
 
@@ -45,39 +45,38 @@ array only when you intend to own its complete ordering.
 
 Every bar color, plus typography, thickness, spacing, borders, radii, panel
 sizing, and transition timing, comes from
-`themes/<theme>/quickshell.json`. Add a corresponding value to every theme when
-introducing a new required theme token. The running shell watches the selected
-theme and applies both theme switches and edits to its JSON without a restart.
+the generated bundle's `quickshell.json`. Add a corresponding template value
+and regenerate every built-in when introducing a required theme token. The
+running shell watches the selected runtime artifact and applies theme switches
+without a restart.
 
 The island silhouette is theme-owned too. For example, the shipped themes use:
 
 ```json
 {
-  "islandRadius": 8,
-  "cornerCurveSize": 12,
-  "cornerCurveRadius": 4,
-  "islandCorners": {
-    "screenOuter": "square",
-    "screenInner": "curve",
-    "contentOuter": "square",
-    "contentInner": "round"
-  },
-  "islandBorders": {
-    "screen": false,
-    "content": true,
-    "outer": false,
-    "inner": true
-  },
-  "barMargin": {
-    "screen": 0,
-    "outer": 0,
-    "content": 0
-  },
-  "horizontalWidgetPadding": {
-    "main": 6,
-    "cross": 3
-  },
-  "trayMainPaddingOffset": -2
+  "bar": {
+    "minimumThickness": 22,
+    "widgetPadding": { "main": 6, "cross": 3 },
+    "trayPaddingOffset": -2,
+    "margin": { "screen": 0, "outer": 0, "content": 0 },
+    "island": {
+      "radius": 8,
+      "curveSize": 12,
+      "curveRadius": 4,
+      "corners": {
+        "screenOuter": "square",
+        "screenInner": "curve",
+        "contentOuter": "square",
+        "contentInner": "round"
+      },
+      "borders": {
+        "screen": false,
+        "content": true,
+        "outer": false,
+        "inner": true
+      }
+    }
+  }
 }
 ```
 
@@ -90,19 +89,19 @@ four border values to `false` makes islands borderless. The three margins move
 the bar away from the screen edge, monitor sides, or workspace respectively;
 screen and content margins are included in the reserved bar area.
 
-`horizontalWidgetPadding` applies to every widget on a top or bottom bar.
+`bar.widgetPadding` applies to every widget on a top or bottom bar.
 `main` pads along the bar and `cross` pads across its thickness; “horizontal”
 describes the bar orientation rather than the x-axis. The shared widget host
 owns this padding, including its clickable area. Widget natural sizes should
 therefore describe content without including another outer inset.
-`trayMainPaddingOffset` is added to `main` for the tray's outer host padding,
+`bar.trayPaddingOffset` is added to `main` for the tray's outer host padding,
 with a floor of zero. The shipped `-2` turns `6` into `4` pixels per side. The
 revealed item row still uses the unmodified `main` value beside its divider,
 and neither value adds item-to-item spacing. Panel rows and actions use the
-separate `controlPadding` value.
+separate `metrics.controlPadding` value.
 
-`panelWidth` sets the normal feature-panel width, while
-`powerPanelWidth` independently sizes the more compact power panel. Both are
+`panel.width` sets the normal feature-panel width, while
+`panel.powerWidth` independently sizes the more compact power panel. Both are
 theme metrics; changing the latter does not squeeze the network, Bluetooth, or
 audio surfaces. Panel height is content-driven and grows as far as the
 remaining monitor height; scrolling begins only after content exceeds that
@@ -116,7 +115,7 @@ default; the nested object can override them when needed. See
 [Menu Configuration](menu-configuration.md#appearance) for the full field
 list.
 
-`barMinThickness` is the bar's minimum content height, not a forced height.
+`bar.minimumThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural
 height; the tallest widget sets one shared height for all three islands. A
 separate vertical-bar padding object will be introduced alongside vertical-bar

@@ -2,9 +2,12 @@
 # hk-wallpaper-init
 # Initialize the current wallpaper on startup.
 
-CURRENT_WALLPAPER_LINK="$HYPRKARL_PATH/config/hyprkarl/current/wallpaper"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
 
-if [[ ! -L "$CURRENT_WALLPAPER_LINK" ]]; then
+CURRENT_WALLPAPER_LINK="$HYPRKARL_CURRENT_WALLPAPER"
+
+if [[ ! -L "$CURRENT_WALLPAPER_LINK" ]] || [[ ! -e "$CURRENT_WALLPAPER_LINK" ]]; then
   exit 1
 fi
 

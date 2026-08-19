@@ -74,7 +74,7 @@ Symptoms:
 
 Cause:
 
-- `config/hyprkarl/current/wallpaper` points at a missing file
+- the XDG-state `current/wallpaper` points at a missing runtime wallpaper
 - the wallpaper cache is stale
 - the active theme has no wallpapers
 
@@ -87,6 +87,7 @@ hk-wallpaper cache --regenerate
 
 Then inspect:
 
+- `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/`
 - `config/hyprkarl/current/wallpaper`
 - `config/hyprkarl/current/theme/wallpapers/`
 

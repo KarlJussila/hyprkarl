@@ -7,6 +7,7 @@ local hyprkarl_path = assert(
 )
 local defaults_path = hyprkarl_path .. "/defaults/hypr"
 local user_path = hyprkarl_path .. "/user/hypr"
+local state_home = os.getenv("XDG_STATE_HOME") or (assert(os.getenv("HOME")) .. "/.local/state")
 
 package.path = table.concat({
     defaults_path .. "/?.lua",
@@ -37,7 +38,7 @@ end
 
 -- The theme is a shipped/default visual layer. User modules load afterward so
 -- explicit personal values win over both behavioral and theme defaults.
-local theme_path = hyprkarl_path .. "/config/hyprkarl/current/theme/hyprland.lua"
+local theme_path = state_home .. "/hyprkarl/current/theme/hyprland.lua"
 local theme, theme_error = loadfile(theme_path)
 if not theme then
     error(theme_error)

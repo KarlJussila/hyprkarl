@@ -84,11 +84,11 @@ Item {
       text: !Networking.wifiEnabled
         ? "Turn on Wi-Fi to view nearby networks."
         : root.wifiDevice === null ? "No Wi-Fi adapter is available." : "No networks found yet."
-      color: root.theme.text
+      color: root.theme.foreground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.fontUi
-      font.pixelSize: root.theme.fontSize
+      font.family: root.theme.uiFontFamily
+      font.pixelSize: root.theme.bodyFontSize
     }
 
     Repeater {
@@ -135,10 +135,10 @@ Item {
           width: parent.width
           implicitHeight: 38
           visible: networkEntry.enteringPassword
-          color: root.theme.background
+          color: root.theme.controlSurface
           border.color: password.activeFocus ? root.theme.accent : root.theme.border
           border.width: root.theme.borderWidth
-          radius: root.theme.radius
+          radius: root.theme.controlRadius
 
           Text {
             anchors.left: parent.left
@@ -146,10 +146,10 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             visible: password.text.length === 0 && !password.activeFocus
             text: "Password"
-            color: root.theme.text
+            color: root.theme.foreground
             opacity: 0.5
-            font.family: root.theme.fontUi
-            font.pixelSize: root.theme.fontSize
+            font.family: root.theme.uiFontFamily
+            font.pixelSize: root.theme.bodyFontSize
           }
 
           TextInput {
@@ -157,9 +157,9 @@ Item {
 
             anchors.fill: parent
             anchors.margins: root.theme.controlPadding
-            color: root.theme.text
-            font.family: root.theme.fontMono
-            font.pixelSize: root.theme.fontSize
+            color: root.theme.foreground
+            font.family: root.theme.monoFontFamily
+            font.pixelSize: root.theme.bodyFontSize
             echoMode: TextInput.Password
             selectByMouse: true
             activeFocusOnTab: true

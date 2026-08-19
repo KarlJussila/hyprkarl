@@ -64,7 +64,7 @@ Item {
       anchors.horizontalCenterOffset: -1
       width: 8
       height: 14
-      property color indicatorColor: root.theme.text
+      property color indicatorColor: root.theme.foreground
       property bool pointsLeft: root.towardEnd ? root.expanded : !root.expanded
 
       onIndicatorColorChanged: requestPaint()

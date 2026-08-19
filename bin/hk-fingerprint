@@ -3,19 +3,19 @@
 # Dispatch fingerprint operations to hk-fingerprint-<action>.
 #
 # Usage:
-#   hk-fingerprint enroll [finger-name]
+#   hk-fingerprint enroll <finger-name>
 #   hk-fingerprint list
+#   hk-fingerprint menu-entries [root|enroll|remove]
 #   hk-fingerprint remove <finger-name>
-#   hk-fingerprint select [message]
 #   hk-fingerprint setup [--remove]
 
 usage() {
   cat <<'EOF'
 Usage:
-  hk-fingerprint enroll [finger-name]
+  hk-fingerprint enroll <finger-name>
   hk-fingerprint list
+  hk-fingerprint menu-entries [root|enroll|remove]
   hk-fingerprint remove <finger-name>
-  hk-fingerprint select [message]
   hk-fingerprint setup [--remove]
 EOF
 }
@@ -24,7 +24,7 @@ action=${1:-}
 shift || true
 
 case "$action" in
-  enroll|list|remove|select|setup) exec "hk-fingerprint-$action" "$@" ;;
+  enroll|list|menu-entries|remove|setup) exec "hk-fingerprint-$action" "$@" ;;
   ""|-h|--help|help) usage; exit 0 ;;
   *) usage >&2; exit 1 ;;
 esac

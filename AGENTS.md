@@ -139,8 +139,14 @@ The same shell renders the command hierarchy from `defaults/menu.json` plus
 the optional deep-merged `user/menu.json`. Menu entries use stable IDs; a
 menu's optional `sourceCommand` may provide validated command entries that
 must be rediscovered when it opens, as the Docker service menus do;
-the established static `hk-menu-*` commands are IPC wrappers while focused
-searchable selectors remain dedicated commands. The menu preserves the
+`hk-shell menu` is the only public transport for opening or toggling static
+navigation. Domain-owned providers supply themes, Docker services, live
+keybindings, Nerd Font icons, and setup-aware fingerprint actions; searchable
+menus filter those entries in-process. Providers run without a login shell,
+and dynamic destinations appear only after their complete model validates;
+preformat large static catalogs instead of transforming them on every open.
+Remaining `hk-menu-*` commands own real
+interfaces rather than forwarding to Quickshell. The menu preserves the
 original Rofi surface's compact width, centered rows, title band, nested frame,
 and bordered selection, while inheriting the active shell theme's semantic
 palette, typography, rounded geometry, border treatment, and interaction

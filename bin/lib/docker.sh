@@ -1,6 +1,6 @@
 # bin/lib/docker.sh
-# Manage local Docker service stacks. Sourced by hk-docker,
-# hk-menu-docker-install, hk-menu-docker-uninstall.
+# Manage local Docker service stacks. Sourced by hk-docker and its provider
+# commands.
 #
 # Module-level globals hold "the currently-loaded service" — populated by
 # load_service, consumed by every other function. This lets callers do:
@@ -169,7 +169,11 @@ load_service() {
 # Filter is one of: all, installed, missing.
 list_services() {
   local filter=$1
+  local compose_file
+  local install_dir
   local service_id
+  local service_label
+  local service_rows
 
   case "$filter" in
     all|installed|missing) ;;
@@ -179,31 +183,35 @@ list_services() {
       ;;
   esac
 
-  while IFS= read -r service_id; do
-    load_service "$service_id" || return 1
+  service_rows=$(jq -er '
+    if (.id | type == "string" and test("^[a-z0-9-]+$"))
+        and (.label | type == "string" and length > 0)
+        and (.compose_file | type == "string" and length > 0)
+    then [.id, .label, .compose_file] | @tsv
+    else error("invalid Docker service menu fields in " + input_filename)
+    end
+  ' "$DOCKER_SERVICE_ROOT"/*/service.json) || return 1
+
+  while IFS=$'\t' read -r service_id service_label compose_file; do
+    install_dir="$DOCKER_CONTAINERS_DIR/$service_id"
 
     case "$filter" in
       installed)
-        [[ -f "${DOCKER_SERVICE["install_dir"]}/${DOCKER_SERVICE["compose_file"]}" ]] || continue
+        [[ -f "$install_dir/$compose_file" ]] || continue
         ;;
       missing)
-        [[ -f "${DOCKER_SERVICE["install_dir"]}/${DOCKER_SERVICE["compose_file"]}" ]] && continue
+        [[ -f "$install_dir/$compose_file" ]] && continue
         ;;
     esac
 
-    printf '%s\t%s\n' "$service_id" "${DOCKER_SERVICE["label"]}"
-  done < <(service_ids)
+    printf '%s\t%s\n' "$service_id" "$service_label"
+  done <<<"$service_rows"
 }
 
 docker_menu_entries() {
   local filter=$1
   local action=$2
   local services
-  local service_id
-  local service_label
-  local command
-  local separator=""
-
   case "$action" in
     install|uninstall) ;;
     *)
@@ -213,20 +221,20 @@ docker_menu_entries() {
   esac
 
   services=$(list_services "$filter") || return 1
-
-  printf '['
-  while IFS=$'\t' read -r service_id service_label; do
-    [[ -n "$service_id" ]] || continue
-    printf -v command 'hk-tui-launch hk-docker %s %q' "$action" "$service_id"
-    printf '%s' "$separator"
-    jq -cn \
-      --arg id "docker-$action.$service_id" \
-      --arg label "$service_label" \
-      --arg command "$command" \
-      '{id: $id, label: $label, action: {type: "command", command: $command}}'
-    separator=','
-  done <<<"$services"
-  printf ']\n'
+  jq -Rcn --arg action "$action" '
+    [inputs
+      | select(length > 0)
+      | split("\t")
+      | {
+          id: ("docker-" + $action + "." + .[0]),
+          label: .[1],
+          action: {
+            type: "command",
+            command: ("hk-tui-launch hk-docker " + $action + " " + .[0])
+          }
+        }
+    ]
+  ' <<<"$services"
 }
 
 # --- docker compose runtime ---

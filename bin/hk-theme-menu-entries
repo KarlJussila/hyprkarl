@@ -1,0 +1,21 @@
+#!/bin/bash
+# hk-theme-menu-entries
+# Print installed theme actions for a dynamic Quickshell menu.
+
+THEMES_PATH="$HYPRKARL_PATH/themes"
+
+find "$THEMES_PATH" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' \
+  | sort -u \
+  | jq -Rcn '
+      [inputs | select(length > 0) | . as $theme | {
+        id: ("theme." + $theme),
+        label: ($theme
+          | split("-")
+          | map((.[0:1] | ascii_upcase) + .[1:])
+          | join(" ")),
+        action: {
+          type: "command",
+          command: ("hk-theme set " + ($theme | @sh))
+        }
+      }]
+    '

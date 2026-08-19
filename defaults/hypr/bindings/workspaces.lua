@@ -2,7 +2,7 @@
 -- workspaces, the scratchpad, and moving workspaces across monitors.
 
 -- Workspaces. Keys 1-9 then 0 (workspace 10). Bound by keysym (not code:) so
--- they show up in `hyprctl binds` / hk-menu-keybindings; assumes a us layout.
+-- they show up in `hyprctl binds` / the searchable keybindings menu; assumes a us layout.
 for i = 1, 10 do
     local key = tostring(i % 10)
     hl.bind("SUPER + " .. key, hl.dsp.focus({ workspace = i }), { description = ("Switch to workspace %d"):format(i) })

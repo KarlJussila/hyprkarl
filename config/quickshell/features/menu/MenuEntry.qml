@@ -24,7 +24,7 @@ Item {
   Process {
     id: checkProcess
 
-    command: ["bash", "-lc",
+    command: ["bash", "-c",
       `${root.entry.checkedCommand} >/dev/null 2>&1; printf '%s' $?`]
     stdout: StdioCollector {
       onStreamFinished: root.checked = Number(text.trim()) === 0

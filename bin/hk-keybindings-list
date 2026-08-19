@@ -1,0 +1,8 @@
+#!/bin/bash
+# hk-keybindings-list
+# Print formatted live Hyprland keybindings.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/keybindings.sh"
+
+keybindings_list

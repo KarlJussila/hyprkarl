@@ -102,8 +102,7 @@ Some changes do not take effect immediately:
 
 - `config/uwsm/default` changes affect new sessions
 - `hk-default-shell` changes affect the next login
-- `hk-docker setup` changes to group membership require a new login or
-  reboot
+- Docker group changes made by `setup-system.sh` require a new login or reboot
 - most other changes can be reloaded live
 
 ## Where to Go Next

@@ -1,0 +1,13 @@
+#!/bin/bash
+# hk-icon-menu-entries
+# Print the prebuilt Nerd Font menu entries.
+
+ICON_DATA="${XDG_DATA_HOME:-$HOME/.local/share}/hyprkarl/data/nerdfont-menu.json"
+
+if [[ ! -f "$ICON_DATA" ]]; then
+  gum log --level error "Icon menu data not found at $ICON_DATA"
+  gum log --level info "Run hk-icon-data-update to generate it"
+  exit 1
+fi
+
+cat "$ICON_DATA"

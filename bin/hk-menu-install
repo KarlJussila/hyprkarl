@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-install
-# Open the Quickshell install menu.
-
-exec hk-shell menu open install

@@ -1,22 +1,51 @@
 #!/bin/bash
 # hk-icon-data-update
-# Downloads and regenerates the Nerd Font glyph data file
+# Download and regenerate provider-ready Nerd Font menu data.
 
-GLYPH_DATA="${XDG_DATA_HOME:-$HOME/.local/share}/hyprkarl/data/nerdfont-glyphs.txt"
+ICON_DATA="${XDG_DATA_HOME:-$HOME/.local/share}/hyprkarl/data/nerdfont-menu.json"
 CSV_URL="https://raw.githubusercontent.com/8bitmcu/NerdFont-Cheat-Sheet/master/nerdfont.csv"
+TEMP_DATA=$(mktemp "${ICON_DATA}.tmp.XXXXXX") || exit 1
+trap 'rm -f "$TEMP_DATA"' EXIT
 
 gum log --level info "Downloading Nerd Font glyph data..."
 
-curl -sf "$CSV_URL" | python3 -c "
+if ! curl -sf "$CSV_URL" | python3 -c '
+import json
+import shlex
 import sys
+
+entries = []
 for line in sys.stdin:
-    parts = line.strip().split(',')
+    parts = line.rstrip().split(",")
     if len(parts) >= 2 and parts[1].strip():
         try:
-            print(chr(int(parts[1].strip(), 16)) + '  ' + parts[0])
+            icon = chr(int(parts[1].strip(), 16))
         except ValueError:
-            pass
-" > "$GLYPH_DATA"
+            continue
+        name = parts[0]
+        entries.append({
+            "id": f"icon.{name}",
+            "icon": icon,
+            "label": name,
+            "action": {
+                "type": "command",
+                "command": f"hk-icon-copy {shlex.quote(icon)}",
+            },
+        })
 
-count=$(wc -l < "$GLYPH_DATA")
-gum log --level info "Saved $count icons to $GLYPH_DATA"
+json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+' >"$TEMP_DATA"; then
+  gum log --level error "Could not download Nerd Font glyph data"
+  exit 1
+fi
+
+if ! jq -e 'type == "array" and length > 0' "$TEMP_DATA" >/dev/null; then
+  gum log --level error "Downloaded icon menu data is empty or invalid"
+  exit 1
+fi
+
+mv "$TEMP_DATA" "$ICON_DATA"
+trap - EXIT
+
+count=$(jq length "$ICON_DATA")
+gum log --level info "Saved $count icons to $ICON_DATA"

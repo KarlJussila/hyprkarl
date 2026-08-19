@@ -1,0 +1,20 @@
+#!/bin/bash
+# hk-docker-menu-entries
+# Print Docker service actions for a dynamic Quickshell menu.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/docker.sh"
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: hk-docker-menu-entries <install|uninstall>" >&2
+  exit 1
+fi
+
+case "$1" in
+  install) docker_menu_entries missing install ;;
+  uninstall) docker_menu_entries installed uninstall ;;
+  *)
+    echo "Usage: hk-docker-menu-entries <install|uninstall>" >&2
+    exit 1
+    ;;
+esac

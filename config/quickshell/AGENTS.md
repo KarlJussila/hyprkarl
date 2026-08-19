@@ -173,12 +173,20 @@ the active power profile, not general application logic.
 Menus with a `sourceCommand` load a fresh JSON entry array when opened. One
 application-wide `Process` in `MenuState` owns this short-lived load and
 validates its output; providers own discovery only, while the JSON menu object
-owns the title and empty-state label. Keep dynamic actions command-only.
+owns the title, empty-state label, optional search behavior, and width role.
+Dynamic entries may run a command, navigate to a declared submenu, or dismiss
+an informational menu; nested dynamic menus reload the restored parent when
+navigating back. Providers and actions inherit the session environment through
+non-login `bash -c`. A dynamic destination is committed only after its provider
+returns a complete valid model; do not add per-menu loading branches or caches.
+Providers should query only the state their rows need, and static generated
+catalogs should already be in provider-ready JSON.
 Keep commands as leaf actions and static hierarchy in data. `MenuWindow.qml`
 owns the full-monitor overlay, exclusive keyboard focus, history navigation,
-and outside-click dismissal. Existing static `hk-menu-*` entry points are thin
-IPC wrappers; specialized searchable selectors may remain separate Rofi
-commands until their own shell-native surfaces are designed.
+search filtering, and outside-click dismissal. `hk-shell menu` is the only
+public transport for opening static navigation. Launcher, calculator, and
+wallpaper/image selectors remain separate interfaces until their shell-native
+surfaces are designed.
 The command menu deliberately blends two visual sources. Preserve the retired
 Rofi menu's compact width, centered icon-and-label rows, title band, nested
 frame, row gaps, and bordered selection. Derive its palette, font, radii,

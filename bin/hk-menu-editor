@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-editor
-# Open the shell-native default-editor menu.
-
-exec hk-shell menu open editor

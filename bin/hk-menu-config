@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-config
-# Open the Quickshell configuration menu.
-
-exec hk-shell menu open config

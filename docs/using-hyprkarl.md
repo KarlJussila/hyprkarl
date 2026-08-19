@@ -8,7 +8,7 @@ and commands.
 The main menu is:
 
 ```bash
-hk-menu
+hk-shell menu toggle main
 ```
 
 You can open it from the terminal, from the Hyprkarl button in the bar, or
@@ -29,10 +29,9 @@ Its top-level sections are:
 - `Power`
   Lock, suspend, reboot, and shutdown actions
 
-The static hierarchy is a Quickshell surface. Escape, Left, or Backspace goes
-to the parent menu and closes the root; clicking outside also closes it. The
-menus can also be opened directly through the `hk-menu-*` commands in `bin/`
-or `hk-shell menu open <menu-id>`.
+The hierarchy is a Quickshell surface. Escape, Left, or Backspace goes to the
+parent menu and closes the root; clicking outside also closes it. Open any
+surface directly with `hk-shell menu open <menu-id>`.
 
 The shipped hierarchy lives in `defaults/menu.json`. Add, reorder, rename, or
 hide entries without editing that default by creating `user/menu.json`; see
@@ -127,7 +126,7 @@ Install sources are:
 - Flatpak:
   `hk-pkg-install-tui --flatpak`
 - Docker services:
-  `hk-menu-docker-install`
+  `hk-shell menu open docker-install`
 
 The package menus use `fzf` to search available packages.
 
@@ -153,9 +152,8 @@ container management interface.
 
 Docker services are managed with:
 
-- `hk-menu-docker-install`
-- `hk-menu-docker-uninstall`
-- `hk-docker setup`
+- `hk-shell menu open docker-install`
+- `hk-shell menu open docker-uninstall`
 - `hk-docker install <service>`
 - `hk-docker uninstall <service>`
 

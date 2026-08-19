@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-utils
-# Open the Quickshell utilities menu.
-
-exec hk-shell menu open utilities

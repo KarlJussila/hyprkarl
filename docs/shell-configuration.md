@@ -150,7 +150,7 @@ map when an instance is referenced only once.
           "kind": "battery",
           "showPercentage": true,
           "lowThreshold": 0.15,
-          "powerCommand": "hk-menu-power"
+          "powerCommand": "hk-shell menu toggle power"
         }
       ]
     }

@@ -1,10 +1,10 @@
 -- System controls: menus, notifications, hardware panels, screenshots, power.
 
 -- Menus
-hl.bind("SUPER + ALT + SPACE", hl.dsp.exec_cmd("hk-menu"), { description = "Main menu" })
+hl.bind("SUPER + ALT + SPACE", hl.dsp.exec_cmd("hk-shell menu toggle main"), { description = "Main menu" })
 hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("hk-menu-launcher || pkill rofi"), { description = "Launch apps" })
-hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("hk-menu-power"), { description = "Power menu" })
-hl.bind("SUPER + K", hl.dsp.exec_cmd("hk-menu-keybindings || pkill rofi"), { description = "View keybinds" })
+hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("hk-shell menu toggle power"), { description = "Power menu" })
+hl.bind("SUPER + K", hl.dsp.exec_cmd("hk-shell menu toggle keybindings"), { description = "View keybinds" })
 hl.bind("SUPER + CTRL + C", hl.dsp.exec_cmd("hk-menu-calculator || pkill rofi"), { description = "Calculator" })
 
 -- Notifications
@@ -32,4 +32,4 @@ hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region"), { locked = true,
 hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("hk-suspend"), { description = "Suspend on lid close" })
 
 -- Open power menu with the power button
-hl.bind("XF86PowerOff", hl.dsp.exec_cmd("hk-menu-power"), { description = "Power menu (power button)" })
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd("hk-shell menu toggle power"), { description = "Power menu (power button)" })

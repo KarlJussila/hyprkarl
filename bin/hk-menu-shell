@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-shell
-# Open the shell-native default-shell menu.
-
-exec hk-shell menu open shell

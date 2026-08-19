@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-power-profile
-# Open the shell-native power-profile menu.
-
-exec hk-shell menu open power-profile

@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-defaults
-# Open the Quickshell defaults menu.
-
-exec hk-shell menu open defaults

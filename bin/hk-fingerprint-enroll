@@ -1,26 +1,12 @@
 #!/bin/bash
 # hk-fingerprint-enroll
-# Enroll a fingerprint. Prompt for finger selection with gum if no argument is given.
+# Enroll a specific fingerprint selected by the Quickshell menu.
 #
 # Usage:
-#   hk-fingerprint-enroll                 # Prompt for finger
-#   hk-fingerprint-enroll <finger-name>   # Enroll specific finger
+#   hk-fingerprint-enroll <finger-name>
 
-# gum lives in ~/.local/bin under some setups.
-export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-
-FINGERS=(
-  "left-thumb"
-  "left-index-finger"
-  "left-middle-finger"
-  "left-ring-finger"
-  "left-little-finger"
-  "right-thumb"
-  "right-index-finger"
-  "right-middle-finger"
-  "right-ring-finger"
-  "right-little-finger"
-)
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/fingerprint.sh"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -31,14 +17,12 @@ print_success() { echo -e "${GREEN}$1${NC}"; }
 print_error()   { echo -e "${RED}$1${NC}"; }
 print_info()    { echo -e "${YELLOW}$1${NC}"; }
 
-format_display() {
-  echo "$1" | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g'
-}
-
 is_valid_finger() {
   local finger="$1"
-  for f in "${FINGERS[@]}"; do
-    [[ "$f" == "$finger" ]] && return 0
+  local known_finger
+
+  for known_finger in "${FINGERPRINT_NAMES[@]}"; do
+    [[ "$known_finger" == "$finger" ]] && return 0
   done
   return 1
 }
@@ -55,40 +39,18 @@ if ! grep -q pam_fprintd.so /etc/pam.d/sudo 2>/dev/null; then
   hk-show-done && exit 1
 fi
 
-if [[ -n "$1" ]]; then
-  finger="$1"
-  if ! is_valid_finger "$finger"; then
-    print_error "Invalid finger name: $finger"
-    print_info "Valid names: ${FINGERS[*]}"
-    hk-show-done && exit 1
-  fi
-else
-  enrolled=$(hk-fingerprint-list)
-
-  options=()
-  for f in "${FINGERS[@]}"; do
-    if ! echo "$enrolled" | grep -qx "$f"; then
-      options+=("$f")
-    fi
-  done
-
-  if [[ ${#options[@]} -eq 0 ]]; then
-    print_error "All fingers are already enrolled."
-    exit 1
-  fi
-
-  display_options=()
-  for f in "${options[@]}"; do
-    display_options+=("$(format_display "$f")")
-  done
-
-  finger=$(printf '%s\n' "${display_options[@]}" \
-    | gum filter --placeholder "Select finger...") || exit 1
-
-  finger=$(echo "$finger" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+finger=${1:-}
+if [[ -z "$finger" ]]; then
+  echo "Usage: hk-fingerprint enroll <finger-name>" >&2
+  exit 1
+fi
+if ! is_valid_finger "$finger"; then
+  print_error "Invalid finger name: $finger"
+  print_info "Valid names: ${FINGERPRINT_NAMES[*]}"
+  hk-show-done && exit 1
 fi
 
-display_name=$(format_display "$finger")
+display_name=$(fingerprint_label "$finger")
 
 print_success "\nEnrolling $display_name..."
 print_info "Keep moving your finger on the sensor until complete.\n"

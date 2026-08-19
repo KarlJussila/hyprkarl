@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-terminal
-# Open the shell-native default-terminal menu.
-
-exec hk-shell menu open terminal

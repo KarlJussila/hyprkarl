@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-power
-# Toggle the Quickshell power menu.
-
-exec hk-shell menu toggle power

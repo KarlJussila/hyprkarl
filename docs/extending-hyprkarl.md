@@ -82,8 +82,9 @@ either a submenu or command action:
 ```
 
 Keep nontrivial interaction in a dedicated `hk-*` command and name that
-command in the entry. Specialized searchable selectors may still use Rofi;
-the Quickshell data surface owns static navigation only. See
+command in the entry. A menu may declare a `sourceCommand` for dynamic entries
+and opt into in-process search; dedicated interfaces such as the launcher,
+calculator, and wallpaper thumbnail picker still use Rofi. See
 [Menu Configuration](menu-configuration.md) for the full contract, submenu
 example, live-reload behavior, and keyboard controls.
 
@@ -132,7 +133,7 @@ Put personal bindings in `user/hypr/bindings.lua`. The form is
 `hl.bind(keys, dispatcher, flags?)`:
 
 ```lua
--- Launch a command. Keep a description so it shows in hk-menu-keybindings.
+-- Launch a command. Keep a description so it appears in the keybindings menu.
 hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("my-command"), { description = "Do the thing" })
 
 -- A built-in dispatcher instead of a command.

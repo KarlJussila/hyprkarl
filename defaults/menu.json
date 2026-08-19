@@ -12,17 +12,49 @@
     "editor": { "title": "Default Editor" },
     "shell": { "title": "Default Shell" },
     "wallpaper": { "title": "Wallpaper" },
-    "fingerprint": { "title": "Fingerprint" },
-    "fingerprint-setup": { "title": "Fingerprint" },
+    "fingerprint": {
+      "title": "Fingerprint",
+      "sourceCommand": "hk-fingerprint menu-entries",
+      "emptyLabel": "No fingerprint actions"
+    },
+    "fingerprint-enroll": {
+      "title": "Add Fingerprint",
+      "sourceCommand": "hk-fingerprint menu-entries enroll",
+      "emptyLabel": "All fingerprints enrolled"
+    },
+    "fingerprint-remove": {
+      "title": "Remove Fingerprint",
+      "sourceCommand": "hk-fingerprint menu-entries remove",
+      "emptyLabel": "No fingerprints enrolled"
+    },
     "power-profile": { "title": "Power Profile" },
+    "keybindings": {
+      "title": "Keybindings",
+      "sourceCommand": "hk-keybindings-menu-entries",
+      "emptyLabel": "No keybindings",
+      "searchable": true,
+      "widthRole": "reference"
+    },
+    "icons": {
+      "title": "Icons",
+      "sourceCommand": "hk-icon-menu-entries",
+      "emptyLabel": "No icons",
+      "searchable": true,
+      "widthRole": "search"
+    },
+    "theme": {
+      "title": "Theme",
+      "sourceCommand": "hk-theme menu-entries",
+      "emptyLabel": "No themes installed"
+    },
     "docker-install": {
       "title": "Install Service",
-      "sourceCommand": "hk-menu-docker-install --entries",
+      "sourceCommand": "hk-docker menu-entries install",
       "emptyLabel": "(nothing to install)"
     },
     "docker-uninstall": {
       "title": "Uninstall Service",
-      "sourceCommand": "hk-menu-docker-uninstall --entries",
+      "sourceCommand": "hk-docker menu-entries uninstall",
       "emptyLabel": "No containers installed"
     },
     "update": { "title": "Update" },
@@ -164,7 +196,7 @@
       "order": 10,
       "icon": "",
       "label": "Theme",
-      "action": { "type": "command", "command": "hk-menu-theme || hk-shell menu open config" }
+      "action": { "type": "menu", "menu": "theme" }
     },
     "config.wallpaper": {
       "parent": "config",
@@ -192,7 +224,7 @@
       "order": 50,
       "icon": "󰈷",
       "label": "Fingerprint",
-      "action": { "type": "command", "command": "hk-menu-fingerprint || hk-shell menu open config" }
+      "action": { "type": "menu", "menu": "fingerprint" }
     },
 
     "defaults.terminal": {
@@ -324,35 +356,6 @@
       "icon": "",
       "label": "Remove",
       "action": { "type": "command", "command": "hk-menu-wallpaper remove || hk-shell menu open wallpaper" }
-    },
-
-    "fingerprint-setup.setup": {
-      "parent": "fingerprint-setup",
-      "order": 10,
-      "icon": "󰈷",
-      "label": "Setup",
-      "action": { "type": "command", "command": "hk-tui-launch hk-fingerprint setup" }
-    },
-    "fingerprint.enroll": {
-      "parent": "fingerprint",
-      "order": 10,
-      "icon": "󰈷",
-      "label": "Add Fingerprint",
-      "action": { "type": "command", "command": "hk-tui-launch hk-fingerprint enroll" }
-    },
-    "fingerprint.remove": {
-      "parent": "fingerprint",
-      "order": 20,
-      "icon": "",
-      "label": "Remove Fingerprint",
-      "action": { "type": "command", "command": "hk-fingerprint remove \"$(hk-fingerprint select 'Remove Fingerprint')\" || hk-shell menu open fingerprint" }
-    },
-    "fingerprint.uninstall": {
-      "parent": "fingerprint",
-      "order": 30,
-      "icon": "󱧖",
-      "label": "Uninstall",
-      "action": { "type": "command", "command": "hk-tui-launch hk-fingerprint setup --remove" }
     },
 
     "power-profile.saver": {

@@ -68,6 +68,9 @@ QtObject {
   readonly property int menuFontSize: menu.fontSize ?? fontSize
   readonly property int menuFontWeight: menu.fontWeight ?? fontWeight
   readonly property int menuWidth: menu.width ?? 280
+  readonly property int menuSearchWidth: menu.searchWidth ?? 560
+  readonly property int menuReferenceWidth: menu.referenceWidth ?? 800
+  readonly property int menuSearchRows: menu.searchRows ?? 10
   readonly property int menuOuterRadius: menu.outerRadius ?? panelRadius
   readonly property int menuInnerRadius: menu.innerRadius ?? radius
   readonly property int menuEntryRadius: menu.entryRadius ?? radius

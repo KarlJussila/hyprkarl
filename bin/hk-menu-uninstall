@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-uninstall
-# Open the Quickshell uninstall menu.
-
-exec hk-shell menu open uninstall

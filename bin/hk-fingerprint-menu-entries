@@ -1,0 +1,68 @@
+#!/bin/bash
+# hk-fingerprint-menu-entries
+# Print setup-aware fingerprint actions for dynamic Quickshell menus.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/fingerprint.sh"
+
+mode=${1:-root}
+
+case "$mode" in
+  root)
+    if fingerprint_is_setup; then
+      jq -cn '[
+        {
+          id: "fingerprint.enroll", icon: "󰈷", label: "Add Fingerprint",
+          action: {type: "menu", menu: "fingerprint-enroll"}
+        },
+        {
+          id: "fingerprint.remove", icon: "", label: "Remove Fingerprint",
+          action: {type: "menu", menu: "fingerprint-remove"}
+        },
+        {
+          id: "fingerprint.uninstall", icon: "󱧖", label: "Uninstall",
+          action: {type: "command", command: "hk-tui-launch hk-fingerprint setup --remove"}
+        }
+      ]'
+    else
+      jq -cn '[{
+        id: "fingerprint.setup", icon: "󰈷", label: "Setup",
+        action: {type: "command", command: "hk-tui-launch hk-fingerprint setup"}
+      }]'
+    fi
+    ;;
+  enroll|remove)
+    enrolled=$(hk-fingerprint list) || exit 1
+    candidates=()
+    if [[ "$mode" == "enroll" ]]; then
+      declare -A enrolled_fingers=()
+      while IFS= read -r finger; do
+        [[ -n "$finger" ]] && enrolled_fingers["$finger"]=1
+      done <<<"$enrolled"
+      for finger in "${FINGERPRINT_NAMES[@]}"; do
+        [[ -n "${enrolled_fingers[$finger]}" ]] || candidates+=("$finger")
+      done
+    else
+      mapfile -t candidates <<<"$enrolled"
+    fi
+
+    printf '%s\n' "${candidates[@]}" \
+      | jq -Rcn --arg mode "$mode" '
+          [inputs | select(length > 0) | . as $finger | {
+            id: ("fingerprint-" + $mode + "." + $finger),
+            label: ($finger
+              | split("-")
+              | map((.[0:1] | ascii_upcase) + .[1:])
+              | join(" ")),
+            action: {
+              type: "command",
+              command: ("hk-tui-launch hk-fingerprint " + $mode + " " + $finger)
+            }
+          }]
+        '
+    ;;
+  *)
+    echo "Usage: hk-fingerprint-menu-entries [root|enroll|remove]" >&2
+    exit 1
+    ;;
+esac

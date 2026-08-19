@@ -75,7 +75,11 @@ The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
 objects recursively merge, `enabled: false` hides an entry, valid changes
 apply live, and invalid changes retain the last valid menu. A menu may use a
 short-lived `sourceCommand` for validated entries that must be rediscovered on
-open; the Docker install/uninstall menus use this for current service state.
+open. Themes, Docker services, live keybindings, Nerd Font icons, and
+fingerprint state use this boundary. Menus may opt into in-process fuzzy
+search and theme-owned search/reference widths. Providers run without a login
+shell and dynamic destinations appear atomically after validation; static
+catalogs such as the icon list are preformatted when their data is generated.
 Menu appearance
 uses the active shell theme plus its nested `menu` object. The compact width,
 centered rows, title band, nested frame, and bordered selection retain the old
@@ -141,10 +145,12 @@ multiple widgets genuinely use the same interaction or visual structure.
 
 ## Current interactions
 
-- The bar menu button, `SUPER + ALT + SPACE`, and `hk-menu` toggle the
-  shell-native main menu on the focused output. `SUPER + ESCAPE` opens its
-  power section. Keyboard navigation supports arrows or H/J/K/L, Home/End,
-  Enter/Space, and Escape/Backspace; clicking outside dismisses the menu.
+- The bar menu button, `SUPER + ALT + SPACE`, and
+  `hk-shell menu toggle main` toggle the shell-native main menu on the focused
+  output. `SUPER + ESCAPE` opens its power section. Searchable menus focus
+  their input and retain arrow/Enter navigation; other menus support arrows or
+  H/J/K/L, Home/End, Enter/Space, and Escape/Backspace. Clicking outside
+  dismisses the menu.
 - Left-click opens feature panels or performs a widget's primary action.
 - Right-click runs the configured secondary launcher.
 - Middle-click is reserved for an explicitly configured tertiary action.

@@ -7,6 +7,16 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Replaced the static Rofi navigation tree with a theme-aware Quickshell menu
+  surface, sparse user overrides, dynamic providers, and in-process search.
+- Migrated theme selection, live keybindings, Nerd Font icons, Docker service
+  selection, and the complete fingerprint workflow—including available and
+  enrolled finger pickers—to Quickshell.
+- Breaking: removed forwarding-only `hk-menu-*` commands. Custom bindings and
+  scripts should call `hk-shell menu open <menu-id>` or
+  `hk-shell menu toggle <menu-id>` directly. `hk-menu-keybindings --print` is
+  replaced by `hk-keybindings-list`.
+
 ## v0.1.0
 
 First tagged release, marking the settled runtime shape:

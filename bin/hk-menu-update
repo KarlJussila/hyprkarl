@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu-update
-# Open the Quickshell update menu.
-
-exec hk-shell menu open update

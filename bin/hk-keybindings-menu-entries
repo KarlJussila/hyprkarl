@@ -1,0 +1,18 @@
+#!/bin/bash
+# hk-keybindings-menu-entries
+# Print live Hyprland keybindings for a dynamic Quickshell menu.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/keybindings.sh"
+
+keybindings=$(keybindings_list) || exit 1
+jq -Rcn '
+  [inputs
+    | select(length > 0)
+    | {
+        id: ("keybinding." + (. | @base64)),
+        label: .,
+        action: {type: "dismiss"}
+      }
+  ]
+' <<<"$keybindings"

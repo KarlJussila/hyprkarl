@@ -1,5 +1,0 @@
-#!/bin/bash
-# hk-menu
-# Toggle the Quickshell main menu.
-
-exec hk-shell menu toggle main

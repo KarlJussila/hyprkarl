@@ -20,8 +20,12 @@ QtObject {
   property int openRevision: 0
   property string dynamicMenuId: ""
   property var dynamicEntries: []
-  property bool dynamicLoading: false
   property string dynamicError: ""
+  property bool sourceLoading: false
+  property bool sourceCancelled: false
+  property string sourceMenuId: ""
+  property string sourceScreenName: ""
+  property var sourceHistory: []
   property string lastError: ""
   property bool loading: false
   property bool defaultResolved: false
@@ -176,6 +180,13 @@ QtObject {
           && (typeof menu.emptyLabel !== "string" || menu.emptyLabel.length === 0)) {
         fail(menuPath + ".emptyLabel", "expected a non-empty string")
       }
+      if (menu.searchable !== undefined && typeof menu.searchable !== "boolean") {
+        fail(menuPath + ".searchable", "expected a boolean")
+      }
+      if (menu.widthRole !== undefined
+          && !["default", "search", "reference"].includes(menu.widthRole)) {
+        fail(menuPath + ".widthRole", "expected 'default', 'search', or 'reference'")
+      }
     }
     if (!document.menus[document.root]) {
       fail(path + ".root", "unknown menu '" + document.root + "'")
@@ -214,8 +225,10 @@ QtObject {
         if (typeof entry.action.menu !== "string" || !document.menus[entry.action.menu]) {
           fail(entryPath + ".action.menu", "unknown menu '" + entry.action.menu + "'")
         }
+      } else if (entry.action.type === "dismiss") {
+        // Informational entries close the menu when activated.
       } else {
-        fail(entryPath + ".action.type", "expected 'command' or 'menu'")
+        fail(entryPath + ".action.type", "expected 'command', 'menu', or 'dismiss'")
       }
     }
   }
@@ -225,6 +238,7 @@ QtObject {
     ready = true
     lastError = ""
     if (requested && !menus[currentMenu]) close()
+    if (sourceLoading && !menus[sourceMenuId]) close()
   }
 
   function loadSelected(): void {
@@ -266,7 +280,15 @@ QtObject {
     }
   }
 
-  function entriesFor(menuId: string): var {
+  function fuzzyMatch(text: string, pattern: string): bool {
+    let patternIndex = 0
+    for (let textIndex = 0; textIndex < text.length && patternIndex < pattern.length; textIndex++) {
+      if (text[textIndex] === pattern[patternIndex]) patternIndex++
+    }
+    return patternIndex === pattern.length
+  }
+
+  function entriesFor(menuId: string, query: string): var {
     const result = []
     for (const entryId of Object.keys(entries)) {
       const entry = entries[entryId]
@@ -278,14 +300,19 @@ QtObject {
       ? left.id.localeCompare(right.id)
       : left.order - right.order)
     if (dynamicMenuId === menuId) result.push(...dynamicEntries)
-    return result
+    const terms = query.trim().toLowerCase().split(/\s+/).filter(term => term.length > 0)
+    if (terms.length === 0) return result
+    return result.filter(entry => {
+      const searchText = ((entry.searchText ?? "") + " " + entry.label).toLowerCase()
+      return terms.every(term => fuzzyMatch(searchText, term))
+    })
   }
 
-  function menuMessage(menuId: string): string {
+  function menuMessage(menuId: string, query: string): string {
     if (dynamicMenuId === menuId) {
-      if (dynamicLoading) return "Loading…"
       if (dynamicError.length > 0) return dynamicError
     }
+    if (query.trim().length > 0) return "No matches"
     return menus[menuId]?.emptyLabel ?? "No entries"
   }
 
@@ -309,11 +336,22 @@ QtObject {
       if (entry.icon !== undefined && typeof entry.icon !== "string") {
         fail(path + ".icon", "expected a string")
       }
+      if (entry.searchText !== undefined && typeof entry.searchText !== "string") {
+        fail(path + ".searchText", "expected a string")
+      }
       requireObject(entry.action, path + ".action")
-      if (entry.action.type !== "command"
-          || typeof entry.action.command !== "string"
-          || entry.action.command.length === 0) {
-        fail(path + ".action", "expected a command action")
+      if (entry.action.type === "command") {
+        if (typeof entry.action.command !== "string" || entry.action.command.length === 0) {
+          fail(path + ".action.command", "expected a non-empty command")
+        }
+      } else if (entry.action.type === "menu") {
+        if (typeof entry.action.menu !== "string" || !menus[entry.action.menu]) {
+          fail(path + ".action.menu", "unknown menu '" + entry.action.menu + "'")
+        }
+      } else if (entry.action.type === "dismiss") {
+        // Informational entries close the menu when activated.
+      } else {
+        fail(path + ".action.type", "expected 'command', 'menu', or 'dismiss'")
       }
       result.push(Object.assign({
         "parent": menuId,
@@ -323,37 +361,52 @@ QtObject {
     return result
   }
 
-  function loadDynamicMenu(menuId: string): void {
+  function showMenu(screen: string, nextHistory, menuId: string,
+      loadedEntries, error: string): void {
+    screenName = screen
+    history = nextHistory
+    currentMenu = menuId
+    dynamicMenuId = menus[menuId]?.sourceCommand === undefined ? "" : menuId
+    dynamicEntries = loadedEntries
+    dynamicError = error
+    openRevision++
+    requested = true
+  }
+
+  function enterMenu(screen: string, nextHistory, menuId: string): bool {
     const sourceCommand = menus[menuId]?.sourceCommand
     if (typeof sourceCommand !== "string") {
-      dynamicMenuId = ""
-      dynamicEntries = []
-      dynamicLoading = false
-      dynamicError = ""
-      return
+      showMenu(screen, nextHistory, menuId, [], "")
+      return true
     }
 
-    dynamicMenuId = menuId
-    dynamicEntries = []
-    dynamicLoading = true
-    dynamicError = ""
-    dynamicSource.command = ["bash", "-lc",
-      `output=$(${sourceCommand}) || exit; printf '%s' "$output"`]
+    if (sourceLoading) return false
+    sourceLoading = true
+    sourceCancelled = false
+    sourceMenuId = menuId
+    sourceScreenName = screen
+    sourceHistory = nextHistory
+    dynamicSource.command = ["bash", "-c", sourceCommand]
     dynamicSource.running = true
+    return true
   }
 
   function finishDynamicSource(output: string): void {
-    dynamicLoading = false
+    sourceLoading = false
+    if (sourceCancelled) return
+
+    let loadedEntries = []
+    let errorMessage = ""
     try {
-      dynamicEntries = validateDynamicEntries(
-        parse(output, "dynamic menu '" + dynamicMenuId + "'"),
-        dynamicMenuId)
-      dynamicError = ""
+      loadedEntries = validateDynamicEntries(
+        parse(output, "dynamic menu '" + sourceMenuId + "'"),
+        sourceMenuId)
     } catch (error) {
-      dynamicEntries = []
-      dynamicError = "Could not load entries"
+      errorMessage = "Could not load entries"
       console.error("Dynamic menu source rejected: " + String(error))
     }
+    showMenu(sourceScreenName, sourceHistory, sourceMenuId,
+      loadedEntries, errorMessage)
   }
 
   function focusedScreenName(): string {
@@ -362,13 +415,7 @@ QtObject {
 
   function openForScreen(name: string, menu: string): bool {
     if (!ready || name.length === 0 || !menus[menu]) return false
-    screenName = name
-    history = [menu]
-    currentMenu = menu
-    openRevision++
-    requested = true
-    loadDynamicMenu(menu)
-    return true
+    return enterMenu(name, [menu], menu)
   }
 
   function openOnFocusedScreen(menu: string): bool {
@@ -376,6 +423,10 @@ QtObject {
   }
 
   function toggleForScreen(name: string, menu: string): bool {
+    if (sourceLoading && sourceScreenName === name && sourceMenuId === menu) {
+      close()
+      return true
+    }
     if (requested && screenName === name && currentMenu === menu) {
       close()
       return true
@@ -388,29 +439,33 @@ QtObject {
   }
 
   function close(): void {
+    if (sourceLoading) {
+      sourceCancelled = true
+      dynamicSource.running = false
+    }
     requested = false
   }
 
   function back(): void {
+    if (sourceLoading) return
     if (history.length <= 1) {
       close()
       return
     }
     const next = history.slice(0, -1)
-    history = next
-    currentMenu = next[next.length - 1]
+    enterMenu(screenName, next, next[next.length - 1])
   }
 
   function activate(entry): void {
+    if (sourceLoading) return
     if (entry.action.type === "menu") {
-      history = history.concat([entry.action.menu])
-      currentMenu = entry.action.menu
-      openRevision++
-      loadDynamicMenu(entry.action.menu)
+      enterMenu(screenName, history.concat([entry.action.menu]), entry.action.menu)
       return
     }
 
     close()
-    Quickshell.execDetached(["bash", "-lc", entry.action.command])
+    if (entry.action.type === "command") {
+      Quickshell.execDetached(["bash", "-c", entry.action.command])
+    }
   }
 }

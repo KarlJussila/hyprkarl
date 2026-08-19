@@ -135,7 +135,8 @@ Cause:
 
 What to do:
 
-- log out and back in, or reboot, after `hk-docker setup`
+- log out and back in, or reboot, after `setup-system.sh` changes Docker group
+  membership
 - confirm that `id -nG "$USER"` includes `docker`
 - confirm that `docker ps` prints a container table, even if it is empty
 

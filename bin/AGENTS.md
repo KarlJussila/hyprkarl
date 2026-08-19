@@ -24,14 +24,15 @@ noun-first form reads naturally: `hk-show-done`, `hk-open-with`,
 without good reason.
 
 Static menu navigation is defined in `defaults/menu.json` and rendered by
-Quickshell. The corresponding `hk-menu-*` commands are thin public wrappers
-around `hk-shell menu`; `hk-menu-fingerprint` only selects the applicable
-shell-native menu from real setup state, and `hk-menu-wallpaper` retains narrow
-action subcommands for the dedicated image and file pickers. Do not rebuild
-navigation hierarchy in those scripts. Docker menu wrappers expose
-`--entries` for the shell's dynamic source boundary; they do not render their
-own UI. Search-heavy selectors such as applications, themes, keybindings, and
-icons may continue using Rofi.
+Quickshell. Open or toggle it directly through `hk-shell menu`; do not add
+forwarding `hk-menu-*` aliases. A command named `hk-menu-*` must own an actual
+interactive surface, as the launcher, calculator, and wallpaper picker still
+do. Dynamic shell entries come from noun-owned provider commands such as
+`hk-theme-menu-entries`, `hk-docker-menu-entries`, and
+`hk-fingerprint-menu-entries`. Providers own discovery and actions but never
+open the shell menu themselves. Keep the open path proportional to the state
+actually needed for its rows. Generate large static catalogs directly in menu
+JSON shape rather than rebuilding them in a provider on every open.
 
 ## Style
 

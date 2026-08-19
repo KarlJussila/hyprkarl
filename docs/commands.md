@@ -40,50 +40,24 @@ does not try to document every internal script.
 
 ## Menus and Launching
 
-- `hk-menu`
-  Open the shell-native main Hyprkarl menu.
 - `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`
-  Control the Quickshell menu through its public IPC boundary. The established
-  `hk-menu-*` navigation commands below are convenient wrappers around it.
+  Control the Quickshell menu through its public IPC boundary. For example,
+  `hk-shell menu toggle main`, `hk-shell menu open theme`, and
+  `hk-shell menu open fingerprint`. Static forwarding aliases are not part of
+  the command surface; bindings and scripts should use this command directly.
 - `hk-menu-launcher`
   Open the rofi app launcher.
-- `hk-menu-config`
-  Open the shell-native configuration menu for themes, wallpapers, and
-  defaults.
-- `hk-menu-defaults`
-  Open the defaults submenu (terminal, editor, shell).
-- `hk-menu-editor` / `hk-menu-shell` / `hk-menu-terminal`
-  Open the corresponding shell-native default chooser directly without going
-  through the defaults menu.
-- `hk-menu-install`
-  Open the shell-native install menu for packages and Docker services.
-- `hk-menu-uninstall`
-  Open the shell-native uninstall menu for packages and Docker services.
-- `hk-menu-update`
-  Open the shell-native update menu: "Update Hyprkarl" launches the guided `hk-update tui`,
-  "Upgrade Packages" runs the system package upgrade (`hk-pkg-upgrade`).
-- `hk-menu-utils`
-  Open the shell-native utilities submenu (toggles, screen recording, and
-  other actions).
-- `hk-menu-power`
-  Open the shell-native power menu.
-- `hk-menu-power-profile`
-  Open the shell-native `power-profiles-daemon` profile chooser. The active
-  profile is marked when the menu opens.
-- `hk-menu-keybindings`
-  Open a searchable rofi menu of all Hyprland keybindings. Pass `--print` /
-  `-p` to print them to stdout instead.
+- `hk-keybindings-list`
+  Print the live Hyprland keybindings shown by the searchable `keybindings`
+  shell menu.
 - `hk-menu-calculator`
   Open `rofi-calc`. `Ctrl+Return` copies the current result to the clipboard;
   history is trimmed to five entries on exit.
-- `hk-menu-icons`
-  Open a fuzzy Nerd Font icon picker. Search by icon name, select an entry, and
-  the glyph is copied to the clipboard. Requires the glyph data file — run
-  `hk-icon-data-update` first if it is missing.
 - `hk-icon-data-update`
   Download the latest Nerd Font glyph list from the upstream cheat-sheet and
-  regenerate `~/.local/share/hyprkarl/data/nerdfont-glyphs.txt`. Re-run after upgrading
-  Nerd Fonts to pick up new icons.
+  regenerate the provider-ready
+  `~/.local/share/hyprkarl/data/nerdfont-menu.json`. Re-run after upgrading
+  Nerd Fonts to pick up new icons shown by the searchable `icons` shell menu.
 
 ### Launching apps
 
@@ -123,8 +97,6 @@ does not try to document every internal script.
 
 ## Themes and Wallpapers
 
-- `hk-menu-theme`
-  Open the searchable theme selector.
 - `hk-theme set <theme>`
   Switch to a theme, update wallpaper state, update theme settings, and reload
   affected programs.
@@ -153,20 +125,19 @@ does not try to document every internal script.
 
 ## Fingerprint
 
-- `hk-menu-fingerprint`
-  Open the shell-native fingerprint menu appropriate to current setup state.
-  Removing a fingerprint continues into the enrolled-finger selector.
+- `hk-shell menu open fingerprint`
+  Open the setup-aware fingerprint workflow. Enrollment uses a dynamic picker
+  containing only available fingers; removal uses a dynamic picker containing
+  only enrolled fingers. Every fingerprint menu is rendered by Quickshell.
 - `hk-fingerprint setup [--remove]`
   Configure fingerprint authentication for sudo and polkit, or remove it with
   `--remove`.
-- `hk-fingerprint enroll [finger-name]`
-  Enroll a fingerprint, prompting for a finger if omitted.
+- `hk-fingerprint enroll <finger-name>`
+  Enroll the specified fingerprint. The shell menu owns finger selection.
 - `hk-fingerprint remove <finger-name>`
   Delete an enrolled fingerprint.
 - `hk-fingerprint list`
   Print enrolled fingers, one per line.
-- `hk-fingerprint select [message]`
-  Show the fingerprint picker and print the selected finger name.
 
 ## Defaults and Session Behavior
 
@@ -216,15 +187,12 @@ does not try to document every internal script.
 
 ## Docker
 
-- `hk-menu-docker-install`
+- `hk-shell menu open docker-install`
   Open the shell-native Docker install menu, populated with services that are
   not installed.
-- `hk-menu-docker-uninstall`
+- `hk-shell menu open docker-uninstall`
   Open the shell-native Docker uninstall menu, populated with installed
   services.
-- `hk-docker setup`
-  Install Docker and Docker Compose, enable Docker, and add the user to the
-  `docker` group.
 - `hk-docker install <service>`
   Install a local Docker service.
 - `hk-docker uninstall <service>`

@@ -159,7 +159,7 @@ are:
 - `user/shell.json`
   Optional sparse user-owned override for the shipped shell configuration
 - `defaults/menu.json`
-  Shipped static command-menu hierarchy and actions
+  Shipped command-menu hierarchy, dynamic providers, search roles, and actions
 - `user/menu.json`
   Optional sparse user-owned menu additions and overrides
 - `themes/<theme>/quickshell.json`
@@ -196,8 +196,8 @@ no separate feature-flyout boundary.
 The shell-native command menu creates one full-screen overlay per output and
 shows only the requested monitor's instance. `features/menu/MenuState.qml`
 owns the watched, validated deep merge, navigation history, checked-state
-probes, and short-lived dynamic menu sources;
-`MenuWindow.qml` owns keyboard focus, dismissal, and rendering. See
+probes, and short-lived dynamic menu sources; `MenuWindow.qml` owns keyboard
+focus, in-process search, dismissal, and rendering. See
 [Menu Configuration](menu-configuration.md).
 
 ## Themes

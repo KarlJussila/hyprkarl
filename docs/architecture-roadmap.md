@@ -132,13 +132,15 @@ to a theme minimum, then shared by all three islands and the exclusive zone.
 The old static Rofi menu tree has also been replaced directly by a
 shell-native Quickshell surface. `defaults/menu.json` owns built-in navigation,
 `user/menu.json` deep-merges additions and overrides by stable entry ID, and
-the old static `hk-menu-*` names now route through the shell's menu IPC.
-Specialized searchable selectors remain dedicated commands. The renderer
-retains the original menu's compact width, centered icon-and-label rows, title
-band, nested frame, and bordered selection. Its semantic palette, typography,
-rounded geometry, borders, and accent states now come from the shell theme, so
-the result shares the shell's visual language without becoming a generic
-feature panel.
+bindings and scripts call the shell's menu IPC directly. Dynamic providers and
+in-process search now cover themes, live keybindings, Nerd Font icons, Docker
+services, and the full fingerprint workflow. Dedicated Rofi commands remain
+only where they still own a distinct interface, such as the launcher,
+calculator, and wallpaper thumbnail picker. The renderer retains the original
+menu's compact width, centered icon-and-label rows, title band, nested frame,
+and bordered selection. Its semantic palette, typography, rounded geometry,
+borders, and accent states now come from the shell theme, so the result shares
+the shell's visual language without becoming a generic feature panel.
 
 ## Constraints and Non-Goals
 
@@ -429,14 +431,16 @@ intermediate Rofi renderer:
 - `user/menu.json` adds, replaces, or disables entries by stable dotted ID;
 - one per-screen overlay renders on the focused output with exclusive keyboard
   focus, history navigation, and outside-click dismissal;
-- the bar, Hyprland bindings, and established static `hk-menu-*` commands all
-  use the same in-process state through the shell's IPC boundary;
-- wallpaper and fingerprint management, power profiles, and default-app
-  choices are nested shell-native menus rather than secondary Rofi menus;
-- Docker install and uninstall menus refresh their filtered service entries
-  from a short-lived source command whenever they open;
-- specialized selectors remain dedicated Rofi or terminal commands where
-  search and richer interaction make that a better fit.
+- the bar and Hyprland bindings use the same in-process state through the
+  shell's IPC boundary, with no forwarding command layer;
+- wallpaper management, power profiles, and default-app choices are nested
+  shell-native menus rather than secondary Rofi navigation menus;
+- themes, live keybindings, Nerd Font icons, Docker services, and every
+  fingerprint choice use domain-owned providers and refresh when opened;
+- searchable menus filter provider entries inside Quickshell;
+- the launcher, calculator, wallpaper thumbnail picker, and package pickers
+  retain dedicated Rofi or terminal interfaces until a replacement can delete
+  their old process path.
 
 The implemented `checkedCommand` remains limited to entries such as power
 profiles that need external state. Add runtime `when` only when a reachable

@@ -39,10 +39,12 @@ shipped definition.
 }
 ```
 
-`root` names the menu opened by `hk-menu` and the bar button. Each object in
-`menus` supplies a title and may also define `sourceCommand` plus `emptyLabel`
-for entries discovered when that menu opens. Each object in `entries` has a
-stable dotted ID and:
+`root` names the menu opened by `hk-shell menu toggle main` and the bar button.
+Each object in `menus` supplies a title and may also define `sourceCommand`
+plus `emptyLabel` for entries discovered when that menu opens. Set
+`searchable` to `true` for an in-process fuzzy-search field. `widthRole` may be
+`default`, `search`, or `reference` and selects the corresponding themed menu
+width. Each object in `entries` has a stable dotted ID and:
 
 - `parent`: the menu containing the entry
 - `order`: numeric display order; IDs break ties deterministically
@@ -51,29 +53,79 @@ stable dotted ID and:
 - `enabled`: optional boolean; `false` removes the entry from rendering
 - `checkedCommand`: optional command evaluated when the menu opens; exit zero
   replaces the icon with a check mark
-- `action`: either a `menu` destination or a shell `command`
+- `action`: a `menu` destination, shell `command`, or `dismiss` action for an
+  informational row
 
 Commands run through `bash -lc` after the menu closes. Keep interaction-heavy
 work in a dedicated `hk-*` command and reference it from the data; the menu
-definition owns navigation, not application logic. The shipped definition
-still uses focused Rofi or terminal interfaces for dynamic and search-heavy
-selectors such as apps, themes, wallpaper thumbnails, enrolled fingers, and
-packages. Docker service discovery feeds dynamic Quickshell menus instead;
-static wallpaper management, fingerprint management, power profiles, and
-default-app choices also remain in Quickshell.
+definition owns navigation, not application logic. Themes, live keybindings,
+Nerd Font icons, Docker services, and every fingerprint choice are dynamic
+Quickshell menus. The app launcher, calculator, wallpaper thumbnail picker,
+and package pickers retain their focused Rofi or terminal interfaces.
 
 Use `checkedCommand` only for a cheap external state probe whose status belongs
 in the menu. Checks run when the menu opens; they are not long-running monitors
 and do not replace shell-native service state in feature panels.
 
 A `sourceCommand` must print one JSON array and exit. Each array item has a
-stable `id`, a `label`, an optional `icon`, and a command `action`; array order
-is display order. The shell validates the result before rendering it, shows
-`emptyLabel` for an empty array, and reports provider or schema failure in the
-menu and `hk-shell logs`. Sources are refreshed on every open so filesystem or
-service state does not go stale. The shipped Docker providers use this boundary
-to show only missing services under Install and installed services under
-Uninstall.
+stable `id`, a `label`, optional `icon` and `searchText` fields, and a
+`command`, `menu`, or `dismiss` action; array order is display order. The shell
+validates the result before rendering it, shows `emptyLabel` for an empty
+array, and reports provider or schema failure in the menu and `hk-shell logs`.
+Sources refresh on every open and when returning to a dynamic parent, so
+filesystem, hardware, and service state do not go stale. Domain commands own
+discovery: for example, `hk-fingerprint menu-entries remove` supplies only
+enrolled fingers and `hk-docker menu-entries install` supplies only missing
+services.
+
+The shell runs both providers and command actions with `bash -c`, inheriting
+the session environment without starting a login shell. A dynamic destination
+is revealed only after its complete result has been parsed and validated, so
+users never interact with a partially populated model. Keep providers fast by
+doing only the discovery their rows require. If a large catalog changes only
+when an update command runs, generate provider-ready JSON during that update
+and make `sourceCommand` print the finished file; the shipped icon picker uses
+this pattern. Runtime caching is not part of the menu contract.
+
+For example, a personal searchable menu needs only a menu declaration, an
+entry that navigates to it, and a provider on `$PATH`:
+
+```json
+{
+  "version": 1,
+  "menus": {
+    "projects": {
+      "title": "Projects",
+      "sourceCommand": "my-project-menu-entries",
+      "searchable": true,
+      "widthRole": "search",
+      "emptyLabel": "No projects"
+    }
+  },
+  "entries": {
+    "main.projects": {
+      "parent": "main",
+      "order": 45,
+      "label": "Projects",
+      "action": { "type": "menu", "menu": "projects" }
+    }
+  }
+}
+```
+
+`my-project-menu-entries` can discover rows at runtime or simply print a
+prebuilt file. Its entire output uses the same provider shape:
+
+```json
+[
+  {
+    "id": "project.notes",
+    "label": "Notes",
+    "searchText": "writing markdown",
+    "action": { "type": "command", "command": "foot -D ~/Notes" }
+  }
+]
+```
 
 ## Sparse User Overrides
 
@@ -127,16 +179,18 @@ gaps, and bordered selection. Its palette, typography, rounded geometry,
 border treatment, translucent accent states, and subtle backdrop scrim make
 it part of the current shell instead of a literal reproduction.
 
-The object owns `scrim`, `fontSize`, `width`, `outerRadius`, `innerRadius`,
-`entryRadius`, `outerBorderWidth`, `outerPadding`, `innerBorderWidth`,
-`headerPadding`, `entryMargin`, `entryPadding`, `selectionBorderWidth`,
-`headerAccentOpacity`, and `selectionAccentOpacity`. It may also override the
-inherited `background`, `foreground`, `accent`, `border`, `font`, and
-`fontWeight` tokens when a theme needs a menu-specific treatment. Omitted
-semantic tokens fall back to the corresponding top-level shell theme values,
-so a new theme normally needs only the menu-specific metrics and modifiers.
-`innerBorderWidth` sets both the nested frame thickness and the divider that
-supports the title band; the band's lower corners stay square against it.
+The object owns `scrim`, `fontSize`, `width`, `searchWidth`, `referenceWidth`,
+`searchRows`, `outerRadius`, `innerRadius`, `entryRadius`, `outerBorderWidth`,
+`outerPadding`, `innerBorderWidth`, `headerPadding`, `entryMargin`,
+`entryPadding`, `selectionBorderWidth`, `headerAccentOpacity`, and
+`selectionAccentOpacity`. It may also override the inherited `background`,
+`foreground`, `accent`, `border`, `font`, and `fontWeight` tokens when a theme
+needs a menu-specific treatment. Omitted semantic tokens fall back to the
+corresponding top-level shell theme values, so a new theme normally needs only
+the menu-specific metrics and modifiers. `innerBorderWidth` sets both the
+nested frame thickness and the divider that supports the title band; the
+band's lower corners stay square against it. `searchRows` fixes the visible
+viewport height of searchable menus while their contents filter.
 
 ## Opening Menus Directly
 
@@ -148,13 +202,16 @@ hk-shell menu open utilities
 hk-shell menu close
 ```
 
-The established `hk-menu`, `hk-menu-config`, `hk-menu-defaults`,
-`hk-menu-install`, `hk-menu-uninstall`, `hk-menu-utils`, `hk-menu-update`, and
-`hk-menu-power` commands remain as compatibility-friendly entry points. The
-wallpaper, fingerprint, power-profile, terminal, editor, and shell menu
-commands also open their corresponding Quickshell surfaces rather than owning
-separate Rofi navigation scripts.
+Menu IDs include `main`, `config`, `defaults`, `install`, `uninstall`,
+`utilities`, `update`, `power`, `power-profile`, `theme`, `keybindings`,
+`icons`, `fingerprint`, `fingerprint-enroll`, and `fingerprint-remove`.
+Static forwarding `hk-menu-*` aliases are intentionally absent: custom
+bindings call the public `hk-shell menu` boundary directly. Commands that own
+a distinct interface remain, including `hk-menu-launcher`,
+`hk-menu-calculator`, and `hk-menu-wallpaper`.
 
 Keyboard navigation supports Up/Down (or J/K), Home/End, Enter/Space/Right (or
-L) to choose, and Escape/Left/Backspace to go back. Going back from the root
-closes the menu. Clicking outside goes back from a submenu and closes the root.
+L) to choose, and Escape/Left/Backspace to go back. In a searchable menu,
+typing edits the query, Up/Down changes the selection, and Escape clears a
+non-empty query before navigating back. Going back from the root closes the
+menu. Clicking outside goes back from a submenu and closes the root.

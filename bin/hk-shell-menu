@@ -24,11 +24,6 @@ case "$action" in
   *) usage >&2; exit 1 ;;
 esac
 
-if ! hk_shell_is_running; then
-  echo "Hyprkarl shell is not running." >&2
-  exit 1
-fi
-
 if [[ "$action" == "close" ]]; then
   exec qs -p "$HK_SHELL_CONFIG" ipc call menu close
 fi

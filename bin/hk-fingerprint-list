@@ -6,4 +6,5 @@ if ! command -v fprintd-list &>/dev/null; then
   exit 1
 fi
 
-fprintd-list "$USER" 2>/dev/null | awk -F': ' '/^ - #/ {print $2}'
+listing=$(fprintd-list "$USER" 2>/dev/null) || exit 1
+awk -F': ' '/^ - #/ {print $2}' <<<"$listing"

@@ -1,0 +1,14 @@
+#!/bin/bash
+# hk-icon-copy
+# Copy one Nerd Font glyph to the clipboard.
+
+glyph=${1:-}
+label=${2:-$glyph}
+
+if [[ -z "$glyph" ]]; then
+  echo "Usage: hk-icon-copy <glyph> [label]" >&2
+  exit 1
+fi
+
+printf '%s' "$glyph" | wl-copy
+gum log --level info "Copied to clipboard: $glyph $label"

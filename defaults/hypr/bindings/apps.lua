@@ -11,4 +11,4 @@ hl.bind("SUPER + SHIFT + ALT + B", hl.dsp.exec_cmd(browser .. " --private"), { d
 hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd("hk-editor-launch"), { description = "Editor" })
 
 hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("hk-tui-launch hk-dictionary"), { description = "Dictionary" })
-hl.bind("SUPER + SHIFT + I", hl.dsp.exec_cmd("hk-menu-icons"), { description = "Icon picker" })
+hl.bind("SUPER + SHIFT + I", hl.dsp.exec_cmd("hk-shell menu toggle icons"), { description = "Icon picker" })

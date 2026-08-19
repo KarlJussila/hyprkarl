@@ -6,6 +6,7 @@
 #   hk-docker install <service>
 #   hk-docker uninstall <service>
 #   hk-docker list
+#   hk-docker menu-entries <install|uninstall>
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/docker.sh"
@@ -16,6 +17,7 @@ Usage:
   hk-docker install <service>
   hk-docker uninstall <service>
   hk-docker list
+  hk-docker menu-entries <install|uninstall>
 EOF
 }
 
@@ -43,6 +45,10 @@ case "$action" in
     fi
     service_ids || exit 1
     exit 0
+    ;;
+  menu-entries)
+    shift
+    exec hk-docker-menu-entries "$@"
     ;;
   *)
     docker_usage

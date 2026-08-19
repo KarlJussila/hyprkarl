@@ -9,6 +9,14 @@ bar has a small configuration layer for casual edits and cohesive QML modules
 for implementation. Do not recreate framework services or introduce generic
 controllers when a Quickshell singleton already owns the state.
 
+The repository-wide trust-user rule is especially important here. Hyprkarl
+ships a default shell and documents suggested personal paths; it is not a
+plugin marketplace and never needs marketplace-style path allowlists,
+capability policing, manifests, approval, or sandboxing. Validate shell-owned
+data needed for shell invariants, but pass user-authored QML and its private
+settings through to the QML runtime. Helpful load errors are appropriate;
+preventing an advanced user from leaving the documented contract is not.
+
 ## Editing surfaces
 
 - `../../defaults/shell.json`: shipped bar behavior, widget order, and widget
@@ -28,19 +36,20 @@ changes use ordered `bar.layoutEdits` operations keyed by stable widget ID;
 do not infer deletion or array ordering from an ordinary deep merge, and do
 not restore a separate widget-definition map.
 
-`kind: "qml"` is the only user-code widget lane. Its `source` is a relative
-`.qml` path fixed below `user/quickshell/modules/`; do not widen it to arbitrary
-paths or add discovery, manifests, install hooks, or enable state. The module
-root declares `required property var context`. `widgets/qml.qml` owns that
-context and exposes only the documented per-bar values and operations: stable
-ID, settings, semantic theme, edge/orientation, output, owning bar window,
-command execution, and shared panel open/close helpers. It also adapts optional
-root `tooltip`, `tooltipSuppressed`, `widgetVisible`, and
-`hostMainPaddingOffset` properties to existing shell contracts. Do not inject
-`SystemState`, feature singletons, or the raw panel host. Each `WidgetHost`
-owns one module instance per rendered bar/output; application-wide state is not
-implicitly created for user modules. Dynamically referenced sources are outside
-Quickshell's static reload graph, so source edits require `hk-shell restart`.
+`kind: "qml"` is the documented user-code widget lane. Its `source` normally
+names a file relative to `user/quickshell/modules/`, but this is a resolution
+base rather than a sandbox: do not validate the path or the module's private
+settings in an attempt to constrain user-authored QML. The module root declares
+`required property var context`. `widgets/qml.qml` owns that context and
+exposes the documented per-bar values and operations: stable ID, settings,
+semantic theme, edge/orientation, output, owning bar window, command execution,
+and shared panel open/close helpers. It also adapts optional root `tooltip`,
+`tooltipSuppressed`, `widgetVisible`, and `hostMainPaddingOffset` properties to
+existing shell contracts. Do not add discovery, manifests, install hooks, or
+implicit enable state. Each `WidgetHost` owns one module instance per rendered
+bar/output; application-wide state is not implicitly created for user modules.
+Dynamically referenced sources are outside Quickshell's static reload graph, so
+source edits require `hk-shell restart`.
 
 ## Architecture
 

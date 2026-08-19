@@ -188,7 +188,7 @@ schema and override examples.
   monitor midpoint.
 - `widgets/WidgetHost.qml` loads widget kinds from the instance definitions.
 - `widgets/*.qml` provide compact status and panel entry points;
-  `widgets/qml.qml` is the path-restricted host for explicitly referenced
+  `widgets/qml.qml` is the host for explicitly referenced
   modules under `user/quickshell/modules/`.
 - `features/` owns feature-specific panel state and composition. Audio,
   network, Bluetooth, power, and clock/calendar all use this boundary.

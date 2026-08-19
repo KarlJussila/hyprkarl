@@ -20,8 +20,7 @@ The intended end state has four properties:
 2. Hyprkarl still runs from `~/.local/share/hyprkarl`; it does not become an
    Arch package, a system image, or a distribution.
 3. One long-running Quickshell process owns shell integration, with small
-   public configuration and extension contracts rather than a general plugin
-   platform from the outset.
+   public configuration and extension contracts and no plugin marketplace.
 4. Themes are palette-first, with common rendering logic owned once and
    generated runtime state kept out of the Git working tree.
 
@@ -154,8 +153,9 @@ the shell's visual language without becoming a generic feature panel.
 - Do not add a generic override or merge engine for every application config.
   Public override contracts belong only at surfaces where users actually need
   them.
-- Do not add a manifest-based shell plugin system until independently
-  distributed extensions demonstrate a concrete need for it.
+- Do not add a plugin marketplace or manifest-based shell plugin system.
+  Hyprkarl owns defaults and suggests personal paths; users own anything they
+  place beyond those defaults.
 - Do not silently rewrite curated user configuration to insert new defaults.
   Show new capabilities and let the owner adopt them explicitly.
 - Do not target unpinned `quickshell-git` behavior. The supported Quickshell
@@ -404,7 +404,7 @@ store.
 Resolved. `BarConfig.qml` was removed in favor of shipped and optional user
 JSON before it could become a public compatibility surface. Command providers
 are application-wide, static commands create no provider runtime, and user QML
-is path-restricted to an explicit per-bar context without plugin discovery.
+uses an explicit per-bar context without plugin discovery.
 
 ## Workstream 3: Establish Upstream Defaults and User Overrides
 
@@ -596,20 +596,13 @@ hk-shell notifications dismiss-all
 IPC failure should be explicit for requested actions. Best-effort calls used
 only for optional presentation may have a documented quiet mode.
 
-### Plugin Threshold
+### No Plugin Marketplace
 
-Do not add manifest discovery during these migrations. Reconsider a plugin
-contract only when all of the following are true:
-
-- at least two useful extensions are maintained outside Hyprkarl;
-- copying a QML module plus a config entry is insufficient;
-- the required lifecycle and injected capabilities are known from those real
-  extensions;
-- the security model for unsandboxed long-running code is documented;
-- validation, update, failure isolation, and removal have owners.
-
-Until then, built-in features, command widgets, and explicitly referenced user
-QML modules are the complete extension model.
+Hyprkarl provides a curated default configuration and suggested personal paths.
+It will not discover, install, approve, sandbox, or remove third-party plugins.
+Built-in features, command widgets, and directly referenced user QML are the
+complete extension model; users remain free to step outside its documented
+contract at their own maintenance and debugging cost.
 
 ### Acceptance Criteria
 
@@ -746,8 +739,8 @@ branch. Deliver them as reviewable vertical changes:
    notification service are complete; notifications deleted Mako in full.
    Require each later feature to delete an older integration path and meet the
    visual brief.
-9. **Reassess plugins only after external extensions exist.** A decision to do
-   nothing is acceptable.
+9. **Keep extensions direct and user-owned.** Complete. There is no plugin
+   marketplace or manifest lifecycle to build or maintain.
 
 Every delivered change must update the relevant human-facing and agent-facing
 documentation in the same commit.
@@ -794,9 +787,9 @@ small design changes before dependent work begins:
 3. Which integration owns display discovery, live changes, persistence, and
    recovery before the planned display feature panel is implemented.
 
-Questions such as plugin marketplaces, compatibility with arbitrary internal
-QML modules, multi-user provisioning, or cross-distribution packaging are
-outside the roadmap until the project requirements change.
+Plugin marketplaces are an explicit non-goal. Compatibility with arbitrary
+internal QML modules, multi-user provisioning, and cross-distribution packaging
+are outside the roadmap.
 
 ## Completion Definition
 
@@ -814,5 +807,5 @@ This roadmap is complete when:
 - theme switching renders palette-driven state outside the repository;
 - additional shell surfaces run in the same process only where doing so
   deletes older integration machinery; and
-- a plugin platform has either been justified by real external extensions or
-  explicitly deferred.
+- personal extensions remain direct user-owned files and references rather
+  than a plugin platform.

@@ -6,6 +6,27 @@ Guidance for coding agents working in this repository.
 
 Hyprkarl is a desktop configuration repository for CachyOS + Hyprland. It is installed once, then edited directly — the live `~/.config/` files are symlinks back into this repo, so changes here take effect immediately without a deploy step.
 
+## Core Engineering Rules
+
+- Prefer the simplest coherent architecture. Remove unnecessary guards,
+  layers, indirection, duplication, and special cases instead of elaborating
+  them.
+- Optimize extension surfaces for directness and readability. A documented
+  file, data shape, or small context is preferable to a framework the project
+  does not need.
+- Trust the user. The person running Hyprkarl owns the system, and documented
+  paths and contracts describe the supported, update-friendly route rather
+  than a permission boundary. Do not sandbox, allowlist, or reject user-authored
+  QML, scripts, or configuration merely because it steps outside that route.
+- Do not over-guard. Validate data Hyprkarl must interpret to preserve its own
+  invariants and inputs that cross a genuinely untrusted boundary. If an
+  off-contract user change works, allow it. If it fails, add concise
+  Hyprkarl-specific context when that is easy and leave debugging of the user's
+  code to the user.
+- Hyprkarl will not have a plugin marketplace. It ships a default configuration
+  and suggests convenient paths for personalization; it does not govern,
+  install, approve, or sandbox third-party extensions.
+
 ## Keeping Docs Current
 
 When you change behavior, structure, or conventions, **update the documentation

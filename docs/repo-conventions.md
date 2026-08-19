@@ -14,6 +14,20 @@ That means:
 - prefer a plain config file when that is enough
 - document what changed for the user or editor when you add or change behavior
 
+## Trust User-Owned Code
+
+The documented user paths and extension contracts are the supported,
+update-friendly route, not a sandbox. Hyprkarl does not block user-authored
+QML, scripts, or configuration merely because it goes beyond that contract.
+Off-contract changes may work, and users are free to accept the maintenance
+and debugging cost when they do. When they fail, Hyprkarl should add concise
+context for failures it can identify cheaply, then let the underlying runtime
+report the user's error.
+
+Hyprkarl will not have a plugin marketplace. It provides a curated default and
+suggested locations for personal code; it does not install, approve, constrain,
+or promise compatibility for third-party extensions.
+
 ## Put Changes in the Right Layer
 
 - `config/`

@@ -304,8 +304,8 @@ Version 1 has three supported ways to place a widget:
    command stream and renders its documented text or small JSON result.
 3. A QML widget explicitly names a file under `user/quickshell/modules/`.
 
-All three lanes are implemented. User QML is intentionally explicit and
-path-restricted; there is no module discovery or plugin installation layer.
+All three lanes are implemented. User QML is intentionally explicit; there is
+no module discovery or plugin installation layer.
 
 ### Command widgets
 
@@ -423,9 +423,8 @@ only when its timer fires.
 
 Use `kind: "qml"` when a widget needs custom interaction or rendering that the
 command-widget presentation contract cannot express. `source` is a relative
-`.qml` path below `user/quickshell/modules/`; absolute paths and `.` or `..`
-segments are rejected. `settings` is an optional object owned entirely by that
-module.
+`.qml` path below `user/quickshell/modules/` in the supported contract.
+`settings` is optional data owned entirely by that module.
 
 For example, this config entry inserts `user/quickshell/modules/Greeting.qml`:
 
@@ -511,6 +510,11 @@ The loader passes no Hyprkarl state singleton or service object. A module can
 import normal QML and Quickshell APIs, but it is trusted, unsandboxed code
 running inside the shell process. A missing or unloadable source logs the QML
 error and collapses that instance without taking down the rest of the bar.
+The shell does not validate `source` or `settings` to police user code. It
+resolves `source` from the documented module directory and passes `settings`
+through; stepping outside the contract is allowed to work or fail according to
+normal QML behavior.
+
 Changes to `user/shell.json` remain live; after editing a dynamically
 referenced QML source, run `hk-shell restart` because it is outside
 Quickshell's statically scanned reload graph.
@@ -539,9 +543,11 @@ components rely on the parsed contract.
   not hidden behind another internal fallback.
 - Duplicate widget IDs are invalid because IDs identify instances for runtime
   state and diagnostics.
-- Unknown widget kinds are invalid configuration. Command widget fields are
-  validated before a provider is created. User-QML sources must be relative
-  `.qml` paths below `user/quickshell/modules/`, and settings must be an object.
+- Command widget fields are validated where the shared provider runtime needs
+  a stable process contract. Other widget kinds flow to `WidgetHost`; a missing
+  implementation becomes a normal QML loader error. User-QML `source` and
+  `settings` are likewise passed through because they belong to trusted user
+  code.
 
 The shell watches both files and recomputes the effective configuration when
 either changes, without recreating unrelated services. `hk-shell reload` is

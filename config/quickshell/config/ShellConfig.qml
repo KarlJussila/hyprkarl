@@ -7,21 +7,6 @@ QtObject {
 
   readonly property url defaultPath: Quickshell.shellPath("../../defaults/shell.json")
   readonly property url userPath: Quickshell.shellPath("../../user/shell.json")
-  readonly property var builtInKinds: [
-    "audio",
-    "battery",
-    "bluetooth",
-    "clock",
-    "cpu",
-    "gpu",
-    "network",
-    "ram",
-    "recording",
-    "toggle",
-    "tray",
-    "workspaces"
-  ]
-
   property var values: ({})
   property bool ready: false
   property url sourcePath: defaultPath
@@ -174,34 +159,6 @@ QtObject {
 
     if (widget.kind === "command") {
       validateCommandWidget(widget, path)
-    } else if (widget.kind === "qml") {
-      validateQmlWidget(widget, path)
-    } else if (typeof widget.kind !== "string"
-        || builtInKinds.indexOf(widget.kind) === -1) {
-      fail(path + ".kind", "unknown widget kind '" + widget.kind + "'")
-    }
-  }
-
-  function validateQmlWidget(widget, path): void {
-    if (typeof widget.source !== "string" || widget.source.length === 0) {
-      fail(path + ".source", "expected a QML file under user/quickshell/modules")
-    }
-
-    const segments = widget.source.split("/")
-    const validSegment = /^[A-Za-z0-9._-]+$/
-    for (const segment of segments) {
-      if (segment.length === 0
-          || segment === "."
-          || segment === ".."
-          || !validSegment.test(segment)) {
-        fail(path + ".source", "expected a relative QML file under user/quickshell/modules")
-      }
-    }
-    if (!segments[segments.length - 1].endsWith(".qml")) {
-      fail(path + ".source", "expected a .qml file under user/quickshell/modules")
-    }
-    if (widget.settings !== undefined) {
-      requireObject(widget.settings, path + ".settings")
     }
   }
 

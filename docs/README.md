@@ -24,6 +24,8 @@ repo checked out at `~/.local/share/hyprkarl/`.
   runtime-state ownership contracts.
 - Read [Menu Configuration](menu-configuration.md) to add, reorder, rename, or
   hide entries in the shell-native command menu.
+- Read [Authentication Surfaces](authentication-surfaces.md) for the resolved
+  polkit migration and the pinned-version lock-screen deferral.
 
 ## Common Tasks
 
@@ -61,3 +63,4 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - [Shell Product Brief](shell-product-brief.md)
 - [Shell Configuration](shell-configuration.md)
 - [Menu Configuration](menu-configuration.md)
+- [Authentication Surfaces](authentication-surfaces.md)

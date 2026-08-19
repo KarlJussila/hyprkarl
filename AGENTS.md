@@ -245,6 +245,7 @@ intentionally omit strict mode (`set -euo pipefail`); Python commands use
 - `docs/configuration-map.md` — repo layout and main editing surfaces
 - `docs/themes.md` — theme structure and wallpaper layout
 - `docs/extending-hyprkarl.md` — adding commands, menus, keybindings, theme-aware config
+- `docs/authentication-surfaces.md` — polkit ownership and the lock-screen release boundary
 - `docs/shell-style.md` — Bash/Python command scripting conventions
 - `docs/commands.md` — full `hk-*` command reference
 - `docs/repo-conventions.md` — editing conventions, stowed-config model, branches and releases

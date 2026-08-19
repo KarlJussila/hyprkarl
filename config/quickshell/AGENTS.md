@@ -302,6 +302,28 @@ loader path. Shell JSON owns selection and application filters; each theme's
 `notification` object owns surface color, geometry, image/icon sizes, and
 drawn-indicator scale.
 
+Authentication surfaces have separate owners; do not create a generic auth
+controller. On the pinned Quickshell 0.3.0-2.1 build, `PolkitAgent` and
+`AuthFlow` are admitted for a shell-native prompt. The root shell owns exactly
+one agent, the feature binds directly to its current flow, and the prompt must
+honor identities, response-required and response-visible state,
+supplementary messages, cancellation, and service-owned retry behavior. It is
+a focused modal surface, not a feature panel, and needs no public IPC endpoint.
+Delete `hyprpolkitagent` only in the same change that validates registration
+and the complete replacement flow. The installed qmltypes leave `AuthFlow`
+unresolved through `PolkitAgent.flow`, and the exact upstream v0.3.0 manual
+example produces the same `qmllint` warning. Do not add an abstraction to hide
+that tooling defect; validate the real prompt in the live runtime.
+
+Do not replace `hyprlock` on this runtime. Quickshell's post-0.3.0 changelog
+contains session-lock crash fixes for sleep, wake, DPMS, unlocking, and early
+surface visibility access that are absent from the pinned release. Keep
+`hyprlock`, `hk-lock`, and the current idle/suspend path until a release with
+those fixes is admitted and re-tested. The eventual lock is a small,
+short-lived Quickshell process isolated from the long-running desktop shell;
+it may share semantic theme inputs but must not instantiate bar services or
+depend on desktop-shell IPC. See `../../docs/authentication-surfaces.md`.
+
 ## Checks
 
 From the repository root:

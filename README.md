@@ -110,6 +110,8 @@ The full manual lives under `docs/`.
 - [docs/menu-configuration.md](docs/menu-configuration.md)
   Shell-native menu entries, user overrides, Python dynamic providers, and
   direct menu commands
+- [docs/authentication-surfaces.md](docs/authentication-surfaces.md)
+  Polkit surface design and the pinned-version lock-screen decision
 
 ## Themes
 

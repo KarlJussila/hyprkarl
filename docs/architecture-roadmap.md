@@ -141,6 +141,13 @@ menu's compact width, centered icon-and-label rows, title band, nested frame,
 and bordered selection. Its semantic palette, typography, rounded geometry,
 borders, and accent states now come from the shell theme, so the result shares
 the shell's visual language without becoming a generic feature panel.
+The pinned authentication capability audit admitted Quickshell's polkit agent
+for the next migration but retained `hyprlock`: post-0.3.0 upstream fixes for
+session-lock crashes during sleep, wake, DPMS, and unlock are absent from the
+installed release. The eventual secure lock is isolated in a short-lived
+Quickshell process rather than tying its failure lifecycle to the desktop
+shell. The resolved boundary is documented in
+[Authentication Surfaces](authentication-surfaces.md).
 
 ## Constraints and Non-Goals
 
@@ -572,9 +579,13 @@ package, and theme output were deleted together. Migrate the remaining
 surfaces one at a time, only when a replacement can delete the old process or
 integration path:
 
-1. Lock screen and polkit only after the installed Quickshell service APIs are
-   verified against the pinned release.
-2. Clipboard, emoji, and image-selection overlays as independent later
+1. Migrate polkit next. The pinned release exposes the required agent and
+   authentication-flow API; the replacement must delete the old agent process
+   and autostart path in the same change.
+2. Keep `hyprlock` until Hyprkarl admits a Quickshell release containing the
+   documented post-0.3.0 session-lock stability fixes, then repeat the
+   capability and lifecycle tests before implementation.
+3. Clipboard, emoji, and image-selection overlays as independent later
    features.
 
 This order is not a feature commitment. Each migration needs its own behavior
@@ -606,7 +617,9 @@ contract at their own maintenance and debugging cost.
 
 ### Acceptance Criteria
 
-- There remains exactly one Quickshell process per session.
+- There remains exactly one long-running Quickshell desktop-shell process per
+  session. A future secure lock may use one isolated process only while the
+  session is locked.
 - Global services are instantiated once; per-monitor windows are instantiated
   through explicit screen models.
 - Every migrated surface has a written interaction outline or visual prototype
@@ -737,8 +750,9 @@ branch. Deliver them as reviewable vertical changes:
    stages built-in/user sources into atomic XDG-state artifacts.
 8. **Migrate shell-native surfaces individually.** In progress. The OSD and
    notification service are complete; notifications deleted Mako in full.
-   Require each later feature to delete an older integration path and meet the
-   visual brief.
+   Polkit is the next admitted migration. The lock screen remains on
+   `hyprlock` until a fixed Quickshell release is admitted. Require each later
+   feature to delete an older integration path and meet the visual brief.
 9. **Keep extensions direct and user-owned.** Complete. There is no plugin
    marketplace or manifest lifecycle to build or maintain.
 
@@ -786,6 +800,10 @@ small design changes before dependent work begins:
    override. `hk-theme build` is the narrow integration boundary.
 3. Which integration owns display discovery, live changes, persistence, and
    recovery before the planned display feature panel is implemented.
+4. Resolved: polkit belongs to the long-running shell, while the eventual
+   secure lock uses an isolated short-lived process. Lock implementation is
+   deferred beyond Quickshell 0.3.0-2.1 because the installed release predates
+   required upstream session-lock stability fixes.
 
 Plugin marketplaces are an explicit non-goal. Compatibility with arbitrary
 internal QML modules, multi-user provisioning, and cross-distribution packaging

@@ -28,7 +28,11 @@ if [[ "$action" == "close" ]]; then
   exec qs -p "$HK_SHELL_CONFIG" ipc call menu close
 fi
 
-result="$(qs -p "$HK_SHELL_CONFIG" ipc call menu "$action" "$menu")" || exit 1
+if [[ -n ${HYPRKARL_OUTPUT:-} ]]; then
+  result="$(qs -p "$HK_SHELL_CONFIG" ipc call menu "${action}ForScreen" "$HYPRKARL_OUTPUT" "$menu")" || exit 1
+else
+  result="$(qs -p "$HK_SHELL_CONFIG" ipc call menu "$action" "$menu")" || exit 1
+fi
 if [[ "$result" != "true" ]]; then
   printf 'Could not open menu: %s\n' "$menu" >&2
   exit 1

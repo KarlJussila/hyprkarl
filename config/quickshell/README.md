@@ -91,8 +91,9 @@ running with an actionable log message. The current bar implements built-in
 and command widget kinds; the user-QML extension lane remains planned. A
 command widget can poll through `bash -c` or consume a persistent newline
 stream. Polling starts a process on every tick, so short intervals carry a CPU
-and battery cost; stream mode is intended for frequent updates. With no
-command widgets in the effective layout, no command timers or processes exist.
+and battery cost; stream mode is intended for frequent updates. Static command
+buttons omit the provider command and create no timer or process; the shipped
+main-menu button uses that form.
 
 The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
 `user/menu.json` adds or overrides menus and entries by stable ID. Ordinary
@@ -193,8 +194,8 @@ schema and override examples.
 - `features/notifications/` owns the freedesktop server, notification
   lifecycle and IPC, icon presentation, and one non-focusable stack per screen.
 - `features/command/` owns one application-wide polling or persistent-stream
-  provider per configured command-widget ID. It owns no runtime work when the
-  effective layout contains no command widgets.
+  provider per provider-backed command-widget ID. Static action buttons do not
+  enter that registry.
 - `components/` contains shared buttons, tooltips, and panel controls.
 - `state/SystemState.qml` owns the one polling process used by CPU, GPU, RAM,
   and recording widgets.
@@ -204,9 +205,9 @@ multiple widgets genuinely use the same interaction or visual structure.
 
 ## Current interactions
 
-- The bar menu button, `SUPER + ALT + SPACE`, and
-  `hk-shell menu toggle main` toggle the shell-native main menu on the focused
-  output. `SUPER + ESCAPE` opens its power section. Searchable menus focus
+- The bar's static command widget toggles the shell-native main menu on its own
+  output. `SUPER + ALT + SPACE` and `hk-shell menu toggle main` target the
+  focused output; `SUPER + ESCAPE` opens its power section. Searchable menus focus
   their input and retain arrow/Enter navigation; other menus support arrows or
   H/J/K/L, Home/End, Enter/Space, and Escape/Backspace. Clicking outside
   dismisses the menu.

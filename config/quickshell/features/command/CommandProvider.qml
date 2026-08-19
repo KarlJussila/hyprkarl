@@ -19,7 +19,7 @@ QtObject {
     return {
       "ready": true,
       "visible": true,
-      "text": "",
+      "text": config.text ?? "",
       "icon": config.icon ?? "",
       "tooltip": config.tooltip ?? "",
       "state": config.state ?? "normal"

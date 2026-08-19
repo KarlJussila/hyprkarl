@@ -300,7 +300,12 @@ sparse `user/shell.json` override:
     "exclusive": true,
     "layout": {
       "start": [
-        { "id": "menu", "kind": "menu" },
+        {
+          "id": "menu",
+          "kind": "command",
+          "icon": "",
+          "primaryCommand": "hk-shell menu toggle main"
+        },
         { "id": "workspaces", "kind": "workspaces" }
       ],
       "center": {
@@ -353,6 +358,8 @@ Support three sources and no more in the first release:
    newline stream. The shell owns process lifetime and ensures one provider per
    configured instance, not one per monitor. Polling has no artificial minimum,
    but its process-per-tick CPU and battery cost is part of the public contract.
+   The same kind supports a static icon/text action without a provider; the
+   shipped main-menu button exercises that zero-process form.
 3. **QML widget** — `type: "qml"` loads an explicitly referenced file from
   `user/quickshell/modules/` and injects a small context: theme, orientation,
   bar window, instance settings, and shared tooltip/panel entry points.

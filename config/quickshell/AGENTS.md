@@ -56,9 +56,12 @@ process per tick, and skips a tick while the prior process is still running.
 Stream mode owns one persistent process and accepts one text value or JSON
 object per newline. Do not impose a polling-rate policy in validation, but keep
 the CPU, wakeup, and battery cost prominent in user documentation. When no
-command widget exists in the effective layout, the registry model must remain
-empty so it creates no timers or processes. Prefer native Quickshell services
-or the shared `SystemState` process for shipped high-frequency widgets.
+command widget has a provider command, the registry model must remain empty so
+it creates no timers or processes. Static command widgets render configured
+text/icons and click actions directly; the shipped menu button is the canonical
+example. Click actions inherit `HYPRKARL_OUTPUT` from `ShellButton` so commands
+can preserve the clicked monitor. Prefer native Quickshell services or the
+shared `SystemState` process for shipped high-frequency widgets.
 
 `layout/IslandSurface.qml` is the single renderer for start, center, and end
 islands. Its corner and border names are logical rather than top/bottom

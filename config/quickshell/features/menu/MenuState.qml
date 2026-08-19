@@ -94,6 +94,14 @@ QtObject {
       return root.openOnFocusedScreen(menu)
     }
 
+    function openForScreen(screen: string, menu: string): bool {
+      return root.openForScreen(screen, menu)
+    }
+
+    function toggleForScreen(screen: string, menu: string): bool {
+      return root.toggleForScreen(screen, menu)
+    }
+
     function close(): void {
       root.close()
     }

@@ -142,7 +142,13 @@ map when an instance is referenced only once.
     "exclusive": true,
     "layout": {
       "start": [
-        { "id": "menu", "kind": "menu" },
+        {
+          "id": "menu",
+          "kind": "command",
+          "icon": "",
+          "tooltip": "Main menu",
+          "primaryCommand": "hk-shell menu toggle main"
+        },
         { "id": "workspaces", "kind": "workspaces" },
         {
           "id": "cpu",
@@ -303,7 +309,26 @@ future work; validation still rejects arbitrary QML references.
 
 ### Command widgets
 
-A minimal command widget treats trimmed standard output as its text:
+A command widget can be a static action button without a data provider. The
+shipped main-menu button is one:
+
+```json
+{
+  "id": "menu",
+  "kind": "command",
+  "icon": "",
+  "tooltip": "Main menu",
+  "primaryCommand": "hk-shell menu toggle main"
+}
+```
+
+With no provider `command`, `text` or `icon` supplies the static presentation
+and no timer or process is created. Click commands receive the clicked bar's
+output name in `HYPRKARL_OUTPUT`; `hk-shell menu` uses it so a bar action opens
+on that bar's monitor rather than whichever monitor was previously focused.
+`mode`, `interval`, and `output` apply only when a provider `command` exists.
+
+A minimal polling widget treats trimmed standard output as its text:
 
 ```json
 {
@@ -328,10 +353,11 @@ A minimal command widget treats trimmed standard output as its text:
 }
 ```
 
-`command` is a non-empty command string run by the non-login shell
-`bash -c`. `mode` defaults to `poll`. In poll mode, `interval` is a required
-positive integer in milliseconds and the command runs immediately, then once
-per interval. There is intentionally no enforced minimum.
+A provider `command` is a non-empty command string run by the non-login shell
+`bash -c`. When it is present, `mode` defaults to `poll`. In poll mode,
+`interval` is a required positive integer in milliseconds and the command runs
+immediately, then once per interval. There is intentionally no enforced
+minimum.
 
 Each poll starts a new Bash process and whatever processes the command itself
 launches. An unnecessarily short interval can waste CPU, reduce battery life,
@@ -386,10 +412,12 @@ or invalid JSON logs a concise warning and retains the last successful value;
 a widget remains hidden until its first valid result. Changing unrelated shell
 configuration does not restart unchanged providers.
 
-When no command widget is present in the effective layout, the registry model
-is empty: it creates no timers and starts no processes. A configured stream has
-one long-running provider process. A configured poll widget has no running OS
-process between ticks and launches only when its timer fires.
+When no command widget has a provider `command`, the registry model is empty:
+it creates no timers and starts no processes. Static action buttons such as the
+shipped menu remain ordinary rendered command widgets without entering that
+registry. A configured stream has one long-running provider process. A
+configured poll widget has no running OS process between ticks and launches
+only when its timer fires.
 
 There is no directory scan, manifest, installation hook, dependency resolver,
 or implicit enable state. A user module exists in the running shell because a

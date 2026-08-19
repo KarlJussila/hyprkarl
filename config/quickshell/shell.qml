@@ -26,12 +26,12 @@ ShellRoot {
   Connections {
     target: configObject
 
-    function onCommandWidgetsChanged(): void {
-      CommandState.configure(configObject.commandWidgets)
+    function onCommandProvidersChanged(): void {
+      CommandState.configure(configObject.commandProviders)
     }
   }
 
-  Component.onCompleted: CommandState.configure(configObject.commandWidgets)
+  Component.onCompleted: CommandState.configure(configObject.commandProviders)
 
   Variants {
     model: configObject.ready && themeObject.ready && MenuState.ready

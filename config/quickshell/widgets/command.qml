@@ -11,16 +11,32 @@ ShellButton {
   required property var config
   required property var systemState
 
-  readonly property var result: CommandState.resultFor(widgetId)
+  readonly property bool hasProvider: config.command !== undefined
+  readonly property var result: hasProvider
+    ? CommandState.resultFor(widgetId)
+    : ({
+      "ready": true,
+      "visible": true,
+      "text": config.text ?? "",
+      "icon": config.icon ?? "",
+      "tooltip": config.tooltip ?? "",
+      "state": config.state ?? "normal"
+    })
   readonly property string icon: result.icon
   readonly property string value: result.text
 
   visible: result.ready && result.visible
     && (icon.length > 0 || value.length > 0)
   tooltip: result.tooltip
-  primaryCommand: config.primaryCommand ?? ""
-  secondaryCommand: config.secondaryCommand ?? ""
-  tertiaryCommand: config.tertiaryCommand ?? ""
+  onPrimary: config.primaryCommand
+    ? () => root.launchPanelCommand(config.primaryCommand)
+    : null
+  onSecondary: config.secondaryCommand
+    ? () => root.launchPanelCommand(config.secondaryCommand)
+    : null
+  onTertiary: config.tertiaryCommand
+    ? () => root.launchPanelCommand(config.tertiaryCommand)
+    : null
 
   function semanticColor(state): color {
     if (state === "muted") return theme.muted

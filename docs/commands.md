@@ -55,8 +55,10 @@ category commands do not emit that event.
 - `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`
   Control the Quickshell menu through its public IPC boundary. For example,
   `hk-shell menu toggle main`, `hk-shell menu open theme`, and
-  `hk-shell menu open fingerprint`. Static forwarding aliases are not part of
-  the command surface; bindings and scripts should use this command directly.
+  `hk-shell menu open fingerprint`. Ordinary calls target the focused output;
+  shell command widgets supply their clicked-output context automatically.
+  Static forwarding aliases are not part of the command surface; bindings and
+  scripts should use this command directly.
 - `hk-menu-launcher`
   Open the rofi app launcher.
 - `hk-keybindings-list`

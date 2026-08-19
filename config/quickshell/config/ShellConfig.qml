@@ -14,7 +14,6 @@ QtObject {
     "clock",
     "cpu",
     "gpu",
-    "menu",
     "network",
     "ram",
     "recording",
@@ -69,8 +68,8 @@ QtObject {
   readonly property var end: layout.end ?? []
   readonly property var widgetInstances: start.concat(
     centerBefore, centerAnchorInstances, centerAfter, end)
-  readonly property var commandWidgets: widgetInstances.filter(
-    widget => widget.kind === "command")
+  readonly property var commandProviders: widgetInstances.filter(
+    widget => widget.kind === "command" && widget.command !== undefined)
 
   property FileView defaultSource: FileView {
     path: root.defaultPath
@@ -182,19 +181,33 @@ QtObject {
   }
 
   function validateCommandWidget(widget, path): void {
-    if (typeof widget.command !== "string" || widget.command.length === 0) {
+    const hasProvider = widget.command !== undefined
+    if (hasProvider
+        && (typeof widget.command !== "string" || widget.command.length === 0)) {
       fail(path + ".command", "expected a non-empty string")
     }
+    if (!hasProvider
+        && !(typeof widget.text === "string" && widget.text.length > 0)
+        && !(typeof widget.icon === "string" && widget.icon.length > 0)) {
+      fail(path, "expected text or an icon when no provider command is set")
+    }
     const mode = widget.mode ?? "poll"
-    if (mode !== "poll" && mode !== "stream") {
+    if (hasProvider && mode !== "poll" && mode !== "stream") {
       fail(path + ".mode", "expected 'poll' or 'stream'")
     }
-    if (mode === "poll"
+    if (hasProvider && mode === "poll"
         && (!Number.isInteger(widget.interval) || widget.interval <= 0)) {
       fail(path + ".interval", "expected a positive integer in poll mode")
     }
-    if (mode === "stream" && widget.interval !== undefined) {
+    if (hasProvider && mode === "stream" && widget.interval !== undefined) {
       fail(path + ".interval", "not used in stream mode")
+    }
+    if (!hasProvider) {
+      for (const field of ["mode", "interval", "output"]) {
+        if (widget[field] !== undefined) {
+          fail(path + "." + field, "requires a provider command")
+        }
+      }
     }
     if (widget.output !== undefined
         && widget.output !== "text"
@@ -203,6 +216,7 @@ QtObject {
     }
     for (const field of [
       "icon",
+      "text",
       "tooltip",
       "primaryCommand",
       "secondaryCommand",

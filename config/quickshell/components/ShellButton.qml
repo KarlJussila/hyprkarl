@@ -27,9 +27,18 @@ Item {
   implicitWidth: contentWidth
   implicitHeight: contentHeight
 
+  function runCommand(command: string): void {
+    Quickshell.execDetached({
+      "command": ["bash", "-c", command],
+      "environment": {
+        "HYPRKARL_OUTPUT": barWindow.screen.name
+      }
+    })
+  }
+
   function launchPanelCommand(command: string): void {
     root.panelHost.close()
-    Quickshell.execDetached(["bash", "-c", command])
+    runCommand(command)
   }
 
   Text {
@@ -63,13 +72,13 @@ Item {
     onClicked: event => {
       if (event.button === Qt.LeftButton) {
         if (root.onPrimary) root.onPrimary()
-        else if (root.primaryCommand) Quickshell.execDetached(["bash", "-c", root.primaryCommand])
+        else if (root.primaryCommand) root.runCommand(root.primaryCommand)
       } else if (event.button === Qt.RightButton) {
         if (root.onSecondary) root.onSecondary()
-        else if (root.secondaryCommand) Quickshell.execDetached(["bash", "-c", root.secondaryCommand])
+        else if (root.secondaryCommand) root.runCommand(root.secondaryCommand)
       } else if (event.button === Qt.MiddleButton) {
         if (root.onTertiary) root.onTertiary()
-        else if (root.tertiaryCommand) Quickshell.execDetached(["bash", "-c", root.tertiaryCommand])
+        else if (root.tertiaryCommand) root.runCommand(root.tertiaryCommand)
       }
     }
 

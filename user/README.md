@@ -25,8 +25,9 @@ A personal readout can be inserted with `kind: "command"`. The shell owns one
 polling or persistent-stream provider per widget ID, not one per monitor, and
 renders either trimmed text or a validated JSON presentation object. Polling
 starts a process on every tick, so short intervals can cost CPU and battery;
-use stream mode for frequent updates. With no configured command widgets, no
-provider timers or processes exist. See
+use stream mode for frequent updates. A command widget with only static text or
+an icon and click actions creates no provider timer or process; the shipped
+main-menu button uses that form. See
 [`Command widgets`](../docs/shell-configuration.md#command-widgets) for the
 minimal example, semantic states, click actions, and failure behavior.
 

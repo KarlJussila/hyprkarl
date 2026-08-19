@@ -185,11 +185,11 @@ The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are
 applied afterward. Deleting the user file returns to the default, while an
 invalid live edit keeps the last valid configuration running. Version 1
-supports top and bottom bars plus built-in and command widget kinds. Command
-widgets are inert unless referenced in the effective layout; configured
-providers are application-wide rather than duplicated per monitor. Poll mode
-starts one process per tick, while stream mode holds one newline-producing
-process for frequent updates. See
+supports top and bottom bars plus built-in and command widget kinds. Static
+command widgets, including the main-menu button, have no provider runtime.
+Configured providers are application-wide rather than duplicated per monitor.
+Poll mode starts one process per tick, while stream mode holds one
+newline-producing process for frequent updates. See
 [Shell Configuration](shell-configuration.md) for the schema and extension
 roadmap.
 

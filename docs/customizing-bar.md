@@ -79,6 +79,11 @@ small validated JSON presentation object. See
 stream mode, semantic states, click commands, failure behavior, and the
 complete contract.
 
+For a static action button, omit the provider `command` and `interval`, supply
+an `icon` or `text`, and set a click command. This form creates no timer or
+process until it is clicked. Click commands receive the owning bar's output
+name as `HYPRKARL_OUTPUT`.
+
 ## Change the Appearance
 
 Every bar color, plus typography, thickness, spacing, borders, radii, panel

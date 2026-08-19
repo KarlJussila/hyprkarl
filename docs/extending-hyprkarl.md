@@ -190,6 +190,10 @@ provider per ID even when several monitors render the widget. See
 [Command widgets](shell-configuration.md#command-widgets) for examples and the
 output schema.
 
+The same kind owns static command buttons: omit the provider command and
+interval, provide text or an icon plus a click command, and the widget creates
+no background timer or process. The shipped main-menu button uses this form.
+
 To add a built-in widget kind:
 
 1. Create `config/quickshell/widgets/<kind>.qml` and keep the compact bar

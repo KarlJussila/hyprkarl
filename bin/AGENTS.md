@@ -37,6 +37,10 @@ The Docker provider trusts Hyprkarl's authored manifest shape. It isolates each
 manifest load so one broken service is logged to stderr and skipped without
 hiding the remaining services; do not add a second manifest schema validator
 to the menu path.
+The bar's generic command-widget launcher sets `HYPRKARL_OUTPUT` to its output
+name. `hk-shell-menu` uses that context when present so the static command
+button opens on the bar that was clicked; ordinary callers continue to target
+the focused monitor.
 
 `hk-shell osd` is the only public transport for transient shell status.
 Hardware and media commands own their system action and pass only semantic

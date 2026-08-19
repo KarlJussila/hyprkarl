@@ -129,8 +129,8 @@ routing, progress, silence mode, one-item restore, bar-connected geometry, and
 data-defined application icon overrides with user QML drawings; Mako is no
 longer part of the session. Personal command widgets can add bar readouts
 without editing QML using one application-wide polling or persistent-stream
-provider per widget ID; an unused command-widget lane starts no timer or
-process.
+provider per widget ID. Static command buttons such as the main-menu trigger
+use the same kind without starting a timer or process.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

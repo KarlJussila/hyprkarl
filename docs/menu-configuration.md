@@ -39,7 +39,9 @@ shipped definition.
 }
 ```
 
-`root` names the menu opened by `hk-shell menu toggle main` and the bar button.
+`root` names the menu opened by `hk-shell menu toggle main` and the bar's static
+command widget. That widget passes its output context so a click opens the menu
+on the same monitor.
 Each object in `menus` supplies a title and may also define `sourceCommand`
 plus `emptyLabel` for entries discovered when that menu opens. Set
 `searchable` to `true` for an in-process fuzzy-search field. `widthRole` may be

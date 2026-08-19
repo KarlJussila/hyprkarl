@@ -42,8 +42,10 @@
       "start": [
         {
           "id": "menu",
-          "kind": "menu",
-          "icon": ""
+          "kind": "command",
+          "icon": "",
+          "tooltip": "Main menu",
+          "primaryCommand": "hk-shell menu toggle main"
         },
         {
           "id": "workspaces",

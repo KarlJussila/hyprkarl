@@ -81,10 +81,11 @@ complete example.
 `horizontalWidgetPadding.main` and `.cross` are universal outer padding for
 every widget on a top or bottom bar. `main` follows the bar and `cross` follows
 its thickness; “horizontal” names the bar orientation, not a coordinate axis.
-The host applies both values by default. The tray is an asymmetric exception:
-`trayTriggerPadding` keeps its disclosure button narrow, while the universal
-main-axis value remains beside the revealed divider and after the last tray
-item. No padding is added between adjacent items. Panel internals use the
+The host applies both values to every widget. Widget natural sizes contain only
+their content, so the tray's 8-pixel chevron receives the same main-axis
+padding as other widgets instead of stacking it on a second built-in inset.
+The revealed tray keeps that padding beside its divider and after its last
+item, without adding space between adjacent items. Panel internals use the
 separate `controlPadding` value.
 
 The cross-axis padding contributes to each widget's natural height, while

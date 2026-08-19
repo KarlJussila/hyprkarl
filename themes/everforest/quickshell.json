@@ -40,7 +40,6 @@
     "main": 6,
     "cross": 3
   },
-  "trayTriggerPadding": 1,
   "controlPadding": 8,
   "tooltipRadius": 6,
   "panelGap": 0,

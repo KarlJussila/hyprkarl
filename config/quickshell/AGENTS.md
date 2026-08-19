@@ -60,14 +60,13 @@ a new surface ownership model.
 
 `horizontalWidgetPadding` names the horizontal-bar design, not coordinate
 axes. Its `main` value pads along a top/bottom bar and its `cross` value pads
-across the bar's thickness. `WidgetHost.qml` owns both values by default so
-built-in and future widgets get the same outer padding and clickable extent.
-An asymmetric composite may expose `hostMainPadding` and own its main-axis
-geometry; the tray is the concrete exception because its compact trigger and
-revealed item row need different insets. Do not opt ordinary widgets out or
-duplicate cross-axis padding. Add a separate vertical-bar padding object only
-when vertical bars are supported. Panel internals use `controlPadding`; they
-are not bar-widget padding.
+across the bar's thickness. `WidgetHost.qml` owns both values so built-in and
+future widgets get the same outer padding and clickable extent. Widget natural
+sizes must describe content, not include a second copy of host padding; the
+tray trigger is the concrete reference because its natural width matches its
+chevron. Add a separate vertical-bar padding object only when vertical bars are
+supported. Panel internals use `controlPadding`; they are not bar-widget
+padding.
 
 Themes own the entire visual surface, including colors, typography, bar
 minimum thickness, spacing, radii, borders, dividers, and the panel gap. Shell
@@ -123,10 +122,10 @@ a second date owner.
 The three performance widgets share `ExpandableReadout`; the tray owns the
 same clipped horizontal expansion for its dynamic item list. Its divider lives
 inside that clipped panel so it reveals between the fixed trigger and items on
-top and bottom bars. The workspace row receives universal host padding. The
-tray opts out of host main-axis padding, uses `trayTriggerPadding` around its
-compact chevron, and applies the universal main-axis value beside the internal
-divider and beyond the item row. Do not turn it into item-to-item spacing.
+top and bottom bars. Universal host padding supplies the outer inset for the
+workspace row and the compact tray trigger. The tray reuses the main-axis value
+between its internal divider and item row. Do not turn it into item-to-item
+spacing.
 
 Component and feature directories have checked-in `qmldir` files where runtime
 loading or singleton registration requires them. Widget files are loaded from

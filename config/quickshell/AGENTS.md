@@ -202,10 +202,21 @@ dictionaries, and the standard `json` module. Bash remains appropriate for a
 provider that only validates and prints prebuilt data.
 Keep commands as leaf actions and static hierarchy in data. `MenuWindow.qml`
 owns the full-monitor overlay, exclusive keyboard focus, history navigation,
-search filtering, and outside-click dismissal. `hk-shell menu` is the only
-public transport for opening static navigation. Launcher, calculator, and
-wallpaper/image selectors remain separate interfaces until their shell-native
-surfaces are designed.
+search filtering, list scrolling, and outside-click dismissal. Keyboard
+selection positions its row immediately, including across wrap-around, while
+pointer selection changes only on actual pointer motion. Delegate pointer
+handlers must pass wheel and touchpad scroll gestures through to the
+`ListView`. Its shared wheel handler owns one continuous kinetic velocity:
+an active gesture pauses retained momentum so direct deltas have full control.
+Release adds the gesture's recent-sample weighted velocity through a soft cap;
+reversing within the gesture clears both retained momentum and earlier samples.
+Momentum uses time-normalized exponential friction. Do not hand wheel momentum
+between manual position updates and `Flickable.flick()`. Opening a menu or
+changing its search resets selection, viewport, and momentum to the first
+result.
+`hk-shell menu` is the only public transport for opening static navigation.
+Launcher, calculator, and wallpaper/image selectors remain separate
+interfaces until their shell-native surfaces are designed.
 The command menu deliberately blends two visual sources. Preserve the retired
 Rofi menu's compact width, centered icon-and-label rows, title band, nested
 frame, row gaps, and bordered selection. Derive its palette, font, radii,

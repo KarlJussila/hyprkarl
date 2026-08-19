@@ -64,6 +64,17 @@ Nerd Font icons, Docker services, and every fingerprint choice are dynamic
 Quickshell menus. The app launcher, calculator, wallpaper thumbnail picker,
 and package pickers retain their focused Rofi or terminal interfaces.
 
+Keyboard navigation keeps the selected row immediately in view, including
+when wrapping between the first and last entries. Moving the pointer selects
+the row beneath it, but a stationary pointer does not override keyboard
+selection as the list moves. Wheel and touchpad gestures scroll the list
+directly with shared kinetic behavior. Repeated gestures in the same direction
+build momentum through a soft cap. Starting another gesture pauses existing
+momentum so the gesture has direct control. On release, a recency-weighted
+velocity from that gesture is added through the soft cap. Reversing within the
+gesture clears both the retained momentum and its earlier samples. Opening a
+menu or changing a search starts at the first result and the top of the list.
+
 Use `checkedCommand` only for a cheap external state probe whose status belongs
 in the menu. Checks run when the menu opens; they are not long-running monitors
 and do not replace shell-native service state in feature panels.

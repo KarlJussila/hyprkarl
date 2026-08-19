@@ -27,19 +27,60 @@ PanelWindow {
       ? theme.menuSearchWidth
       : theme.menuWidth
   property real reveal: active ? 1 : 0
+  property bool pointerPositionKnown: false
+  property point pointerPosition: Qt.point(0, 0)
+
+  function selectIndex(index): void {
+    if (menuList.count === 0) {
+      menuList.currentIndex = -1
+      return
+    }
+
+    const nextIndex = (index + menuList.count) % menuList.count
+    menuList.currentIndex = nextIndex
+    menuList.positionViewAtIndex(nextIndex, ListView.Contain)
+  }
+
+  function moveSelection(offset): void {
+    if (menuList.count === 0) return
+
+    if (menuList.currentIndex < 0) {
+      selectIndex(offset > 0 ? 0 : menuList.count - 1)
+      return
+    }
+
+    selectIndex(menuList.currentIndex + offset)
+  }
+
+  function resetSelection(): void {
+    wheelHandler.momentumVelocity = 0
+    wheelHandler.gestureSamples = []
+    wheelHandler.previousDelta = 0
+    menuList.currentIndex = menuList.count > 0 ? 0 : -1
+    if (menuList.count > 0) menuList.positionViewAtBeginning()
+  }
+
+  function selectFromPointer(index, sceneX, sceneY): void {
+    const moved = pointerPositionKnown
+      && (sceneX !== pointerPosition.x || sceneY !== pointerPosition.y)
+
+    pointerPosition = Qt.point(sceneX, sceneY)
+    pointerPositionKnown = true
+    if (moved) menuList.currentIndex = index
+  }
 
   function handleKey(event, editing): void {
     if (event.key === Qt.Key_Escape) {
       if (editing && searchInput.text.length > 0) searchInput.clear()
       else MenuState.back()
     } else if (event.key === Qt.Key_Down || (!editing && event.key === Qt.Key_J)) {
-      if (menuList.count > 0) menuList.currentIndex = (menuList.currentIndex + 1) % menuList.count
+      moveSelection(1)
     } else if (event.key === Qt.Key_Up || (!editing && event.key === Qt.Key_K)) {
-      if (menuList.count > 0) menuList.currentIndex = (menuList.currentIndex - 1 + menuList.count) % menuList.count
+      moveSelection(-1)
     } else if (!editing && event.key === Qt.Key_Home) {
-      menuList.currentIndex = 0
+      selectIndex(0)
     } else if (!editing && event.key === Qt.Key_End) {
-      menuList.currentIndex = Math.max(0, menuList.count - 1)
+      selectIndex(menuList.count - 1)
     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
         || (!editing && (event.key === Qt.Key_Space || event.key === Qt.Key_Right || event.key === Qt.Key_L))) {
       if (menuList.currentIndex >= 0) MenuState.activate(menuList.model[menuList.currentIndex])
@@ -53,7 +94,7 @@ PanelWindow {
 
   function resetMenuFocus(): void {
     searchInput.clear()
-    menuList.currentIndex = menuList.count > 0 ? 0 : -1
+    Qt.callLater(root.resetSelection)
     if (root.searchable) searchInput.forceActiveFocus()
     else root.contentItem.forceActiveFocus()
   }
@@ -258,7 +299,7 @@ PanelWindow {
             verticalAlignment: TextInput.AlignVCenter
             selectByMouse: true
             clip: true
-            onTextChanged: menuList.currentIndex = menuList.count > 0 ? 0 : -1
+            onTextChanged: Qt.callLater(root.resetSelection)
             Keys.onPressed: event => root.handleKey(event, true)
           }
         }
@@ -307,14 +348,136 @@ PanelWindow {
         ListView {
           id: menuList
 
+          readonly property real wheelPixelScale: 1.5
+          readonly property real wheelStep: 120
+          readonly property real wheelFlickThreshold: 120
+          readonly property real wheelMomentumFriction: 0.96
+          readonly property real wheelMomentumInterval: 0.008
+          readonly property real wheelSampleWindow: 150
+
           anchors.fill: parent
           visible: count > 0
           clip: true
           boundsBehavior: Flickable.StopAtBounds
+          maximumFlickVelocity: 5000
+          highlightFollowsCurrentItem: false
           model: MenuState.entriesFor(MenuState.currentMenu, searchInput.text)
-          currentIndex: count > 0 ? 0 : -1
+          currentIndex: -1
           onCountChanged: {
-            if (count > 0 && currentIndex < 0) currentIndex = 0
+            Qt.callLater(root.resetSelection)
+          }
+
+          WheelHandler {
+            id: wheelHandler
+
+            property real momentumVelocity: 0
+            property var gestureSamples: []
+            property real previousDelta: 0
+
+            function softCap(velocity): real {
+              const maximum = menuList.maximumFlickVelocity
+              const knee = maximum * 0.6
+              const magnitude = Math.abs(velocity)
+              if (magnitude <= knee) return velocity
+
+              const headroom = maximum - knee
+              const cappedMagnitude = knee + headroom
+                * (1 - Math.exp(-(magnitude - knee) / headroom))
+              return velocity < 0 ? -cappedMagnitude : cappedMagnitude
+            }
+
+            function addSample(delta, timestamp): void {
+              if (previousDelta * delta < 0) {
+                momentumVelocity = 0
+                gestureSamples = []
+              }
+
+              const recentSamples = gestureSamples.filter(sample =>
+                timestamp - sample.timestamp <= menuList.wheelSampleWindow)
+              recentSamples.push({ "delta": delta, "timestamp": timestamp })
+              gestureSamples = recentSamples
+              previousDelta = delta
+            }
+
+            function sampledVelocity(timestamp): real {
+              const samples = gestureSamples.filter(sample =>
+                timestamp - sample.timestamp <= menuList.wheelSampleWindow)
+              if (samples.length < 2) return 0
+
+              const firstTime = samples[0].timestamp
+              const lastTime = samples[samples.length - 1].timestamp
+              const timeSpan = Math.max(1, lastTime - firstTime)
+              let weightedDelta = 0
+              let totalWeight = 0
+              for (const sample of samples) {
+                const weight = 1 + (sample.timestamp - firstTime) / timeSpan
+                weightedDelta += sample.delta * weight
+                totalWeight += weight
+              }
+              return weightedDelta / totalWeight
+                / menuList.wheelMomentumInterval
+            }
+
+            function advanceMomentum(frameSeconds): void {
+              const maximumY = Math.max(menuList.originY,
+                menuList.originY + menuList.contentHeight - menuList.height)
+              const nextY = Math.max(menuList.originY,
+                Math.min(maximumY, menuList.contentY
+                  - momentumVelocity * frameSeconds))
+
+              if (nextY === menuList.contentY) {
+                momentumVelocity = 0
+                return
+              }
+
+              menuList.contentY = nextY
+              const nextVelocity = momentumVelocity * Math.pow(
+                menuList.wheelMomentumFriction,
+                frameSeconds / menuList.wheelMomentumInterval)
+              momentumVelocity = Math.abs(nextVelocity)
+                  < menuList.wheelFlickThreshold
+                ? 0
+                : nextVelocity
+            }
+
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            activeTimeout: 0.1
+            target: null
+
+            onWheel: event => {
+              const delta = event.pixelDelta.y !== 0
+                ? event.pixelDelta.y * menuList.wheelPixelScale
+                : event.angleDelta.y / 120 * menuList.wheelStep
+              if (delta === 0) return
+
+              const maximumY = Math.max(menuList.originY,
+                menuList.originY + menuList.contentHeight - menuList.height)
+              menuList.contentY = Math.max(menuList.originY,
+                Math.min(maximumY, menuList.contentY - delta))
+              addSample(delta, Date.now())
+            }
+
+            onActiveChanged: {
+              if (active) {
+                gestureSamples = []
+                previousDelta = 0
+                return
+              }
+
+              const releaseVelocity = sampledVelocity(Date.now())
+              momentumVelocity = momentumVelocity * releaseVelocity >= 0
+                ? softCap(momentumVelocity + releaseVelocity)
+                : softCap(releaseVelocity)
+              gestureSamples = []
+              previousDelta = 0
+            }
+          }
+
+          FrameAnimation {
+            running: !wheelHandler.active
+              && Math.abs(wheelHandler.momentumVelocity)
+                >= menuList.wheelFlickThreshold
+            onTriggered: wheelHandler.advanceMomentum(frameTime)
           }
 
           delegate: MenuEntry {
@@ -327,7 +490,8 @@ PanelWindow {
             textAlignment: root.entryTextAlignment
             refreshToken: MenuState.openRevision
             selected: ListView.isCurrentItem
-            onHovered: menuList.currentIndex = index
+            onPointerMoved: (sceneX, sceneY) =>
+              root.selectFromPointer(index, sceneX, sceneY)
             onChosen: MenuState.activate(modelData)
           }
         }

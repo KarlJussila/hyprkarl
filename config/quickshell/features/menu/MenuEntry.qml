@@ -11,7 +11,7 @@ Item {
   property bool selected: false
   property bool checked: false
 
-  signal hovered()
+  signal pointerMoved(real sceneX, real sceneY)
   signal chosen()
 
   function refreshChecked(): void {
@@ -73,13 +73,15 @@ Item {
     }
   }
 
-  MouseArea {
-    id: mouse
+  HoverHandler {
+    id: hover
 
-    anchors.fill: parent
-    hoverEnabled: true
     cursorShape: Qt.PointingHandCursor
-    onEntered: root.hovered()
-    onClicked: root.chosen()
+    onPointChanged: root.pointerMoved(point.scenePosition.x,
+      point.scenePosition.y)
+  }
+
+  TapHandler {
+    onTapped: root.chosen()
   }
 }

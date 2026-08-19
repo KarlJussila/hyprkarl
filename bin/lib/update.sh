@@ -20,7 +20,7 @@
 #   remove_stale_symlinks                Remove broken symlinks pointing into hyprkarl
 #   remove_empty_dirs                    Remove empty directories left behind after stow
 
-HYPRKARL_PATH="${HYPRKARL_PATH:-$HOME/.local/share/hyprkarl}"
+export HYPRKARL_PATH="${HYPRKARL_PATH:-$HOME/.local/share/hyprkarl}"
 UPDATE_STATE_DIR="$HYPRKARL_PATH/config/hyprkarl/update"
 
 # --- baseline commit state ---

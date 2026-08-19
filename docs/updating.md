@@ -60,6 +60,11 @@ first failure. Pass `--force` or `--adopt` to have that flag applied to the
 dotfiles step. Run categories individually if you only want specific ones or
 need to handle them separately.
 
+After a successful `hk-update all` or guided update, Hyprkarl runs executable
+files from `user/hooks/post-update.d/` in lexical order. Individual category
+commands do not emit the event. A hook failure is reported after the update
+has already been applied and makes the full workflow return nonzero.
+
 ## Checking Before Applying
 
 ```bash

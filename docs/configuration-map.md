@@ -51,6 +51,11 @@ These files are machine-local and gitignored. They are written by `hk-update`
 and the setup scripts. Delete one to force `hk-update` to re-run that category
 regardless of whether anything changed.
 
+Personal executable lifecycle hooks live under
+`user/hooks/<event>.d/`. Hyprkarl supports `post-boot`, `post-update`,
+`theme-set`, and `wallpaper-set`; files run in lexical order. See
+[Extending Hyprkarl](extending-hyprkarl.md#add-a-lifecycle-hook).
+
 ## Hyprland
 
 Hyprland is configured in **Lua** (`hyprland.lua`), required since Hyprland 0.55

@@ -25,8 +25,9 @@ fi
 ln -sfn "../../../themes/$THEME_NAME" "$THEME_LINK"
 echo "$THEME_NAME" > "$HYPRKARL_PATH/config/hyprkarl/current/theme.name"
 
+post_action_status=0
 if ! hk-wallpaper-init; then
-  hk-wallpaper-cycle
+  hk-wallpaper-cycle || post_action_status=1
 fi
 
 # Apply matching GTK color scheme and icon theme.
@@ -46,4 +47,11 @@ fi
 hyprctl reload >/dev/null
 hk-mako-reload
 hk-terminal-reload
-hk-btop-reload
+hk-btop-reload || exit 1
+
+hk-hook-run theme-set || post_action_status=1
+
+if [[ "$post_action_status" -ne 0 ]]; then
+  printf "Theme '%s' was applied, but a wallpaper action or lifecycle hook failed.\n" "$THEME_NAME" >&2
+  exit 1
+fi

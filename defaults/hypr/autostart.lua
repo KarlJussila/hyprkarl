@@ -10,4 +10,5 @@ hl.on("hyprland.start", function()
     -- Slow app launch fix -- set systemd vars
     hl.exec_cmd("systemctl --user import-environment $(env | cut -d'=' -f 1)")
     hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+    hl.exec_cmd([[hk-hook-run post-boot || notify-send "Hyprkarl post-boot hook failed" "Check the hook output in the Hyprland log."]])
 end)

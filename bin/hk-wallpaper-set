@@ -23,4 +23,9 @@ if [[ ! -f "$wallpaper_path" ]]; then
 fi
 
 ln -nsf "theme/wallpapers/$wallpaper_name" "$CURRENT_WALLPAPER_LINK"
-hyprctl hyprpaper wallpaper ",$wallpaper_path"
+hyprctl hyprpaper wallpaper ",$wallpaper_path" || exit 1
+
+if ! hk-hook-run wallpaper-set; then
+  printf "Wallpaper '%s' was applied, but a wallpaper-set hook failed.\n" "$wallpaper_name" >&2
+  exit 1
+fi

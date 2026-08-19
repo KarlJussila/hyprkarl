@@ -1,0 +1,54 @@
+#!/bin/bash
+# hk-hook-run
+# Run executable user hooks for one supported lifecycle event.
+#
+# Usage:
+#   hk-hook-run <post-boot|post-update|theme-set|wallpaper-set>
+
+
+event=${1:-}
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: hk-hook-run <post-boot|post-update|theme-set|wallpaper-set>" >&2
+  exit 1
+fi
+
+case "$event" in
+  post-boot|post-update|theme-set|wallpaper-set) ;;
+  *)
+    echo "Unknown hook event: $event" >&2
+    exit 1
+    ;;
+esac
+
+HOOK_DIR="$HYPRKARL_PATH/user/hooks/$event.d"
+
+if [[ ! -d "$HOOK_DIR" ]]; then
+  exit 0
+fi
+
+if [[ ! -r "$HOOK_DIR" ]] || [[ ! -x "$HOOK_DIR" ]]; then
+  echo "Cannot read hook directory: $HOOK_DIR" >&2
+  exit 1
+fi
+
+shopt -s nullglob
+hooks=("$HOOK_DIR"/*)
+shopt -u nullglob
+
+status=0
+for hook in "${hooks[@]}"; do
+  if [[ ! -f "$hook" ]] || [[ ! -x "$hook" ]]; then
+    continue
+  fi
+
+  "$hook"
+  hook_status=$?
+
+  if [[ "$hook_status" -ne 0 ]]; then
+    printf 'Hook failed with status %d: %s\n' "$hook_status" "$hook" >&2
+    status=1
+  fi
+done
+
+exit "$status"

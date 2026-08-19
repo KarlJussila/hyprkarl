@@ -10,6 +10,9 @@
 #   hk-update system
 #   hk-update all [--force|--adopt]
 
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/update.sh"
+
 usage() {
   cat <<'EOF'
 Usage:
@@ -40,6 +43,10 @@ case "$action" in
     hk-update-dotfiles "${dotfiles_flags[@]}" || exit 1
     hk-update-packages || exit 1
     hk-update-system   || exit 1
+    if ! hk-hook-run post-update; then
+      printf 'Update completed, but a post-update hook failed.\n' >&2
+      exit 1
+    fi
     ;;
   check|dotfiles|packages|system|remove-stale|tui)
     exec "hk-update-$action" "$@" ;;

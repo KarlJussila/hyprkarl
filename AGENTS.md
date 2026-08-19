@@ -159,6 +159,17 @@ All user-facing utilities are in `bin/` and follow the `hk-*` naming
 convention. See `bin/AGENTS.md` for command structure, naming rules, and
 authoring conventions before adding or editing one.
 
+### Lifecycle Hooks
+
+`hk-hook-run` executes user-owned, non-hidden executable files from
+`user/hooks/<event>.d/` in lexical order. The supported events are
+`post-boot`, `post-update`, `theme-set`, and `wallpaper-set`, each emitted only
+by its existing public action. Missing directories are a no-op. The runner
+attempts every hook and returns nonzero after reporting failures; the owning
+action must state when its primary change already completed. Do not add event
+metadata, retries, background execution, or new event names without a concrete
+public workflow.
+
 ### Session Environment
 
 `config/uwsm/env` sets session-wide environment variables (including

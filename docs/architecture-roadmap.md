@@ -393,9 +393,8 @@ compatibility surface. Command and user-QML extension lanes remain future work.
 
 ## Workstream 3: Establish Upstream Defaults and User Overrides
 
-Status: partially complete. The Hyprland ownership split, ownership-aware
-update review, and data-defined shell-native menus are complete; lifecycle
-hooks remain.
+Status: complete. The Hyprland ownership split, ownership-aware update review,
+data-defined shell-native menus, and narrow lifecycle hooks are implemented.
 
 ### Hyprland
 
@@ -448,18 +447,20 @@ entry needs it, and batch evaluations if startup latency becomes measurable.
 
 ### Hooks
 
-Add a small event runner for supported lifecycle points. Initial events should
-come only from existing public actions:
+Implemented. `hk-hook-run` accepts only lifecycle points emitted by existing
+public actions:
 
 - `post-boot`
 - `post-update`
 - `theme-set`
 - `wallpaper-set`
 
-Each event runs regular files from `user/hooks/<event>.d/` in lexical order.
-Hook failures should be reported without disguising failure of the owning
-public action. Avoid background retries and hook metadata until a real use
-case requires them.
+Each event runs non-hidden executable regular files from
+`user/hooks/<event>.d/` in lexical order. The runner attempts every hook and
+returns nonzero after reporting any failures. Theme, wallpaper, and update
+commands distinguish a completed primary action from a failed post-action
+hook; session startup uses a desktop notification because it has no terminal.
+There are no background retries, hook arguments, or metadata.
 
 ### Update Behavior
 
@@ -493,10 +494,10 @@ is to distinguish ownership in its review output:
 
 ### Migration Risk
 
-Medium-high. Hyprland load order is behavior, so the move needs a before/after
-configuration inventory and non-destructive verification before reload. Menu
-conversion should proceed one coherent subtree at a time or in one complete
-replacement; avoid leaving two authoritative definitions for the same entry.
+The medium-high migration risk has been retired. Hyprland's load order was
+verified before cutover, the old menu definition path was removed with its
+replacement, and lifecycle hooks are limited to four successful public action
+boundaries rather than a general event system.
 
 ## Workstream 4: Grow the Bar into a Cohesive Shell Host
 
@@ -719,8 +720,9 @@ branch. Deliver them as reviewable vertical changes:
 5. **Introduce `user/` and split Hyprland defaults from overrides.** Complete.
    The stable bootstrap preserves shipped behavior and loads optional user
    modules afterward; update review reports both ownership classes separately.
-6. **Convert menus to data and add narrow lifecycle hooks.** Menu conversion
-   is complete with a direct Quickshell renderer; lifecycle hooks remain.
+6. **Convert menus to data and add narrow lifecycle hooks.** Complete. Static
+   and dynamic menus use the direct Quickshell renderer, while four public
+   actions own the narrow user hook events.
 7. **Move runtime theme state and adopt palette-first rendering.** Coordinate
    this with the theme-generator repository.
 8. **Migrate shell-native surfaces individually.** Start with OSD; require each

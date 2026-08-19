@@ -42,6 +42,31 @@ example:
 See [`docs/menu-configuration.md`](../docs/menu-configuration.md) for the menu
 schema, adding entries and submenus, and direct menu commands.
 
+## Lifecycle Hooks
+
+Personal lifecycle hooks live under `user/hooks/<event>.d/`. Supported events
+are:
+
+- `post-boot` after Hyprland starts the session;
+- `post-update` after `hk-update all` or the guided update completes;
+- `theme-set` after a theme has been applied; and
+- `wallpaper-set` after a wallpaper has been applied.
+
+The runner executes non-hidden regular files with the executable bit set in
+lexical filename order. Prefix names with numbers when order matters:
+
+```text
+user/hooks/theme-set.d/
+├── 10-reload-my-app
+└── 20-refresh-generated-files
+```
+
+Hooks inherit the action's environment and receive no positional arguments.
+Query current state with commands such as `hk-theme current` when needed. A
+missing event directory is normal. If one hook fails, later hooks still run;
+the owning command reports that its main action completed but a hook failed.
+`post-boot` failures are reported through a desktop notification.
+
 ## Hyprland
 
 Shipped Hyprland behavior lives under `defaults/hypr/`. To add or override

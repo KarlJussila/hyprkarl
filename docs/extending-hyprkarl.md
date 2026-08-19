@@ -58,6 +58,29 @@ new subcommand:
 The action script is callable directly (`hk-theme-set foo`) as well as through
 the dispatcher (`hk-theme set foo`).
 
+## Add a Lifecycle Hook
+
+Put personal hook executables under `user/hooks/<event>.d/`. The supported
+events are `post-boot`, `post-update`, `theme-set`, and `wallpaper-set`.
+For example:
+
+```bash
+mkdir -p user/hooks/theme-set.d
+$EDITOR user/hooks/theme-set.d/10-reload-my-app
+chmod +x user/hooks/theme-set.d/10-reload-my-app
+```
+
+Hooks are non-hidden executable regular files and run in lexical filename
+order, so numeric prefixes make dependencies visible. They inherit the public
+action's environment but receive no positional arguments. Read current state
+through the normal public commands instead of depending on runner internals.
+
+All hooks for an event are attempted. If any fails, `hk-hook-run` returns
+nonzero after reporting the file and status. Theme, wallpaper, and update
+commands make clear that their main action already completed before returning
+that hook failure; session startup reports a `post-boot` failure by desktop
+notification. Missing event directories and non-executable files are ignored.
+
 ## Add a Menu Action
 
 The static menu hierarchy is data, not a tree of shell branches. Built-in

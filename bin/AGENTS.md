@@ -38,6 +38,14 @@ manifest load so one broken service is logged to stderr and skipped without
 hiding the remaining services; do not add a second manifest schema validator
 to the menu path.
 
+`hk-hook-run` is the only lifecycle-hook runner. It accepts exactly
+`post-boot`, `post-update`, `theme-set`, or `wallpaper-set`, then runs
+non-hidden executable regular files from `user/hooks/<event>.d/` in lexical
+order. Missing directories and non-executable files are normal. It attempts
+every hook, reports each failure, and returns nonzero if any failed. Wire new
+events only to a real successful public action; do not add hook metadata,
+arguments, retries, or background execution without a concrete requirement.
+
 ## Style
 
 Follow `docs/shell-style.md`. Choose Python for structured data, JSON,
@@ -60,6 +68,8 @@ command boundary. Catch per item only when the command can still return useful
 results from the remaining items, as the Docker menu provider does.
 `$HYPRKARL_PATH` is guaranteed by the session environment — no fallbacks
 outside `lib/update.sh` and the setup scripts, which must run from a TTY.
+Update entry points source `lib/update.sh` before invoking hooks so that
+guarantee also holds for a pre-session `hk-update all`.
 
 Several scripts and `defaults/menu.json` embed Nerd Font glyphs in labels.
 These private-use-area characters are easy to drop silently when rewriting a

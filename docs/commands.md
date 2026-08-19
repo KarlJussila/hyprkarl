@@ -38,6 +38,18 @@ does not try to document every internal script.
 - `hk-update system`
   Re-run `setup-system.sh`.
 
+Full update workflows (`hk-update all` and `hk-update tui`) run the
+`post-update` lifecycle hooks after completing successfully. Individual
+category commands do not emit that event.
+
+## Lifecycle Hooks
+
+- `hk-hook-run <event>`
+  Run personal executable hooks from `user/hooks/<event>.d/` in lexical order.
+  Supported events are `post-boot`, `post-update`, `theme-set`, and
+  `wallpaper-set`. This is normally called by the corresponding Hyprkarl
+  action rather than manually.
+
 ## Menus and Launching
 
 - `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`

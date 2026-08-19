@@ -397,9 +397,9 @@ phase_apply() {
 
   for item in "${chosen[@]}"; do
     case "$item" in
-      Dotfiles) apply_dotfiles ;;
-      Packages) apply_packages ;;
-      System)   apply_system ;;
+      Dotfiles) apply_dotfiles || return 1 ;;
+      Packages) apply_packages || return 1 ;;
+      System)   apply_system || return 1 ;;
     esac
   done
 }
@@ -480,7 +480,16 @@ main() {
   fi
 
   phase_review
-  phase_apply
+  if ! phase_apply; then
+    hk-show-done "Update stopped while applying changes. Press any key to close..."
+    exit 1
+  fi
+
+  if ! hk-hook-run post-update; then
+    hk-show-done "Update applied, but a post-update hook failed. Press any key to close..."
+    exit 1
+  fi
+
   outro
 }
 

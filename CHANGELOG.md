@@ -26,6 +26,8 @@ surfaces) — they are called out explicitly.
 - Kept an open empty system tray fully collapsed while preserving its state so
   newly appearing items reveal automatically, and kept the chevron trigger's
   visible width stable between collapsed and expanded states.
+- Added ordered user lifecycle hooks for session startup, completed updates,
+  theme changes, and wallpaper changes under `user/hooks/<event>.d/`.
 - Breaking: removed forwarding-only `hk-menu-*` commands. Custom bindings and
   scripts should call `hk-shell menu open <menu-id>` or
   `hk-shell menu toggle <menu-id>` directly. `hk-menu-keybindings --print` is

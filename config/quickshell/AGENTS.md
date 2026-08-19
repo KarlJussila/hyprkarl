@@ -46,14 +46,20 @@ vocabulary for top and bottom bars. `curve` is the concave join supported at a
 The bar window and exclusive zone include screen- and content-side margins,
 while panel and tooltip anchors also account for the content margin.
 
+Bar height is intrinsic. Widgets report natural heights including
+`widgetVerticalPadding`; `barMinThickness` is only a floor. `BarLayout.qml`
+owns the maximum across all three islands and applies that resolved height to
+each island. Do not restore fixed `barThickness` bindings in widgets or let
+islands resolve their final heights independently.
+
 Version 1 deliberately accepts only top and bottom bars. Layout and widget
 code is horizontal until a vertical design exists; keep edge-dependent popup
 placement at the panel-window boundary so later vertical support does not need
 a new surface ownership model.
 
 Themes own the entire visual surface, including colors, typography, bar
-thickness, spacing, radii, borders, dividers, and the panel gap. Shell JSON
-owns placement and behavior, not visual metrics. `config/Theme.qml` watches
+minimum thickness, spacing, radii, borders, dividers, and the panel gap. Shell
+JSON owns placement and behavior, not visual metrics. `config/Theme.qml` watches
 the canonical `../hyprkarl/current/theme.name` selector, then reads the chosen
 `themes/<name>/quickshell.json` directly. Do not watch through the replaceable
 `current/theme` symlink: its target changes on a theme switch and can leave a
@@ -105,7 +111,9 @@ a second date owner.
 The three performance widgets share `ExpandableReadout`; the tray owns the
 same clipped horizontal expansion for its dynamic item list. Its divider lives
 inside that clipped panel so it reveals between the fixed trigger and items on
-top and bottom bars.
+top and bottom bars. The tray-item row and workspace row use
+`itemGroupPadding` only at their outer boundaries; do not turn that into
+item-to-item spacing.
 
 Component and feature directories have checked-in `qmldir` files where runtime
 loading or singleton registration requires them. Widget files are loaded from

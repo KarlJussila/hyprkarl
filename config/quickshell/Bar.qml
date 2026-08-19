@@ -12,7 +12,7 @@ PanelWindow {
   required property var systemState
 
   readonly property int totalThickness: theme.barMarginScreen
-    + theme.barThickness
+    + barLayout.contentHeight
     + theme.barMarginContent
 
   color: theme.background
@@ -40,6 +40,7 @@ PanelWindow {
   }
 
   BarLayout {
+    id: barLayout
     anchors.fill: parent
     barWindow: root
     shellConfig: root.shellConfig

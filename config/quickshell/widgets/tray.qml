@@ -19,13 +19,14 @@ Item {
   property bool expanded: false
 
   implicitWidth: trigger.implicitWidth + trayPanel.width
-  implicitHeight: theme.barThickness
+  implicitHeight: Math.max(trigger.implicitHeight, trayRow.implicitHeight)
 
   component TrayItem: Item {
     required property var trayItem
 
-    implicitWidth: root.theme.barThickness
-    implicitHeight: root.theme.barThickness
+    implicitWidth: root.theme.barMinThickness
+    implicitHeight: 15 + root.theme.widgetVerticalPadding * 2
+    height: root.height
 
     IconImage {
       anchors.centerIn: parent
@@ -48,7 +49,8 @@ Item {
 
   component TrayTrigger: Item {
     implicitWidth: 18
-    implicitHeight: root.theme.barThickness
+    implicitHeight: 14 + root.theme.widgetVerticalPadding * 2
+    height: root.height
 
     Canvas {
       id: chevron
@@ -93,10 +95,16 @@ Item {
   Item {
     id: trayPanel
 
+    readonly property real outerPadding: trayRow.implicitWidth > 0
+      ? root.theme.itemGroupPadding
+      : 0
+
     x: root.towardEnd ? trigger.width : 0
     y: 0
-    width: root.expanded ? trayRow.implicitWidth + root.theme.borderWidth : 0
-    height: root.theme.barThickness
+    width: root.expanded
+      ? trayRow.implicitWidth + outerPadding * 2 + root.theme.borderWidth
+      : 0
+    height: root.height
     clip: true
 
     Behavior on width {
@@ -110,14 +118,16 @@ Item {
       x: !root.towardEnd ? trayPanel.width - width : 0
       y: 0
       width: root.theme.borderWidth
-      height: root.theme.barThickness
+      height: parent.height
       color: root.theme.border
     }
 
     Row {
       id: trayRow
 
-      x: root.towardEnd ? root.theme.borderWidth : trayPanel.width - root.theme.borderWidth - width
+      x: root.towardEnd
+        ? root.theme.borderWidth + trayPanel.outerPadding
+        : trayPanel.width - root.theme.borderWidth - trayPanel.outerPadding - width
 
       Repeater {
         model: SystemTray.items

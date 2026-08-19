@@ -41,7 +41,8 @@ Hyprkarl should feel:
 
 A live capture of the retired AGS bar establishes these qualities to retain:
 
-- a thin 22-logical-pixel bar;
+- a thin bar with a 22-logical-pixel baseline that can grow to fit its tallest
+  naturally padded widget;
 - strong start, centered, and end composition;
 - a clock held at the monitor midpoint rather than merely centered in leftover
   space;

@@ -85,6 +85,14 @@ four border values to `false` makes islands borderless. The three margins move
 the bar away from the screen edge, monitor sides, or workspace respectively;
 screen and content margins are included in the reserved bar area.
 
+`itemGroupPadding` controls the horizontal inset before the first and after the
+last workspace or tray item. It deliberately does not affect item-to-item
+spacing or ordinary button padding.
+
+`barMinThickness` is the bar's minimum content height, not a forced height.
+Each widget's content plus `widgetVerticalPadding` establishes its natural
+height; the tallest widget sets one shared height for all three islands.
+
 ## Manage and Inspect the Bar
 
 Hyprland starts the bar through the same public lifecycle commands used for

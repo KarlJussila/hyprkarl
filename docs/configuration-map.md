@@ -155,8 +155,9 @@ are:
 - `user/shell.json`
   Optional sparse user-owned override for the shipped shell configuration
 - `themes/<theme>/quickshell.json`
-  Theme-specific colors, typography, bar thickness, logical island corners and
-  borders, radii, and screen/outer/content spacing
+  Theme-specific colors, typography, minimum bar thickness, natural widget
+  padding, logical island corners and borders, radii, and
+  screen/outer/content spacing
 
 The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are

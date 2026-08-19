@@ -14,8 +14,8 @@ Item {
   required property var systemState
   required property var panelHost
 
-  implicitWidth: workspaceRow.implicitWidth
-  implicitHeight: theme.barThickness
+  implicitWidth: workspaceRow.implicitWidth + theme.itemGroupPadding * 2
+  implicitHeight: workspaceRow.implicitHeight
 
   component WorkspaceButton: Item {
     id: workspaceButton
@@ -29,7 +29,8 @@ Item {
 
     visible: shown
     implicitWidth: shown ? content.implicitWidth : 0
-    implicitHeight: shown ? root.theme.barThickness : 0
+    implicitHeight: shown ? content.implicitHeight + root.theme.widgetVerticalPadding * 2 : 0
+    height: root.height
 
     Row {
       id: content
@@ -75,7 +76,9 @@ Item {
 
   Row {
     id: workspaceRow
-    anchors.fill: parent
+    x: root.theme.itemGroupPadding
+    width: implicitWidth
+    height: parent.height
 
     Repeater {
       model: Hyprland.workspaces

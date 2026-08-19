@@ -65,12 +65,15 @@ A full theme in this repo includes:
 - `hyprtoolkit.conf`
   Hyprtoolkit styling
 - `quickshell.json`
-  Quickshell colors, typography, bar thickness, spacing, island corner and
-  border geometry, radii, dividers, tooltip radius, panel gap, preferred/max
-  panel size, and transition timing. `barMargin` controls the screen, outer,
-  and content gaps; `islandCorners` and `islandBorders` control the four
-  logical island edges. All Quickshell surface colors and interaction states
-  must come from this semantic theme data. See
+  Quickshell colors, typography, minimum bar thickness, spacing, island corner
+  and border geometry, radii, dividers, tooltip radius, panel gap,
+  preferred/max panel size, and transition timing. `barMargin` controls the
+  screen, outer, and content gaps; `islandCorners` and `islandBorders` control
+  the four logical island edges; `itemGroupPadding` controls the outer-only
+  inset for workspace and tray-item rows. `barMinThickness` is only a floor;
+  the tallest naturally padded widget sets a shared island height. All
+  Quickshell surface colors and interaction states must come from this semantic
+  theme data. See
   [Customizing the Bar](customizing-bar.md#change-the-appearance) for the
   geometry schema.
 - `rofi.rasi`

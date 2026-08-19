@@ -19,7 +19,7 @@ Item {
   implicitWidth: loadedItem?.visible ? loader.implicitWidth + dividerExtent : 0
   implicitHeight: loadedItem?.visible ? loader.implicitHeight : 0
   width: implicitWidth
-  height: implicitHeight
+  height: parent.height
 
   Rectangle {
     visible: root.dividerExtent > 0
@@ -31,7 +31,7 @@ Item {
   Loader {
     id: loader
     x: root.dividerExtent
-    y: 0
+    height: parent.height
   }
 
   function loadWidget(): void {

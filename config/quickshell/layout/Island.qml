@@ -21,7 +21,7 @@ Item {
   implicitWidth: hasContent
     ? surface.leftInset + content.implicitWidth + surface.rightInset
     : 0
-  implicitHeight: theme.barThickness
+  implicitHeight: Math.max(theme.barMinThickness, content.implicitHeight)
 
   IslandSurface {
     id: surface

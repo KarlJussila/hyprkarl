@@ -44,8 +44,10 @@ QtObject {
   readonly property int barMarginContent: barMargin.content ?? 0
   readonly property int borderWidth: values.borderWidth ?? 0
   readonly property bool showDividers: values.showDividers ?? true
-  readonly property int barThickness: values.barThickness ?? 22
+  readonly property int barMinThickness: values.barMinThickness ?? 22
   readonly property int widgetPadding: values.widgetPadding ?? 0
+  readonly property int widgetVerticalPadding: values.widgetVerticalPadding ?? 0
+  readonly property int itemGroupPadding: values.itemGroupPadding ?? widgetPadding
   readonly property int tooltipRadius: values.tooltipRadius ?? radius
   readonly property int panelGap: values.panelGap ?? 0
   readonly property int panelWidth: values.panelWidth ?? 360

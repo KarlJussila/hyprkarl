@@ -65,8 +65,8 @@ yet.
 Themes own appearance through `themes/<theme>/quickshell.json`. `Theme.qml`
 watches `config/hyprkarl/current/theme.name`, then reads the selected theme
 file directly, so both a theme switch and an edit to the active JSON apply to a
-running bar. This includes every color plus typography, bar thickness, spacing,
-radii, borders, dividers, panel sizing, and transition timing.
+running bar. This includes every color plus typography, minimum bar thickness,
+spacing, radii, borders, dividers, panel sizing, and transition timing.
 
 Island geometry uses logical edges so the same theme works on top and bottom
 bars. `barMargin.screen`, `barMargin.content`, and `barMargin.outer` control the
@@ -77,6 +77,12 @@ accepts `curve` for the concave joins between islands. `islandBorders` toggles
 the corresponding four edges. `islandRadius`, `cornerCurveSize`, and
 `cornerCurveRadius` size those shapes. See `docs/customizing-bar.md` for a
 complete example.
+
+`itemGroupPadding` is the outer-only horizontal inset for the workspace and
+tray-item rows. It does not add spacing between their adjacent items.
+`widgetVerticalPadding` contributes to each widget's natural height, while
+`barMinThickness` only supplies a floor. The bar resolves the tallest widget
+and gives every island that same content height.
 
 ## Structure
 
@@ -108,7 +114,9 @@ multiple widgets genuinely use the same interaction or visual structure.
 - CPU, GPU, and RAM values start collapsed; left-click reveals the value and
   right-click switches between primary and alternate formats. Their readouts
   and the system tray expand horizontally instead of appearing immediately.
-  The open tray separates its expander from its items with a divider.
+  The open tray separates its expander from its items with a divider. Tray
+  items and workspace labels have outer padding at their group boundaries
+  without adding space between adjacent items.
 - Focused workspaces use accent-colored brackets; audio, battery, and toggle
   widgets use drawn indicators instead of font-dependent approximations.
 - Audio, network, Bluetooth, battery/power, and clock/calendar open

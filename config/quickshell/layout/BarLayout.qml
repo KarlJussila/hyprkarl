@@ -12,6 +12,13 @@ Item {
   readonly property int islandY: shellConfig.edge === "top"
     ? theme.barMarginScreen
     : theme.barMarginContent
+  readonly property real contentHeight: Math.max(
+    startIsland.implicitHeight,
+    centerIsland.implicitHeight,
+    endIsland.implicitHeight
+  )
+
+  implicitHeight: contentHeight
 
   Island {
     id: startIsland
@@ -25,6 +32,7 @@ Item {
 
     x: root.theme.barMarginOuter
     y: root.islandY
+    height: root.contentHeight
   }
 
   CenterIsland {
@@ -40,6 +48,7 @@ Item {
 
     x: parent.width / 2 - centerIsland.pivotOffset
     y: root.islandY
+    height: root.contentHeight
   }
 
   Island {
@@ -54,5 +63,6 @@ Item {
 
     x: parent.width - root.theme.barMarginOuter - width
     y: root.islandY
+    height: root.contentHeight
   }
 }

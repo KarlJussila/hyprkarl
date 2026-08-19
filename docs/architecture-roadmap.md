@@ -126,6 +126,8 @@ the shared shell process and remaining bar survived without a runtime warning.
 The shared island renderer now restores the retired AGS bar's theme-controlled
 logical corner shapes, selective borders, and screen/outer/content margins
 without making individual widgets own surface geometry.
+Bar content height is resolved once from the tallest natural widget, subject
+to a theme minimum, then shared by all three islands and the exclusive zone.
 
 ## Constraints and Non-Goals
 

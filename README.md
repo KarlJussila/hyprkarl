@@ -116,8 +116,10 @@ watches `config/hyprkarl/current/theme.name`, then reads the selected
 `themes/<theme>/quickshell.json` directly. Theme switches therefore apply
 without restarting the shell. The same file controls island corner shapes,
 selective borders, and screen/outer/content margins as well as colors and
-typography. Inspect or manage the bar with `hk-shell status`, `hk-shell logs`,
-and the other `hk-shell` lifecycle commands.
+typography. It also provides the minimum height and widget padding; the tallest
+widget determines one shared height for all islands. Inspect or manage the bar
+with `hk-shell status`, `hk-shell logs`, and the other `hk-shell` lifecycle
+commands.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

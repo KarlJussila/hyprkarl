@@ -17,7 +17,8 @@ Item {
   readonly property real visibleExtent: content.implicitWidth
 
   width: visibleExtent
-  height: theme.barThickness
+  implicitHeight: content.implicitHeight
+  height: parent.height
 
   Row {
     id: content

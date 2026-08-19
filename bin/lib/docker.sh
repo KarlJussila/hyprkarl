@@ -223,7 +223,7 @@ docker_menu_entries() {
       --arg id "docker-$action.$service_id" \
       --arg label "$service_label" \
       --arg command "$command" \
-      '{id: $id, icon: "󰡨", label: $label, action: {type: "command", command: $command}}'
+      '{id: $id, label: $label, action: {type: "command", command: $command}}'
     separator=','
   done <<<"$services"
   printf ']\n'

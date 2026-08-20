@@ -8,6 +8,7 @@ QtObject {
   property string activeName: ""
   property string activeArtifact: ""
   property var values: ({})
+  readonly property var document: values
   readonly property bool ready: activeName.length > 0 && Object.keys(values).length > 0
 
   readonly property var palette: values.palette ?? ({})

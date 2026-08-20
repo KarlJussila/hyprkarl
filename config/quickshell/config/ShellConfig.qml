@@ -41,6 +41,10 @@ QtObject {
   readonly property int osdMargin: osd.margin ?? 40
   readonly property int osdTimeout: osd.timeout ?? 2000
   readonly property int osdMediaTimeout: osd.mediaTimeout ?? 3000
+  readonly property var userRoot: values.userRoot ?? ({})
+  readonly property string userRootSource: userRoot.source ?? ""
+  readonly property var userRootSettings: userRoot.settings ?? ({})
+  readonly property bool barEnabled: bar.enabled ?? true
   readonly property string edge: bar.edge ?? "top"
   readonly property bool exclusive: bar.exclusive ?? true
   readonly property var layout: bar.layout ?? ({})
@@ -53,8 +57,10 @@ QtObject {
   readonly property var end: layout.end ?? []
   readonly property var widgetInstances: start.concat(
     centerBefore, centerAnchorInstances, centerAfter, end)
-  readonly property var commandProviders: widgetInstances.filter(
-    widget => widget.kind === "command" && widget.command !== undefined)
+  readonly property var commandProviders: barEnabled
+    ? widgetInstances.filter(
+      widget => widget.kind === "command" && widget.command !== undefined)
+    : []
 
   property FileView defaultSource: FileView {
     path: root.defaultPath
@@ -310,6 +316,9 @@ QtObject {
     }
 
     requireObject(document.bar, path + ".bar")
+    if (typeof document.bar.enabled !== "boolean") {
+      fail(path + ".bar.enabled", "expected a boolean")
+    }
     if (document.bar.edge !== "top" && document.bar.edge !== "bottom") {
       fail(path + ".bar.edge", "version 1 supports only 'top' and 'bottom'")
     }
@@ -329,6 +338,17 @@ QtObject {
     }
     validateWidgets(layout.center.after, path + ".bar.layout.center.after", ids)
     validateWidgets(layout.end, path + ".bar.layout.end", ids)
+
+    if (document.userRoot !== undefined) {
+      requireObject(document.userRoot, path + ".userRoot")
+      if (typeof document.userRoot.source !== "string"
+          || document.userRoot.source.length === 0) {
+        fail(path + ".userRoot.source", "expected a non-empty string")
+      }
+      if (document.userRoot.settings !== undefined) {
+        requireObject(document.userRoot.settings, path + ".userRoot.settings")
+      }
+    }
   }
 
   function parseJson(text, path): var {
@@ -361,6 +381,9 @@ QtObject {
     }
     if (document.notifications !== undefined) {
       requireObject(document.notifications, userPath + ".notifications")
+    }
+    if (document.userRoot !== undefined) {
+      requireObject(document.userRoot, userPath + ".userRoot")
     }
     return document
   }

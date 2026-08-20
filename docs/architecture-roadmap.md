@@ -308,6 +308,7 @@ sparse `user/shell.json` override:
 {
   "version": 1,
   "bar": {
+    "enabled": true,
     "edge": "top",
     "exclusive": true,
     "layout": {
@@ -362,7 +363,7 @@ Rules:
 
 ### Extension Lanes
 
-Support three sources and no more in the first release:
+Support three bar-widget sources:
 
 1. **Built-in widget** — `kind` selects a Hyprkarl-owned QML component.
 2. **Command widget** — a command produces plain text or a small documented
@@ -375,6 +376,12 @@ Support three sources and no more in the first release:
 3. **QML widget** — `kind: "qml"` loads an explicitly referenced file from
   `user/quickshell/modules/` and injects a small context: theme, orientation,
   bar window, instance settings, and shared tooltip/panel entry points.
+
+One separate application-wide `userRoot.source` may compose independent
+surfaces or a replacement bar. The built-in bar can be disabled without
+stopping menus, OSD, notifications, or polkit, and the user root may provide a
+reactive per-output notification position. This stays one explicit composition
+root rather than a discovery or plugin system.
 
 Do not scan the directory for plugins, execute install hooks, or invent enable
 state. A module exists because the canonical config references it.
@@ -401,6 +408,8 @@ store.
 - Two instances of the same built-in kind can carry independent settings.
 - One command widget and one user QML widget work on every monitor on top and
   bottom edges.
+- Disabling the built-in bar also stops bar-only polling, while a user root can
+  replace its surfaces and notification placement.
 - Invalid external configuration produces an actionable error and a usable
   default bar.
 - Config reload does not recreate unrelated shared services.

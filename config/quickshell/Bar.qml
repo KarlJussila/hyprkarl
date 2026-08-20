@@ -14,6 +14,7 @@ PanelWindow {
   readonly property int totalThickness: theme.barMarginScreen
     + barLayout.contentHeight
     + theme.barMarginContent
+  readonly property real visibleExtent: totalThickness
 
   color: theme.windowSurface
   aboveWindows: true

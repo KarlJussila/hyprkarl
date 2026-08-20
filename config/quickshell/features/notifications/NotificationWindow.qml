@@ -8,31 +8,31 @@ PanelWindow {
   id: root
 
   required property var output
-  required property var barWindow
   required property var notificationState
+  required property var position
   required property var shellConfig
   required property var theme
 
-  readonly property string resolvedEdge: shellConfig.notificationEdge === "bar"
-    ? shellConfig.edge
-    : shellConfig.notificationEdge
+  readonly property string resolvedEdge: position.edge
+  readonly property real surfaceExtent: position.extent ?? 0
   readonly property var screenEntries:
     notificationState.entriesForScreen(output.name)
   readonly property var entries: resolvedEdge === "top"
     ? screenEntries
     : screenEntries.slice().reverse()
-  readonly property bool alignedWithBar: resolvedEdge === shellConfig.edge
-  readonly property bool touchesBar: alignedWithBar
+  readonly property bool touchesSurface: surfaceExtent !== 0
+    && position.connected === true
     && shellConfig.notificationGap === 0
-    && theme.barMarginContent === 0
   readonly property bool touchesScreenSide:
     shellConfig.notificationSideMargin === 0
-  readonly property bool touchesBarCorner: touchesBar
-    && touchesScreenSide
-    && theme.barMarginOuter === 0
-  readonly property int edgeOffset: (alignedWithBar ? barWindow.height : 0)
+  readonly property bool touchesScreenEdge: surfaceExtent === 0
+    && shellConfig.notificationGap === 0
+  readonly property bool touchesAnchorCorner: touchesScreenSide
+    && (touchesScreenEdge
+      || (touchesSurface && position.reachesSide === true))
+  readonly property real edgeOffset: surfaceExtent
     + shellConfig.notificationGap
-    - (touchesBar ? theme.borderWidth : 0)
+    - (touchesSurface ? theme.borderWidth : 0)
   readonly property bool connectedStack: theme.notificationStackSpacing === 0
 
   visible: entries.length > 0
@@ -77,7 +77,7 @@ PanelWindow {
         required property var modelData
         required property int index
 
-        readonly property bool barAdjacent: root.resolvedEdge === "top"
+        readonly property bool edgeAdjacent: root.resolvedEdge === "top"
           ? index === 0
           : index === root.entries.length - 1
         readonly property bool touchesPrevious: root.connectedStack && index > 0
@@ -132,29 +132,29 @@ PanelWindow {
           sharpTopLeft: (parent.touchesPrevious
               && (root.shellConfig.notificationSide === "left"
                 || parent.previousCoversOuterCorner))
-            || (parent.barAdjacent
-              && root.touchesBarCorner
+            || (parent.edgeAdjacent
+              && root.touchesAnchorCorner
               && root.resolvedEdge === "top"
               && root.shellConfig.notificationSide === "left")
           sharpTopRight: (parent.touchesPrevious
               && (root.shellConfig.notificationSide === "right"
                 || parent.previousCoversOuterCorner))
-            || (parent.barAdjacent
-              && root.touchesBarCorner
+            || (parent.edgeAdjacent
+              && root.touchesAnchorCorner
               && root.resolvedEdge === "top"
               && root.shellConfig.notificationSide === "right")
           sharpBottomLeft: (parent.touchesNext
               && (root.shellConfig.notificationSide === "left"
                 || parent.nextCoversOuterCorner))
-            || (parent.barAdjacent
-              && root.touchesBarCorner
+            || (parent.edgeAdjacent
+              && root.touchesAnchorCorner
               && root.resolvedEdge === "bottom"
               && root.shellConfig.notificationSide === "left")
           sharpBottomRight: (parent.touchesNext
               && (root.shellConfig.notificationSide === "right"
                 || parent.nextCoversOuterCorner))
-            || (parent.barAdjacent
-              && root.touchesBarCorner
+            || (parent.edgeAdjacent
+              && root.touchesAnchorCorner
               && root.resolvedEdge === "bottom"
               && root.shellConfig.notificationSide === "right")
         }

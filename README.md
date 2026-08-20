@@ -140,7 +140,10 @@ provider per widget ID. Static command buttons such as the main-menu trigger
 use the same kind without starting a timer or process. More specialized
 personal bar widgets can be explicitly loaded from
 `user/quickshell/modules/` through a small per-bar context, without turning the
-shell into a plugin platform.
+shell into a plugin platform. The built-in bar can also be disabled while the
+other shell services stay active; one explicitly referenced application-wide
+user QML root can compose replacement surfaces, consume open-ended theme data,
+and publish reactive notification positioning for a custom bar.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

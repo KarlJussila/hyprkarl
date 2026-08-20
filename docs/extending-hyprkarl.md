@@ -201,6 +201,14 @@ can use the existing tooltip and feature-panel surfaces without editing
 Hyprkarl-owned QML. See
 [User QML widgets](shell-configuration.md#user-qml-widgets).
 
+For an interface that is not owned by one bar widget, explicitly reference one
+application-wide QML root through `userRoot.source` in `user/shell.json`. It
+can create independent or per-output surfaces, consume arbitrary custom values
+from `context.theme.document`, and optionally supply reactive notification
+positioning for a personal bar. Set `bar.enabled` to false when that module
+replaces the built-in bar. See
+[Application-wide user QML](shell-configuration.md#application-wide-user-qml).
+
 To add a built-in widget kind:
 
 1. Create `config/quickshell/widgets/<kind>.qml` and keep the compact bar

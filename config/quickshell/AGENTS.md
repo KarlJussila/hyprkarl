@@ -24,6 +24,8 @@ preventing an advanced user from leaving the documented contract is not.
 - `../../user/shell.json`: optional sparse user override.
 - `../../defaults/menu.json`: shipped static command-menu hierarchy.
 - `../../user/menu.json`: optional sparse menu additions and overrides.
+- `../../user/quickshell/<source>.qml`: one optional application-wide user root
+  explicitly named by `userRoot.source`.
 - the active XDG-state bundle's `quickshell.json`: semantic colors, typography,
   metrics, and island geometry.
 - `widgets/*.qml`: one implementation per widget kind.
@@ -58,13 +60,29 @@ bar/output; application-wide state is not implicitly created for user modules.
 Dynamically referenced sources are outside Quickshell's static reload graph, so
 source edits require `hk-shell restart`.
 
+`bar.enabled` controls instantiation, not merely visibility. When false, do not
+retain the per-output bar windows or run the application-wide hardware and
+command-widget providers used only by them. The other shell surfaces remain
+independent. `config/UserRoot.qml` loads one trusted application-wide user QML
+root for independent surfaces or a replacement bar; do not turn it into
+directory discovery or a plugin registry.
+
+When `notifications.edge` is `bar`, `ScreenSurfaces.qml` resolves one reactive
+position object per output. The built-in bar supplies the fallback; a user
+root's optional `notificationPosition(outputName)` method may override its
+`edge`, `extent`, `connected`, and `reachesSide` fields. Explicit `top` and
+`bottom` notification edges bypass this provider. `NotificationWindow` owns
+only presentation from that position and must not regain a hard dependency on
+the built-in bar window.
+
 ## Architecture
 
 `shell.qml` creates shared configuration, theme, and system state objects, then
 uses one `Variants` model to create a `ScreenSurfaces` group per screen after
 configuration, theme, and menu data are ready. That group owns the screen's
-bar, menu, OSD, and notification windows, allowing bar-relative surfaces to
-use the actual bar window geometry.
+optional bar, menu, OSD, and notification windows. It resolves notification
+placement from a small reactive position object rather than exposing the bar
+window to notification presentation.
 It creates one `MenuWindow` per screen. The
 menu singleton selects exactly one requested monitor, owns navigation history,
 and exposes the public `menu` IPC target. Each inactive window stays hidden and

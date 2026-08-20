@@ -190,9 +190,13 @@ the default, arrays replace completely, and explicit widget-ID layout edits are
 applied afterward. Deleting the user file returns to the default, while an
 invalid live edit keeps the last valid configuration running. Version 1
 supports top and bottom bars plus built-in, command, and explicitly referenced
-user-QML widget kinds. Personal modules live below
+user-QML widget kinds. `bar.enabled` can remove the built-in bar while keeping
+the other shell surfaces alive. Personal per-bar modules live below
 `user/quickshell/modules/`, receive one narrow context per bar/output, and are
-not discovered as plugins. Static
+not discovered as plugins. An optional `userRoot.source` names one
+application-wide QML composition root below `user/quickshell/`; it may create
+independent surfaces and provide reactive notification positioning for a
+custom bar. Static
 command widgets, including the main-menu button, have no provider runtime.
 Configured providers are application-wide rather than duplicated per monitor.
 Poll mode starts one process per tick, while stream mode holds one
@@ -252,8 +256,10 @@ mode, the one-item visual restore snapshot, and the public IPC target;
 interaction. `defaults/shell.json` owns placement, timing, limits, application
 filters, compact applications, and icon descriptors. `component` descriptors
 load shipped drawings or files under `user/quickshell/icons/` through one
-shared interface. `ScreenSurfaces.qml` supplies the actual bar window for
-border-connected placement. Theme JSON owns surface color and geometry. Mako
+shared interface. `ScreenSurfaces.qml` supplies the built-in bar's reactive
+position by default; a user root may replace that
+per-output position without replacing notification presentation. Theme JSON
+owns surface color and geometry. Mako
 has no runtime or theme path.
 
 ## Themes

@@ -3,7 +3,8 @@
 This document defines the lasting public configuration boundary for the
 Quickshell shell. The production bar implements default/user resolution, common
 version 1 structure validation, inline built-in and command widget instances,
-explicit user-QML modules, explicit layout edits, and live last-valid reloads.
+explicit per-bar and application-wide user-QML modules, explicit layout edits,
+and live last-valid reloads.
 Widget-specific setting validation lands with each stable module contract.
 `hk-shell config` commands and gesture persistence remain later work.
 
@@ -138,6 +139,7 @@ map when an instance is referenced only once.
     }
   },
   "bar": {
+    "enabled": true,
     "edge": "top",
     "exclusive": true,
     "layout": {
@@ -196,8 +198,11 @@ one of them. OSD appearance is theme data under `osd` in `quickshell.json`, not
 shell configuration.
 
 `notifications.edge` accepts `bar`, `top`, or `bottom`; `bar` follows the
-configured bar edge. `side` accepts `left` or `right`. `gap` separates the
-stack from the bar (or explicit screen edge), while `sideMargin` separates it
+built-in bar or an application-wide user root's reactive positioning
+provider. Explicit `top` and `bottom` values always use that monitor edge and
+bypass bar-relative positioning. `side` accepts `left` or `right`. `gap`
+separates the stack from the supplied surface extent (or explicit screen
+edge), while `sideMargin` separates it
 from the monitor side. With the shipped zero values, the stack overlaps the
 bar border, sits flush against the right screen edge, sharpens the one corner
 touching both, and reveals from the bar into the workspace. The shipped
@@ -286,6 +291,13 @@ away from it. This preserves the deliberate centered-island composition of
 the current bar without encoding the implementation's QML object shape as a
 public API.
 
+`bar.enabled` controls whether the built-in bar is instantiated. When it is
+false, its per-output windows, panels, widgets, application-wide command
+providers, and hardware polling process are absent or inactive. Menu, OSD,
+notifications, and polkit remain available. With the default
+`notifications.edge: "bar"`, notifications fall back to the configured bar
+edge with zero extent and therefore sit directly against the monitor edge.
+
 Version 1 accepts `top` and `bottom`. Left and right are added only when
 vertical layouts and panel behavior are implemented and tested. The current
 layout and widgets are intentionally horizontal; edge-dependent popup
@@ -304,8 +316,10 @@ Version 1 has three supported ways to place a widget:
    command stream and renders its documented text or small JSON result.
 3. A QML widget explicitly names a file under `user/quickshell/modules/`.
 
-All three lanes are implemented. User QML is intentionally explicit; there is
-no module discovery or plugin installation layer.
+All three lanes are implemented. A separate, optional application-wide user
+root composes interfaces that do not belong to one bar instance. User QML is
+always explicitly referenced; there is no module discovery or plugin
+installation layer.
 
 ### Command widgets
 
@@ -530,6 +544,94 @@ behavior, while all panel colors and geometry remain theme data. Activating an
 audio, network, or Bluetooth header cog closes that panel before starting its
 configured command.
 
+### Application-wide user QML
+
+Use one explicitly referenced user root for independent surfaces, global
+state, or a complete personal bar. It is instantiated once for the shell
+process and may compose as many files and per-screen `Variants` as needed.
+Configure it in `user/shell.json`:
+
+```json
+{
+  "version": 1,
+  "bar": { "enabled": false },
+  "userRoot": {
+    "source": "Extensions.qml",
+    "settings": {}
+  }
+}
+```
+
+The documented source location is `user/quickshell/Extensions.qml`. Its root
+may be any QML object and declares `required property var context`. The context
+contains `settings`, the complete merged shell `configuration`, and the live
+`theme`. The ordinary typed theme properties remain available, while
+`context.theme.document` exposes the complete generated `quickshell.json` for
+custom values such as
+`context.theme.document.extensions.dashboard.background`. Theme authors may
+derive those values from any source vocabulary by placing the final values
+under `shell` in `theme.yaml`.
+
+An optional root method can override notification positioning per output while
+`notifications.edge` is `bar`:
+
+```qml
+import QtQml
+import Quickshell
+import Quickshell.Wayland
+
+Scope {
+  id: root
+  required property var context
+
+  Variants {
+    id: customBars
+    model: Quickshell.screens
+
+    PanelWindow {
+      required property var modelData
+
+      screen: modelData
+      anchors.top: true
+      anchors.left: true
+      anchors.right: true
+      implicitHeight: 30
+      color: root.context.theme.barSurface
+
+      // Bind this to the animated onscreen portion for an autohiding bar.
+      property real notificationExtent: height
+    }
+  }
+
+  function notificationPosition(outputName: string): var {
+    const bar = customBars.instances.find(candidate =>
+      candidate.screen.name === outputName)
+    if (!bar) return null
+
+    return {
+      "edge": "top",
+      "extent": bar.notificationExtent,
+      "connected": bar.notificationExtent > 0,
+      "reachesSide": true
+    }
+  }
+}
+```
+
+The method may return `null` to use the built-in position for that output, or
+an object whose supplied fields override it. `edge` is `top` or `bottom`;
+`extent` is the reactive distance from that screen edge. `connected` says the
+notification shares the surface border when `notifications.gap` is zero, and
+`reachesSide` says that surface reaches the configured notification side so
+their outer corner should sharpen. A hidden custom bar normally reports zero
+extent and `connected: false`, causing the stack to sit against the screen
+edge. These are ordinary QML bindings: changing a property read by the method
+repositions an existing notification window immediately.
+
+The module is trusted, unsandboxed user code. Its source and private settings
+are not schema-policed. Changes to `user/shell.json` apply live; restart the
+shell after editing the dynamically loaded QML source.
+
 ## Validation and Resolution
 
 The loader validates the external file boundary and otherwise lets internal
@@ -559,9 +661,9 @@ running configuration and reports the new error.
 | State | Owner | Persistence |
 | --- | --- | --- |
 | Widget order and instance settings | Shipped defaults plus sparse `user/shell.json` edits | User override is versioned |
-| Bar edge and exclusion behavior | Shipped defaults plus `user/shell.json` | User override is versioned |
+| Built-in bar enablement, edge, and exclusion behavior | Shipped defaults plus `user/shell.json` | User override is versioned |
 | OSD edge, margin, and dismissal timeouts | Shipped defaults plus `user/shell.json` | User override is versioned |
-| Notification placement, timing, filters, compact apps, and icon selection | Shipped defaults plus `user/shell.json` | User override is versioned |
+| Notification placement, timing, filters, compact apps, and icon selection | Shipped defaults plus `user/shell.json`, with an optional reactive user-root position | User override is versioned; reactive position is memory only |
 | Visible notification stack, silence mode, and one restore snapshot | Application-wide `NotificationState` | Memory only |
 | Command-widget results and provider processes | Application-wide `CommandState`, keyed by widget ID | Memory only |
 | Colors, typography, spacing, island geometry, borders, and interaction states | Active semantic theme | Theme-derived |

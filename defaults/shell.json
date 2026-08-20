@@ -36,6 +36,7 @@
     }
   },
   "bar": {
+    "enabled": true,
     "edge": "top",
     "exclusive": true,
     "layout": {

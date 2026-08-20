@@ -7,6 +7,10 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Added `bar.enabled` so the built-in bar and its bar-only polling can be
+  removed without stopping menus, notifications, OSD, or polkit. Added one
+  explicitly referenced application-wide user QML root with open theme data
+  and reactive per-output notification positioning for custom bars.
 - Breaking: renamed generator-owned `palette.yaml` sources to `theme.yaml` and
   expanded them into an open, typed token graph. Shared defaults now own fonts,
   spacing, radii, border widths, motion, and the complete Quickshell appearance

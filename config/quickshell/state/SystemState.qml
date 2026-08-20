@@ -5,6 +5,8 @@ import Quickshell.Io
 QtObject {
   id: root
 
+  required property bool active
+
   property real cpuUsage: 0
   property real cpuTemp: 0
   property real gpuUsage: 0
@@ -33,11 +35,20 @@ QtObject {
   }
 
   property Process monitor: Process {
-    running: true
+    running: false
     command: ["bash", Quickshell.shellPath("scripts/read-system-state.sh")]
     stdout: SplitParser {
       onRead: line => root.update(line)
     }
-    onRunningChanged: if (!running) running = true
+    // qmllint disable signal-handler-parameters
+    onExited: if (root.active) running = true
+    // qmllint enable signal-handler-parameters
   }
+
+  onActiveChanged: {
+    if (active && !monitor.running) monitor.running = true
+    if (!active && monitor.running) monitor.running = false
+  }
+
+  Component.onCompleted: if (active) monitor.running = true
 }

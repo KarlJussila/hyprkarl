@@ -70,6 +70,7 @@ bar without editing that upstream default, create a sparse override at
 {
   "version": 1,
   "bar": {
+    "enabled": true,
     "edge": "bottom"
   }
 }
@@ -97,6 +98,15 @@ stream. Polling starts a process on every tick, so short intervals carry a CPU
 and battery cost; stream mode is intended for frequent updates. Static command
 buttons omit the provider command and create no timer or process; the shipped
 main-menu button uses that form.
+
+`bar.enabled: false` destroys the built-in per-output bar windows and makes
+their application-wide hardware monitor and command providers inert; the
+menu, notifications, OSD, and polkit remain active. One optional
+`userRoot.source` loads an application-wide QML composition root from
+`user/quickshell/`. It can own independent or per-screen surfaces and may
+publish a reactive notification position for each output. This is one
+explicitly referenced user module, not a discovered plugin collection. See
+`docs/shell-configuration.md` for its context and positioning contract.
 
 The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
 `user/menu.json` adds or overrides menus and entries by stable ID. Ordinary
@@ -164,7 +174,7 @@ The sibling top-level `osd` object owns transient-surface behavior:
 `mediaTimeout`, all in milliseconds. Each theme's nested `osd` object owns
 widths, padding, spacing, radius, indicator size, progress height, and motion.
 
-The sibling `notifications` object owns bar-relative docking, timeouts, stack
+The sibling `notifications` object owns surface-relative docking, timeouts, stack
 limit, exact application filters, compact applications, fallback icons, and
 data-defined application/icon-name overrides. An override descriptor may use
 an icon-theme name or path, a Nerd Font glyph, a built-in or user QML drawing,
@@ -181,6 +191,8 @@ schema and override examples.
   `ScreenSurfaces.qml` groups that screen's bar, menu, OSD, notification, and
   polkit windows so each surface receives the correct output.
 - `config/ShellConfig.qml` selects, validates, and watches shell JSON.
+- `config/UserRoot.qml` loads the optional application-wide user composition
+  root and forwards its reactive notification-position method.
 - `Bar.qml` owns the layer-shell window and exclusive zone.
 - `panels/FeaturePanelHost.qml` owns the one feature-panel window and active
   panel lifecycle for each monitor.

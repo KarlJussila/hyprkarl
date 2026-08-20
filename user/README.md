@@ -39,6 +39,15 @@ context; there is no directory discovery or plugin manifest. See
 complete config and module example. Restart the shell after changing a module
 source.
 
+Application-wide personal interfaces belong in one explicitly referenced QML
+root such as `user/quickshell/Extensions.qml`. Configure it with
+`userRoot.source` in `shell.json`; it receives live theme and configuration
+data and may create independent windows or per-screen variants. A custom bar
+can set `bar.enabled` to false and expose the documented reactive notification
+position method so the shell's notification stack follows its visible extent.
+See
+[`Application-wide user QML`](../docs/shell-configuration.md#application-wide-user-qml).
+
 The Quickshell command menu uses `menu.json` here when it exists. It is also a
 sparse versioned override; menu and entry objects merge by stable ID. For
 example:

@@ -14,7 +14,15 @@ import "state"
 ShellRoot {
   ShellConfig { id: configObject }
   Theme { id: themeObject }
-  SystemState { id: stateObject }
+  UserRoot {
+    id: userRootObject
+    shellConfig: configObject
+    theme: themeObject
+  }
+  SystemState {
+    id: stateObject
+    active: configObject.barEnabled
+  }
   OsdState {
     id: osdStateObject
     shellConfig: configObject
@@ -50,6 +58,7 @@ ShellRoot {
       systemState: stateObject
       osdState: osdStateObject
       notificationState: notificationStateObject
+      userRoot: userRootObject
     }
   }
 }

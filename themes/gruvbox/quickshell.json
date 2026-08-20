@@ -100,7 +100,6 @@
     "spacing": 10,
     "radius": 10,
     "iconSize": 36,
-    "scrim": "rgba(40,40,40,0.72)",
     "headerAccentOpacity": 0.3,
     "transitionDuration": 140
   },

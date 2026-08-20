@@ -66,8 +66,8 @@ request being cancelled externally.
 
 The surface should use the shell's semantic theme and existing typography,
 borders, title-band language, and input controls where they genuinely fit.
-It should be a compact centered authorization surface with a subdued modal
-backdrop, not a feature panel and not a copy of the current agent window.
+It should be a compact centered authorization surface on a transparent modal
+input plane, not a feature panel and not a copy of the current agent window.
 There is no new public IPC command: polkit's D-Bus request is the public event.
 
 `PolkitAgent` queues requests and owns the active `AuthFlow`; Hyprkarl should

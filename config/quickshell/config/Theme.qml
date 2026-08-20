@@ -102,7 +102,6 @@ QtObject {
   readonly property int polkitSpacing: polkit.spacing ?? controlPadding
   readonly property int polkitRadius: polkit.radius ?? panelRadius
   readonly property int polkitIconSize: polkit.iconSize ?? 36
-  readonly property color polkitScrim: polkit.scrim ?? "transparent"
   readonly property real polkitHeaderAccentOpacity:
     polkit.headerAccentOpacity ?? 0.3
   readonly property int polkitTransitionDuration:

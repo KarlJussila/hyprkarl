@@ -96,14 +96,8 @@ PanelWindow {
     }
   }
 
-  Rectangle {
+  MouseArea {
     anchors.fill: parent
-    color: root.theme.polkitScrim
-    opacity: root.reveal
-
-    MouseArea {
-      anchors.fill: parent
-    }
   }
 
   Rectangle {
@@ -310,6 +304,7 @@ PanelWindow {
             selectedTextColor: root.theme.popupSurface
             font.family: root.theme.monoFontFamily
             font.pixelSize: root.theme.bodyFontSize
+            verticalAlignment: TextInput.AlignVCenter
             echoMode: root.flow?.responseVisible
               ? TextInput.Normal
               : TextInput.Password

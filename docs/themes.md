@@ -111,7 +111,7 @@ A full theme in this repo includes:
   docking, timing, filtering, and icon selection remain behavior in
   `shell.json`.
   The nested `polkit` object controls the modal prompt width, padding,
-  spacing, radius, icon size, backdrop, title-band accent, and transition
+  spacing, radius, icon size, title-band accent, and transition
   timing. Authentication behavior remains owned by Quickshell's polkit flow.
   All Quickshell surface colors and interaction states come from semantic
   theme data rather than consumer-specific color aliases. See

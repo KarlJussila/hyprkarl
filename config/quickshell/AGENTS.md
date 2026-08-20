@@ -337,16 +337,18 @@ permanent close control or generic action-button row without a new interaction
 design.
 
 Icon presentation is data, not app-specific QML branching. Notification
-content images win because they are part of the message. Otherwise
+content images win because they are part of the message, but they use the same
+theme-owned icon size as every other icon source. Otherwise
 `notifications.iconOverrides` may match a lowercase application or icon name
 and select `icon`, `glyph`, `component`, or `none`; then the sender's
 application icon and the configured urgency fallback apply. A `component`
 names either a shipped file under `features/notifications/icons/` or a user
 file under `user/quickshell/icons/`. Both expose `progress` and `theme` on a
 root `Item`; the shipped audio and battery drawings use exactly this public
-loader path. Shell JSON owns selection and application filters; each theme's
-`notification` object owns surface color, geometry, image/icon sizes, and
-drawn-indicator scale.
+loader path. Absolute sender icon paths become `file:` URLs before reaching
+QML, and a `none` descriptor removes the icon item from layout. Shell JSON owns
+selection and application filters; each theme's `notification` object owns
+surface color, geometry, icon size, and drawn-indicator scale.
 
 Authentication surfaces have separate owners; do not create a generic auth
 controller. `features/polkit/PolkitState.qml` owns the one session

@@ -91,7 +91,6 @@ QtObject {
     ?? notificationSpacing
   readonly property int notificationRadius: notification.radius ?? panelRadius
   readonly property int notificationIconSize: notification.iconSize ?? 32
-  readonly property int notificationImageSize: notification.imageSize ?? 80
   readonly property real notificationIndicatorScale: notification.indicatorScale ?? 1.5
   readonly property int notificationProgressHeight: notification.progressHeight ?? 6
   readonly property int notificationTransitionDuration:

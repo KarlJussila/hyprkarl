@@ -180,7 +180,7 @@ data-defined application/icon-name overrides. An override descriptor may use
 an icon-theme name or path, a Nerd Font glyph, a built-in or user QML drawing,
 or no icon. Notification content images remain message content and take
 priority. Each theme's `notification` object owns surface color, widths,
-padding, spacing, radius, icon/image sizes, custom-indicator scale, progress
+padding, spacing, radius, icon size, custom-indicator scale, progress
 height, and reveal timing. See `docs/shell-configuration.md` for the complete
 schema and override examples.
 

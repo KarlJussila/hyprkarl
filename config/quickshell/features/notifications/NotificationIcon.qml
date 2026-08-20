@@ -16,18 +16,17 @@ Item {
   readonly property string kind: descriptor?.kind ?? "none"
   readonly property string value: descriptor?.value ?? ""
   readonly property bool visibleIcon: hasNotificationImage || kind !== "none"
-  readonly property bool large: hasNotificationImage
-  readonly property int iconSize: large
-    ? theme.notificationImageSize
-    : theme.notificationIconSize
+  readonly property int iconSize: theme.notificationIconSize
   readonly property string imageSource: resolveImage(
     hasNotificationImage ? notificationImage : value)
   readonly property string componentSource: resolveComponent()
 
   function resolveImage(candidate): string {
     if (candidate.length === 0) return ""
-    if (candidate.startsWith("/") || candidate.startsWith("file:")
-        || candidate.startsWith("image:")) return candidate
+    if (candidate.startsWith("/")) return "file://" + candidate
+    if (candidate.startsWith("file:") || candidate.startsWith("image:")) {
+      return candidate
+    }
     return Quickshell.iconPath(candidate, true)
   }
 
@@ -61,8 +60,8 @@ Item {
   Component.onCompleted: loadDrawing()
 
   visible: visibleIcon
-  implicitWidth: iconSize
-  implicitHeight: iconSize
+  implicitWidth: visibleIcon ? iconSize : 0
+  implicitHeight: visibleIcon ? iconSize : 0
 
   IconImage {
     anchors.fill: parent

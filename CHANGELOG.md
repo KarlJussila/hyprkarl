@@ -11,6 +11,9 @@ surfaces) — they are called out explicitly.
   scale presets, and output enable/disable controls. `hk-display` now owns
   Hyprland discovery, live changes, and an XDG-state layout that survives
   reloads without editing tracked or user-authored monitor files.
+- Fixed notification icon paths and sizing. Absolute sender paths now load as
+  files, every icon source uses `notification.iconSize`, and the redundant
+  `notification.imageSize` theme token has been removed.
 - Added `bar.enabled` so the built-in bar and its bar-only polling can be
   removed without stopping menus, notifications, OSD, or polkit. Added one
   explicitly referenced application-wide user QML root with open theme data

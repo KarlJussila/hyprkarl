@@ -89,7 +89,6 @@
     "stackSpacing": 0,
     "radius": 10,
     "iconSize": 32,
-    "imageSize": 80,
     "indicatorScale": 1.5,
     "progressHeight": 6,
     "transitionDuration": 140

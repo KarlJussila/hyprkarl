@@ -247,8 +247,12 @@ and `component` loads a small QML drawing. `builtin/<file>.qml` resolves under
 the shipped `features/notifications/icons/` directory;
 `user/<file>.qml` resolves under `user/quickshell/icons/`. The shipped audio
 and battery indicators use this same component path rather than special-case
-renderer branches. A component root is an `Item` with writable `progress` and
-`theme` properties. For example, `user/quickshell/icons/RingIcon.qml` can be:
+renderer branches. Absolute file paths are supported, and `none` removes the
+icon from the notification layout. Sender content images take priority but use
+the same theme `notification.iconSize` as application icons, glyphs, and QML
+drawings. A component root is an `Item` with writable `progress` and `theme`
+properties. For example,
+`user/quickshell/icons/RingIcon.qml` can be:
 
 ```qml
 import QtQuick

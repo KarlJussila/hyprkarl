@@ -58,6 +58,24 @@ midpoint `anchor`, and `after` so its anchor can remain exactly centered.
 Prefer `bar.layoutEdits` for focused personal changes. Replace a whole layout
 array only when you intend to own its complete ordering.
 
+The shipped `display` widget opens controls for the bar's own output. Remove it
+with a layout edit if monitor controls do not belong in your bar:
+
+```json
+{
+  "version": 1,
+  "bar": {
+    "layoutEdits": [
+      { "op": "remove", "id": "display" }
+    ]
+  }
+}
+```
+
+Its panel can change internal-backlight brightness, select a cleaned scale,
+and enable or disable connected outputs. Those actions go through
+`hk-display`; they do not rewrite `user/shell.json` or personal Hyprland Lua.
+
 ## Add a Command Widget
 
 Use `kind: "command"` for a personal readout that can be produced by a small

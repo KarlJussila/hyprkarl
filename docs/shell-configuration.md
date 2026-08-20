@@ -535,10 +535,10 @@ Quickshell's statically scanned reload graph.
 
 Feature panels remain separate surfaces. A built-in feature widget can declare
 its corresponding built-in panel; a user QML widget may use the shared panel
-entry point. Panel contents do not live inline in JSON. Audio, network,
-Bluetooth, power, and calendar all exercise the per-monitor host; no feature
-owns a second popup-window implementation. `secondaryCommand` supplies the
-advanced launcher used by audio, network, and Bluetooth. The battery widget's
+entry point. Panel contents do not live inline in JSON. Display, audio,
+network, Bluetooth, power, and calendar all exercise the per-monitor host; no
+feature owns a second popup-window implementation. `secondaryCommand` supplies
+the advanced launcher used by audio, network, and Bluetooth. The battery widget's
 `powerCommand` supplies the power-actions launcher. These strings are
 behavior, while all panel colors and geometry remain theme data. Activating an
 audio, network, or Bluetooth header cog closes that panel before starting its
@@ -669,7 +669,8 @@ running configuration and reports the new error.
 | Colors, typography, spacing, island geometry, borders, and interaction states | Active semantic theme | Theme-derived |
 | Open panel, hover, focus, disclosure, and in-progress UI | Quickshell feature objects | Memory only |
 | Wi-Fi, Bluetooth, audio, battery, and power state | The corresponding system service | Service-owned |
-| Monitor modes and arrangement | Future display integration | Backend-owned, contract not yet chosen |
+| Display discovery and live output state | `hk-display` over Hyprland and the internal backlight service | Service-owned |
+| Output enablement, mode, position, scale, and transform captured by display actions | `hk-display` | Generated under XDG state |
 | Generated theme output and caches | XDG state/cache paths | Regenerable |
 | Secrets and machine-local environment | `config/uwsm/env.local` or system service | Never shell JSON |
 
@@ -681,6 +682,17 @@ state store.
 The shell must not persist transient panel state or copy service-owned choices
 into its configuration. Choosing an audio device or power profile changes the
 underlying service; it does not rewrite shell JSON.
+
+The display panel follows the same separation. Its per-output QML view queries
+and invokes `hk-display`; it does not own a second monitor model or write shell
+JSON. Scale and output enablement persist in
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`, whose generated Lua
+loads after shipped monitor defaults and before explicit
+`user/hypr/monitors.lua`. Brightness is backlight service state and is not
+copied into that layout. Version 1 exposes cleaned scale presets, internal
+backlight brightness when available, and output enable/disable; mode and
+position editing, external DDC brightness, and global text sizing remain
+outside this panel slice.
 
 ## Update Contract
 

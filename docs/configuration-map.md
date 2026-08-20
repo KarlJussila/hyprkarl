@@ -65,6 +65,18 @@ The active bundle's `gtk-theme/` payload is materialized separately as a
 managed real-file copy at `~/.local/share/themes/hyprkarl/`. Theme switches
 replace that copy; GTK does not consume it through the runtime symlink tree.
 
+Display-panel layout state lives separately under
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`:
+
+- `layout.json`
+  The backend's machine-readable enabled state and active mode, position,
+  scale, and transform for known outputs
+- `monitors.lua`
+  The generated Hyprland rules loaded on configuration reload
+
+`hk-display` is the only writer. These are machine state, not personal editing
+surfaces; use `user/hypr/monitors.lua` for explicit authored rules.
+
 ## Hyprland
 
 Hyprland is configured in **Lua** (`hyprland.lua`), required since Hyprland 0.55
@@ -103,10 +115,12 @@ modules in this order:
   Keybinding includes (`hl.bind()`)
 
 The bootstrap next loads the active theme from
-`config/hyprkarl/current/theme/hyprland.lua`, then loads matching optional files
-from `user/hypr/` in the same order. User calls therefore win over shipped and
-theme values. Missing user files are skipped; syntax, read, and runtime errors
-are reported.
+`config/hyprkarl/current/theme/hyprland.lua`, the generated
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/monitors.lua`, then
+matching optional files from `user/hypr/` in the same order. The generated
+layout wins over shipped monitor defaults, while user calls win over shipped,
+theme, and generated values. Missing generated and user files are skipped;
+syntax, read, and runtime errors are reported.
 
 `bindings.lua` then requires:
 
@@ -212,9 +226,11 @@ Hyprland starts it with `hk-shell start`; use `hk-shell status`, `hk-shell
 logs`, and `hk-shell stop` to inspect and manage it. A direct `qs -p
 config/quickshell` launch remains useful for foreground development.
 See `config/quickshell/README.md` for its structure, checks, and interactions.
-The audio, network, Bluetooth, battery/power, and clock/calendar
+The display, audio, network, Bluetooth, battery/power, and clock/calendar
 panels share a per-monitor host under `config/quickshell/panels/`; their
 feature-specific views and state live under `config/quickshell/features/`.
+The display view delegates discovery, live changes, and persistence to
+`hk-display` rather than owning a second QML state store.
 Network scanning and Bluetooth discovery use feature-owned singletons because
 those operations are global to an adapter while panels are per monitor.
 Network scanning follows panel activity; Bluetooth discovery begins only from

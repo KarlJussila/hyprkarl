@@ -203,8 +203,10 @@ schema and override examples.
 - `widgets/*.qml` provide compact status and panel entry points;
   `widgets/qml.qml` is the host for explicitly referenced
   modules under `user/quickshell/modules/`.
-- `features/` owns feature-specific panel state and composition. Audio,
-  network, Bluetooth, power, and clock/calendar all use this boundary.
+- `features/` owns feature-specific panel state and composition. Display,
+  audio, network, Bluetooth, power, and clock/calendar all use this boundary.
+  Display is a per-output view over the separate `hk-display` backend rather
+  than a second QML monitor-state owner.
 - `features/menu/` owns menu configuration, navigation state, IPC, and the
   per-screen overlay.
 - `features/osd/` owns one typed state/IPC object and the per-screen,
@@ -245,7 +247,7 @@ multiple widgets genuinely use the same interaction or visual structure.
   without adding space between adjacent items.
 - Focused workspaces use accent-colored brackets; audio, battery, and toggle
   widgets use drawn indicators instead of font-dependent approximations.
-- Audio, network, Bluetooth, battery/power, and clock/calendar open
+- Display, audio, network, Bluetooth, battery/power, and clock/calendar open
   independent, stable-width feature panels through one per-monitor host. The
   host expands each panel to its content height or the remaining monitor
   height, scrolls only content that still cannot fit, switches between those
@@ -279,6 +281,13 @@ multiple widgets genuinely use the same interaction or visual structure.
   physical pixels so fractional output scaling does not soften it.
   The installed PowerProfiles API exposes confirmed profile state but no
   per-write failure result, so the bar does not invent one.
+- Display targets the output containing the clicked bar. It exposes an
+  available internal backlight, whole-logical-pixel scale presets, and
+  connected-output enablement without allowing the last active output to be
+  disabled. `hk-display` owns discovery, live Hyprland changes, and the
+  generated XDG-state layout; the panel does not rewrite shell JSON or
+  personal monitor rules. External DDC brightness, mode/position editing, and
+  global text size are intentionally outside this first slice.
 - Clock/calendar binds the bar, date header, viewed month, and current-day
   highlight to one shared clock. Previous/next controls navigate real months,
   a return action appears away from the current month, and reopening resets to

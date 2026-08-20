@@ -136,7 +136,8 @@ input.lua
 bindings.lua
 ```
 
-They load in that order after all shipped modules and after the active theme.
+They load in that order after all shipped modules, the active theme, and the
+display panel's machine-generated XDG-state monitor layout.
 Only create the files you need. A personal monitor override can be as small as:
 
 ```lua
@@ -147,6 +148,9 @@ The files execute directly against Hyprland's `hl` Lua API. They are not
 merged structurally: later calls override settings such as monitor and input
 values, while additive APIs such as bindings and window rules add entries.
 Use `hl.unbind()` before `hl.bind()` when replacing an existing shortcut.
+
+`hk-display` never edits this directory. A rule in `user/hypr/monitors.lua`
+loads after its generated layout and therefore retains the final say.
 
 Run `Hyprland --verify-config` before reloading. A missing optional file is
 normal; an unreadable file or Lua error is reported rather than silently

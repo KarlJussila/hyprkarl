@@ -45,8 +45,7 @@ if not theme then
 end
 theme()
 
-local function load_user_module(module)
-    local path = user_path .. "/" .. module .. ".lua"
+local function load_optional_file(path)
     local file, open_error, error_code = io.open(path, "r")
 
     if not file then
@@ -65,6 +64,11 @@ local function load_user_module(module)
     chunk()
 end
 
+-- Display-panel changes are generated machine state. They override the
+-- shipped catch-all rule without editing the repository, while explicit user
+-- monitor rules below retain the final say.
+load_optional_file(state_home .. "/hyprkarl/display/monitors.lua")
+
 for _, module in ipairs(modules) do
-    load_user_module(module)
+    load_optional_file(user_path .. "/" .. module .. ".lua")
 end

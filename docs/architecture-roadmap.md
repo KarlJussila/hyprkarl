@@ -75,14 +75,17 @@ does not decide the final surface shape.
 ### Resolved Product Decisions
 
 - Feature panels remain independent surfaces. Network/Wi-Fi, Bluetooth,
-  audio, battery/power, clock/calendar, and later display controls each have
+  audio, battery/power, clock/calendar, and display controls each have
   enough distinct state and interaction depth to own their information
   architecture.
 - Those panels share a visual and windowing vocabulary, not one combined
   control-center layout. A bar widget opens its feature's panel directly.
-- A display panel is a desired later feature. It should not be designed until
-  one integration owns monitor discovery, live application, persistence, and
-  error reporting across Hyprland and the shell.
+- The display panel delegates monitor discovery, live application,
+  persistence, and error reporting to one `hk-display` backend. Its first
+  per-output slice covers internal-backlight brightness, cleaned scale
+  presets, and output enablement; mode/position editing and external DDC
+  brightness remain later work. Global text sizing is a separate
+  accessibility/theme concern.
 - Top and bottom bars are first-class in the initial production shell.
   Vertical bars are intentionally deferred. Orientation should remain an
   explicit layout concern at the bar and panel-window boundaries where that
@@ -102,10 +105,11 @@ The lasting product and public-data boundaries are developed further in the
 ### Current Foundation Progress
 
 The production Quickshell bar has a per-bar feature-panel host exercised by
-separate audio, network, Bluetooth, battery/power, and clock/calendar panels.
+separate display, audio, network, Bluetooth, battery/power, and clock/calendar
+panels.
 The host owns monitor-local active state, anchoring, bounds, focus and
 dismissal, scrolling, transitions, and contact-aware corners. Header, section,
-row, and action controls have now survived five different feature compositions
+row, and action controls have now survived six different feature compositions
 and form the stable baseline vocabulary; summaries, sliders, calendar cells,
 and navigation remain feature-owned. Network scanning and Bluetooth discovery
 each have a feature-owned, application-global request owner so multiple
@@ -567,8 +571,9 @@ information architecture:
 - network/Wi-Fi, Bluetooth, audio, battery/power, and clock/calendar remain
   distinct panels rather than summaries inside a combined quick-settings
   surface;
-- display controls become another distinct panel only after a cohesive monitor
-  integration owns discovery, live application, persistence, and failures;
+- display controls remain another distinct panel over the cohesive
+  `hk-display` backend that owns discovery, live application, persistence, and
+  failures;
 - bar widgets remain concise status and entry points, not compressed copies of
   their full panels.
 
@@ -633,7 +638,7 @@ contract at their own maintenance and debugging cost.
   through explicit screen models.
 - Every migrated surface has a written interaction outline or visual prototype
   before its reusable component needs are finalized.
-- Audio, network, Bluetooth, power, clock/calendar, and future display panels
+- Display, audio, network, Bluetooth, power, and clock/calendar panels
   share a recognizable Hyprkarl design language without being forced into
   identical layouts.
 - Disabled or unopened surfaces do not keep unnecessary windows or pollers.
@@ -813,8 +818,10 @@ small design changes before dependent work begins:
 2. Resolved: the companion theme generator remains an external sibling by
    default, with `HYPRKARL_THEME_GENERATOR_PATH` as an explicit relocation
    override. `hk-theme build` is the narrow integration boundary.
-3. Which integration owns display discovery, live changes, persistence, and
-   recovery before the planned display feature panel is implemented.
+3. Resolved: `hk-display` owns Hyprland discovery, live scale and output-state
+   changes, internal backlight control, and the generated XDG-state layout.
+   The Quickshell display panel is a per-output view over that backend, while
+   `user/hypr/monitors.lua` loads afterward and retains the final say.
 4. Resolved: polkit belongs to the long-running shell, while the eventual
    secure lock uses an isolated short-lived process. Lock implementation is
    deferred beyond Quickshell 0.3.0-2.1 because the installed release predates

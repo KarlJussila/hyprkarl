@@ -6,6 +6,7 @@ PanelAction 1.0 PanelAction.qml
 PanelHeader 1.0 PanelHeader.qml
 PanelRow 1.0 PanelRow.qml
 PanelSectionLabel 1.0 PanelSectionLabel.qml
+PanelSlider 1.0 PanelSlider.qml
 ShellButton 1.0 ShellButton.qml
 ShellTooltip 1.0 ShellTooltip.qml
 ToggleIndicator 1.0 ToggleIndicator.qml

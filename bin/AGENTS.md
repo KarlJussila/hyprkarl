@@ -55,6 +55,15 @@ Bindings and helpers must use that typed surface rather than call a daemon
 control tool or internal QML object. Notification producers continue to use
 the standard freedesktop service through `notify-send` or their toolkit.
 
+`hk-display` is the single display-control boundary. Its Python library owns
+Hyprland output discovery, live scale and enable/disable changes, internal
+backlight control, and the generated layout under
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`. The Quickshell panel
+must call this command rather than write Hyprland rules or persistence itself.
+Generated `monitors.lua` loads before `user/hypr/monitors.lua`, so personal Lua
+remains the final authority. Do not add a second shell-JSON display-state store
+or make the backend rewrite user-authored monitor configuration.
+
 `hk-hook-run` is the only lifecycle-hook runner. It accepts exactly
 `post-boot`, `post-update`, `theme-set`, or `wallpaper-set`, then runs
 non-hidden executable regular files from `user/hooks/<event>.d/` in lexical

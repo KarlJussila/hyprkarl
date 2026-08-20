@@ -101,9 +101,13 @@ envs.lua, autostart.lua, monitors.lua, permissions.lua, looknfeel.lua,
 animations.lua, gum.lua, windows.lua, input.lua, bindings.lua
 ```
 
-It then loads the active theme and matching optional user modules in the same
-order. User values therefore win over shipped behavior and the theme. Missing
-user files are normal; other load failures must remain visible.
+It then loads the active theme, the machine-generated display layout from
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/monitors.lua`, and
+matching optional user modules in the same order. Generated display state
+therefore overrides the shipped catch-all monitor rule without dirtying the
+repository, while explicit `user/hypr/monitors.lua` calls retain the final say.
+Missing generated and user files are normal; other load failures must remain
+visible.
 
 Keybindings are split under `defaults/hypr/bindings/`: `apps.lua`, `media.lua`, `windows.lua` (window management), `workspaces.lua` (workspaces/monitors/scratchpad), `system.lua` (menus, notifications, panels, power). App-specific window rules are split under `defaults/hypr/windows/`: `browsers.lua`, `floating.lua`, `media.lua`, `terminals.lua`, `screenshots.lua` — each required by `windows.lua`, which owns the base rules and the final `default-opacity` application. Personal modules belong in `user/hypr/`; upstream must not add or modify a user's files there.
 
@@ -167,12 +171,14 @@ offset, resolved with a zero floor; the tray binds this to
 One optional `userRoot.source` loads a trusted application-wide QML composition
 root for independent surfaces or a replacement bar. It may publish reactive
 per-output notification positioning; there is no discovery or plugin layer.
-Each bar owns
-one `FeaturePanelHost`; audio, network, Bluetooth,
+Each bar owns one `FeaturePanelHost`; display, audio, network, Bluetooth,
 battery/power, and clock/calendar panels compose shared panel controls inside
-that host, while feature directories own service-specific state. Bluetooth
-and network use feature singletons for adapter-global discovery/scan
-ownership; clock uses one application-wide current-time owner.
+that host, while feature directories own service-specific state. The display
+panel targets the bar's output and delegates discovery, live changes, and
+persistent monitor layout to `hk-display`; it does not rewrite shell JSON or
+user monitor files. Bluetooth and network use feature singletons for
+adapter-global discovery/scan ownership; clock uses one application-wide
+current-time owner.
 `config/quickshell/features/command/CommandState.qml` owns one polling or
 persistent-stream provider per provider-backed command-widget ID. Static
 command widgets, including the main-menu button, create no provider runtime.

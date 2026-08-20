@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""Print display-panel state as JSON."""
+
+import json
+import sys
+
+from lib.display import display_state
+
+
+def main() -> int:
+    output = sys.argv[1] if len(sys.argv) > 1 else ""
+    try:
+        json.dump(
+            display_state(output), sys.stdout, ensure_ascii=False, separators=(",", ":")
+        )
+        print()
+        return 0
+    except Exception as error:
+        print(f"Could not read display state: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""Enable or disable one display and persist the result."""
+
+import sys
+
+from lib.display import toggle
+
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        print("Usage: hk-display-toggle <output>", file=sys.stderr)
+        return 1
+    try:
+        print("enabled" if toggle(sys.argv[1]) else "disabled")
+        return 0
+    except Exception as error:
+        print(f"Could not toggle display: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

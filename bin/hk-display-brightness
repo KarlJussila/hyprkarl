@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+"""Set one display's backlight brightness."""
+
+import sys
+
+from lib.display import set_brightness
+
+
+def main() -> int:
+    if len(sys.argv) != 3:
+        print("Usage: hk-display-brightness <output> <percent>", file=sys.stderr)
+        return 1
+    try:
+        percent = max(1, min(100, round(float(sys.argv[2]))))
+        print(set_brightness(sys.argv[1], percent))
+        return 0
+    except Exception as error:
+        print(f"Could not set display brightness: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

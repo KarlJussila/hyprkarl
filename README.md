@@ -134,7 +134,10 @@ routing, progress, silence mode, one-item restore, bar-connected geometry, and
 data-defined application icon overrides with user QML drawings; Mako is no
 longer part of the session. Polkit privilege requests also use a focused,
 theme-aware Quickshell prompt; the separate `hyprpolkitagent` process is no
-longer part of the session. Personal command widgets can add bar readouts
+longer part of the session. A per-output display panel controls internal
+backlight brightness, scale, and output enablement through one persistent
+`hk-display` backend; explicit personal Hyprland monitor rules still have the
+final say. Personal command widgets can add bar readouts
 without editing QML using one application-wide polling or persistent-stream
 provider per widget ID. Static command buttons such as the main-menu trigger
 use the same kind without starting a timer or process. More specialized

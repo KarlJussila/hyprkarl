@@ -81,9 +81,12 @@ Each substantial status feature owns an independent panel:
   reachable on battery-less systems should follow an actual desktop use case.
 - **Clock and calendar:** date, calendar navigation, and time-related actions
   that earn a place there.
-- **Display:** brightness and monitor controls are a desired later panel. It
-  waits for a cohesive integration that owns monitor discovery, supported
-  modes, live application, persistence, and failures.
+- **Display:** the first panel slice targets the invoking output and exposes
+  an available internal backlight, cleaned scale presets, and connected-output
+  enablement. One backend owns Hyprland discovery, live application, and
+  persistent layout state. Mode/position editing and external DDC brightness
+  remain later work. Global text sizing stays a separate accessibility/theme
+  concern rather than masquerading as per-output display state.
 
 These are separate surfaces, not summaries inside one combined quick-settings
 window. A feature can link to another feature or system settings when useful,

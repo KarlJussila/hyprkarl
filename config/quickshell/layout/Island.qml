@@ -48,6 +48,16 @@ Item {
         definition: modelData
         edge: root.edge
         showDivider: root.theme.showDividers && index > 0
+        leadingBoundaryInset: root.theme.showDividers
+          && root.instances.length > 1
+          && index === 0
+          && surface.borderEnabled(root.leftRole)
+            ? root.theme.borderWidth : 0
+        trailingBoundaryInset: root.theme.showDividers
+          && root.instances.length > 1
+          && index === root.instances.length - 1
+          && surface.borderEnabled(root.rightRole)
+            ? root.theme.borderWidth : 0
         barWindow: root.barWindow
         theme: root.theme
         systemState: root.systemState

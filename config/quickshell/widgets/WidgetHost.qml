@@ -10,6 +10,8 @@ Item {
   required property var theme
   required property var systemState
   required property var panelHost
+  property real leadingBoundaryInset: 0
+  property real trailingBoundaryInset: 0
 
   readonly property string widgetId: definition.id
   readonly property var loadedItem: loader.item
@@ -38,8 +40,9 @@ Item {
 
   Loader {
     id: loader
-    x: root.dividerExtent
+    x: root.dividerExtent + root.leadingBoundaryInset
     width: implicitWidth + root.mainPadding * 2
+      - root.leadingBoundaryInset - root.trailingBoundaryInset
     height: parent.height
   }
 

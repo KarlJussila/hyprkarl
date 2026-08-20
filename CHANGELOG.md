@@ -7,6 +7,10 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Added a per-output display panel with internal-backlight brightness, cleaned
+  scale presets, and output enable/disable controls. `hk-display` now owns
+  Hyprland discovery, live changes, and an XDG-state layout that survives
+  reloads without editing tracked or user-authored monitor files.
 - Added `bar.enabled` so the built-in bar and its bar-only polling can be
   removed without stopping menus, notifications, OSD, or polkit. Added one
   explicitly referenced application-wide user QML root with open theme data

@@ -117,6 +117,10 @@ coordinates: `screen` faces the output edge, `content` faces the workspace,
 `outer` faces a monitor side, and `inner` faces another island. Preserve that
 vocabulary for top and bottom bars. `curve` is the concave join supported at a
 `screenInner` corner; on other corners it intentionally resolves to square.
+`WidgetHost` balances a side island's bordered edge against the neighboring
+divider by insetting the edge widget's loaded content on the border side. Keep
+that half-border centering correction in the host; do not reintroduce visual
+offsets in individual edge widgets or the tray chevron.
 The bar window and exclusive zone include screen- and content-side margins,
 while panel and tooltip anchors also account for the content margin.
 
@@ -168,10 +172,13 @@ It also owns edge-dependent popup gravity: top-bar panels expand downward and
 bottom-bar panels expand upward while anchoring within the bar surface.
 Panel contents must not create their own popup window or reproduce geometry.
 
-Audio, network, Bluetooth, battery/power, and clock/calendar now exercise this
-host with five different compositions. Their repeated header, section, row,
-and action controls are the stable baseline vocabulary; feature-specific
-summaries, sliders, calendar cells, and navigation remain with their features.
+Display, audio, network, Bluetooth, battery/power, and clock/calendar now
+exercise this host with six different compositions. Their repeated header,
+section, row, and action controls are the stable baseline vocabulary;
+feature-specific summaries, sliders, calendar cells, and navigation remain
+with their features. `components/PanelSlider.qml` owns the shared normalized
+slider used by display brightness and audio levels; do not fork its interaction
+for another percentage control.
 `PanelHeader` owns the compact optional header action; audio, network, and
 Bluetooth place their advanced-settings cog there instead of adding a wide
 footer action.
@@ -194,6 +201,16 @@ canvas; do not use the item's transform scale, which blurs its texture.
 Small canvas strokes must resolve against `Screen.devicePixelRatio`; the audio
 indicator uses a two-physical-pixel stroke and is vertically centered in its
 bar row.
+
+`features/display/DisplayPanel.qml` is a per-output view over `hk-display`.
+Opening it and its active-only timer query the bar's output; scale and
+brightness act on that same output, while the display rows enable or disable
+named outputs. The backend—not QML—owns Hyprland discovery, scale cleanup,
+live application, and the generated XDG-state layout. Never disable the last
+active output. Internal backlight brightness is shown only when the target
+exposes it; external DDC brightness, mode/position editing, and global text
+size are not part of this first display slice. Text size is an accessibility
+and theme concern, not per-output monitor state.
 
 Hover text uses `ShellTooltip`, a non-focusable `PopupWindow` with an empty
 input mask. Do not replace it with Qt Controls' attached `ToolTip`; that window

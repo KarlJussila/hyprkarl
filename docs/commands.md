@@ -291,6 +291,12 @@ shell.
   gamma dimming).
 - `hk-caffeine`
   Toggle idle behaviors (hypridle).
+- `hk-display <state|scale|toggle|brightness> [arguments]`
+  Query or change display state through the backend used by the Quickshell
+  display panel. `state [output]` prints JSON; `scale <output> <factor>` and
+  `toggle <output>` apply and persist Hyprland layout changes; `brightness
+  <output> <percent>` controls an available internal backlight without adding
+  it to the monitor layout.
 - `hk-playerctl`
   Control media playback and show track state in the shell OSD.
 - `hk-volume`
@@ -316,7 +322,9 @@ completeness so they can be discovered with grep:
 
 - Launching glue: `hk-tui-launch`, `hk-app-restart`
 - Hardware actions bound to function keys: `hk-brightness-display`,
-  `hk-brightness-keyboard`, `hk-audio-switch`, `hk-battery-monitor`
+  `hk-brightness-keyboard`, `hk-audio-switch`, `hk-battery-monitor`; display
+  dispatcher actions: `hk-display-state`, `hk-display-scale`,
+  `hk-display-toggle`, `hk-display-brightness`
 - Notification helpers: `hk-battery-notify`, `hk-notify-window-class`,
   `hk-show-done`, `hk-suggest-reboot`
 - Lookup helpers: `hk-battery-find`, `hk-icon-find`, `hk-cmd-present`,

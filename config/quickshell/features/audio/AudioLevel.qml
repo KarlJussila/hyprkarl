@@ -44,7 +44,7 @@ Item {
       action: root.audio ? () => root.audio.muted = !root.audio.muted : null
     }
 
-    AudioSlider {
+    PanelSlider {
       width: parent.width
       theme: root.theme
       enabled: root.audio !== null

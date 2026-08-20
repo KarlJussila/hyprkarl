@@ -116,8 +116,8 @@ example, live-reload behavior, and keyboard controls.
 
 `config/hypr/hyprland.lua` is a stable bootstrap. Hyprkarl's implementation
 lives in `defaults/hypr/`, while personal modules live in `user/hypr/` and load
-after both the shipped configuration and active theme. Supported module names,
-in load order, are:
+after the shipped configuration, active theme, and generated display layout.
+Supported module names, in load order, are:
 
 ```text
 envs, autostart, monitors, permissions, looknfeel,
@@ -140,6 +140,10 @@ Calls that define collections remain additive. Personal bindings and window
 rules can therefore be added directly, while replacing an existing binding
 requires an `hl.unbind()` call first. Always run `Hyprland --verify-config`
 before reloading.
+
+Display-panel changes persist through `hk-display` under XDG state. They do
+not modify `user/hypr/monitors.lua`; any monitor rules you place there load
+later and remain authoritative on reload.
 
 ## Add a New Keybinding
 

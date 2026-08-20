@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""Set and persist one display's scale."""
+
+import sys
+
+from lib.display import set_scale
+
+
+def main() -> int:
+    if len(sys.argv) != 3:
+        print("Usage: hk-display-scale <output> <scale>", file=sys.stderr)
+        return 1
+    try:
+        print(set_scale(sys.argv[1], float(sys.argv[2])))
+        return 0
+    except Exception as error:
+        print(f"Could not set display scale: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

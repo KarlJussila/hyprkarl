@@ -61,7 +61,6 @@ Item {
     Canvas {
       id: chevron
       anchors.centerIn: parent
-      anchors.horizontalCenterOffset: -1
       width: 8
       height: 14
       property color indicatorColor: root.theme.foreground

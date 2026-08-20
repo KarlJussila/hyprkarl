@@ -109,6 +109,10 @@
       },
       "end": [
         {
+          "id": "display",
+          "kind": "display"
+        },
+        {
           "id": "audio",
           "kind": "audio",
           "showPercentage": false,

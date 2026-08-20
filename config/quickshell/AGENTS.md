@@ -28,6 +28,13 @@ preventing an advanced user from leaving the documented contract is not.
   metrics, and island geometry.
 - `widgets/*.qml`: one implementation per widget kind.
 
+For generator-owned themes, the companion repository's typed
+`defaults/theme.yaml` supplies the complete final `shell` object serialized as
+`quickshell.json`. Add new required appearance values there, not as literals in
+`templates/quickshell.json`. Theme authors may derive that stable consumer
+object from arbitrary custom structures; do not make the shell depend on the
+source vocabulary.
+
 Shell JSON is data-only. Widget definitions live inline in the layout; `id`
 identifies the instance and `kind` selects the implementation loaded by
 `WidgetHost.qml`. Ordinary user objects merge recursively over the shipped

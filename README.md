@@ -119,7 +119,10 @@ Shipped themes live under `themes/`; personal themes and overlays live under
 `user/themes/`. Selection atomically assembles an immutable runtime bundle
 under `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl`, so switching never
 edits tracked files. Quickshell watches the runtime selector and applies theme
-switches without restarting. Its semantic `quickshell.json` controls island corner shapes,
+switches without restarting. Built-ins are generated from typed `theme.yaml`
+graphs whose strings, numbers, booleans, shared defaults, and arbitrary custom
+structures can feed stable consumer values. The semantic `quickshell.json`
+controls island corner shapes,
 selective borders, and screen/outer/content margins as well as colors and
 typography. It also provides the minimum height and widget padding; the tallest
 widget determines one shared height for all islands. Inspect or manage the bar
@@ -145,7 +148,8 @@ Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 hk-theme set <theme-name>
 ```
 
-To build your own theme, generate one into `user/themes/` with
+To build your own theme, create a typed source and generate it into
+`user/themes/` with
 `hk-theme build <source> [name]` and the adjacent
 [hyprkarl-theme-generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
 (recommended), or copy an existing bundle there and edit it. See

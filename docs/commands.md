@@ -112,7 +112,7 @@ category commands do not emit that event.
 ## Themes and Wallpapers
 
 - `hk-theme build <source> [name]`
-  Render a palette source with the companion generator into the user-owned
+  Render a typed `theme.yaml` source with the companion generator into the user-owned
   `user/themes/<name>/` bundle. The generator defaults to the sibling
   `../theme-generator` checkout and can be relocated with
   `HYPRKARL_THEME_GENERATOR_PATH`.

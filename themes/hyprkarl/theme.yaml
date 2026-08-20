@@ -1,0 +1,198 @@
+typography:
+  ui_family: JetBrains Mono Nerd Font Propo
+  mono_family: JetBrains Mono Nerd Font
+  body_size: 13
+  readout_size: 13
+  weight: 700
+  style: Bold
+metrics:
+  spacing:
+    compact: 3
+    small: 6
+    medium: 8
+    large: 10
+    xlarge: 12
+    xxlarge: 14
+  radius:
+    entry: 4
+    tooltip: 6
+    control: 8
+    popup: 10
+  border:
+    standard: 2
+    subtle: 1
+  opacity:
+    header_accent: 0.3
+    selection_accent: 0.16
+motion:
+  surface: 140
+shell:
+  palette:
+    foreground: '#c7a3bf'
+    muted: '#b3a9b3'
+    accent: '#8a1a80'
+    border: '#43343e'
+    urgent: '#cc5555'
+    warning: '#f4b39e'
+  surfaces:
+    window: '#00000000'
+    bar: '#1b1519'
+    popup: '#1b1519'
+    tooltip: '#1b1519'
+    notification: '#1b1519'
+    control: '#00000000'
+  typography:
+    uiFamily: JetBrains Mono Nerd Font Propo
+    monoFamily: JetBrains Mono Nerd Font
+    bodySize: 13
+    readoutSize: 13
+    weight: 700
+    style: Bold
+  metrics:
+    radius: 8
+    borderWidth: 2
+    controlPadding: 8
+  bar:
+    minimumThickness: 22
+    showDividers: true
+    widgetPadding:
+      main: 6
+      cross: 3
+    trayPaddingOffset: -2
+    margin:
+      screen: 0
+      outer: 0
+      content: 0
+    island:
+      radius: 8
+      curveSize: 12
+      curveRadius: 4
+      corners:
+        screenOuter: square
+        screenInner: curve
+        contentOuter: square
+        contentInner: round
+      borders:
+        screen: false
+        content: true
+        outer: false
+        inner: true
+  panel:
+    gap: 0
+    width: 360
+    powerWidth: 300
+    padding: 12
+    spacing: 10
+    radius: 10
+    transitionDuration: 140
+  tooltip:
+    radius: 6
+  osd:
+    width: 300
+    mediaWidth: 380
+    padding: 12
+    spacing: 10
+    radius: 10
+    iconSize: 20
+    progressHeight: 6
+    transitionDuration: 140
+  notification:
+    width: 420
+    compactWidth: 210
+    padding: 10
+    spacing: 8
+    stackSpacing: 0
+    radius: 10
+    iconSize: 32
+    imageSize: 80
+    indicatorScale: 1.5
+    progressHeight: 6
+    transitionDuration: 140
+  polkit:
+    width: 440
+    padding: 14
+    spacing: 10
+    radius: 10
+    iconSize: 36
+    headerAccentOpacity: 0.3
+    transitionDuration: 140
+  menu:
+    scrim: '#22000000'
+    fontSize: 14
+    width: 280
+    searchWidth: 560
+    referenceWidth: 800
+    searchRows: 10
+    outerRadius: 10
+    innerRadius: 6
+    entryRadius: 4
+    outerBorderWidth: 2
+    outerPadding: 6
+    innerBorderWidth: 2
+    headerPadding: 6
+    entryMargin: 4
+    entryPadding: 7
+    selectionBorderWidth: 1
+    headerAccentOpacity: 0.3
+    selectionAccentOpacity: 0.16
+mode: dark
+base:
+  background: '#1b1519'
+  layer0: '#1b1519'
+  layer1: '#241c21'
+  layer2: '#2f252c'
+  layer3: '#382b34'
+  layer4: '#43343e'
+  surface_soft: '#241c21'
+  surface: '#2f252c'
+  surface_alt: '#43343e'
+  foreground: '#d2ccd2'
+  foreground_muted: '#b3a9b3'
+  foreground_dim: '#8a7b8a'
+ansi:
+  black: '#2e2329'
+  red: '#cc5555'
+  green: '#96708e'
+  yellow: '#d7937d'
+  blue: '#6843ae'
+  magenta: '#63005A'
+  cyan: '#a46fd6'
+  white: '#d2ccd2'
+bright:
+  black: '#42333b'
+  red: '#dd6666'
+  green: '#c7a3bf'
+  yellow: '#f4b39e'
+  blue: '#9877dc'
+  magenta: '#8a1a80'
+  cyan: '#dea6f5'
+  white: '#e8e8e8'
+accent:
+  primary:
+    base: '#63005A'
+    soft: '#3a0035'
+    bright: '#8a1a80'
+  secondary:
+    base: '#a46fd6'
+    soft: '#642c9a'
+    bright: '#dea6f5'
+  tertiary:
+    base: '#96708e'
+    soft: '#4e3949'
+    bright: '#c7a3bf'
+status:
+  success: '#c7a3bf'
+  warning: '#f4b39e'
+  error: '#cc5555'
+  urgent: '#dd6666'
+ui:
+  cursor: '#e3a16f'
+  text: '#d2ccd2'
+  text_secondary: '#c7a3bf'
+  selection_bg: '#e3a16f'
+  selection_fg: '#1b1519'
+  panel: '#2f252c'
+  border: '#63005A'
+  border_inner: '#96708e'
+  border_soft: '#3a0035'
+  highlight: '#8a1a80'

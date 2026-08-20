@@ -181,6 +181,9 @@ are:
   padding, logical island corners and borders, radii, and
   screen/outer/content spacing, plus menu, OSD, notification, and polkit
   appearance
+- `themes/<theme>/theme.yaml`
+  Fully merged and resolved typed graph retained in generator-owned built-in
+  bundles for inspection; the shell consumes `quickshell.json`
 
 The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are

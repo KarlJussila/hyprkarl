@@ -7,6 +7,11 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Breaking: renamed generator-owned `palette.yaml` sources to `theme.yaml` and
+  expanded them into an open, typed token graph. Shared defaults now own fonts,
+  spacing, radii, border widths, motion, and the complete Quickshell appearance
+  contract; theme-defined structures can derive native string, numeric, and
+  boolean consumer values.
 - Replaced `hyprpolkitagent` with a focused, theme-aware Quickshell polkit
   prompt supporting PAM response visibility, fingerprint/no-response flows,
   multiple identities, cancellation, and service-owned retries.

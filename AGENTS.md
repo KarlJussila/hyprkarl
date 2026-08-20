@@ -124,10 +124,14 @@ Switch themes with:
 hk-theme set <theme-name>    # hyprkarl, everforest, gruvbox
 ```
 
-Built-ins are generated from `palette.yaml` plus explicit overrides with the companion
+Built-ins are generated from a typed `theme.yaml` graph plus explicit overrides
+with the companion
 [theme generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
-(locally at `../theme-generator/`). Add a consumer template there and
-regenerate every built-in instead of hand-copying one new file per theme.
+(locally at `../theme-generator/`). Shared generator defaults recursively merge
+with each source before native Jinja resolution; strings, numbers, booleans,
+and arbitrary user-defined structures may feed the final consumer values. Add
+a consumer template there and regenerate every built-in instead of hand-copying
+one new file per theme.
 `hk-theme build <source> [name]` renders a personal bundle into
 `user/themes/<name>/`.
 

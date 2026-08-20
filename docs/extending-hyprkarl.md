@@ -210,9 +210,10 @@ To add a built-in widget kind:
 3. If it opens a panel, put service-specific state and panel composition under
    `config/quickshell/features/<kind>/` and use the existing per-monitor
    `FeaturePanelHost` rather than creating another popup window.
-4. Add required appearance tokens to the companion generator's shared
-   `templates/quickshell.json`, regenerate every built-in, and expose only the
-   semantic QML property the component needs.
+4. Add required appearance values to the companion generator's shared
+   `defaults/theme.yaml` `shell` object, regenerate every built-in, and expose
+   only the semantic QML property the component needs. Theme-specific sources
+   may derive that final value from any custom token structure.
 
 Add a shared component only when multiple widgets genuinely use the same
 interaction or visual structure.
@@ -242,6 +243,13 @@ Examples:
 - terminal configs import from `current/theme/...`
 - Hyprland `loadfile`s `current/theme/hyprland.lua` at the end of its config
 - `hyprlock` points at `current/wallpaper`
+
+Generator-owned themes use a typed `theme.yaml` source. It recursively merges
+over the companion generator's shared defaults, then resolves Jinja
+expressions without coercing numbers or booleans to strings. The shipped
+`metrics`, `motion`, and `typography` groups are conventions, not a schema:
+authors can define their own vocabulary as long as consumer-facing values such
+as the final `shell` object reference it. See [Themes](themes.md).
 
 ## Exposing New Config Files
 

@@ -21,7 +21,7 @@ The intended end state has four properties:
    Arch package, a system image, or a distribution.
 3. One long-running Quickshell process owns shell integration, with small
    public configuration and extension contracts and no plugin marketplace.
-4. Themes are palette-first, with common rendering logic owned once and
+4. Themes use a typed token graph, with common rendering logic owned once and
    generated runtime state kept out of the Git working tree.
 
 ## Product and Visual Direction
@@ -639,7 +639,7 @@ High if attempted as a rewrite, moderate when migrated one feature at a time.
 The largest risks are lifetime differences between cold start and live reload,
 per-monitor popup routing, and accidental global state in QML singletons.
 
-## Workstream 5: Make Themes Palette-First
+## Workstream 5: Build a Typed Theme Graph
 
 ### Goal
 
@@ -648,14 +648,15 @@ hatches and the repo's transparent editing model.
 
 ### Source Model
 
-Implemented. The companion generator owns palette resolution, shared Jinja
-templates, explicit per-theme overrides, assets, validation, and reproducible
-built-in output. Its source hierarchy is:
+Implemented. The companion generator owns the shared typed defaults, native
+Jinja resolution, consumer templates, explicit per-theme overrides, assets,
+validation, and reproducible built-in output. Its source hierarchy is:
 
 ```text
+defaults/theme.yaml           shared typed vocabulary and consumer defaults
 templates/                    shared consumer templates
 themes/<name>/
-├── palette.yaml             canonical colors and mode
+├── theme.yaml               colors and optional token overrides
 ├── overrides/               exceptional hand-written consumer files
 ├── wallpapers/
 ├── icons/
@@ -665,6 +666,10 @@ user/themes/<name>/           user theme or documented overlay
 
 The companion remains the rendering authority and is exposed for personal
 themes through `hk-theme build`; Hyprkarl does not duplicate its renderer.
+Source objects deep-merge over the defaults before recursive expressions
+resolve. Values retain native string, integer, decimal, and boolean types.
+Theme authors may define arbitrary structures and feed them into the final
+consumer values; the shipped vocabulary is guidance, not an allowlist.
 
 ### Generated State
 
@@ -696,7 +701,7 @@ Omarchy's full theme surface before Hyprkarl has corresponding components.
 The runtime supports two clear cases:
 
 1. A complete user theme selected by name.
-2. A documented overlay on a built-in theme for changed palette values,
+2. A documented overlay on a built-in theme for changed consumer values,
    wallpapers, or exceptional consumer output.
 
 User-wide templates may be added later if users need to theme applications
@@ -707,8 +712,8 @@ participate in an ambiguous multi-layer merge.
 
 - Adding one common themed consumer requires one template, not one file per
   existing theme.
-- Every built-in theme renders all required consumers from a documented
-  palette plus explicit exceptions.
+- Every built-in theme renders all required consumers from a documented typed
+  graph plus explicit exceptions.
 - Switching themes does not dirty the Git worktree.
 - A failed render leaves the previous active theme intact.
 - Quickshell updates semantic theme values without rebuilding unrelated shell
@@ -717,10 +722,10 @@ participate in an ambiguous multi-layer merge.
 
 ### Migration Risk
 
-Medium-high. The palette schema, companion generator, and checked-in outputs
-currently live across repository boundaries. First make one theme render
-identically, then convert the remaining themes and remove duplicated generated
-files in one intentional migration.
+Resolved. The source rename and checked-in outputs span repository boundaries,
+so the generator validates every built-in before syncing all bundles together.
+The generated Quickshell contract remains stable while its former template
+literals move into the shared graph.
 
 ## Delivery Sequence
 
@@ -745,9 +750,9 @@ branch. Deliver them as reviewable vertical changes:
 6. **Convert menus to data and add narrow lifecycle hooks.** Complete. Static
    and dynamic menus use the direct Quickshell renderer, while four public
    actions own the narrow user hook events.
-7. **Move runtime theme state and adopt palette-first rendering.** Complete.
-   The companion generator now owns palette-first production, while Hyprkarl
-   stages built-in/user sources into atomic XDG-state artifacts.
+7. **Move runtime theme state and adopt typed theme rendering.** Complete.
+   The companion generator owns typed token resolution and production, while
+   Hyprkarl stages built-in/user sources into atomic XDG-state artifacts.
 8. **Migrate shell-native surfaces individually.** In progress. The OSD,
    notification service, and polkit prompt are complete; each deleted its old
    integration in full. The lock screen remains on `hyprlock` until a fixed
@@ -823,7 +828,7 @@ This roadmap is complete when:
 - the bar preserves Hyprkarl's curated AGS-derived visual character while
   feature panels follow the independently designed richer surface
   model;
-- theme switching renders palette-driven state outside the repository;
+- theme switching renders token-driven state outside the repository;
 - additional shell surfaces run in the same process only where doing so
   deletes older integration machinery; and
 - personal extensions remain direct user-owned files and references rather

@@ -66,10 +66,11 @@ layout.
 
 A full theme in this repo includes:
 
-- `palette.yaml`
-  Canonical palette and mode used to render the bundle. This makes every
-  generated output traceable to its generator input. Runtime activation does
-  not require this source file for a complete hand-authored legacy bundle.
+- `theme.yaml`
+  Fully merged and resolved typed token graph used to render the bundle. It
+  includes colors, fonts, shared metrics, component values, custom source
+  structures, and mode, making every generated output inspectable. Runtime
+  activation does not require this file for a complete hand-authored bundle.
 
 - `hyprland.lua`
   Theme-specific Hyprland styling (Lua — Hyprland's config is Lua since 0.55).
@@ -164,20 +165,21 @@ Optional theme files:
 
 There are two ways to make a theme.
 
-### Generate one from a color palette (recommended)
+### Generate one from a typed theme source (recommended)
 
 The themes shipped with Hyprkarl are produced by the companion tool,
 [hyprkarl-theme-generator](https://github.com/KarlJussila/hyprkarl-theme-generator).
 It renders an entire theme — every file listed under
-[Theme Contents](#theme-contents) — from a single YAML color palette, so the
-colors stay consistent across Hyprland, the bar, terminals, GTK, Qt, and the
-rest. It's the easiest path if you're building a new look, and it pairs well
-with an LLM: hand it a terminal colorscheme (or describe the mood you want) and
-have it write the palette.
+[Theme Contents](#theme-contents) — from one typed YAML graph, so colors,
+typography, geometry, borders, and motion stay coherent across Hyprland, the
+shell, terminals, GTK, Qt, and the rest. Shared defaults provide the complete
+non-color structure, so a minimal source still mostly defines colors. It pairs
+well with an LLM: hand it a terminal colorscheme (or describe the mood you
+want) and have it write the required color groups plus any structural changes.
 
 Keep its checkout beside Hyprkarl (the default), or set
 `HYPRKARL_THEME_GENERATOR_PATH` in `~/.config/uwsm/env.local`. Create a source
-directory with `palette.yaml`, optional `overrides/`, `wallpapers/`, and
+directory with `theme.yaml`, optional `overrides/`, `wallpapers/`, and
 `previews/`, then run:
 
 ```bash
@@ -188,8 +190,16 @@ hk-theme set my-theme
 `hk-theme build <source> [name]` writes the complete generated bundle to
 `user/themes/<name>/`, never to upstream-owned `themes/`. Generator developers
 use its direct `python -m theme_generator sync ...` command when intentionally
-refreshing the checked-in built-ins. Keep the palette source outside that
+refreshing the checked-in built-ins. Keep the theme source outside that
 generated destination; a clean rebuild replaces the destination as one unit.
+
+Theme sources recursively merge over the generator's `defaults/theme.yaml`,
+then Jinja expressions resolve to native strings, integers, decimals, and
+booleans. Authors may define arbitrary structures and reference them from the
+final `shell` values; the shipped `metrics`, `motion`, and `typography`
+vocabulary is a default, not an allowlist. For example, a theme may define
+`widths.standard_border` and bind `shell.metrics.borderWidth` to it. Objects
+merge recursively, while arrays and scalar values replace their defaults.
 
 ### Copy an existing theme
 
@@ -211,13 +221,13 @@ because the repo already expects a specific file layout.
 
 ### Move an existing custom theme
 
-An output-only theme created before palette-first generation can keep working.
+An output-only theme created before token-driven generation can keep working.
 Move its complete directory from `themes/<name>/` to `user/themes/<name>/`, then
 run `hk-theme set <name>`. Runtime validation checks the files consumers need;
-it does not require a historical theme to invent a palette.
+it does not require a historical theme to invent a source graph.
 
 To make that theme generator-owned later, create a new source directory with
-`palette.yaml`, put only genuine exceptions under `overrides/`, copy its assets,
+`theme.yaml`, put only genuine exceptions under `overrides/`, copy its assets,
 and use `hk-theme build`. Compare the result before replacing the old personal
 bundle.
 

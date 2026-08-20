@@ -116,10 +116,13 @@ a module source; JSON layout changes still apply live.
 
 Every bar color, plus typography, thickness, spacing, borders, radii, panel
 sizing, and transition timing, comes from
-the generated bundle's `quickshell.json`. Add a corresponding template value
-and regenerate every built-in when introducing a required theme token. The
-running shell watches the selected runtime artifact and applies theme switches
-without a restart.
+the generated bundle's `quickshell.json`. Generator-owned appearance begins in
+the companion repository's typed `defaults/theme.yaml` graph; its final
+`shell` object is serialized as that JSON contract. Add a corresponding
+consumer value there and regenerate every built-in when introducing a required
+theme property. Individual themes may override it directly or derive it from
+their own token vocabulary. The running shell watches the selected runtime
+artifact and applies theme switches without a restart.
 
 The island silhouette is theme-owned too. For example, the shipped themes use:
 

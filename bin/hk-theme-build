@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-theme-build
-# Build a palette source into a user-owned Hyprkarl theme bundle.
+# Build a typed theme source into a user-owned Hyprkarl theme bundle.
 #
 # Usage:
 #   hk-theme-build <theme-source> [theme-name]
@@ -25,7 +25,7 @@ if [[ -e "$theme_source" ]]; then
   theme_source=$(realpath "$theme_source")
 fi
 if [[ -z "$theme_name" ]]; then
-  if [[ "$theme_source" == */palette.yaml ]]; then
+  if [[ "$theme_source" == */theme.yaml ]]; then
     theme_name=$(basename "$(dirname "$theme_source")")
   else
     theme_name=$(basename "$theme_source")

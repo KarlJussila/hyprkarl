@@ -56,8 +56,8 @@ width. `entryAlignment` may be `left`, `center`, or `right`; it defaults to
 - `enabled`: optional boolean; `false` removes the entry from rendering
 - `checkedCommand`: optional command evaluated when the menu opens; exit zero
   replaces the icon with a check mark
-- `action`: a `menu` destination, shell `command`, or `dismiss` action for an
-  informational row
+- `action`: a `menu` destination, shell `command`, Quickshell `surface`, or
+  `dismiss` action for an informational row
 
 Commands run through `bash -c` after the menu closes. Keep interaction-heavy
 work in a dedicated `hk-*` command and reference it from the data; the menu
@@ -67,6 +67,23 @@ Quickshell menus. The app launcher, open-with chooser, calculator, and
 wallpaper thumbnail picker are dedicated Quickshell overlays because their
 rows and actions do not fit the command-menu data contract. Package pickers
 retain their focused terminal interfaces.
+
+A `surface` action switches directly to another Quickshell overlay without
+starting a process or calling back through shell IPC:
+
+```json
+{
+  "type": "surface",
+  "surface": "wallpaper",
+  "parameters": { "action": "set" }
+}
+```
+
+The shipped surface IDs are `launcher`, `calculator`, and `wallpaper`.
+`wallpaper` accepts an `action` parameter of `set` or `remove`; the other two
+need no parameters. The surface ID and optional parameter object are passed
+through as authored, so a user composition may respond to its own surface IDs
+and parameter vocabulary without changing the menu engine.
 
 Keyboard navigation keeps the selected row immediately in view, including
 when wrapping between the first and last entries. Moving the pointer selects
@@ -85,9 +102,10 @@ and do not replace shell-native service state in feature panels.
 
 A `sourceCommand` must print one JSON array and exit. Each array item has a
 stable `id`, a `label`, optional `icon` and `searchText` fields, and a
-`command`, `menu`, or `dismiss` action; array order is display order. The shell
-validates the result before rendering it, shows `emptyLabel` for an empty
-array, and reports provider or schema failure in the menu and `hk-shell logs`.
+`command`, `menu`, `surface`, or `dismiss` action; array order is display order.
+The shell validates the result before rendering it, shows `emptyLabel` for an
+empty array, and reports provider or schema failure in the menu and
+`hk-shell logs`.
 Sources refresh on every open and when returning to a dynamic parent, so
 filesystem, hardware, and service state do not go stale. Domain commands own
 discovery: for example, `hk-fingerprint menu-entries remove` supplies only

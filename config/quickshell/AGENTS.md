@@ -275,11 +275,15 @@ validates its output; providers own discovery only, while the JSON menu object
 owns the title, empty-state label, optional search behavior, and width role.
 Menus may also choose left, center, or right entry alignment; keep this a
 general data property rather than branching the renderer for a specific menu.
-Dynamic entries may run a command, navigate to a declared submenu, or dismiss
-an informational menu; nested dynamic menus reload the restored parent when
-navigating back. Providers and actions inherit the session environment through
-non-login `bash -c`. A dynamic destination is committed only after its provider
-returns a complete valid model; do not add per-menu loading branches or caches.
+Static and dynamic entries may run a command, navigate to a declared submenu,
+switch directly to a Quickshell surface, or dismiss an informational menu.
+Surface actions pass an open-ended parameter object through `OverlayState` so
+shipped and user-composed surfaces use the same in-process transition instead
+of calling back through `hk-shell`. Nested dynamic menus reload the restored
+parent when navigating back. Providers and command actions inherit the session
+environment through non-login `bash -c`. A dynamic destination is committed
+only after its provider returns a complete valid model; do not add per-menu
+loading branches or caches.
 Providers should query only the state their rows need, and static generated
 catalogs should already be in provider-ready JSON. Providers that construct or
 transform entries should normally be Python executables using lists,

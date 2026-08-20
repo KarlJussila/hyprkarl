@@ -134,7 +134,9 @@ alignment. Providers run without a login shell and dynamic destinations appear
 atomically after validation; static catalogs such as the icon list are
 preformatted when their data is generated. Providers that construct entries
 use Python dictionaries and the standard `json` module; simple pass-through
-providers may remain Bash.
+providers may remain Bash. A `surface` action moves directly from the command
+menu to a dedicated or user-composed Quickshell overlay without spawning a
+command; its optional parameter object is passed through unchanged.
 Menu appearance
 uses the active shell theme plus its nested `menu` object. The compact width,
 centered rows, title band, nested frame, and bordered selection retain the old
@@ -145,7 +147,8 @@ accent states now belong to the shell's visual system. See
 The launcher/open-with chooser, calculator, and wallpaper picker are dedicated
 surfaces rather than command-menu entry shapes. They share the command menu's
 frame, focus lifecycle, and touchpad momentum through `features/overlay/`, but
-each feature owns its domain behavior. The launcher consumes Quickshell's
+each feature owns its domain behavior. Built-in menu entries reach these
+surfaces through in-process surface actions. The launcher consumes Quickshell's
 resident desktop-entry model and launches through `gtk-launch`; open-with asks
 `hk-open-with` for Gio's application model and may set the chosen application
 as the MIME default before launching. The calculator evaluates with `qalc` and

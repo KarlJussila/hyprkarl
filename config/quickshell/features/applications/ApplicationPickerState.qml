@@ -40,6 +40,19 @@ QtObject {
 
   signal requested()
 
+  property Connections overlayConnection: Connections {
+    target: OverlayState
+
+    function onOpenRevisionChanged(): void {
+      if (OverlayState.activeSurface === root.launcherSurface) {
+        root.requested()
+      } else if (OverlayState.activeSurface === root.openWithSurface) {
+        root.loadFile(OverlayState.parameters.path ?? "")
+        root.requested()
+      }
+    }
+  }
+
   property IpcHandler launcherIpc: IpcHandler {
     target: "launcher"
 
@@ -109,19 +122,19 @@ QtObject {
   }
 
   function openLauncher(screen: string): bool {
-    const opened = OverlayState.open(launcherSurface, screen)
-    if (opened) requested()
-    return opened
+    return OverlayState.open(launcherSurface, screen, {})
   }
 
   function toggleLauncher(screen: string): bool {
-    const toggled = OverlayState.toggle(launcherSurface, screen)
-    if (launcherActive) requested()
-    return toggled
+    return OverlayState.toggle(launcherSurface, screen)
   }
 
   function openFile(screen: string, path: string): bool {
     if (screen.length === 0 || path.length === 0) return false
+    return OverlayState.open(openWithSurface, screen, { "path": path })
+  }
+
+  function loadFile(path: string): void {
     filePath = path
     mimeType = ""
     openWithEntries = []
@@ -129,9 +142,6 @@ QtObject {
     openWithLoading = true
     setDefault = false
     openWithSource.exec(["hk-open-with", "entries", path])
-    const opened = OverlayState.open(openWithSurface, screen)
-    if (opened) requested()
-    return opened
   }
 
   function close(): void {

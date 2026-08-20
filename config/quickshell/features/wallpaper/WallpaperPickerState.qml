@@ -15,6 +15,15 @@ QtObject {
   property bool loading: false
   property string error: ""
 
+  property Connections overlayConnection: Connections {
+    target: OverlayState
+
+    function onOpenRevisionChanged(): void {
+      if (OverlayState.activeSurface !== root.surface) return
+      root.load(OverlayState.parameters.action ?? "set")
+    }
+  }
+
   property IpcHandler ipc: IpcHandler {
     target: "wallpaper"
 
@@ -59,12 +68,15 @@ QtObject {
 
   function openForScreen(screen: string, nextAction: string): bool {
     if (screen.length === 0 || !["set", "remove"].includes(nextAction)) return false
+    return OverlayState.open(surface, screen, { "action": nextAction })
+  }
+
+  function load(nextAction: string): void {
     action = nextAction
     entries = []
     error = ""
     loading = true
     source.exec(["hk-wallpaper-entries"])
-    return OverlayState.open(surface, screen)
   }
 
   function close(): void {

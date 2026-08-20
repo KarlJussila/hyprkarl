@@ -250,10 +250,18 @@ QtObject {
         if (typeof entry.action.menu !== "string" || !document.menus[entry.action.menu]) {
           fail(entryPath + ".action.menu", "unknown menu '" + entry.action.menu + "'")
         }
+      } else if (entry.action.type === "surface") {
+        if (typeof entry.action.surface !== "string" || entry.action.surface.length === 0) {
+          fail(entryPath + ".action.surface", "expected a non-empty surface id")
+        }
+        if (entry.action.parameters !== undefined) {
+          requireObject(entry.action.parameters, entryPath + ".action.parameters")
+        }
       } else if (entry.action.type === "dismiss") {
         // Informational entries close the menu when activated.
       } else {
-        fail(entryPath + ".action.type", "expected 'command', 'menu', or 'dismiss'")
+        fail(entryPath + ".action.type",
+          "expected 'command', 'menu', 'surface', or 'dismiss'")
       }
     }
   }
@@ -373,10 +381,18 @@ QtObject {
         if (typeof entry.action.menu !== "string" || !menus[entry.action.menu]) {
           fail(path + ".action.menu", "unknown menu '" + entry.action.menu + "'")
         }
+      } else if (entry.action.type === "surface") {
+        if (typeof entry.action.surface !== "string" || entry.action.surface.length === 0) {
+          fail(path + ".action.surface", "expected a non-empty surface id")
+        }
+        if (entry.action.parameters !== undefined) {
+          requireObject(entry.action.parameters, path + ".action.parameters")
+        }
       } else if (entry.action.type === "dismiss") {
         // Informational entries close the menu when activated.
       } else {
-        fail(path + ".action.type", "expected 'command', 'menu', or 'dismiss'")
+        fail(path + ".action.type",
+          "expected 'command', 'menu', 'surface', or 'dismiss'")
       }
       result.push(Object.assign({
         "parent": menuId,
@@ -394,7 +410,7 @@ QtObject {
     dynamicEntries = loadedEntries
     dynamicError = error
     openRevision++
-    OverlayState.open(surface, screen)
+    OverlayState.open(surface, screen, {})
   }
 
   function enterMenu(screen: string, nextHistory, menuId: string): bool {
@@ -484,6 +500,11 @@ QtObject {
     if (sourceLoading) return
     if (entry.action.type === "menu") {
       enterMenu(screenName, history.concat([entry.action.menu]), entry.action.menu)
+      return
+    }
+    if (entry.action.type === "surface") {
+      OverlayState.open(entry.action.surface, screenName,
+        clone(entry.action.parameters ?? {}))
       return
     }
 

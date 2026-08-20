@@ -86,7 +86,7 @@ notification. Missing event directories and non-executable files are ignored.
 The static menu hierarchy is data, not a tree of shell branches. Built-in
 entries live in `defaults/menu.json`; personal additions and overrides belong
 in `user/menu.json`. Add a stable entry ID, its parent menu, order, label, and
-either a submenu or command action:
+a submenu, command, or direct Quickshell surface action:
 
 ```json
 {
@@ -104,9 +104,11 @@ either a submenu or command action:
 ```
 
 Keep nontrivial interaction in a dedicated `hk-*` command and name that
-command in the entry. A menu may declare a `sourceCommand` for dynamic entries
-and opt into in-process search. Dynamic providers should normally use Python
-data structures and the standard `json` module; Bash is better reserved for
+command in the entry. Use a `surface` action when the destination is another
+Quickshell overlay; it changes surfaces in-process and may pass an open-ended
+parameter object. A menu may declare a `sourceCommand` for dynamic entries and
+opt into in-process search. Dynamic providers should normally use Python data
+structures and the standard `json` module; Bash is better reserved for
 providers that only print prebuilt JSON. The launcher, calculator, open-with
 chooser, and wallpaper thumbnail picker use dedicated Quickshell features
 rather than the command-menu JSON shape. See

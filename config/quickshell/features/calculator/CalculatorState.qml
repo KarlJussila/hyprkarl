@@ -22,7 +22,7 @@ QtObject {
     }
 
     function openForScreen(screen: string): bool {
-      return OverlayState.open(root.surface, screen)
+      return OverlayState.open(root.surface, screen, {})
     }
 
     function toggle(): bool {

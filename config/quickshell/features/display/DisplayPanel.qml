@@ -19,6 +19,8 @@ Item {
   readonly property int currentBrightness: brightnessPreview >= 0
     ? brightnessPreview
     : displayState.brightness.percent
+  readonly property bool brightnessBusy: brightnessPreview >= 0
+    || brightnessProcess.running
   property var displayState: ({
     "target": outputName,
     "outputs": [],
@@ -27,7 +29,10 @@ Item {
     "brightness": { "available": false, "percent": 0 }
   })
   property int brightnessPreview: -1
-  property bool brightnessPending: false
+  property int brightnessDesired: -1
+  property int brightnessInFlight: -1
+  property int brightnessRevision: 0
+  property int stateBrightnessRevision: 0
   property string currentAction: ""
   property string actionTarget: ""
   property string error: ""
@@ -36,14 +41,18 @@ Item {
   implicitHeight: content.implicitHeight
 
   function refresh(): void {
-    if (!stateProcess.running) {
-      stateProcess.exec(["hk-display", "state", outputName])
-    }
+    if (stateProcess.running || brightnessBusy) return
+    stateBrightnessRevision = brightnessRevision
+    stateProcess.exec(["hk-display", "state", outputName])
   }
 
   function acceptState(value: string): void {
     try {
-      displayState = JSON.parse(value)
+      const nextState = JSON.parse(value)
+      if (stateBrightnessRevision !== brightnessRevision) {
+        nextState.brightness = displayState.brightness
+      }
+      displayState = nextState
       error = ""
     } catch (parseError) {
       error = "Display state returned invalid data"
@@ -61,19 +70,34 @@ Item {
     actionProcess.exec(command)
   }
 
-  function applyBrightness(): void {
-    if (actionProcess.running) {
-      brightnessPending = true
-      return
-    }
-    brightnessPending = false
-    runAction("brightness", displayState.target, String(currentBrightness))
+  function commitBrightness(percent: int): void {
+    const nextState = Object.assign({}, displayState)
+    nextState.brightness = Object.assign({}, displayState.brightness, {
+      "percent": percent
+    })
+    displayState = nextState
   }
 
-  onActiveChanged: {
-    if (active) refresh()
-    else brightnessDebounce.stop()
+  function startBrightnessWrite(): void {
+    brightnessInFlight = brightnessDesired
+    brightnessProcess.exec([
+      "hk-display", "brightness", displayState.target,
+      String(brightnessInFlight)
+    ])
   }
+
+  function queueBrightness(value: real): void {
+    const percent = Math.max(1, Math.round(value * 100))
+    brightnessPreview = percent
+    if (brightnessDesired === percent) return
+
+    brightnessDesired = percent
+    brightnessRevision++
+    error = ""
+    if (!brightnessProcess.running) startBrightnessWrite()
+  }
+
+  onActiveChanged: if (active) refresh()
 
   Timer {
     interval: 3000
@@ -81,13 +105,6 @@ Item {
     repeat: true
     triggeredOnStart: true
     onTriggered: root.refresh()
-  }
-
-  Timer {
-    id: brightnessDebounce
-
-    interval: 160
-    onTriggered: root.applyBrightness()
   }
 
   Timer {
@@ -127,11 +144,34 @@ Item {
       }
       root.currentAction = ""
       root.actionTarget = ""
-      if (root.brightnessPending) {
-        root.applyBrightness()
+      settleRefresh.restart()
+    }
+    // qmllint enable signal-handler-parameters
+  }
+
+  Process {
+    id: brightnessProcess
+
+    stderr: StdioCollector { id: brightnessError }
+
+    // qmllint disable signal-handler-parameters
+    onExited: exitCode => {
+      if (exitCode !== 0) {
+        root.error = brightnessError.text.trim() || "Brightness change failed"
+        root.brightnessPreview = -1
+        root.brightnessDesired = -1
+        root.brightnessInFlight = -1
+        settleRefresh.restart()
+        return
+      }
+
+      root.commitBrightness(root.brightnessInFlight)
+      if (root.brightnessDesired !== root.brightnessInFlight) {
+        root.startBrightnessWrite()
       } else {
         root.brightnessPreview = -1
-        settleRefresh.restart()
+        root.brightnessDesired = -1
+        root.brightnessInFlight = -1
       }
     }
     // qmllint enable signal-handler-parameters
@@ -164,10 +204,7 @@ Item {
       theme: root.theme
       value: root.currentBrightness / 100
       stepSize: 0.05
-      onEdited: value => {
-        root.brightnessPreview = Math.max(1, Math.round(value * 100))
-        brightnessDebounce.restart()
-      }
+      onEdited: value => root.queueBrightness(value)
     }
 
     PanelSectionLabel {

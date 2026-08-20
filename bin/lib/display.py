@@ -223,8 +223,8 @@ def set_brightness(output: str, percent: int) -> int:
     device = backlight_device(output)
     if device is None:
         raise RuntimeError(f"Brightness control is unavailable for {output}")
-    run(["brightnessctl", "-d", device, "set", f"{percent}%"])
-    return brightness(output)["percent"]
+    run(["brightnessctl", "-q", "-d", device, "set", f"{percent}%"])
+    return percent
 
 
 def display_state(requested: str) -> dict[str, Any]:

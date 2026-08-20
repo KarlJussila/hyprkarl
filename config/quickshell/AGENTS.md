@@ -211,6 +211,10 @@ active output. Internal backlight brightness is shown only when the target
 exposes it; external DDC brightness, mode/position editing, and global text
 size are not part of this first display slice. Text size is an accessibility
 and theme concern, not per-output monitor state.
+While brightness is changing, the slider's local value owns presentation and
+the state poller pauses. Writes start immediately and collapse any movement
+during an active command to the newest value; do not restore an idle debounce
+or clear the local value before that newest write succeeds.
 
 Hover text uses `ShellTooltip`, a non-focusable `PopupWindow` with an empty
 input mask. Do not replace it with Qt Controls' attached `ToolTip`; that window

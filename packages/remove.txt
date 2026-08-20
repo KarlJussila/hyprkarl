@@ -10,6 +10,7 @@ libastal-network-git # No longer needed after the AGS removal
 libastal-powerprofiles-git # No longer needed after the AGS removal
 libastal-tray-git # No longer needed after the AGS removal
 libastal-wireplumber-git # No longer needed after the AGS removal
+hyprpolkitagent # Replaced with the Quickshell polkit agent
 waybar # Replaced with Quickshell bar
 wifitui-bin # Replaced with wifitui
 wofi # Replaced with rofi

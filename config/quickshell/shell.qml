@@ -8,6 +8,7 @@ import "features/command"
 import "features/menu"
 import "features/notifications"
 import "features/osd"
+import "features/polkit"
 import "state"
 
 ShellRoot {
@@ -22,6 +23,8 @@ ShellRoot {
     id: notificationStateObject
     shellConfig: configObject
   }
+
+  property var polkitState: PolkitState
 
   Connections {
     target: configObject

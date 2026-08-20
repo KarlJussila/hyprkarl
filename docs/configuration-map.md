@@ -179,7 +179,8 @@ are:
 - `themes/<theme>/quickshell.json`
   Generated theme-specific semantic colors, typography, minimum bar thickness, natural widget
   padding, logical island corners and borders, radii, and
-  screen/outer/content spacing, plus menu, OSD, and notification appearance
+  screen/outer/content spacing, plus menu, OSD, notification, and polkit
+  appearance
 
 The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are
@@ -213,6 +214,12 @@ Network scanning follows panel activity; Bluetooth discovery begins only from
 the panel's explicit scan action. Clock uses one application-wide current-time
 singleton while viewed-month navigation remains local to each panel. There is
 no separate feature-flyout boundary.
+
+`config/quickshell/features/polkit/PolkitState.qml` owns the one session
+polkit agent. `PolkitWindow.qml` supplies the per-output modal presentation,
+with only the output chosen at request start becoming visible and focused.
+This surface is independent of the feature-panel host and has no public IPC
+command; polkit's D-Bus request is its entry point.
 
 `config/quickshell/features/command/` owns the corresponding application-wide
 command-widget registry and provider lifetime. The public poll/stream contract

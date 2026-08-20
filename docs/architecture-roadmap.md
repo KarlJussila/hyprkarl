@@ -579,9 +579,9 @@ package, and theme output were deleted together. Migrate the remaining
 surfaces one at a time, only when a replacement can delete the old process or
 integration path:
 
-1. Migrate polkit next. The pinned release exposes the required agent and
-   authentication-flow API; the replacement must delete the old agent process
-   and autostart path in the same change.
+1. Polkit is complete. The long-running shell owns the one session agent and
+   focused-output prompt; the old process, package, and autostart path were
+   removed in the same change.
 2. Keep `hyprlock` until Hyprkarl admits a Quickshell release containing the
    documented post-0.3.0 session-lock stability fixes, then repeat the
    capability and lifecycle tests before implementation.
@@ -748,11 +748,12 @@ branch. Deliver them as reviewable vertical changes:
 7. **Move runtime theme state and adopt palette-first rendering.** Complete.
    The companion generator now owns palette-first production, while Hyprkarl
    stages built-in/user sources into atomic XDG-state artifacts.
-8. **Migrate shell-native surfaces individually.** In progress. The OSD and
-   notification service are complete; notifications deleted Mako in full.
-   Polkit is the next admitted migration. The lock screen remains on
-   `hyprlock` until a fixed Quickshell release is admitted. Require each later
-   feature to delete an older integration path and meet the visual brief.
+8. **Migrate shell-native surfaces individually.** In progress. The OSD,
+   notification service, and polkit prompt are complete; each deleted its old
+   integration in full. The lock screen remains on `hyprlock` until a fixed
+   Quickshell release is admitted. Clipboard, emoji, and image-selection
+   overlays are independent later candidates. Require each later feature to
+   delete an older integration path and meet the visual brief.
 9. **Keep extensions direct and user-owned.** Complete. There is no plugin
    marketplace or manifest lifecycle to build or maintain.
 

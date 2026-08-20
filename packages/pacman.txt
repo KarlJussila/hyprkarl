@@ -18,7 +18,6 @@ hypridle
 hyprlock
 hyprpaper
 hyprpicker
-hyprpolkitagent
 hyprshot
 hyprsunset
 imagemagick

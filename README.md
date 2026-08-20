@@ -111,7 +111,7 @@ The full manual lives under `docs/`.
   Shell-native menu entries, user overrides, Python dynamic providers, and
   direct menu commands
 - [docs/authentication-surfaces.md](docs/authentication-surfaces.md)
-  Polkit surface design and the pinned-version lock-screen decision
+  Shell-native polkit ownership and the pinned-version lock-screen decision
 
 ## Themes
 
@@ -129,6 +129,8 @@ media-key feedback use the same shell through a focused-monitor, click-through
 OSD. The shell also owns desktop notifications, including focused-monitor
 routing, progress, silence mode, one-item restore, bar-connected geometry, and
 data-defined application icon overrides with user QML drawings; Mako is no
+longer part of the session. Polkit privilege requests also use a focused,
+theme-aware Quickshell prompt; the separate `hyprpolkitagent` process is no
 longer part of the session. Personal command widgets can add bar readouts
 without editing QML using one application-wide polling or persistent-stream
 provider per widget ID. Static command buttons such as the main-menu trigger

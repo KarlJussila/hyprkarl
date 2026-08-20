@@ -83,8 +83,8 @@ A full theme in this repo includes:
   Hyprtoolkit styling
 - `quickshell.json`
   Quickshell's semantic `palette`, `surfaces`, `typography`, and `metrics`
-  roles, plus component-specific `bar`, `panel`, `tooltip`, `menu`, `osd`, and
-  `notification`
+  roles, plus component-specific `bar`, `panel`, `tooltip`, `menu`, `osd`,
+  `notification`, and `polkit`
   values.
   It controls minimum bar thickness, spacing, island corner
   and border geometry, radii, dividers, tooltip radius, panel gap,
@@ -110,6 +110,9 @@ A full theme in this repo includes:
   indicator scale, progress height, and reveal timing. Notification routing,
   docking, timing, filtering, and icon selection remain behavior in
   `shell.json`.
+  The nested `polkit` object controls the modal prompt width, padding,
+  spacing, radius, icon size, backdrop, title-band accent, and transition
+  timing. Authentication behavior remains owned by Quickshell's polkit flow.
   All Quickshell surface colors and interaction states come from semantic
   theme data rather than consumer-specific color aliases. See
   [Customizing the Bar](customizing-bar.md#change-the-appearance) for the

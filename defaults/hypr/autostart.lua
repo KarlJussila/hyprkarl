@@ -1,7 +1,6 @@
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
     hl.exec_cmd("systemctl --user start hypridle.service")
-    hl.exec_cmd("uwsm app -- systemctl --user start hyprpolkitagent")
     hl.exec_cmd([[hk-shell start; hk-hook-run post-boot || notify-send "Hyprkarl post-boot hook failed" "Check the hook output in the Hyprland log."]])
     hl.exec_cmd("uwsm app -- hyprpaper")
     hl.exec_cmd("hk-wallpaper init || hk-wallpaper cycle")

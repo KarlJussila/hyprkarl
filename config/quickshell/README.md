@@ -176,9 +176,10 @@ schema and override examples.
 
 ## Structure
 
-- `shell.qml` creates one bar per Quickshell screen after configuration and
-  theme data load. `ScreenSurfaces.qml` groups that screen's bar, menu, OSD,
-  and notification windows so bar-relative surfaces use the real bar geometry.
+- `shell.qml` retains application-wide feature singletons and creates one
+  surface group per Quickshell screen after configuration and theme data load.
+  `ScreenSurfaces.qml` groups that screen's bar, menu, OSD, notification, and
+  polkit windows so each surface receives the correct output.
 - `config/ShellConfig.qml` selects, validates, and watches shell JSON.
 - `Bar.qml` owns the layer-shell window and exclusive zone.
 - `panels/FeaturePanelHost.qml` owns the one feature-panel window and active
@@ -198,6 +199,8 @@ schema and override examples.
   click-through transient surface.
 - `features/notifications/` owns the freedesktop server, notification
   lifecycle and IPC, icon presentation, and one non-focusable stack per screen.
+- `features/polkit/` owns the one session agent and the focused modal prompt;
+  it binds directly to Quickshell's active authentication flow and has no IPC.
 - `features/command/` owns one application-wide polling or persistent-stream
   provider per provider-backed command-widget ID. Static action buttons do not
   enter that registry.
@@ -282,3 +285,8 @@ multiple widgets genuinely use the same interaction or visual structure.
   screen is sharp as well. Clicking a toast or using the notification binding
   dismisses it; no permanent close button or action-button row is rendered.
   Mako is not started or configured.
+- Polkit requests open a compact modal prompt on the output that was focused
+  when the request began. The prompt follows PAM's response visibility,
+  supports multiple identities when supplied, submits with Enter, cancels
+  with Escape, and leaves retries to the service-owned authentication flow.
+  `hyprpolkitagent` is not started alongside it.

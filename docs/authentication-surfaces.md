@@ -1,9 +1,8 @@
 # Authentication Surfaces
 
-Hyprkarl currently uses `hyprlock` for session locking and
-`hyprpolkitagent` for privilege prompts. Both are candidates for a
-Hyprkarl-styled Quickshell surface, but they have different security and
-lifecycle requirements and must not be hidden behind one generic
+Hyprkarl uses `hyprlock` for session locking and a shell-native Quickshell
+agent for polkit privilege prompts. The two surfaces have different security
+and lifecycle requirements and are not hidden behind one generic
 authentication controller.
 
 This document records the capability decision for the pinned Quickshell
@@ -14,8 +13,9 @@ and the upstream
 
 ## Decision Summary
 
-- Build the polkit prompt in the existing long-running shell process next.
-  Quickshell 0.3.0 includes the required `PolkitAgent` and `AuthFlow` APIs.
+- Keep the completed polkit prompt in the existing long-running shell process.
+  Quickshell 0.3.0 includes the required `PolkitAgent` and `AuthFlow` APIs;
+  `hyprpolkitagent` is no longer started or installed.
 - Keep `hyprlock` as the production lock screen. Although the pinned build
   exposes `WlSessionLock`, its release does not include later upstream fixes
   for session-lock crashes around sleep, wake, DPMS, and unlocking.
@@ -33,16 +33,17 @@ and the upstream
 | Secure Wayland session lock | `hyprlock`, launched by `hk-lock` | Retain |
 | Idle and suspend lock requests | `hypridle` through `hk-lock` | Retain |
 | Password and fingerprint unlock | `hyprlock` plus PAM/fprintd | Retain |
-| Polkit agent registration and prompts | `hyprpolkitagent` | Migrate next |
+| Polkit agent registration and prompts | Quickshell `features/polkit/` | Complete |
 
 The inactive `hypridle` service is normal while the caffeine toggle is on; it
 does not change these ownership boundaries.
 
 ## Polkit Design
 
-The root `shell.qml` will own exactly one feature-level polkit state object.
-That object owns Quickshell's single `PolkitAgent`, while a dedicated prompt
-component owns presentation. Do not put polkit into the feature-panel host:
+The root `shell.qml` retains exactly one `PolkitState` singleton. That object
+owns Quickshell's single `PolkitAgent`, while `PolkitWindow.qml` owns one
+presentation surface per output and activates only the focused output chosen
+when the request begins. Do not put polkit into the feature-panel host:
 an authorization request is a modal system interaction, not a bar flyout.
 
 At the start of a request, the prompt targets the focused output and requests
@@ -81,19 +82,17 @@ produces that warning too. Treat that specific warning as a tooling limitation
 and make the live registration and prompt exercise authoritative. Do not add a
 wrapper or weaken the QML types merely to silence it.
 
-The implementation and cutover are one vertical change:
+The cutover removed the old agent from Hyprland autostart and the installation
+package list, and added it to `packages/remove.txt` for existing installations.
+The live acceptance pass covered exclusive agent registration, a real
+fingerprint authorization, the fingerprint-timeout transition to a password
+prompt, Escape cancellation, and clean process completion. Password and
+multiple-identity presentation remain direct bindings to `AuthFlow`; exercise
+them when those PAM and account states are available on the test machine.
 
-1. Build and lint the inactive feature.
-2. Stop `hyprpolkitagent` temporarily and verify that the Quickshell agent
-   registers.
-3. Exercise password, fingerprint/no-response messaging, incorrect input,
-   cancellation, multiple identities when available, queued requests, a live
-   reload, and a cold shell start.
-4. Remove the `hyprpolkitagent` autostart and package only after those checks
-   pass.
-
-Running both agents is not a supported test state because only one session
-agent can own the polkit registration.
+Running both agents is not supported because only one session agent can own
+the polkit registration. An already-installed `hyprpolkitagent` package is
+harmless after its user service is disabled; the normal update flow removes it.
 
 ## Lock-Screen Capability and Deferral
 

@@ -122,6 +122,21 @@ If a user override caused the problem, correct it or remove
 `user/shell.json`; the shell otherwise retains its last valid
 configuration during a live edit.
 
+## Privilege Prompt Does Not Appear
+
+Hyprkarl's running Quickshell process owns the session polkit agent. Check
+`hk-shell status` and the shell log for `Polkit agent registered: true`. If an
+older installation still has the replaced agent active, disable it and restart
+the shell:
+
+```bash
+systemctl --user disable --now hyprpolkitagent.service
+hk-shell restart
+```
+
+The normal `hk-update` package-removal step removes the old package. Do not run
+both agents together; only one can register for the session.
+
 ## Docker Is Not Ready
 
 Symptoms:

@@ -206,6 +206,11 @@ notification window so the default stack can share the real bar border and
 contact-aware corner geometry. User QML icon drawings use the same component
 loader as the shipped audio and battery drawings. `hk-shell notifications` is
 the only control transport.
+`config/quickshell/features/polkit/PolkitState.qml` owns the one session
+polkit agent, while one `PolkitWindow` per output provides the modal prompt on
+the output focused when the request begins. The feature binds directly to
+Quickshell's authentication flow, is not part of the feature-panel host, and
+has no public IPC command. Do not reintroduce `hyprpolkitagent` alongside it.
 
 ### `hk-*` Commands
 

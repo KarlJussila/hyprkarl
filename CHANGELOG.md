@@ -7,6 +7,9 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Replaced `hyprpolkitagent` with a focused, theme-aware Quickshell polkit
+  prompt supporting PAM response visibility, fingerprint/no-response flows,
+  multiple identities, cancellation, and service-owned retries.
 - Replaced the static Rofi navigation tree with a theme-aware Quickshell menu
   surface, sparse user overrides, dynamic providers, and in-process search.
 - Migrated theme selection, live keybindings, Nerd Font icons, Docker service

@@ -94,6 +94,16 @@
     "progressHeight": 6,
     "transitionDuration": 140
   },
+  "polkit": {
+    "width": 440,
+    "padding": 14,
+    "spacing": 10,
+    "radius": 10,
+    "iconSize": 36,
+    "scrim": "rgba(40,40,40,0.72)",
+    "headerAccentOpacity": 0.3,
+    "transitionDuration": 140
+  },
   "menu": {
     "scrim": "#22000000",
     "fontSize": 14,

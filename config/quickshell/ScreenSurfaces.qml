@@ -5,6 +5,7 @@ import Quickshell
 import "features/menu"
 import "features/notifications"
 import "features/osd"
+import "features/polkit"
 
 Scope {
   id: root
@@ -40,6 +41,11 @@ Scope {
     output: root.output
     osdState: root.osdState
     shellConfig: root.shellConfig
+    theme: root.theme
+  }
+
+  property PolkitWindow polkit: PolkitWindow {
+    output: root.output
     theme: root.theme
   }
 }

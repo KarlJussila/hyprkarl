@@ -1,121 +1,121 @@
 #!/usr/bin/env python3
-"""Show a rofi-based app picker for opening a file.
+"""Open the shell app chooser or perform one of its Gio-owned actions."""
 
-Usage:
-    hk-open-with <file-path>
-"""
-from __future__ import annotations
-
-import html
-import os
+import json
 import subprocess
 import sys
+from pathlib import Path
 
 import gi
 
 gi.require_version("Gio", "2.0")
-from gi.repository import Gio
+gi.require_version("GioUnix", "2.0")
+from gi.repository import Gio, GioUnix
 
 
-def icon_name(app: Gio.AppInfo) -> str | None:
+def icon_name(app: Gio.AppInfo) -> str:
     icon = app.get_icon()
-    if icon is None:
-        return None
-    if hasattr(icon, "get_names"):
-        if names := icon.get_names():
-            return names[0]
-    if hasattr(icon, "get_file"):
-        if (file := icon.get_file()) is not None:
-            return file.get_path()
-    if hasattr(icon, "to_string"):
-        return icon.to_string()
-    return None
+    return icon.to_string() if icon is not None else "application-x-executable"
 
 
-def app_label(app: Gio.AppInfo) -> str:
-    name = html.escape(app.get_display_name() or app.get_name())
-    generic = app.get_generic_name() if hasattr(app, "get_generic_name") else None
-    if generic and generic != app.get_display_name():
-        return f"{name} <span weight='light' size='small'><i>({html.escape(generic)})</i></span>"
-    return name
+def chooser_apps(default_id: str) -> list[Gio.AppInfo]:
+    return sorted(
+        (
+            app
+            for app in Gio.AppInfo.get_all()
+            if app.get_id() and (app.should_show() or app.get_id() == default_id)
+        ),
+        key=lambda app: (app.get_display_name() or app.get_name()).casefold(),
+    )
 
 
-def app_meta(app: Gio.AppInfo) -> str:
-    fields = [
-        app.get_display_name(),
-        app.get_name(),
-        app.get_executable(),
-        app.get_id(),
-    ]
-    if hasattr(app, "get_generic_name"):
-        fields.append(app.get_generic_name())
-    return " ".join(field for field in fields if field)
+def file_content_type(path: Path) -> str:
+    info = Gio.File.new_for_path(str(path)).query_info(
+        "standard::content-type", Gio.FileQueryInfoFlags.NONE, None
+    )
+    return info.get_content_type()
 
 
-def _sort_key(app: Gio.AppInfo) -> str:
-    return (app.get_display_name() or app.get_name()).casefold()
+def print_entries(path: Path) -> None:
+    content_type = file_content_type(path)
+    default_app = Gio.AppInfo.get_default_for_type(content_type, False)
+    default_id = default_app.get_id() if default_app is not None else ""
+    entries = []
+
+    for app in chooser_apps(default_id):
+        name = app.get_display_name() or app.get_name()
+        generic_name = app.get_generic_name() or ""
+        app_id = app.get_id() or ""
+        entries.append(
+            {
+                "id": app_id,
+                "name": name,
+                "genericName": generic_name,
+                "icon": icon_name(app),
+                "searchText": " ".join(
+                    filter(
+                        None,
+                        [name, generic_name, app.get_name(), app.get_executable(), app_id],
+                    )
+                ),
+                "isDefault": app_id == default_id,
+            }
+        )
+
+    json.dump(
+        {"mimeType": content_type, "entries": entries},
+        sys.stdout,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    print()
 
 
-def visible_apps() -> list[Gio.AppInfo]:
-    apps = [app for app in Gio.AppInfo.get_all() if app.should_show()]
-    apps.sort(key=_sort_key)
-    return apps
+def launch(path: Path, app_id: str, make_default: bool) -> None:
+    app = GioUnix.DesktopAppInfo.new(app_id)
+    if app is None:
+        raise RuntimeError(f"Application not found: {app_id}")
+
+    if make_default:
+        content_type = file_content_type(path)
+        if not app.set_as_default_for_type(content_type):
+            raise RuntimeError(f"Could not set {app_id} as the default for {content_type}")
+
+    app.launch([Gio.File.new_for_path(str(path))], None)
 
 
-def rofi_theme() -> str:
-    config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
-    return os.path.join(config_home, "rofi", "launcher.rasi")
-
-
-def chooser_input(apps: list[Gio.AppInfo]) -> str:
-    rows = []
-    for app in apps:
-        parts = [app_label(app)]
-        if icon := icon_name(app):
-            parts.append(f"icon\x1f{icon}")
-        if meta := app_meta(app):
-            parts.append(f"meta\x1f{meta}")
-        rows.append("\0".join(parts))
-    return "\n".join(rows) + "\n"
+def usage() -> None:
+    print(
+        "Usage:\n"
+        "  hk-open-with <file>\n"
+        "  hk-open-with entries <file>\n"
+        "  hk-open-with launch <file> <desktop-id> <true|false>",
+        file=sys.stderr,
+    )
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        return 1
-
-    file = Gio.File.new_for_path(sys.argv[1])
-    apps = visible_apps()
-    if not apps:
-        return 1
-
     try:
-        result = subprocess.run(
-            [
-                "rofi",
-                "-dmenu",
-                "-i",
-                "-no-custom",
-                "-show-icons",
-                "-markup-rows",
-                "-format", "i",
-                "-p", "",
-                "-window-title", "Open With",
-                "-theme", rofi_theme(),
-            ],
-            input=chooser_input(apps),
-            text=True,
-            capture_output=True,
-            check=False,
-        )
+        if len(sys.argv) == 2:
+            subprocess.run(
+                ["hk-shell", "open-with", "open", str(Path(sys.argv[1]).resolve())],
+                check=True,
+            )
+            return 0
 
-        if result.returncode != 0:
-            return 1
-        selected = int(result.stdout.strip())
-        apps[selected].launch([file], None)
+        if len(sys.argv) == 3 and sys.argv[1] == "entries":
+            print_entries(Path(sys.argv[2]))
+            return 0
 
-    except Exception:
+        if len(sys.argv) == 5 and sys.argv[1] == "launch":
+            launch(Path(sys.argv[2]), sys.argv[3], sys.argv[4] == "true")
+            return 0
+    except Exception as error:
+        print(f"Open-with failed: {error}", file=sys.stderr)
         return 1
-    return 0
+
+    usage()
+    return 1
 
 
 if __name__ == "__main__":

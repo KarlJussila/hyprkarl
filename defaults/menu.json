@@ -67,7 +67,7 @@
       "order": 10,
       "icon": "󱓟",
       "label": "Launch",
-      "action": { "type": "command", "command": "hk-menu-launcher" }
+      "action": { "type": "command", "command": "hk-shell launcher open" }
     },
     "main.install": {
       "parent": "main",
@@ -342,21 +342,21 @@
       "order": 10,
       "icon": "󰋹",
       "label": "Select",
-      "action": { "type": "command", "command": "hk-menu-wallpaper select || hk-shell menu open wallpaper" }
+      "action": { "type": "command", "command": "hk-shell wallpaper set" }
     },
     "wallpaper.add": {
       "parent": "wallpaper",
       "order": 20,
       "icon": "",
       "label": "Add",
-      "action": { "type": "command", "command": "hk-menu-wallpaper add || hk-shell menu open wallpaper" }
+      "action": { "type": "command", "command": "hk-wallpaper-add-interactive" }
     },
     "wallpaper.remove": {
       "parent": "wallpaper",
       "order": 30,
       "icon": "",
       "label": "Remove",
-      "action": { "type": "command", "command": "hk-menu-wallpaper remove || hk-shell menu open wallpaper" }
+      "action": { "type": "command", "command": "hk-shell wallpaper remove" }
     },
 
     "power-profile.saver": {

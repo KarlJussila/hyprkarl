@@ -2,10 +2,10 @@
 
 -- Menus
 hl.bind("SUPER + ALT + SPACE", hl.dsp.exec_cmd("hk-shell menu toggle main"), { description = "Main menu" })
-hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("hk-menu-launcher || pkill rofi"), { description = "Launch apps" })
+hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("hk-shell launcher toggle"), { description = "Launch apps" })
 hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("hk-shell menu toggle power"), { description = "Power menu" })
 hl.bind("SUPER + K", hl.dsp.exec_cmd("hk-shell menu toggle keybindings"), { description = "View keybinds" })
-hl.bind("SUPER + CTRL + C", hl.dsp.exec_cmd("hk-menu-calculator || pkill rofi"), { description = "Calculator" })
+hl.bind("SUPER + CTRL + C", hl.dsp.exec_cmd("hk-shell calculator toggle"), { description = "Calculator" })
 
 -- Notifications
 hl.bind("SUPER + COMMA", hl.dsp.exec_cmd("hk-shell notifications dismiss"), { description = "Dismiss last notification" })

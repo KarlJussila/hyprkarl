@@ -77,6 +77,10 @@ Display-panel layout state lives separately under
 `hk-display` is the only writer. These are machine state, not personal editing
 surfaces; use `user/hypr/monitors.lua` for explicit authored rules.
 
+The shell calculator keeps its five most recent expression/result pairs in
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/calculator-history.json`.
+This is disposable interaction history, not an editing surface.
+
 ## Hyprland
 
 Hyprland is configured in **Lua** (`hyprland.lua`), required since Hyprland 0.55
@@ -248,12 +252,15 @@ command; polkit's D-Bus request is its entry point.
 command-widget registry and provider lifetime. The public poll/stream contract
 is documented in `docs/shell-configuration.md`.
 
-The shell-native command menu creates one full-screen overlay per output and
-shows only the requested monitor's instance. `features/menu/MenuState.qml`
+The shell creates the command menu and its dedicated launcher/open-with,
+calculator, and wallpaper surfaces once per output. One application-wide
+`features/overlay/OverlayState.qml` makes them mutually exclusive and routes
+the active surface to the focused output. The shared frame and scroll
+interaction also live under `features/overlay/`; each feature directory owns
+its domain-specific state and presentation. `features/menu/MenuState.qml`
 owns the watched, validated deep merge, navigation history, checked-state
-probes, and short-lived dynamic menu sources; `MenuWindow.qml` owns keyboard
-focus, in-process search, dismissal, and rendering. See
-[Menu Configuration](menu-configuration.md).
+probes, and short-lived dynamic menu sources. See [Menu
+Configuration](menu-configuration.md).
 
 The shell-native OSD uses one application-wide state owner and one
 click-through window per output under `features/osd/`. `hk-shell osd` sends

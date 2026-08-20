@@ -200,8 +200,14 @@ keybindings, Nerd Font icons, and setup-aware fingerprint actions; searchable
 menus filter those entries in-process. Providers run without a login shell,
 and dynamic destinations appear only after their complete model validates;
 preformat large static catalogs instead of transforming them on every open.
-Remaining `hk-menu-*` commands own real
-interfaces rather than forwarding to Quickshell. The menu preserves the
+`OverlayState` gives the menu, launcher/open-with chooser, calculator, and
+wallpaper picker one exclusive focused surface and output. The launcher uses
+Quickshell's resident desktop-entry index; open-with adds Gio-owned MIME,
+default-application, and file-launch behavior behind `hk-open-with`. The
+calculator evaluates with `qalc` and keeps five recent entries in XDG state.
+The wallpaper picker presents the existing thumbnail cache and performs set or
+remove actions directly. Rofi is not part of the runtime or package set.
+The command menu preserves the
 original Rofi surface's compact width, centered rows, title band, nested frame,
 and bordered selection, while inheriting the active shell theme's semantic
 palette, typography, rounded geometry, border treatment, and interaction

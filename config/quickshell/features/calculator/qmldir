@@ -1,0 +1,3 @@
+module qs.features.calculator
+singleton CalculatorState 1.0 CalculatorState.qml
+CalculatorWindow 1.0 CalculatorWindow.qml

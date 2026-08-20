@@ -63,8 +63,10 @@ Commands run through `bash -c` after the menu closes. Keep interaction-heavy
 work in a dedicated `hk-*` command and reference it from the data; the menu
 definition owns navigation, not application logic. Themes, live keybindings,
 Nerd Font icons, Docker services, and every fingerprint choice are dynamic
-Quickshell menus. The app launcher, calculator, wallpaper thumbnail picker,
-and package pickers retain their focused Rofi or terminal interfaces.
+Quickshell menus. The app launcher, open-with chooser, calculator, and
+wallpaper thumbnail picker are dedicated Quickshell overlays because their
+rows and actions do not fit the command-menu data contract. Package pickers
+retain their focused terminal interfaces.
 
 Keyboard navigation keeps the selected row immediately in view, including
 when wrapping between the first and last entries. Moving the pointer selects
@@ -270,9 +272,9 @@ Menu IDs include `main`, `config`, `defaults`, `install`, `uninstall`,
 `utilities`, `update`, `power`, `power-profile`, `theme`, `keybindings`,
 `icons`, `fingerprint`, `fingerprint-enroll`, and `fingerprint-remove`.
 Static forwarding `hk-menu-*` aliases are intentionally absent: custom
-bindings call the public `hk-shell menu` boundary directly. Commands that own
-a distinct interface remain, including `hk-menu-launcher`,
-`hk-menu-calculator`, and `hk-menu-wallpaper`.
+bindings call the relevant `hk-shell` boundary directly. Use `hk-shell
+launcher`, `hk-shell calculator`, and `hk-shell wallpaper` for the dedicated
+overlays.
 
 Keyboard navigation supports Up/Down (or J/K), Home/End, Enter/Space/Right (or
 L) to choose, and Escape/Left/Backspace to go back. In a searchable menu,

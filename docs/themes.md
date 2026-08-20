@@ -118,8 +118,9 @@ A full theme in this repo includes:
   theme data rather than consumer-specific color aliases. See
   [Customizing the Bar](customizing-bar.md#change-the-appearance) for the
   geometry schema.
-- `rofi.rasi`
-  Rofi styling
+  `applicationPicker`, `calculator`, and `wallpaperPicker` add their
+  interface-specific widths, row counts, icon size, thumbnail columns, scale,
+  and gap while inheriting the shared menu frame and semantic colors.
 - `alacritty.toml`, `foot.ini`, `ghostty.conf`, `kitty.conf`
   Terminal colors
 - `btop.theme`

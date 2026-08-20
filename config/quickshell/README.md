@@ -29,6 +29,20 @@ hk-shell menu open utilities
 hk-shell menu close
 ```
 
+The dedicated application, calculator, and wallpaper surfaces use that
+instance too:
+
+```bash
+hk-shell launcher toggle
+hk-shell calculator toggle
+hk-shell wallpaper set
+hk-open-with <file>
+```
+
+Only one focused shell overlay is visible at a time. Opening one of these
+surfaces replaces an open command menu or another dedicated overlay on the
+focused output.
+
 Hardware and media commands use the shell-native OSD. It can also be exercised
 directly:
 
@@ -128,6 +142,19 @@ Rofi menu's identity; palette, typography, rounded geometry, borders, and
 accent states now belong to the shell's visual system. See
 `docs/menu-configuration.md` for the schema and examples.
 
+The launcher/open-with chooser, calculator, and wallpaper picker are dedicated
+surfaces rather than command-menu entry shapes. They share the command menu's
+frame, focus lifecycle, and touchpad momentum through `features/overlay/`, but
+each feature owns its domain behavior. The launcher consumes Quickshell's
+resident desktop-entry model and launches through `gtk-launch`; open-with asks
+`hk-open-with` for Gio's application model and may set the chosen application
+as the MIME default before launching. The calculator evaluates with `qalc` and
+keeps five recent expression/result pairs in XDG state. The wallpaper picker
+loads cached thumbnails from `hk-wallpaper-entries` and delegates changes to
+`hk-wallpaper`. Their widths, row counts, icon size, grid geometry, and history
+limit are theme values under `applicationPicker`, `calculator`, and
+`wallpaperPicker`.
+
 Themes own appearance through the active runtime bundle's `quickshell.json`.
 `Theme.qml` watches the XDG-state `current/theme.json` selector, then reads the
 immutable artifact named there, so a theme switch applies to a running bar.
@@ -188,8 +215,8 @@ schema and override examples.
 
 - `shell.qml` retains application-wide feature singletons and creates one
   surface group per Quickshell screen after configuration and theme data load.
-  `ScreenSurfaces.qml` groups that screen's bar, menu, OSD, notification, and
-  polkit windows so each surface receives the correct output.
+  `ScreenSurfaces.qml` groups that screen's bar, focused overlays, OSD,
+  notification, and polkit windows so each surface receives the correct output.
 - `config/ShellConfig.qml` selects, validates, and watches shell JSON.
 - `config/UserRoot.qml` loads the optional application-wide user composition
   root and forwards its reactive notification-position method.
@@ -209,6 +236,11 @@ schema and override examples.
   than a second QML monitor-state owner.
 - `features/menu/` owns menu configuration, navigation state, IPC, and the
   per-screen overlay.
+- `features/overlay/` owns focused-surface exclusivity, the shared visual frame,
+  and touchpad momentum used by menus and dedicated pickers.
+- `features/applications/` owns the resident launcher and Gio-backed open-with
+  chooser; `features/calculator/` and `features/wallpaper/` own their
+  corresponding state, IPC, and per-screen presentations.
 - `features/osd/` owns one typed state/IPC object and the per-screen,
   click-through transient surface.
 - `features/notifications/` owns the freedesktop server, notification
@@ -233,6 +265,12 @@ multiple widgets genuinely use the same interaction or visual structure.
   their input and retain arrow/Enter navigation; other menus support arrows or
   H/J/K/L, Home/End, Enter/Space, and Escape/Backspace. Clicking outside
   dismisses the menu.
+- `SUPER + SPACE` opens the resident application launcher. The calculator and
+  wallpaper picker use their corresponding `hk-shell` commands, while
+  `hk-open-with <file>` opens the same application chooser in file mode. Search,
+  selection, dismissal, and touchpad momentum are consistent across these
+  focused overlays. The open-with footer uses the shell switch primitive to
+  optionally make the selected application the MIME default.
 - Left-click opens feature panels or performs a widget's primary action.
 - Right-click runs the configured secondary launcher.
 - Middle-click is reserved for an explicitly configured tertiary action.

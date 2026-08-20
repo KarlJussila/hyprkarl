@@ -1,0 +1,4 @@
+module qs.features.overlay
+singleton OverlayState 1.0 OverlayState.qml
+MomentumScroll 1.0 MomentumScroll.qml
+OverlayWindow 1.0 OverlayWindow.qml

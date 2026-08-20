@@ -25,9 +25,9 @@ without good reason.
 
 Static menu navigation is defined in `defaults/menu.json` and rendered by
 Quickshell. Open or toggle it directly through `hk-shell menu`; do not add
-forwarding `hk-menu-*` aliases. A command named `hk-menu-*` must own an actual
-interactive surface, as the launcher, calculator, and wallpaper picker still
-do. Dynamic shell entries come from noun-owned provider commands such as
+forwarding `hk-menu-*` aliases. Launcher, calculator, open-with, and wallpaper
+selection are also Quickshell interfaces opened through their typed `hk-shell`
+commands. Dynamic shell entries come from noun-owned provider commands such as
 `hk-theme-menu-entries`, `hk-docker-menu-entries`, and
 `hk-fingerprint-menu-entries`. Providers own discovery and actions but never
 open the shell menu themselves. Keep the open path proportional to the state
@@ -41,6 +41,13 @@ The bar's generic command-widget launcher sets `HYPRKARL_OUTPUT` to its output
 name. `hk-shell-menu` uses that context when present so the static command
 button opens on the bar that was clicked; ordinary callers continue to target
 the focused monitor.
+
+`hk-open-with <file>` is the file-manager entry point for the shared
+application picker. Its internal `entries` and `launch` actions form the one
+Gio boundary for MIME discovery, changing the default application, and
+file-aware launch semantics. QML must not duplicate those operations.
+`hk-wallpaper-entries` is the equivalent short-lived JSON source for the
+thumbnail picker; wallpaper mutation remains in `hk-wallpaper` commands.
 
 `hk-shell osd` is the only public transport for transient shell status.
 Hardware and media commands own their system action and pass only semantic

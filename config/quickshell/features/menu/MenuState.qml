@@ -4,6 +4,7 @@ import QtQml
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
+import "../overlay"
 
 QtObject {
   id: root
@@ -13,8 +14,9 @@ QtObject {
 
   property var values: ({})
   property bool ready: false
-  property bool requested: false
-  property string screenName: ""
+  readonly property string surface: "menu"
+  readonly property bool requested: OverlayState.activeSurface === surface
+  readonly property string screenName: requested ? OverlayState.screenName : ""
   property string currentMenu: ""
   property var history: []
   property int openRevision: 0
@@ -110,6 +112,17 @@ QtObject {
   property Process dynamicSource: Process {
     stdout: StdioCollector {
       onStreamFinished: root.finishDynamicSource(text)
+    }
+  }
+
+  property Connections overlayConnection: Connections {
+    target: OverlayState
+
+    function onActiveSurfaceChanged(): void {
+      if (OverlayState.activeSurface === root.surface || !root.sourceLoading) return
+      root.sourceCancelled = true
+      root.dynamicSource.running = false
+      root.sourceLoading = false
     }
   }
 
@@ -375,14 +388,13 @@ QtObject {
 
   function showMenu(screen: string, nextHistory, menuId: string,
       loadedEntries, error: string): void {
-    screenName = screen
     history = nextHistory
     currentMenu = menuId
     dynamicMenuId = menus[menuId]?.sourceCommand === undefined ? "" : menuId
     dynamicEntries = loadedEntries
     dynamicError = error
     openRevision++
-    requested = true
+    OverlayState.open(surface, screen)
   }
 
   function enterMenu(screen: string, nextHistory, menuId: string): bool {
@@ -455,7 +467,7 @@ QtObject {
       sourceCancelled = true
       dynamicSource.running = false
     }
-    requested = false
+    OverlayState.close(surface)
   }
 
   function back(): void {

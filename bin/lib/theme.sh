@@ -48,7 +48,6 @@ theme_validate_bundle() {
   local root="$1" required
   local required_files=(
     quickshell.json
-    rofi.rasi
     hyprland.lua
     hyprlock.conf
     hyprtoolkit.conf

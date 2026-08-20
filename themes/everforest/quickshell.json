@@ -121,5 +121,19 @@
     "selectionBorderWidth": 1,
     "headerAccentOpacity": 0.3,
     "selectionAccentOpacity": 0.16
+  },
+  "applicationPicker": {
+    "width": 560,
+    "rows": 7,
+    "iconSize": 32
+  },
+  "calculator": {
+    "width": 480,
+    "historyRows": 5
+  },
+  "wallpaperPicker": {
+    "columns": 3,
+    "thumbnailScreenFraction": 0.25,
+    "gap": 14
   }
 }

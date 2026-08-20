@@ -224,6 +224,11 @@ default; the nested object can override them when needed. See
 [Menu Configuration](menu-configuration.md#appearance) for the full field
 list.
 
+The dedicated application picker, calculator, and wallpaper picker inherit
+that same frame. Their additional appearance values live in
+`applicationPicker`, `calculator`, and `wallpaperPicker` beside `menu` in
+`quickshell.json`; see [Themes](themes.md) for the ownership split.
+
 `bar.minimumThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural
 height; the tallest widget sets one shared height for all three islands. A

@@ -12,6 +12,10 @@ Usage:
   hk-shell logs [qs log options]
   hk-shell menu [toggle|open] [menu-id]
   hk-shell menu close
+  hk-shell launcher [toggle|open|close]
+  hk-shell calculator [toggle|open|close]
+  hk-shell open-with open <file>
+  hk-shell wallpaper <set|remove|close>
   hk-shell notifications <dismiss|dismiss-all|toggle-silenced|restore>
   hk-shell osd volume <percent> [muted]
   hk-shell osd audio-output <percent> <muted> <description>
@@ -26,7 +30,7 @@ action=${1:-}
 shift || true
 
 case "$action" in
-  start|stop|restart|status|logs|menu|notifications|osd) exec "hk-shell-$action" "$@" ;;
+  start|stop|restart|status|logs|menu|launcher|calculator|open-with|wallpaper|notifications|osd) exec "hk-shell-$action" "$@" ;;
   ""|-h|--help|help) usage; exit 0 ;;
   *) usage >&2; exit 1 ;;
 esac

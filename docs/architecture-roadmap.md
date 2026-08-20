@@ -138,9 +138,10 @@ shell-native Quickshell surface. `defaults/menu.json` owns built-in navigation,
 `user/menu.json` deep-merges additions and overrides by stable entry ID, and
 bindings and scripts call the shell's menu IPC directly. Dynamic providers and
 in-process search now cover themes, live keybindings, Nerd Font icons, Docker
-services, and the full fingerprint workflow. Dedicated Rofi commands remain
-only where they still own a distinct interface, such as the launcher,
-calculator, and wallpaper thumbnail picker. The renderer retains the original
+services, and the full fingerprint workflow. The launcher/open-with chooser,
+calculator, and wallpaper thumbnail picker now use dedicated Quickshell
+overlays with one exclusive focused-surface owner. Rofi and its calculator
+plugin have been removed. The command-menu renderer retains the original
 menu's compact width, centered icon-and-label rows, title band, nested frame,
 and bordered selection. Its semantic palette, typography, rounded geometry,
 borders, and accent states now come from the shell theme, so the result shares
@@ -472,9 +473,9 @@ intermediate Rofi renderer:
 - themes, live keybindings, Nerd Font icons, Docker services, and every
   fingerprint choice use domain-owned providers and refresh when opened;
 - searchable menus filter provider entries inside Quickshell;
-- the launcher, calculator, wallpaper thumbnail picker, and package pickers
-  retain dedicated Rofi or terminal interfaces until a replacement can delete
-  their old process path.
+- the launcher/open-with chooser, calculator, and wallpaper thumbnail picker
+  use dedicated shell-native overlays, while package pickers retain their
+  focused terminal interfaces.
 
 The implemented `checkedCommand` remains limited to entries such as power
 profiles that need external state. Add runtime `when` only when a reachable

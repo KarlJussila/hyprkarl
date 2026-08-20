@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""Print the active theme's wallpaper thumbnails for the shell picker."""
+
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+
+
+def main() -> int:
+    state_home = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
+    theme_state = state_home / "hyprkarl/current"
+
+    try:
+        subprocess.run(["hk-wallpaper-cache"], check=True)
+        theme_name = (theme_state / "theme.name").read_text().strip()
+        wallpaper_dir = theme_state / "theme/wallpapers"
+        cache_dir = Path.home() / ".cache/hyprkarl/wallpapers" / theme_name
+        current_link = theme_state / "wallpaper"
+        current = current_link.resolve().name if current_link.exists() else ""
+
+        entries = [
+            {
+                "name": path.name,
+                "thumbnail": (cache_dir / path.name).as_uri(),
+                "current": path.name == current,
+            }
+            for path in sorted(wallpaper_dir.iterdir(), key=lambda item: item.name.casefold())
+            if path.is_file() and path.suffix.lower() in IMAGE_SUFFIXES
+        ]
+        json.dump(entries, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+        print()
+        return 0
+    except Exception as error:
+        print(f"Could not load wallpapers: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

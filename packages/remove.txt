@@ -13,4 +13,6 @@ libastal-wireplumber-git # No longer needed after the AGS removal
 hyprpolkitagent # Replaced with the Quickshell polkit agent
 waybar # Replaced with Quickshell bar
 wifitui-bin # Replaced with wifitui
-wofi # Replaced with rofi
+wofi # Replaced with Quickshell overlays
+rofi # Replaced with Quickshell overlays
+rofi-calc # Replaced with the Quickshell calculator

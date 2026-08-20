@@ -300,8 +300,30 @@ between manual position updates and `Flickable.flick()`. Opening a menu or
 changing its search resets selection, viewport, and momentum to the first
 result.
 `hk-shell menu` is the only public transport for opening static navigation.
-Launcher, calculator, and wallpaper/image selectors remain separate
-interfaces until their shell-native surfaces are designed.
+`features/overlay/OverlayState.qml` owns exclusivity and monitor routing across
+that menu, the application chooser, calculator, and wallpaper picker. Opening
+one replaces the active focused overlay instead of leaving another visible
+behind it. `OverlayWindow` owns their shared shell-styled frame, search field,
+focus, scrim, and reveal, while each feature owns its body and key semantics.
+`MomentumScroll` owns the kinetic touchpad behavior shared by long picker
+lists and grids.
+
+`features/applications/` renders launcher and open-with modes through one
+picker. Launcher entries come directly from Quickshell's watched
+`DesktopEntries` model and launch through `gtk-launch` so desktop-file field
+codes and terminal handling remain intact. Open-with runs `hk-open-with
+entries` only when requested because Quickshell does not expose MIME
+associations; selection returns through the same command for Gio-owned
+file-aware launching and optional default-app assignment. Its toggle uses the
+same `ToggleIndicator` as bar controls.
+
+`features/calculator/` evaluates the current expression with one short-lived
+`qalc` process, copies the chosen result with `wl-copy`, and owns five recent
+expression/result pairs under XDG state. `features/wallpaper/` loads the
+existing thumbnail cache once per open through `hk-wallpaper-entries` and
+directly selects set or remove actions. Neither feature starts a background
+poller. Their appearance comes from the shared `menu` tokens plus the
+`applicationPicker`, `calculator`, and `wallpaperPicker` theme objects.
 The command menu deliberately blends two visual sources. Preserve the retired
 Rofi menu's compact width, centered icon-and-label rows, title band, nested
 frame, row gaps, and bordered selection. Derive its palette, font, radii,

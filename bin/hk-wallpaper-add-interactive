@@ -1,0 +1,12 @@
+#!/bin/bash
+# hk-wallpaper-add-interactive
+# Choose an image in a terminal and add it to the active theme.
+
+output_file=$(mktemp) || exit 1
+trap 'rm -f "$output_file"' EXIT
+
+hk-terminal-open -e bash -c 'hk-picture-select >"$1"' _ "$output_file"
+selected=$(<"$output_file")
+if [[ -n "$selected" ]]; then
+  hk-wallpaper add "$selected"
+fi

@@ -8,7 +8,6 @@
 #   hk-wallpaper cycle
 #   hk-wallpaper init
 #   hk-wallpaper remove <filename>
-#   hk-wallpaper select [highlight-color]
 #   hk-wallpaper set <filename>
 
 usage() {
@@ -19,7 +18,6 @@ Usage:
   hk-wallpaper cycle
   hk-wallpaper init
   hk-wallpaper remove <filename>
-  hk-wallpaper select [highlight-color]
   hk-wallpaper set <filename>
 EOF
 }
@@ -28,7 +26,7 @@ action=${1:-}
 shift || true
 
 case "$action" in
-  add|cache|cycle|init|remove|select|set) exec "hk-wallpaper-$action" "$@" ;;
+  add|cache|cycle|init|remove|set) exec "hk-wallpaper-$action" "$@" ;;
   ""|-h|--help|help) usage; exit 0 ;;
   *) usage >&2; exit 1 ;;
 esac

@@ -23,6 +23,7 @@ hyprsunset
 imagemagick
 imv
 jq
+libqalculate
 lm_sensors
 localsend
 libnotify
@@ -46,8 +47,6 @@ qt5ct
 qt6ct
 quickshell
 resvg
-rofi
-rofi-calc
 satty
 stow
 ttf-iosevka-nerd

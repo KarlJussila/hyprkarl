@@ -59,14 +59,18 @@ category commands do not emit that event.
   shell command widgets supply their clicked-output context automatically.
   Static forwarding aliases are not part of the command surface; bindings and
   scripts should use this command directly.
-- `hk-menu-launcher`
-  Open the rofi app launcher.
+- `hk-shell launcher [toggle|open|close]`
+  Control the Quickshell application launcher. It searches Quickshell's
+  resident desktop-entry index and launches the selected desktop file.
+- `hk-shell calculator [toggle|open|close]`
+  Control the Quickshell calculator. Results come from `qalc`; choosing one
+  copies it to the clipboard and stores up to five recent calculations in XDG
+  state.
+- `hk-shell wallpaper <set|remove|close>`
+  Open the Quickshell thumbnail picker to set or remove a wallpaper.
 - `hk-keybindings-list`
   Print the live Hyprland keybindings shown by the searchable `keybindings`
   shell menu.
-- `hk-menu-calculator`
-  Open `rofi-calc`. `Ctrl+Return` copies the current result to the clipboard;
-  history is trimmed to five entries on exit.
 - `hk-icon-data-update`
   Download the latest Nerd Font glyph list from the upstream cheat-sheet and
   regenerate the provider-ready
@@ -95,7 +99,9 @@ category commands do not emit that event.
   to close before returning. Arguments are forwarded to `xdg-terminal-exec`.
   Use `hk-tui-launch` instead when you don't need to wait for the result.
 - `hk-open-with <file>`
-  Show a rofi-based app picker for opening a file.
+  Show the shared Quickshell application picker for opening a file. Its custom
+  switch optionally makes the selected application the default for the file's
+  MIME type before launching it.
 - `hk-lock`
   Launch `hyprlock` if it is not already running and wait until its Wayland
   surface is present before returning.
@@ -124,15 +130,10 @@ category commands do not emit that event.
   List installed themes.
 - `hk-theme current`
   Print the current theme name.
-- `hk-menu-wallpaper`
-  Open the shell-native wallpaper management menu. Select and Remove continue
-  into the thumbnail picker; Add opens the file picker in a terminal.
 - `hk-wallpaper set <filename>`
   Set the current wallpaper for the active theme.
 - `hk-wallpaper cycle`
   Switch to the next wallpaper in the active theme.
-- `hk-wallpaper select`
-  Show the wallpaper picker and print the selected filename.
 - `hk-wallpaper add <path>`
   Copy an image into the active theme's wallpaper directory and set it as the
   current wallpaper.

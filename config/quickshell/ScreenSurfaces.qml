@@ -2,10 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQml
 import Quickshell
+import "features/applications"
+import "features/calculator"
 import "features/menu"
 import "features/notifications"
 import "features/osd"
 import "features/polkit"
+import "features/wallpaper"
 
 Scope {
   id: root
@@ -62,6 +65,21 @@ Scope {
   }
 
   property MenuWindow menu: MenuWindow {
+    output: root.output
+    theme: root.theme
+  }
+
+  property ApplicationPickerWindow applications: ApplicationPickerWindow {
+    output: root.output
+    theme: root.theme
+  }
+
+  property CalculatorWindow calculator: CalculatorWindow {
+    output: root.output
+    theme: root.theme
+  }
+
+  property WallpaperPickerWindow wallpaperPicker: WallpaperPickerWindow {
     output: root.output
     theme: root.theme
   }

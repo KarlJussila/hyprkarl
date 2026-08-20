@@ -133,6 +133,23 @@ QtObject {
   readonly property real menuHeaderAccentOpacity: menu.headerAccentOpacity ?? 0
   readonly property real menuSelectionAccentOpacity: menu.selectionAccentOpacity ?? 0
 
+  readonly property var applicationPicker: values.applicationPicker ?? ({})
+  readonly property int applicationPickerWidth:
+    applicationPicker.width ?? menuSearchWidth
+  readonly property int applicationPickerRows: applicationPicker.rows ?? 7
+  readonly property int applicationPickerIconSize: applicationPicker.iconSize ?? 32
+
+  readonly property var calculator: values.calculator ?? ({})
+  readonly property int calculatorWidth: calculator.width ?? menuSearchWidth
+  readonly property int calculatorHistoryRows: calculator.historyRows ?? 5
+
+  readonly property var wallpaperPicker: values.wallpaperPicker ?? ({})
+  readonly property int wallpaperPickerColumns: wallpaperPicker.columns ?? 3
+  readonly property real wallpaperThumbnailScreenFraction:
+    wallpaperPicker.thumbnailScreenFraction ?? 0.25
+  readonly property int wallpaperPickerGap:
+    wallpaperPicker.gap ?? menuOuterPadding * 2
+
   readonly property string stateHome: (Quickshell.env("XDG_STATE_HOME")
     ?? Quickshell.env("HOME") + "/.local/state") + "/hyprkarl"
 

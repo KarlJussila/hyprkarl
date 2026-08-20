@@ -1,0 +1,31 @@
+#!/bin/bash
+# hk-shell-launcher
+# Control the shell-native application launcher.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/shell.sh
+source "$SCRIPT_DIR/lib/shell.sh"
+
+action=${1:-toggle}
+case "$action" in
+  toggle|open|close) ;;
+  *) echo "Usage: hk-shell launcher [toggle|open|close]" >&2; exit 1 ;;
+esac
+
+if [[ "$action" == "close" ]]; then
+  exec qs -p "$HK_SHELL_CONFIG" ipc call launcher close
+fi
+
+if [[ -n ${HYPRKARL_OUTPUT:-} ]]; then
+  method="${action}ForScreen"
+  args=("$HYPRKARL_OUTPUT")
+else
+  method="$action"
+  args=()
+fi
+
+result="$(qs -p "$HK_SHELL_CONFIG" ipc call launcher "$method" "${args[@]}")" || exit 1
+if [[ "$result" != "true" ]]; then
+  echo "Could not open application launcher." >&2
+  exit 1
+fi

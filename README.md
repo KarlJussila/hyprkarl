@@ -147,6 +147,11 @@ shell into a plugin platform. The built-in bar can also be disabled while the
 other shell services stay active; one explicitly referenced application-wide
 user QML root can compose replacement surfaces, consume open-ended theme data,
 and publish reactive notification positioning for a custom bar.
+The app launcher, open-with chooser, calculator, and wallpaper picker are also
+Quickshell-native. They share the shell's focused-overlay frame and interaction
+model while keeping application, calculation, and wallpaper behavior in small
+feature-owned implementations. Open-with can optionally set the selected
+application as the MIME default before launching the file.
 
 Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 

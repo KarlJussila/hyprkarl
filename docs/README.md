@@ -16,8 +16,8 @@ repo checked out at `~/.local/share/hyprkarl/`.
   keybindings, themes, wallpapers, defaults, and utilities.
 - Read [Configuration Map](configuration-map.md) if you need to know where a
   change belongs before you touch anything.
-- Read [Architecture Roadmap](architecture-roadmap.md) for the completed shell
-  foundation and the remaining user-owned configuration and theme work.
+- Read [Architecture Roadmap](architecture-roadmap.md) for the planned
+  user-owned configuration, integrated theme compiler, and update overhaul.
 - Read [Shell Product Brief](shell-product-brief.md) for the bar and independent
   feature-panel direction.
 - Read [Shell Configuration](shell-configuration.md) for the public JSON and

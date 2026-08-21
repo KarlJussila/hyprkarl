@@ -7,15 +7,15 @@ does not try to document every internal script.
 
 - `hk-update check`
   Report what would change across configuration, packages, and system without
-  making any changes. Configuration output separates upstream-owned defaults
-  from user-owned files, which are review-only.
+  making any changes. It reports shipped configuration changes only; personal
+  configuration stays outside the checkout.
 - `hk-update all [--force|--adopt]`
   Run dotfiles, packages, and system updates in sequence. `--force` and
   `--adopt` are passed through to the dotfiles step.
 - `hk-update tui`
   Interactive guided update in a terminal: fetch and merge upstream (safe on a
-  dirty working tree, with conflict resolution), review upstream and user
-  configuration separately from package and system changes, then apply the categories you
+  dirty working tree, with conflict resolution), review upstream configuration
+  with package and system changes, then apply the categories you
   select. Excludes the system package upgrade (`paru -Syu`) — see
   `hk-pkg-upgrade` for that. Launch via the update menu or
   `hk-tui-launch hk-update-tui`.
@@ -37,6 +37,11 @@ does not try to document every internal script.
   that were dropped or added to the removal list.
 - `hk-update system`
   Re-run `setup-system.sh`.
+- `hk-user-migrate`
+  Move personal configuration from the retired checkout `user/` directory to
+  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, materialize the user-owned
+  UWSM and terminal-default files, and stop if both old and new locations
+  contain data. `hk-update dotfiles` runs it before restowing.
 
 Full update workflows (`hk-update all` and `hk-update tui`) run the
 `post-update` lifecycle hooks after completing successfully. Individual
@@ -45,7 +50,7 @@ category commands do not emit that event.
 ## Lifecycle Hooks
 
 - `hk-hook-run <event>`
-  Run personal executable hooks from `user/hooks/<event>.d/` in lexical order.
+  Run personal executable hooks from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/` in lexical order.
   Supported events are `post-boot`, `post-update`, `theme-set`, and
   `wallpaper-set`. This is normally called by the corresponding Hyprkarl
   action rather than manually.
@@ -119,7 +124,7 @@ category commands do not emit that event.
 
 - `hk-theme build <source> [name]`
   Render a typed `theme.yaml` source with the companion generator into the user-owned
-  `user/themes/<name>/` bundle. The generator defaults to the sibling
+  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/` bundle. The generator defaults to the sibling
   `../theme-generator` checkout and can be relocated with
   `HYPRKARL_THEME_GENERATOR_PATH`.
 - `hk-theme set <theme>`

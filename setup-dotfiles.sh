@@ -26,8 +26,3 @@ fi
 # rather than relying on autostart's `hk-wallpaper init || cycle` fallback
 # to win a race against hyprpaper starting up on the very first boot.
 PATH="$SCRIPT_DIR/bin:$PATH" "$SCRIPT_DIR/bin/hk-wallpaper-cycle"
-
-# Create personal env var file from template if it doesn't exist
-if [[ ! -f ~/.config/uwsm/env.local ]]; then
-  cp "$SCRIPT_DIR/templates/setup/env.local.example" ~/.config/uwsm/env.local
-fi

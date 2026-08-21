@@ -5,3 +5,8 @@
 
 # Machine-local Claude Code state — belongs to the repo checkout, not ~/.config
 \.claude
+
+# These are seed files for real user-owned configuration, not Stow targets.
+^/uwsm/default$
+^/uwsm/env\.local$
+^/xdg-terminals\.list$

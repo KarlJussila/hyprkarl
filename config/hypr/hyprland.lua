@@ -6,8 +6,10 @@ local hyprkarl_path = assert(
     "HYPRKARL_PATH must point at the Hyprkarl checkout"
 )
 local defaults_path = hyprkarl_path .. "/defaults/hypr"
-local user_path = hyprkarl_path .. "/user/hypr"
-local state_home = os.getenv("XDG_STATE_HOME") or (assert(os.getenv("HOME")) .. "/.local/state")
+local home = assert(os.getenv("HOME"))
+local config_home = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
+local user_path = config_home .. "/hyprkarl/hypr"
+local state_home = os.getenv("XDG_STATE_HOME") or (home .. "/.local/state")
 
 package.path = table.concat({
     defaults_path .. "/?.lua",

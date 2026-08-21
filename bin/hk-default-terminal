@@ -16,6 +16,9 @@ if (($# == 0)); then
 fi
 
 package="$1"
+config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+default_file="$config_home/uwsm/default"
+terminal_list="$config_home/xdg-terminals.list"
 
 # Map package name to desktop entry ID
 case "$package" in
@@ -39,10 +42,11 @@ if hk-pkg install "$package"; then
   fi
 
   # Update $TERMINAL
-  sed -i --follow-symlinks "s/^export TERMINAL=.*/export TERMINAL=$package/" ~/.config/uwsm/default
+  sed -i "s/^export TERMINAL=.*/export TERMINAL=$package/" "$default_file"
 
   # Update xdg-terminals.list to prioritize the proper terminal
-  sed "s|{{desktop_id}}|$desktop_id|" "$HYPRKARL_PATH/templates/xdg/xdg-terminals.list" > "$HYPRKARL_PATH/config/xdg-terminals.list"
+  sed "s|{{desktop_id}}|$desktop_id|" \
+    "$HYPRKARL_PATH/templates/xdg/xdg-terminals.list" > "$terminal_list"
 else
   echo "Failed to install $package"
 fi

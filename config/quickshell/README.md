@@ -78,7 +78,7 @@ check.
 
 `defaults/shell.json` is Hyprkarl's shipped configuration. To customize the
 bar without editing that upstream default, create a sparse override at
-`user/shell.json`:
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`:
 
 ```json
 {
@@ -105,7 +105,7 @@ updates and valid user edits are resolved live, deleting the user file returns
 to the shipped default, and a rejected live edit leaves the last valid layout
 running with an actionable log message. The current bar implements built-in,
 command, and user-QML widget kinds. A user-QML instance names a relative file
-below `user/quickshell/modules/` and receives the documented per-bar context;
+below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/` and receives the documented per-bar context;
 modules are never discovered or registered implicitly. A command widget can
 poll through `bash -c` or consume a persistent newline
 stream. Polling starts a process on every tick, so short intervals carry a CPU
@@ -117,13 +117,13 @@ main-menu button uses that form.
 their application-wide hardware monitor and command providers inert; the
 menu, notifications, OSD, and polkit remain active. One optional
 `userRoot.source` loads an application-wide QML composition root from
-`user/quickshell/`. It can own independent or per-screen surfaces and may
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/`. It can own independent or per-screen surfaces and may
 publish a reactive notification position for each output. This is one
 explicitly referenced user module, not a discovered plugin collection. See
 `docs/shell-configuration.md` for its context and positioning contract.
 
 The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
-`user/menu.json` adds or overrides menus and entries by stable ID. Ordinary
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json` adds or overrides menus and entries by stable ID. Ordinary
 objects recursively merge, `enabled: false` hides an entry, valid changes
 apply live, and invalid changes retain the last valid menu. A menu may use a
 short-lived `sourceCommand` for validated entries that must be rediscovered on
@@ -232,7 +232,7 @@ schema and override examples.
 - `widgets/WidgetHost.qml` loads widget kinds from the instance definitions.
 - `widgets/*.qml` provide compact status and panel entry points;
   `widgets/qml.qml` is the host for explicitly referenced
-  modules under `user/quickshell/modules/`.
+  modules under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`.
 - `features/` owns feature-specific panel state and composition. Display,
   audio, network, Bluetooth, power, and clock/calendar all use this boundary.
   Display is a per-output view over the separate `hk-display` backend rather

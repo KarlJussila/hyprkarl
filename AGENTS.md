@@ -4,7 +4,11 @@ Guidance for coding agents working in this repository.
 
 ## What This Repo Is
 
-Hyprkarl is a desktop configuration repository for CachyOS + Hyprland. It is installed once, then edited directly — the live `~/.config/` files are symlinks back into this repo, so changes here take effect immediately without a deploy step.
+Hyprkarl is a desktop configuration repository for CachyOS + Hyprland. Shipped
+entry points under `~/.config/` are symlinks into this checkout, while ordinary
+personal configuration lives outside it under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/` and the applications' own
+configuration directories.
 
 ## Core Engineering Rules
 
@@ -93,7 +97,7 @@ Hyprland is configured in **Lua** (`hyprland.lua`), as required since Hyprland
 https://wiki.hypr.land/Configuring/Start/.
 
 `config/hypr/hyprland.lua` is the stable entry point. It adds
-`defaults/hypr/` and `user/hypr/` to the Lua module path, then loads the
+`defaults/hypr/` and `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` to the Lua module path, then loads the
 upstream modules from `defaults/hypr/` in this order:
 
 ```
@@ -105,11 +109,11 @@ It then loads the active theme, the machine-generated display layout from
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/monitors.lua`, and
 matching optional user modules in the same order. Generated display state
 therefore overrides the shipped catch-all monitor rule without dirtying the
-repository, while explicit `user/hypr/monitors.lua` calls retain the final say.
+repository, while explicit personal `hypr/monitors.lua` calls retain the final say.
 Missing generated and user files are normal; other load failures must remain
 visible.
 
-Keybindings are split under `defaults/hypr/bindings/`: `apps.lua`, `media.lua`, `windows.lua` (window management), `workspaces.lua` (workspaces/monitors/scratchpad), `system.lua` (menus, notifications, panels, power). App-specific window rules are split under `defaults/hypr/windows/`: `browsers.lua`, `floating.lua`, `media.lua`, `terminals.lua`, `screenshots.lua` — each required by `windows.lua`, which owns the base rules and the final `default-opacity` application. Personal modules belong in `user/hypr/`; upstream must not add or modify a user's files there.
+Keybindings are split under `defaults/hypr/bindings/`: `apps.lua`, `media.lua`, `windows.lua` (window management), `workspaces.lua` (workspaces/monitors/scratchpad), `system.lua` (menus, notifications, panels, power). App-specific window rules are split under `defaults/hypr/windows/`: `browsers.lua`, `floating.lua`, `media.lua`, `terminals.lua`, `screenshots.lua` — each required by `windows.lua`, which owns the base rules and the final `default-opacity` application. Personal modules belong in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/`; upstream must not add or modify them.
 
 Validate any change non-destructively with `Hyprland --verify-config` before
 relaunching — a broken `hyprland.lua` has no automatic fallback.
@@ -117,7 +121,7 @@ relaunching — a broken `hyprland.lua` has no automatic fallback.
 ### Theme System
 
 Shipped theme sources live in `themes/{name}/`; personal themes and overlays
-live in `user/themes/{name}/`. Themes control **look** — colors, fonts, spacing
+live in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/{name}/`. Themes control **look** — colors, fonts, spacing
 — not behavior. `hk-theme set` stages and validates an immutable bundle under
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/`, then atomically swaps
 the XDG-state selector. The tracked paths under `config/hyprkarl/current/` are
@@ -137,7 +141,7 @@ and arbitrary user-defined structures may feed the final consumer values. Add
 a consumer template there and regenerate every built-in instead of hand-copying
 one new file per theme.
 `hk-theme build <source> [name]` renders a personal bundle into
-`user/themes/<name>/`.
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`.
 
 GTK theme payloads are the deliberate exception to runtime symlink consumption.
 `theme_install_gtk_payload` materializes the active bundle's `gtk-theme/` as a
@@ -151,7 +155,7 @@ unrelated directory at the same destination.
 
 The active bar under `config/quickshell/` reads
 the upstream-owned `defaults/shell.json` and applies the optional sparse
-`user/shell.json` override. Objects merge recursively, arrays replace as
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` override. Objects merge recursively, arrays replace as
 complete ordered values, and `bar.layoutEdits` provides explicit widget-ID
 operations for surgical layout changes. Widget instances are defined inline
 in the default layout, `bar.enabled` controls whether the built-in per-output
@@ -185,13 +189,13 @@ command widgets, including the main-menu button, create no provider runtime.
 Polling uses non-login `bash -c`, starts a process per tick, and has a
 documented CPU and battery cost; use stream mode or native services for
 frequent updates. `config/quickshell/widgets/qml.qml` hosts explicitly
-referenced personal QML widgets below `user/quickshell/modules/`. Each module
+referenced personal QML widgets below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`. Each module
 receives the narrow documented per-bar context and is instantiated once per
 output; there is no plugin discovery or implicit shared state. See
 `config/quickshell/AGENTS.md` before changing the shell. Use `hk-shell` to
 start, stop, restart, inspect, or read logs from the production bar.
 The same shell renders the command hierarchy from `defaults/menu.json` plus
-the optional deep-merged `user/menu.json`. Menu entries use stable IDs; a
+the optional deep-merged `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`. Menu entries use stable IDs; a
 menu's optional `sourceCommand` may provide validated command entries that
 must be rediscovered when it opens, as the Docker service menus do;
 `hk-shell menu` is the only public transport for opening or toggling static
@@ -241,7 +245,7 @@ authoring conventions before adding or editing one.
 ### Lifecycle Hooks
 
 `hk-hook-run` executes user-owned, non-hidden executable files from
-`user/hooks/<event>.d/` in lexical order. The supported events are
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/` in lexical order. The supported events are
 `post-boot`, `post-update`, `theme-set`, and `wallpaper-set`, each emitted only
 by its existing public action. Missing directories are a no-op. The runner
 attempts every hook and returns nonzero after reporting failures; the owning
@@ -253,8 +257,8 @@ public workflow.
 
 `config/uwsm/env` sets session-wide environment variables (including
 `HYPRKARL_PATH` and `$PATH`). Changes require a new Hyprland session.
-`config/uwsm/default` controls `$TERMINAL`, `$EDITOR`, and `$SHELL`.
-`~/.config/uwsm/env.local` holds machine-local variables and is not tracked.
+`~/.config/uwsm/default` controls `$TERMINAL`, `$EDITOR`, and `$SHELL`.
+`~/.config/uwsm/env.local` holds machine-local variables. Both are real user-owned files, seeded or migrated by `hk-user-migrate` and never tracked.
 
 ## Command Script Style
 

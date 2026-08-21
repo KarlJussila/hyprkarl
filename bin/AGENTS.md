@@ -67,13 +67,13 @@ Hyprland output discovery, live scale and enable/disable changes, internal
 backlight control, and the generated layout under
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`. The Quickshell panel
 must call this command rather than write Hyprland rules or persistence itself.
-Generated `monitors.lua` loads before `user/hypr/monitors.lua`, so personal Lua
+Generated `monitors.lua` loads before `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`, so personal Lua
 remains the final authority. Do not add a second shell-JSON display-state store
 or make the backend rewrite user-authored monitor configuration.
 
 `hk-hook-run` is the only lifecycle-hook runner. It accepts exactly
 `post-boot`, `post-update`, `theme-set`, or `wallpaper-set`, then runs
-non-hidden executable regular files from `user/hooks/<event>.d/` in lexical
+non-hidden executable regular files from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/` in lexical
 order. Missing directories and non-executable files are normal. It attempts
 every hook, reports each failure, and returns nonzero if any failed. Wire new
 events only to a real successful public action; do not add hook metadata,
@@ -109,15 +109,15 @@ These private-use-area characters are easy to drop silently when rewriting a
 whole file; prefer targeted edits.
 
 `hk-update` treats `config/`, `applications/`, `defaults/`, and `themes/` as
-upstream-owned configuration. Files under `user/` are review-only: update
-commands may display them but must never generate, replace, reset, or adopt
-them.
+upstream-owned configuration. Personal files live outside the checkout under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; update commands must not
+generate, replace, reset, or adopt them.
 
 `lib/theme.sh` owns the theme source-to-runtime boundary. Theme selection must
-copy a built-in plus an optional same-name `user/themes/` overlay into a new
+copy a built-in plus an optional same-name `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` overlay into a new
 XDG-state artifact, validate it, and atomically swap the selector before any
 reloads. The repository's `config/hyprkarl/current/` entries are fixed
-compatibility links. Wallpaper additions/removals persist under `user/themes/`;
+compatibility links. Wallpaper additions/removals persist under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`;
 never mutate checked-in theme sources from a public command.
 The same library owns installation of the GTK payload as a marked real-file
 copy. `hk-theme-set` refreshes it while holding the theme lock; setup/update

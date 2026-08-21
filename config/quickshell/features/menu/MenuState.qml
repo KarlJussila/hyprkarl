@@ -4,13 +4,14 @@ import QtQml
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
+import "../../config"
 import "../overlay"
 
 QtObject {
   id: root
 
   readonly property url defaultPath: Quickshell.shellPath("../../defaults/menu.json")
-  readonly property url userPath: Quickshell.shellPath("../../user/menu.json")
+  readonly property url userPath: Paths.userUrl("menu.json")
 
   property var values: ({})
   property bool ready: false

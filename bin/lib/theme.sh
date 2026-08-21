@@ -2,6 +2,8 @@
 # Shared ownership of generated theme sources and active runtime state.
 
 HYPRKARL_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl"
+HYPRKARL_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl"
+HYPRKARL_USER_THEMES="$HYPRKARL_CONFIG_HOME/themes"
 HYPRKARL_THEME_STATE="$HYPRKARL_STATE_HOME/current"
 HYPRKARL_THEME_ARTIFACTS="$HYPRKARL_STATE_HOME/themes"
 HYPRKARL_CURRENT_THEME="$HYPRKARL_THEME_STATE/theme"
@@ -178,7 +180,7 @@ theme_install_gtk_payload() {
 theme_activate_bundle() {
   local name="$1"
   local built_in="$HYPRKARL_PATH/themes/$name"
-  local user="$HYPRKARL_PATH/user/themes/$name"
+  local user="$HYPRKARL_USER_THEMES/$name"
   local staging artifact artifact_name previous_artifact temporary_link
   local disabled_wallpaper old_artifact
 

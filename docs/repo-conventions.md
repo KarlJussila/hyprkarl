@@ -34,9 +34,8 @@ or promise compatibility for third-party extensions.
   Stowed application config and stable live entry points
 - `defaults/`
   Upstream-owned behavior and data defaults
-- `user/`
-  User-owned overrides. Upstream may document this namespace but does not add
-  or replace personal configuration files.
+- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
+  User-owned overrides. Upstream does not add or replace personal files there.
 - `themes/`
   Theme assets and per-theme overrides
 - `bin/`
@@ -63,7 +62,8 @@ paths are immutable compatibility links into that state tree:
 - `config/hyprkarl/current/wallpaper`
 
 Theme sources under `themes/` are upstream-owned; personal themes, same-name
-overlays, wallpaper additions, and removal markers belong under `user/themes/`.
+overlays, wallpaper additions, and removal markers belong under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`.
 Switching themes must stage and validate a complete bundle before atomically
 moving the XDG-state selector.
 
@@ -97,9 +97,10 @@ update reads as a move between releases rather than between commit hashes.
 
 Files under `config/` and `applications/` are exposed through GNU Stow.
 
-Files under `defaults/` and `user/` are read directly from the checkout by
-stable entry points. They are not stowed: updates own `defaults/`, while a
-user's branch owns their files under `user/`.
+Files under `defaults/` are read directly from the checkout by stable entry
+points. Personal configuration is read from
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; it is never stowed or owned by
+a Git branch.
 
 - editing an existing tracked file needs no extra step
 - adding a new tracked file (or removing one) requires re-stowing with

@@ -8,6 +8,8 @@
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"
 
+"$HYPRKARL_PATH/bin/hk-user-migrate" || exit 1
+
 force=0
 adopt=0
 for arg in "$@"; do

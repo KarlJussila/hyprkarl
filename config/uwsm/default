@@ -1,4 +1,5 @@
-# Changes require a restart to take effect.
+# Seed for the real user-owned ~/.config/uwsm/default.
+# Changes to the installed copy require a new session.
 export TERMINAL=kitty
 export EDITOR=nvim
 

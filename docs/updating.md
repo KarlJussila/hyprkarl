@@ -27,11 +27,9 @@ The recommended interactive path — also reachable from the main menu under
 **Update → Update Hyprkarl**, which opens it in a floating terminal. It walks
 the whole config-sync process in three phases:
 
-1. **Sync** — fetches from `origin` and merges the upstream branch. Because the
-   live `~/.config/` files are symlinks into the repo the working tree is
-   usually dirty, so it offers to stash-and-restore (or commit first) before
-   merging, and guides you through any merge or stash conflicts file by file
-   (edit in `$EDITOR`, take theirs, or keep yours).
+1. **Sync** — fetches from `origin` and merges the upstream branch. If you have
+   changed shipped code, it offers to stash-and-restore or commit first, then
+   guides you through merge or stash conflicts file by file.
 2. **Review** — summarizes the pending dotfile, package, and system changes and
    lets you browse the diffs (rendered with `delta` inside an `fzf` preview
    pane) before committing to anything.
@@ -61,7 +59,7 @@ dotfiles step. Run categories individually if you only want specific ones or
 need to handle them separately.
 
 After a successful `hk-update all` or guided update, Hyprkarl runs executable
-files from `user/hooks/post-update.d/` in lexical order. Individual category
+files from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/post-update.d/` in lexical order. Individual category
 commands do not emit the event. A hook failure is reported after the update
 has already been applied and makes the full workflow return nonzero.
 
@@ -73,15 +71,14 @@ hk-update check
 
 Prints a summary of what each category would do without touching anything:
 changed configuration, packages to install or remove, and whether system setup
-files changed. Configuration is divided by ownership:
+files changed. Configuration output covers shipped paths:
 
 - upstream-owned paths (`config/`, `applications/`, `defaults/`, and `themes/`)
   are implementation and default changes from Hyprkarl;
-- personal files under `user/` are shown separately for review and are never
-  generated, replaced, or reset by an update.
 
-The guided TUI exposes those as separate diffs. Useful for reviewing a merge
-before applying it.
+Personal files under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/` are outside
+the checkout and are never generated, replaced, reset, or reviewed by an
+update.
 
 ## Dotfiles Update
 

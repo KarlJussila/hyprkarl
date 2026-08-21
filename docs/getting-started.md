@@ -38,6 +38,9 @@ cd ~/.local/share/hyprkarl
   On re-runs it refuses to proceed while the repo has uncommitted `config/` or
   `applications/` changes, since the stow step resets those paths to HEAD —
   commit (or discard) first.
+  Before it restows, `hk-user-migrate` moves retired checkout-local personal
+  configuration to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/` and seeds or
+  materializes the real user-owned UWSM and terminal-default files.
 - `setup-system.sh`
   Applies system-level settings such as GTK defaults, SDDM autologin, logind
   lid handling, sudo and faillock settings, and LocalSend firewall rules.
@@ -50,16 +53,20 @@ place for you to undo manually.
 
 Hyprkarl is edited from `~/.local/share/hyprkarl/`.
 
-The files under `~/.config/` and `~/.local/share/applications/` are symlinks
-back into that tree, so the tracked files in Hyprkarl are the source of truth.
-For example, `~/.config/hypr/hyprland.lua` points at the stable bootstrap in
-this checkout. Ordinary Hyprland personalization belongs in
-`~/.local/share/hyprkarl/user/hypr/`, not in that bootstrap or the shipped
-modules under `defaults/hypr/`.
+Shipped entry points under `~/.config/` and
+`~/.local/share/applications/` are symlinks back into that tree, so tracked
+Hyprkarl implementation files remain live. For example,
+`~/.config/hypr/hyprland.lua` points at the stable bootstrap in this checkout.
+Ordinary Hyprland personalization belongs in
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/`, not in that bootstrap or
+the shipped modules under `defaults/hypr/`. Personal Hyprkarl files and the
+real `~/.config/uwsm/default`, `env.local`, and `xdg-terminals.list` are not
+Stow links.
 
 ## Editing Hyprkarl
 
-If you plan to customize Hyprkarl, make a branch first and edit the files in
+Personalize Hyprkarl through `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`.
+Create a fork branch only when changing shipped code or defaults in
 `~/.local/share/hyprkarl/`.
 
 For editing guidance, see:
@@ -78,7 +85,7 @@ has actually changed.
 ```bash
 cd ~/.local/share/hyprkarl
 git fetch origin
-git merge origin/main   # or rebase onto your personal branch
+git merge origin/main
 hk-update all
 ```
 
@@ -100,7 +107,7 @@ and what to do when things go wrong.
 
 Some changes do not take effect immediately:
 
-- `config/uwsm/default` changes affect new sessions
+- `~/.config/uwsm/default` changes affect new sessions
 - `hk-default-shell` changes affect the next login
 - Docker group changes made by `setup-system.sh` require a new login or reboot
 - most other changes can be reloaded live

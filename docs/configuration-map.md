@@ -13,8 +13,8 @@ would edit.
   Application config and session behavior
 - `defaults/`
   Upstream-owned shell data and Hyprland behavior
-- `user/`
-  Reserved user-owned configuration; upstream keeps only documentation here
+- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
+  User-owned Hyprkarl configuration, QML, themes, and hooks
 - `packages/`
   Package lists read by `setup-packages.sh` and `hk-update packages`
 - `themes/`
@@ -57,7 +57,7 @@ and the setup scripts. Delete one to force `hk-update` to re-run that category
 regardless of whether anything changed.
 
 Personal executable lifecycle hooks live under
-`user/hooks/<event>.d/`. Hyprkarl supports `post-boot`, `post-update`,
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/`. Hyprkarl supports `post-boot`, `post-update`,
 `theme-set`, and `wallpaper-set`; files run in lexical order. See
 [Extending Hyprkarl](extending-hyprkarl.md#add-a-lifecycle-hook).
 
@@ -75,7 +75,7 @@ Display-panel layout state lives separately under
   The generated Hyprland rules loaded on configuration reload
 
 `hk-display` is the only writer. These are machine state, not personal editing
-surfaces; use `user/hypr/monitors.lua` for explicit authored rules.
+surfaces; use `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua` for explicit authored rules.
 
 The shell calculator keeps its five most recent expression/result pairs in
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/calculator-history.json`.
@@ -86,7 +86,7 @@ This is disposable interaction history, not an editing surface.
 Hyprland is configured in **Lua** (`hyprland.lua`), required since Hyprland 0.55
 (hyprlang `.conf` is deprecated). `config/hypr/hyprland.lua` is the stable live
 bootstrap. Shipped behavior lives under `defaults/hypr/`; the bootstrap adds
-that directory and `user/hypr/` to Lua's module path, then loads the shipped
+that directory and `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` to Lua's module path, then loads the shipped
 modules in this order:
 
 - `envs.lua`
@@ -121,7 +121,7 @@ modules in this order:
 The bootstrap next loads the active theme from
 `config/hyprkarl/current/theme/hyprland.lua`, the generated
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/monitors.lua`, then
-matching optional files from `user/hypr/` in the same order. The generated
+matching optional files from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` in the same order. The generated
 layout wins over shipped monitor defaults, while user calls win over shipped,
 theme, and generated values. Missing generated and user files are skipped;
 syntax, read, and runtime errors are reported.
@@ -146,7 +146,7 @@ Validate edits with `Hyprland --verify-config` (non-destructive: parses the conf
 and reports errors without launching). There is no automatic fallback if
 `hyprland.lua` is broken.
 
-For personal changes, create only the relevant `user/hypr/*.lua` files. The
+For personal changes, create only the relevant `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/*.lua` files. The
 files under `defaults/hypr/` are upstream-owned references and should not be
 edited for ordinary personalization. See
 [Extending Hyprkarl](extending-hyprkarl.md#customize-hyprland).
@@ -160,14 +160,14 @@ For Hyprland syntax and option reference, see the official Hyprland docs:
 `config/uwsm/env` sets the session-wide environment:
 
 - exports `HYPRKARL_PATH`
-- adds `bin/` to `PATH`
+- adds `~/.local/bin` and Hyprkarl's `bin/` to `PATH`
 - extends `XDG_DATA_DIRS` for Flatpak desktop entries
 - points `WIFITUI_THEME` at the active theme
 - sets `QT_QPA_PLATFORMTHEME`
-- sources `config/uwsm/default`
-- sources `config/uwsm/env.local` if it exists
+- sources `~/.config/uwsm/default`
+- sources `~/.config/uwsm/env.local` if it exists
 
-`config/uwsm/default` is the user-editable place for:
+`~/.config/uwsm/default` is the user-editable place for:
 
 - `TERMINAL`
 - `EDITOR`
@@ -177,9 +177,9 @@ For Hyprland syntax and option reference, see the official Hyprland docs:
 The default terminal and editor commands update this file. Changes here require
 a new session.
 
-`config/uwsm/env.local` is for machine-local environment variables such as API
-keys and personal settings. It is gitignored and never tracked. `setup-dotfiles.sh`
-creates it from `config/uwsm/env.local.example` on first run if it doesn't exist.
+`~/.config/uwsm/env.local` is for machine-local environment variables such as API
+keys and personal settings. It is a real user-owned file. `hk-user-migrate`
+migrates an old checkout copy or creates it from a shipped example when absent.
 
 ## Quickshell Bar
 
@@ -188,11 +188,11 @@ are:
 
 - `defaults/shell.json`
   Shipped bar edge, widget order, and inline widget instances
-- `user/shell.json`
+- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`
   Optional sparse user-owned override for the shipped shell configuration
 - `defaults/menu.json`
   Shipped command-menu hierarchy, dynamic providers, search roles, and actions
-- `user/menu.json`
+- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`
   Optional sparse user-owned menu additions and overrides
 - `themes/<theme>/quickshell.json`
   Generated theme-specific semantic colors, typography, minimum bar thickness, natural widget
@@ -210,9 +210,9 @@ invalid live edit keeps the last valid configuration running. Version 1
 supports top and bottom bars plus built-in, command, and explicitly referenced
 user-QML widget kinds. `bar.enabled` can remove the built-in bar while keeping
 the other shell surfaces alive. Personal per-bar modules live below
-`user/quickshell/modules/`, receive one narrow context per bar/output, and are
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`, receive one narrow context per bar/output, and are
 not discovered as plugins. An optional `userRoot.source` names one
-application-wide QML composition root below `user/quickshell/`; it may create
+application-wide QML composition root below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/`; it may create
 independent surfaces and provide reactive notification positioning for a
 custom bar. Static
 command widgets, including the main-menu button, have no provider runtime.
@@ -278,7 +278,7 @@ mode, the one-item visual restore snapshot, and the public IPC target;
 `NotificationWindow.qml` and `NotificationToast.qml` own presentation and
 interaction. `defaults/shell.json` owns placement, timing, limits, application
 filters, compact applications, and icon descriptors. `component` descriptors
-load shipped drawings or files under `user/quickshell/icons/` through one
+load shipped drawings or files under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/icons/` through one
 shared interface. `ScreenSurfaces.qml` supplies the built-in bar's reactive
 position by default; a user root may replace that
 per-output position without replacing notification presentation. Theme JSON
@@ -288,7 +288,7 @@ has no runtime or theme path.
 ## Themes
 
 Shipped bundles live under `themes/<theme-name>/`; complete personal themes and
-same-name overlays live under `user/themes/<theme-name>/`.
+same-name overlays live under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<theme-name>/`.
 
 See [Themes](themes.md) for the full theme layout and how
 XDG state selects the active bundle; `config/hyprkarl/current/` provides stable

@@ -4,6 +4,17 @@ Manual test harnesses for hyprkarl. These are interactive sandboxes, not an
 automated CI suite — you run a scenario, drive the TUI or observe output, and
 verify the result.
 
+## `hk-user-migrate.sh`
+
+Runs the personal-configuration migration against a disposable checkout and
+home. It verifies moved user files, materialized session files, idempotence,
+preservation of the existing Hyprkarl config directory, and a real destination
+conflict.
+
+```bash
+tests/hk-user-migrate.sh
+```
+
 ## `hk-update-tui.sh`
 
 Exercises [`hk-update tui`](../docs/updating.md#guided-update-tui) (the guided

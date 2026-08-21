@@ -51,71 +51,6 @@ provisioner, or plugin marketplace.
 - Updates never need a destructive "adopt" or "force" path during ordinary
   use.
 
-## Phase 1: move personal configuration out of the checkout
-
-### Goal
-
-Make the installed repository entirely upstream-owned. Move current personal
-files from `user/` and ignored files inside `config/` to real files below the
-user's configuration directory.
-
-### Target paths
-
-```text
-~/.config/hyprkarl/
-├── shell.json
-├── menu.json
-├── hypr/
-├── hooks/
-├── quickshell/
-│   ├── Extensions.qml
-│   ├── modules/
-│   └── icons/
-└── themes/
-```
-
-Hyprkarl resolves this root from `XDG_CONFIG_HOME`, falling back to
-`~/.config`. The repository's shipped defaults stay under `defaults/`,
-`config/`, and the integrated theme compiler.
-
-Machine-specific session files also leave the checkout:
-
-```text
-~/.config/uwsm/default
-~/.config/uwsm/env.local
-~/.config/xdg-terminals.list
-```
-
-The default-terminal and default-editor commands edit these real user-owned
-files. Setup creates a file from a shipped example only when no user file
-exists. Later updates leave it alone.
-
-`~/.local/bin` must be present in the session `PATH`. Custom menu providers,
-hook helpers, and other personal commands use that standard directory.
-
-### Migration
-
-Provide one migration for existing installations:
-
-1. Find personal files in the old `user/` tree and ignored session files in
-   the checkout.
-2. Move them to their new paths when the destination is absent.
-3. Stop and show both paths when a destination already contains unrelated
-   data. Do not choose which copy wins.
-4. Remove the old runtime lookup after the migration. Do not keep permanent
-   dual-path fallback behavior.
-
-The migration handles real existing data. It does not reject unusual QML,
-scripts, paths, or theme values authored by the owner.
-
-### Acceptance
-
-- A normal personalized installation has a clean Hyprkarl worktree.
-- Every current `user/` feature works from `~/.config/hyprkarl/`.
-- Terminal and editor changes do not modify tracked files.
-- Existing personal files migrate without being overwritten.
-- A fresh installation does not recommend creating a Git branch.
-
 ## Phase 2: integrate the theme compiler
 
 ### Goal
@@ -532,14 +467,13 @@ kept beside theme data or components.
 
 Implement the work as reviewable changes in this order:
 
-1. Move personal files to XDG configuration paths and migrate this machine.
-2. Integrate the theme compiler and convert built-in themes to source-only.
-3. Audit every managed application and add its personal configuration method.
-4. Add shell module switches and complete the personal QML overlay controls.
-5. Replace the updater, package-removal flow, and system setup with the new
+1. Integrate the theme compiler and convert built-in themes to source-only.
+2. Audit every managed application and add its personal configuration method.
+3. Add shell module switches and complete the personal QML overlay controls.
+4. Replace the updater, package-removal flow, and system setup with the new
    source, apply, and migration model.
-6. Reuse the shared menu frame and investigate the remaining reload failure.
-7. Finish the documentation and agent-instruction cleanup.
+5. Reuse the shared menu frame and investigate the remaining reload failure.
+6. Finish the documentation and agent-instruction cleanup.
 
 Documentation and focused tests belong in each change. The final cleanup is
 for consolidation, not for postponing behavioral documentation.

@@ -2,12 +2,12 @@
 
 Hyprkarl's bar is built with Quickshell. Its shipped placement and behavior
 live in `defaults/shell.json`; personal changes belong in the optional
-`user/shell.json`. Appearance is entirely
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. Appearance is entirely
 theme-derived from the active bundle's `quickshell.json`.
 
 ## Override the Shipped Configuration
 
-Create `user/shell.json` with only the values you want to
+Create `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` with only the values you want to
 change. Objects merge recursively over the shipped defaults. Arrays replace as
 complete ordered values, so use `bar.layoutEdits` when you only need to move,
 insert, override, or remove one widget by its stable ID.
@@ -74,7 +74,7 @@ with a layout edit if monitor controls do not belong in your bar:
 
 Its panel can change internal-backlight brightness, select a cleaned scale,
 and enable or disable connected outputs. Those actions go through
-`hk-display`; they do not rewrite `user/shell.json` or personal Hyprland Lua.
+`hk-display`; they do not rewrite personal shell JSON or Hyprland Lua.
 
 ## Add a Command Widget
 
@@ -122,7 +122,7 @@ name as `HYPRKARL_OUTPUT`.
 ## Add a QML Widget
 
 Use `kind: "qml"` only when the command-widget surface is not expressive
-enough. Put the implementation below `user/quickshell/modules/`, reference it
+enough. Put the implementation below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`, reference it
 explicitly with a relative `source`, and keep per-instance data in `settings`:
 
 ```json

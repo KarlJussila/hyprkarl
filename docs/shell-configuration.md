@@ -14,7 +14,8 @@ Use one complete shipped file and one optional sparse override:
 
 ```text
 defaults/shell.json    Hyprkarl's shipped configuration
-user/shell.json        the owner's sparse override, when present
+${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json
+                      the owner's sparse override, when present
 ```
 
 The shipped file is upstream-owned. The user file is never rewritten during
@@ -36,7 +37,7 @@ For example, this is a complete user file that only moves the bar:
 
 The planned `hk-shell config init`, `diff`, and `reset` commands will wrap this
 contract once the public shell command is introduced. Until then, create and
-edit `user/shell.json` directly.
+edit `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` directly.
 
 ## Merge and Layout Rules
 
@@ -245,14 +246,15 @@ name. Each value is an icon descriptor:
 `icon` accepts an icon-theme name or file path, `glyph` uses the theme font,
 and `component` loads a small QML drawing. `builtin/<file>.qml` resolves under
 the shipped `features/notifications/icons/` directory;
-`user/<file>.qml` resolves under `user/quickshell/icons/`. The shipped audio
+The logical `user/<file>.qml` namespace resolves under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/icons/`. The shipped audio
 and battery indicators use this same component path rather than special-case
 renderer branches. Absolute file paths are supported, and `none` removes the
 icon from the notification layout. Sender content images take priority but use
 the same theme `notification.iconSize` as application icons, glyphs, and QML
 drawings. A component root is an `Item` with writable `progress` and `theme`
 properties. For example,
-`user/quickshell/icons/RingIcon.qml` can be:
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/icons/RingIcon.qml` can be:
 
 ```qml
 import QtQuick
@@ -318,7 +320,7 @@ Version 1 has three supported ways to place a widget:
 1. A built-in widget uses `kind` to select a Hyprkarl-owned implementation.
 2. A command widget either polls an explicit command or reads a persistent
    command stream and renders its documented text or small JSON result.
-3. A QML widget explicitly names a file under `user/quickshell/modules/`.
+3. A QML widget explicitly names a file under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`.
 
 All three lanes are implemented. A separate, optional application-wide user
 root composes interfaces that do not belong to one bar instance. User QML is
@@ -441,10 +443,10 @@ only when its timer fires.
 
 Use `kind: "qml"` when a widget needs custom interaction or rendering that the
 command-widget presentation contract cannot express. `source` is a relative
-`.qml` path below `user/quickshell/modules/` in the supported contract.
+`.qml` path below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/` in the supported contract.
 `settings` is optional data owned entirely by that module.
 
-For example, this config entry inserts `user/quickshell/modules/Greeting.qml`:
+For example, this config entry inserts `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/Greeting.qml`:
 
 ```json
 {
@@ -533,7 +535,7 @@ resolves `source` from the documented module directory and passes `settings`
 through; stepping outside the contract is allowed to work or fail according to
 normal QML behavior.
 
-Changes to `user/shell.json` remain live; after editing a dynamically
+Changes to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` remain live; after editing a dynamically
 referenced QML source, run `hk-shell restart` because it is outside
 Quickshell's statically scanned reload graph.
 
@@ -553,7 +555,7 @@ configured command.
 Use one explicitly referenced user root for independent surfaces, global
 state, or a complete personal bar. It is instantiated once for the shell
 process and may compose as many files and per-screen `Variants` as needed.
-Configure it in `user/shell.json`:
+Configure it in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`:
 
 ```json
 {
@@ -566,7 +568,7 @@ Configure it in `user/shell.json`:
 }
 ```
 
-The documented source location is `user/quickshell/Extensions.qml`. Its root
+The documented source location is `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/Extensions.qml`. Its root
 may be any QML object and declares `required property var context`. The context
 contains `settings`, the complete merged shell `configuration`, and the live
 `theme`. The ordinary typed theme properties remain available, while
@@ -633,7 +635,7 @@ edge. These are ordinary QML bindings: changing a property read by the method
 repositions an existing notification window immediately.
 
 The module is trusted, unsandboxed user code. Its source and private settings
-are not schema-policed. Changes to `user/shell.json` apply live; restart the
+are not schema-policed. Changes to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` apply live; restart the
 shell after editing the dynamically loaded QML source.
 
 ## Validation and Resolution
@@ -641,7 +643,7 @@ shell after editing the dynamically loaded QML source.
 The loader validates the external file boundary and otherwise lets internal
 components rely on the parsed contract.
 
-- Missing `user/shell.json` selects the shipped default without warning.
+- Missing `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` selects the shipped default without warning.
 - An unreadable user file, invalid JSON, invalid effective field, unsupported
   version, or invalid layout operation reports the file and failing path, then
   starts with the shipped default.
@@ -664,10 +666,10 @@ running configuration and reports the new error.
 
 | State | Owner | Persistence |
 | --- | --- | --- |
-| Widget order and instance settings | Shipped defaults plus sparse `user/shell.json` edits | User override is versioned |
-| Built-in bar enablement, edge, and exclusion behavior | Shipped defaults plus `user/shell.json` | User override is versioned |
-| OSD edge, margin, and dismissal timeouts | Shipped defaults plus `user/shell.json` | User override is versioned |
-| Notification placement, timing, filters, compact apps, and icon selection | Shipped defaults plus `user/shell.json`, with an optional reactive user-root position | User override is versioned; reactive position is memory only |
+| Widget order and instance settings | Shipped defaults plus sparse personal shell JSON edits | User-owned file |
+| Built-in bar enablement, edge, and exclusion behavior | Shipped defaults plus personal shell JSON | User-owned file |
+| OSD edge, margin, and dismissal timeouts | Shipped defaults plus personal shell JSON | User-owned file |
+| Notification placement, timing, filters, compact apps, and icon selection | Shipped defaults plus personal shell JSON, with an optional reactive user-root position | User-owned file; reactive position is memory only |
 | Visible notification stack, silence mode, and one restore snapshot | Application-wide `NotificationState` | Memory only |
 | Command-widget results and provider processes | Application-wide `CommandState`, keyed by widget ID | Memory only |
 | Colors, typography, spacing, island geometry, borders, and interaction states | Active semantic theme | Theme-derived |
@@ -676,9 +678,9 @@ running configuration and reports the new error.
 | Display discovery and live output state | `hk-display` over Hyprland and the internal backlight service | Service-owned |
 | Output enablement, mode, position, scale, and transform captured by display actions | `hk-display` | Generated under XDG state |
 | Generated theme output and caches | XDG state/cache paths | Regenerable |
-| Secrets and machine-local environment | `config/uwsm/env.local` or system service | Never shell JSON |
+| Secrets and machine-local environment | `~/.config/uwsm/env.local` or system service | Never shell JSON |
 
-One component owns writes to `user/shell.json`. If drag-to-reorder or another
+One component owns writes to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. If drag-to-reorder or another
 shell gesture later persists configuration, it goes through that same writer
 and uses an atomic temporary-file replacement. Do not add a second layout
 state store.
@@ -692,7 +694,7 @@ and invokes `hk-display`; it does not own a second monitor model or write shell
 JSON. Scale and output enablement persist in
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`, whose generated Lua
 loads after shipped monitor defaults and before explicit
-`user/hypr/monitors.lua`. Brightness is backlight service state and is not
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`. Brightness is backlight service state and is not
 copied into that layout. Version 1 exposes cleaned scale presets, internal
 backlight brightness when available, and output enable/disable; mode and
 position editing, external DDC brightness, and global text sizing remain
@@ -701,7 +703,7 @@ outside this panel slice.
 ## Update Contract
 
 Updates may change `defaults/shell.json` and bump its schema version. They do
-not edit `user/shell.json`. New inherited values and widgets automatically
+not edit `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. New inherited values and widgets automatically
 appear unless the user replaced the relevant value or explicitly edited that
 widget by ID. When a future user schema version is no longer supported, the
 update must provide an explicit migration command or documented manual

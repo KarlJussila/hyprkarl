@@ -21,7 +21,7 @@ case "$event" in
     ;;
 esac
 
-HOOK_DIR="$HYPRKARL_PATH/user/hooks/$event.d"
+HOOK_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/$event.d"
 
 if [[ ! -d "$HOOK_DIR" ]]; then
   exit 0

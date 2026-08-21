@@ -34,7 +34,7 @@ parent menu and closes the root; clicking outside also closes it. Open any
 surface directly with `hk-shell menu open <menu-id>`.
 
 The shipped hierarchy lives in `defaults/menu.json`. Add, reorder, rename, or
-hide entries without editing that default by creating `user/menu.json`; see
+hide entries without editing that default by creating `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`; see
 [Menu Configuration](menu-configuration.md).
 
 ## Common Keybindings
@@ -59,7 +59,7 @@ Some common keybindings are:
   Open `btop`
 
 Shipped keybindings are defined in `defaults/hypr/bindings/`; personal bindings
-belong in `user/hypr/bindings.lua`. The keybindings menu reads the live bindings
+belong in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/bindings.lua`. The keybindings menu reads the live bindings
 from Hyprland.
 
 ## System Tray

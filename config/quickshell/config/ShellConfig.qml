@@ -6,7 +6,7 @@ QtObject {
   id: root
 
   readonly property url defaultPath: Quickshell.shellPath("../../defaults/shell.json")
-  readonly property url userPath: Quickshell.shellPath("../../user/shell.json")
+  readonly property url userPath: Paths.userUrl("shell.json")
   property var values: ({})
   property bool ready: false
   property url sourcePath: defaultPath

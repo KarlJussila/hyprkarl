@@ -1,6 +1,7 @@
 # Hyprkarl
 Hyprkarl is a desktop configuration repo for CachyOS + Hyprland, inspired by
-Omarchy. It is meant to be installed and then edited directly.
+Omarchy. It supplies a complete default system while keeping ordinary personal
+configuration outside the checkout.
 
 > **Warning:** The fresh-install path (`setup-*.sh` on a new machine) is
 > largely untested — the running system it produces is daily-driven, but the
@@ -63,15 +64,17 @@ lists them so you can undo what you want manually.
 
 ## After Installation
 
-Hyprkarl's configs and scripts live in `~/.local/share/hyprkarl/`. The live
-files under `~/.config/` and `~/.local/share/applications/` are usually
-symlinks back into that tree, so edit the files in Hyprkarl itself.
+Hyprkarl's shipped configs and scripts live in `~/.local/share/hyprkarl/`.
+Their live entry points are usually symlinks back into that tree. Personal
+Hyprkarl configuration lives under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; normal personal commands belong
+in `~/.local/bin/`.
 
 A few things worth knowing:
 
-- create a git branch before customizing
-- updates are normal git merges, not a special Hyprkarl workflow
-- user environment variables live in `~/.config/uwsm/`
+- no Git branch is needed for ordinary personalization
+- use a fork branch only when changing Hyprkarl's shipped implementation
+- user environment variables and session defaults live in `~/.config/uwsm/`
   and require a new session to take effect
 
 ## Documentation
@@ -116,7 +119,7 @@ The full manual lives under `docs/`.
 ## Themes
 
 Shipped themes live under `themes/`; personal themes and overlays live under
-`user/themes/`. Selection atomically assembles an immutable runtime bundle
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. Selection atomically assembles an immutable runtime bundle
 under `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl`, so switching never
 edits tracked files. Quickshell watches the runtime selector and applies theme
 switches without restarting. Built-ins are generated from typed `theme.yaml`
@@ -142,10 +145,10 @@ without editing QML using one application-wide polling or persistent-stream
 provider per widget ID. Static command buttons such as the main-menu trigger
 use the same kind without starting a timer or process. More specialized
 personal bar widgets can be explicitly loaded from
-`user/quickshell/modules/` through a small per-bar context, without turning the
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/` through a small per-bar context, without turning the
 shell into a plugin platform. The built-in bar can also be disabled while the
 other shell services stay active; one explicitly referenced application-wide
-user QML root can compose replacement surfaces, consume open-ended theme data,
+user QML root under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/` can compose replacement surfaces, consume open-ended theme data,
 and publish reactive notification positioning for a custom bar.
 The app launcher, open-with chooser, calculator, and wallpaper picker are also
 Quickshell-native. They share the shell's focused-overlay frame and interaction
@@ -160,7 +163,7 @@ hk-theme set <theme-name>
 ```
 
 To build your own theme, create a typed source and generate it into
-`user/themes/` with
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` with
 `hk-theme build <source> [name]` and the adjacent
 [hyprkarl-theme-generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
 (recommended), or copy an existing bundle there and edit it. See
@@ -219,7 +222,7 @@ Provided themes:
 
 These are the basic keybindings to get you started. You can search the rest in
 the keybindings menu. Personal additions and overrides belong in
-`user/hypr/bindings.lua`; shipped bindings live under `defaults/hypr/bindings/`.
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/bindings.lua`; shipped bindings live under `defaults/hypr/bindings/`.
 
 ```
 SUPER + K              ->  Searchable list of keybinds
@@ -238,10 +241,10 @@ SUPER + T              ->  Toggle tiling/floating
 Releases are annotated git tags (`vX.Y.Z`) on `main`; see
 [CHANGELOG.md](CHANGELOG.md) for what changed in each.
 
-If you have customized Hyprkarl, update it like a normal git branch. Review
-upstream changes before merging them and commit your own work first. Shell and
-Hyprland personalization under `user/` is deliberately separate from
-Hyprkarl-owned defaults so routine upstream changes do not edit those files.
+Routine personalization lives outside the checkout under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, so it does not need a personal
+Git branch. Create a fork branch only when changing Hyprkarl's shipped code or
+defaults. Routine upstream updates do not edit personal files.
 
 For the full update workflow, including when to run `hk-update`,
 `setup-packages.sh`, `setup-system.sh`, or `setup-dotfiles.sh`, see

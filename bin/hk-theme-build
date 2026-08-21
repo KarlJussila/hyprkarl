@@ -38,7 +38,7 @@ if [[ ! "$theme_name" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
   exit 1
 fi
 
-destination="$HYPRKARL_PATH/user/themes/$theme_name"
+destination="$HYPRKARL_USER_THEMES/$theme_name"
 if [[ -e "$theme_source" ]]; then
   source_directory="$theme_source"
   if [[ -f "$source_directory" ]]; then

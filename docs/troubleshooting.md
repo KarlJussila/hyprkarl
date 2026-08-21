@@ -38,7 +38,7 @@ Cause:
 
 What to do:
 
-- if you changed `config/uwsm/default`, restart the graphical session
+- if you changed `~/.config/uwsm/default`, restart the graphical session
 - if you changed the default shell, log out and log back in
 - if you changed Docker group membership, log in again or reboot
 - otherwise, restart or reload the affected app or service
@@ -101,7 +101,7 @@ Symptoms:
 
 Cause:
 
-- invalid JSON in `user/shell.json`
+- invalid JSON in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`
 - invalid theme data in the active theme's `quickshell.json`
 - a QML load error or stopped Quickshell instance
 
@@ -119,7 +119,7 @@ hk-shell restart
 registering the instance. For foreground development, stop the managed
 instance and run `qs -p "$HYPRKARL_PATH/config/quickshell"` in a terminal.
 If a user override caused the problem, correct it or remove
-`user/shell.json`; the shell otherwise retains its last valid
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`; the shell otherwise retains its last valid
 configuration during a live edit.
 
 ## Privilege Prompt Does Not Appear

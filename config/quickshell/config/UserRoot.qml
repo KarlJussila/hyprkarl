@@ -37,8 +37,7 @@ Scope {
     }
 
     moduleLoader.setSource(
-      Quickshell.shellPath("../../user/quickshell/"
-        + shellConfig.userRootSource),
+      Paths.userUrl("quickshell/" + shellConfig.userRootSource),
       { "context": userContext }
     )
     moduleLoader.active = true

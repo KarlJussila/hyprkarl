@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import "../components"
+import "../config"
 
 Item {
   id: root
@@ -91,7 +92,7 @@ Item {
 
   Component.onCompleted: {
     moduleLoader.setSource(
-      Quickshell.shellPath("../../user/quickshell/modules/" + root.config.source),
+      Paths.userUrl("quickshell/modules/" + root.config.source),
       { "context": widgetContext }
     )
   }

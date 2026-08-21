@@ -2,7 +2,7 @@
 
 # Ensure hyprkarl bins are in the path
 export HYPRKARL_PATH=$HOME/.local/share/hyprkarl
-export PATH=$HYPRKARL_PATH/bin:$PATH
+export PATH=$HOME/.local/bin:$HYPRKARL_PATH/bin:$PATH
 
 # Add flatpak directories
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
@@ -11,10 +11,11 @@ export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/
 export QT_QPA_PLATFORMTHEME=qt6ct
 
 # Set default terminal and editor
-source ~/.config/uwsm/default
+source "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/default"
 
 # Set wifitui theme
 export WIFITUI_THEME="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/wifitui.toml"
 
 # Machine-local env vars (API keys, personal settings) — not tracked in git
-[[ -f ~/.config/uwsm/env.local ]] && source ~/.config/uwsm/env.local
+[[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env.local" ]] \
+  && source "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env.local"

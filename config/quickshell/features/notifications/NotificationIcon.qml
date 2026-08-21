@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
+import "../../config"
 
 Item {
   id: root
@@ -36,7 +37,7 @@ Item {
       return Quickshell.shellPath("features/notifications/icons/"
         + descriptor.source.slice("builtin/".length))
     }
-    return Quickshell.shellPath("../../user/quickshell/icons/"
+    return Paths.userUrl("quickshell/icons/"
       + descriptor.source.slice("user/".length))
   }
 

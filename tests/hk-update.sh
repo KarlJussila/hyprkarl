@@ -111,14 +111,12 @@ seed_dotfiles_change() {
   git -C "$CLONE" rev-parse HEAD~1 > "$CLONE/config/hyprkarl/update/dotfiles.commit"
 }
 
-seed_owned_config_changes() {
+seed_upstream_config_change() {
   local baseline
   baseline=$(git -C "$CLONE" rev-parse HEAD)
   printf '\n-- test: upstream default change\n' >> "$CLONE/defaults/hypr/input.lua"
-  mkdir -p "$CLONE/user/hypr"
-  printf 'hl.config({ input = { sensitivity = 0 } })\n' > "$CLONE/user/hypr/input.lua"
-  git -C "$CLONE" add defaults/hypr/input.lua user/hypr/input.lua
-  git -C "$CLONE" commit -q -m "test: owned configuration changes"
+  git -C "$CLONE" add defaults/hypr/input.lua
+  git -C "$CLONE" commit -q -m "test: upstream configuration change"
   printf '%s\n' "$baseline" > "$CLONE/config/hyprkarl/update/dotfiles.commit"
 }
 
@@ -311,10 +309,10 @@ cmd_check_uptodate() {
 
 cmd_check_pending() {
   banner "check-pending"
-  printf 'Scenario: upstream defaults, user config, and packages changed.\n'
-  printf 'Expected: labels configuration by owner and lists new packages.\n\n'
+  printf 'Scenario: upstream defaults and packages changed.\n'
+  printf 'Expected: lists upstream configuration and new packages.\n\n'
   reset_sandbox
-  seed_owned_config_changes
+  seed_upstream_config_change
   seed_packages_add
   run_check
 }

@@ -2,12 +2,12 @@
 
 Hyprkarl's static command hierarchy is rendered by Quickshell and defined as
 data. The shipped definition lives at `defaults/menu.json`; personal changes
-belong in the optional `user/menu.json` override.
+belong in the optional `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json` override.
 
 Both files use JSON version 1. The shell watches them, recursively merges the
 user object over the shipped object, and validates the effective result. A
 valid edit applies live. An invalid edit is reported in `hk-shell logs` while
-the last valid menu remains active; deleting `user/menu.json` returns to the
+the last valid menu remains active; deleting `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json` returns to the
 shipped definition.
 
 ## Document Shape

@@ -10,7 +10,7 @@ source "$SCRIPT_DIR/lib/theme.sh"
 
 THEME_NAME=$(theme_current_name)
 WALLPAPER_DIR="$HYPRKARL_CURRENT_THEME/wallpapers"
-USER_THEME_DIR="$HYPRKARL_PATH/user/themes/$THEME_NAME"
+USER_THEME_DIR="$HYPRKARL_USER_THEMES/$THEME_NAME"
 CACHE_DIR="$HOME/.cache/hyprkarl/wallpapers/$THEME_NAME"
 
 wallpaper_name="$1"

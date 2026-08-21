@@ -7,6 +7,12 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Breaking: moved personal shell JSON, menu JSON, Hyprland modules, hooks,
+  Quickshell extensions, and themes from the checkout's `user/` tree to
+  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`. `hk-user-migrate` performs the
+  one-time move before a dotfiles update and materializes UWSM defaults,
+  machine-local environment, and terminal preferences as real user files.
+  Ordinary personalization no longer requires a Git branch.
 - Added a per-output display panel with internal-backlight brightness, cleaned
   scale presets, and output enable/disable controls. `hk-display` now owns
   Hyprland discovery, live changes, and an XDG-state layout that survives
@@ -46,7 +52,7 @@ surfaces) — they are called out explicitly.
   newly appearing items reveal automatically, and kept the chevron trigger's
   visible width stable between collapsed and expanded states.
 - Added ordered user lifecycle hooks for session startup, completed updates,
-  theme changes, and wallpaper changes under `user/hooks/<event>.d/`.
+  theme changes, and wallpaper changes under the personal configuration root.
 - Breaking: removed forwarding-only `hk-menu-*` commands. Custom bindings and
   scripts should call `hk-shell menu open <menu-id>` or
   `hk-shell menu toggle <menu-id>` directly. `hk-menu-keybindings --print` is

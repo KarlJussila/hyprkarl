@@ -1,7 +1,7 @@
 # Themes
 
 Hyprkarl's shipped theme bundles live under `themes/`; personal bundles and
-overlays live under `user/themes/`. Selecting a theme copies those sources into
+overlays live under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. Selecting a theme copies those sources into
 an immutable runtime bundle under XDG state, then atomically swaps one symlink.
 Git never owns the selected theme or wallpaper.
 
@@ -32,7 +32,7 @@ hk-theme set <theme-name>
 ```
 
 Hyprkarl takes an exclusive theme lock, assembles the built-in bundle plus an
-optional same-name `user/themes/<name>/` overlay, validates the complete
+optional same-name `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/` overlay, validates the complete
 result, and atomically activates it. Only after activation does it:
 
 - updates the wallpaper state
@@ -75,7 +75,7 @@ A full theme in this repo includes:
 - `hyprland.lua`
   Theme-specific Hyprland styling (Lua — Hyprland's config is Lua since 0.55).
   The bootstrap loads it after shipped defaults and before optional
-  `user/hypr/*.lua` modules. Theme values override defaults; explicit personal
+  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/*.lua` modules. Theme values override defaults; explicit personal
   values can still override the theme. Typically it sets the active border, e.g.
   `hl.config({ general = { col = { active_border = "rgb(63005A)" } } })`.
 - `hyprlock.conf`
@@ -189,7 +189,7 @@ hk-theme set my-theme
 ```
 
 `hk-theme build <source> [name]` writes the complete generated bundle to
-`user/themes/<name>/`, never to upstream-owned `themes/`. Generator developers
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`, never to upstream-owned `themes/`. Generator developers
 use its direct `python -m theme_generator sync ...` command when intentionally
 refreshing the checked-in built-ins. Keep the theme source outside that
 generated destination; a clean rebuild replaces the destination as one unit.
@@ -204,11 +204,12 @@ merge recursively, while arrays and scalar values replace their defaults.
 
 ### Copy an existing theme
 
-For a complete hand-edited personal theme, copy a bundle into `user/`:
+For a complete hand-edited personal theme, copy a bundle into the personal
+theme directory:
 
 ```bash
 cp -a ~/.local/share/hyprkarl/themes/hyprkarl \
-  ~/.local/share/hyprkarl/user/themes/my-theme
+  "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/my-theme"
 ```
 
 Then edit the copied files and activate it:
@@ -223,7 +224,7 @@ because the repo already expects a specific file layout.
 ### Move an existing custom theme
 
 An output-only theme created before token-driven generation can keep working.
-Move its complete directory from `themes/<name>/` to `user/themes/<name>/`, then
+Move its complete directory from `themes/<name>/` to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`, then
 run `hk-theme set <name>`. Runtime validation checks the files consumers need;
 it does not require a historical theme to invent a source graph.
 
@@ -235,7 +236,7 @@ bundle.
 ## Wallpapers in Themes
 
 Built-in wallpapers live in `themes/<name>/wallpapers/`. Personal additions
-and built-in removals are recorded under `user/themes/<name>/`, then included
+and built-in removals are recorded under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`, then included
 the next time the bundle is assembled. Wallpaper commands also update the
 active runtime bundle immediately.
 
@@ -245,13 +246,13 @@ To add a wallpaper to the current theme, you can run:
 hk-wallpaper add /path/to/image.png
 ```
 
-That copies the file into `user/themes/<name>/wallpapers/`, copies it into the
+That copies the file into `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/wallpapers/`, copies it into the
 active runtime bundle, rebuilds its thumbnail, and selects it.
 
 You can also add wallpapers manually by copying image files into:
 
 ```text
-user/themes/<theme>/wallpapers/
+${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<theme>/wallpapers/
 ```
 
 Then rebuild that theme's thumbnail cache:

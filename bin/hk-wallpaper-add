@@ -11,7 +11,7 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/theme.sh"
 
 THEME_NAME=$(theme_current_name)
-USER_THEME_DIR="$HYPRKARL_PATH/user/themes/$THEME_NAME"
+USER_THEME_DIR="$HYPRKARL_USER_THEMES/$THEME_NAME"
 
 source_path="$1"
 

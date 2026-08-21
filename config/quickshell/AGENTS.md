@@ -21,10 +21,10 @@ preventing an advanced user from leaving the documented contract is not.
 
 - `../../defaults/shell.json`: shipped bar behavior, widget order, and widget
   instances.
-- `../../user/shell.json`: optional sparse user override.
+- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`: optional sparse user override.
 - `../../defaults/menu.json`: shipped static command-menu hierarchy.
-- `../../user/menu.json`: optional sparse menu additions and overrides.
-- `../../user/quickshell/<source>.qml`: one optional application-wide user root
+- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`: optional sparse menu additions and overrides.
+- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/<source>.qml`: one optional application-wide user root
   explicitly named by `userRoot.source`.
 - the active XDG-state bundle's `quickshell.json`: semantic colors, typography,
   metrics, and island geometry.
@@ -46,7 +46,7 @@ do not infer deletion or array ordering from an ordinary deep merge, and do
 not restore a separate widget-definition map.
 
 `kind: "qml"` is the documented user-code widget lane. Its `source` normally
-names a file relative to `user/quickshell/modules/`, but this is a resolution
+names a file relative to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`, but this is a resolution
 base rather than a sandbox: do not validate the path or the module's private
 settings in an attempt to constrain user-authored QML. The module root declares
 `required property var context`. `widgets/qml.qml` owns that context and
@@ -369,7 +369,7 @@ theme-owned icon size as every other icon source. Otherwise
 and select `icon`, `glyph`, `component`, or `none`; then the sender's
 application icon and the configured urgency fallback apply. A `component`
 names either a shipped file under `features/notifications/icons/` or a user
-file under `user/quickshell/icons/`. Both expose `progress` and `theme` on a
+file under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/icons/`. Both expose `progress` and `theme` on a
 root `Item`; the shipped audio and battery drawings use exactly this public
 loader path. Absolute sender icon paths become `file:` URLs before reaching
 QML, and a `none` descriptor removes the icon item from layout. Shell JSON owns

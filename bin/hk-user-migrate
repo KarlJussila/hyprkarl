@@ -1,0 +1,121 @@
+#!/bin/bash
+# hk-user-migrate
+# Move personal configuration out of the Hyprkarl checkout.
+
+HYPRKARL_PATH="${HYPRKARL_PATH:-$HOME/.local/share/hyprkarl}"
+CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+PERSONAL_ROOT="$CONFIG_HOME/hyprkarl"
+
+personal_paths=(shell.json menu.json hypr hooks quickshell themes)
+conflicts=()
+
+for relative in "${personal_paths[@]}"; do
+  old_path="$HYPRKARL_PATH/user/$relative"
+  new_path="$PERSONAL_ROOT/$relative"
+  if [[ -e "$old_path" ]] || [[ -L "$old_path" ]]; then
+    if [[ -e "$new_path" ]] || [[ -L "$new_path" ]]; then
+      conflicts+=("$old_path -> $new_path")
+    fi
+  fi
+done
+
+check_session_file() {
+  local old_path="$1" new_path="$2" preserve_source="$3" resolved
+
+  if [[ -L "$new_path" ]]; then
+    resolved=$(readlink -f "$new_path" 2>/dev/null)
+    if [[ "$resolved" != "$old_path" ]]; then
+      conflicts+=("$old_path -> $new_path")
+    fi
+    return
+  fi
+
+  if [[ "$preserve_source" -eq 0 ]] \
+      && [[ -e "$old_path" ]] && [[ -e "$new_path" ]]; then
+    conflicts+=("$old_path -> $new_path")
+  fi
+}
+
+check_session_file \
+  "$HYPRKARL_PATH/config/uwsm/default" \
+  "$CONFIG_HOME/uwsm/default" 1
+check_session_file \
+  "$HYPRKARL_PATH/config/uwsm/env.local" \
+  "$CONFIG_HOME/uwsm/env.local" 0
+check_session_file \
+  "$HYPRKARL_PATH/config/xdg-terminals.list" \
+  "$CONFIG_HOME/xdg-terminals.list" 1
+
+if [[ ${#conflicts[@]} -gt 0 ]]; then
+  printf 'Personal configuration already exists at both paths:\n' >&2
+  printf '  %s\n' "${conflicts[@]}" >&2
+  printf 'Choose which copy to keep, then run hk-user-migrate again.\n' >&2
+  exit 1
+fi
+
+for relative in "${personal_paths[@]}"; do
+  old_path="$HYPRKARL_PATH/user/$relative"
+  new_path="$PERSONAL_ROOT/$relative"
+  if [[ ! -e "$old_path" ]] && [[ ! -L "$old_path" ]]; then
+    continue
+  fi
+
+  mkdir -p "$(dirname "$new_path")"
+  mv "$old_path" "$new_path" || exit 1
+  printf 'Moved %s to %s\n' "$old_path" "$new_path"
+done
+
+materialize_session_file() {
+  local old_path="$1" new_path="$2" preserve_source="$3"
+  local parent temporary
+
+  if [[ -e "$new_path" ]] && [[ ! -L "$new_path" ]]; then
+    return
+  fi
+  if [[ ! -f "$old_path" ]]; then
+    return
+  fi
+
+  parent=$(dirname "$new_path")
+  mkdir -p "$parent"
+  temporary=$(mktemp "$parent/.hyprkarl-user.XXXXXX") || return 1
+  if ! cp -a "$old_path" "$temporary"; then
+    rm -f "$temporary"
+    return 1
+  fi
+  if ! mv -T "$temporary" "$new_path"; then
+    rm -f "$temporary"
+    return 1
+  fi
+  if [[ "$preserve_source" -eq 0 ]]; then
+    rm -f "$old_path"
+  fi
+  printf 'Materialized personal file at %s\n' "$new_path"
+}
+
+materialize_session_file \
+  "$HYPRKARL_PATH/config/uwsm/default" \
+  "$CONFIG_HOME/uwsm/default" 1 || exit 1
+materialize_session_file \
+  "$HYPRKARL_PATH/config/uwsm/env.local" \
+  "$CONFIG_HOME/uwsm/env.local" 0 || exit 1
+materialize_session_file \
+  "$HYPRKARL_PATH/config/xdg-terminals.list" \
+  "$CONFIG_HOME/xdg-terminals.list" 1 || exit 1
+
+seed_session_file() {
+  local source="$1" destination="$2"
+
+  if [[ -e "$destination" ]] || [[ -L "$destination" ]]; then
+    return
+  fi
+  mkdir -p "$(dirname "$destination")"
+  cp -a "$source" "$destination" || return 1
+  printf 'Created personal file at %s\n' "$destination"
+}
+
+seed_session_file \
+  "$HYPRKARL_PATH/templates/setup/env.local.example" \
+  "$CONFIG_HOME/uwsm/env.local" || exit 1
+
+rmdir "$HYPRKARL_PATH/user" 2>/dev/null || true

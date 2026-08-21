@@ -1,8 +1,9 @@
 # Extending Hyprkarl
 
-Hyprkarl is meant to be extended by editing the repo directly. This page covers
-the main extension paths: new commands, new menu actions, new keybindings, and
-new theme-aware configuration.
+Hyprkarl is extended through user-owned configuration and commands. This page
+covers the main extension paths: new commands, new menu actions, new
+keybindings, and new theme-aware configuration. Change the checkout only when
+you are deliberately changing shipped behavior.
 
 ## Choose the Right Place
 
@@ -20,8 +21,8 @@ Use this rule of thumb:
   Application config and session behavior
 - `defaults/`
   Hyprkarl-owned defaults; inspect these to understand behavior, but keep
-  personal overrides under `user/`
-- `user/`
+  personal overrides under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
+- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
   Personal shell and Hyprland configuration that upstream does not replace
 - `themes/`
   Theme assets and per-theme overrides
@@ -60,14 +61,14 @@ the dispatcher (`hk-theme set foo`).
 
 ## Add a Lifecycle Hook
 
-Put personal hook executables under `user/hooks/<event>.d/`. The supported
+Put personal hook executables under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/`. The supported
 events are `post-boot`, `post-update`, `theme-set`, and `wallpaper-set`.
 For example:
 
 ```bash
-mkdir -p user/hooks/theme-set.d
-$EDITOR user/hooks/theme-set.d/10-reload-my-app
-chmod +x user/hooks/theme-set.d/10-reload-my-app
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/theme-set.d"
+$EDITOR "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/theme-set.d/10-reload-my-app"
+chmod +x "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/theme-set.d/10-reload-my-app"
 ```
 
 Hooks are non-hidden executable regular files and run in lexical filename
@@ -85,7 +86,7 @@ notification. Missing event directories and non-executable files are ignored.
 
 The static menu hierarchy is data, not a tree of shell branches. Built-in
 entries live in `defaults/menu.json`; personal additions and overrides belong
-in `user/menu.json`. Add a stable entry ID, its parent menu, order, label, and
+in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`. Add a stable entry ID, its parent menu, order, label, and
 a submenu, command, or direct Quickshell surface action:
 
 ```json
@@ -118,7 +119,7 @@ example, live-reload behavior, and keyboard controls.
 ## Customize Hyprland
 
 `config/hypr/hyprland.lua` is a stable bootstrap. Hyprkarl's implementation
-lives in `defaults/hypr/`, while personal modules live in `user/hypr/` and load
+lives in `defaults/hypr/`, while personal modules live in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` and load
 after the shipped configuration, active theme, and generated display layout.
 Supported module names, in load order, are:
 
@@ -127,7 +128,7 @@ envs, autostart, monitors, permissions, looknfeel,
 animations, gum, windows, input, bindings
 ```
 
-Create only the modules you need. For example, `user/hypr/input.lua` can
+Create only the modules you need. For example, `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/input.lua` can
 override selected input values without copying the shipped input configuration:
 
 ```lua
@@ -145,7 +146,7 @@ requires an `hl.unbind()` call first. Always run `Hyprland --verify-config`
 before reloading.
 
 Display-panel changes persist through `hk-display` under XDG state. They do
-not modify `user/hypr/monitors.lua`; any monitor rules you place there load
+not modify `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`; any monitor rules you place there load
 later and remain authoritative on reload.
 
 ## Add a New Keybinding
@@ -160,7 +161,7 @@ useful as examples, live in:
 - `defaults/hypr/bindings/workspaces.lua` — workspace switching, monitor moves, scratchpad
 - `defaults/hypr/bindings/system.lua` — menus, notifications, panels, screenshots, power
 
-Put personal bindings in `user/hypr/bindings.lua`. The form is
+Put personal bindings in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/bindings.lua`. The form is
 `hl.bind(keys, dispatcher, flags?)`:
 
 ```lua
@@ -181,7 +182,7 @@ to that. After editing, validate with `Hyprland --verify-config`.
 
 ## Add a Quickshell Bar Feature
 
-For personal placement or behavior changes, add a sparse `user/shell.json`
+For personal placement or behavior changes, add a sparse `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`
 override. Objects merge recursively, arrays
 replace, and `bar.layoutEdits` can target a widget by stable ID without copying
 the shipped layout. See [Shell Configuration](shell-configuration.md).
@@ -203,13 +204,13 @@ no background timer or process. The shipped main-menu button uses this form.
 
 For a personal widget whose rendering or interaction cannot fit that data
 contract, add an explicitly referenced `kind: "qml"` module under
-`user/quickshell/modules/`. It receives only the documented per-bar context and
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`. It receives only the documented per-bar context and
 can use the existing tooltip and feature-panel surfaces without editing
 Hyprkarl-owned QML. See
 [User QML widgets](shell-configuration.md#user-qml-widgets).
 
 For an interface that is not owned by one bar widget, explicitly reference one
-application-wide QML root through `userRoot.source` in `user/shell.json`. It
+application-wide QML root through `userRoot.source` in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. It
 can create independent or per-output surfaces, consume arbitrary custom values
 from `context.theme.document`, and optionally supply reactive notification
 positioning for a personal bar. Set `bar.enabled` to false when that module
@@ -238,7 +239,7 @@ validation commands.
 
 ## Add a Theme-Aware Feature
 
-Hyprkarl assembles a built-in theme plus an optional `user/themes/<name>/`
+Hyprkarl assembles a built-in theme plus an optional `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`
 overlay into an immutable XDG-state artifact. It atomically points
 `current/theme` at that artifact and `current/wallpaper` at the selection.
 The paths under `config/hyprkarl/current/` are fixed compatibility links into

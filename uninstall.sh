@@ -24,9 +24,11 @@ rm -f "$HYPRKARL_PATH"/config/hyprkarl/update/*.commit
 printf 'Hyprkarl config symlinks removed.\n\n'
 printf 'Left in place:\n'
 printf '  - the repo at %s (delete it when you are done)\n' "$HYPRKARL_PATH"
+printf '  - personal configuration under ~/.config/hyprkarl/\n'
 printf '  - installed packages (see packages/*.txt; remove with pacman -Rns)\n'
 printf '  - system settings from setup-system.sh: /etc/sddm.conf (autologin),\n'
 printf '    /etc/systemd/logind.conf.d/lid.conf, /etc/sudoers.d/passwd-tries,\n'
 printf '    the faillock deny count, ufw LocalSend rules, and the docker\n'
 printf '    service/group membership\n'
-printf '  - ~/.config/uwsm/env.local (your personal env vars)\n'
+printf '  - ~/.config/uwsm/default and env.local\n'
+printf '  - ~/.config/xdg-terminals.list\n'

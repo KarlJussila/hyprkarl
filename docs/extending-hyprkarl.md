@@ -286,7 +286,7 @@ changes future installs only; edit the corresponding real file under
 If you add a new file or directory under `config/` or `applications/`, run:
 
 ```bash
-hk-update dotfiles
+hk-update apply
 ```
 
 This re-stows the tracked entry points, picks up new non-ignored files, and

@@ -118,6 +118,25 @@ upstream-owned configuration. Personal files live outside the checkout under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; update commands must not
 generate, replace, reset, or adopt them.
 
+`hk-update-sync` owns source review. It fetches the explicitly configured
+remote and branch, presents the incoming commits and file summary, and writes
+one confirmed revision without moving the checkout. `hk-update-apply` owns the
+live transition to that revision. Stop Quickshell before changing the checkout,
+fast-forward only to the reviewed commit, run migration and Stow work before
+rebuilding the selected theme, then reload consumers and restart the shell.
+Write configuration success only after configuration and reload work succeeds,
+then clear the pending source. Automatic sync is not a custom-branch merge
+tool.
+
+Package update state is an atomic XDG-state snapshot, not a Git baseline.
+Removal changes get one multi-select review and are recorded as handled even
+when the owner keeps a package or a selected removal needs manual retry. System
+changes are ordered executable files under `system/migrations/`; record an ID
+only after its file succeeds. `hk-update all` owns the sync, apply, packages,
+system, then `post-update` order. Do not reintroduce the retired update TUI,
+dotfiles subcommand, per-package confirmation loop, routine system-setup rerun,
+or force/adopt paths.
+
 `hk-user-migrate` also owns the one-time application-config seed migration.
 Paths ignored by `config/.stow-local-ignore` are starting material, not live
 files. The migration may replace a link that points directly into Hyprkarl,
@@ -130,12 +149,14 @@ do not make copy-if-missing an every-update policy.
 the integrated Python compiler with a built-in source and optional same-name
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` overlay. The compiler
 renders and validates a complete temporary bundle before the command installs
-an immutable XDG-state artifact and atomically swaps the selector. The
+an immutable XDG-state artifact, transactionally replaces the GTK payload, and
+then publishes the selector. A failed GTK install leaves the prior selector
+and GTK payload in place. The
 repository's `config/hyprkarl/current/` entries are fixed compatibility links.
 Wallpaper additions and removals persist under the personal theme source;
 never mutate checked-in theme sources from a public command. Do not restore
 `hk-theme build`, a sibling generator path, or a generated-bundle input mode.
 The same library owns installation of the GTK payload as a marked real-file
-copy. `hk-theme-set` refreshes it while holding the theme lock; setup/update
-uses the same helper and may replace an unrelated destination only on the
-explicit force/adopt path.
+copy. `hk-theme-set` refreshes it while holding the theme lock; setup and
+configuration apply use the same helper. They stop if the destination is not a
+Hyprkarl-managed GTK payload.

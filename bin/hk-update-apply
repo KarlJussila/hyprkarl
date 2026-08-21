@@ -1,0 +1,117 @@
+#!/bin/bash
+# hk-update-apply
+# Advance to a reviewed source revision and apply shipped configuration.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/update.sh"
+source "$SCRIPT_DIR/lib/shell.sh"
+
+restart_shell=0
+source_advanced=0
+inherited_restart=0
+
+if [[ -e "$UPDATE_SHELL_RESTART_MARKER" ]]; then
+  restart_shell=1
+  inherited_restart=1
+fi
+
+restore_shell() {
+  if [[ "$restart_shell" -eq 1 ]]; then
+    hk-shell start || return 1
+    rm -f "$UPDATE_SHELL_RESTART_MARKER"
+  fi
+}
+
+fail_apply() {
+  local message="$1"
+
+  printf '%s\n' "$message" >&2
+  if [[ "$restart_shell" -eq 1 ]] \
+      && { [[ "$source_advanced" -eq 1 ]] || [[ "$inherited_restart" -eq 1 ]]; }; then
+    printf 'Quickshell remains stopped because the reviewed source was advanced but configuration application did not finish.\n' >&2
+  else
+    restore_shell >/dev/null
+  fi
+  exit 1
+}
+
+trap 'fail_apply "Configuration application interrupted."' INT TERM
+
+pending=$(update_read_pending_source)
+head=$(update_head_commit)
+
+if ! git -C "$HYPRKARL_PATH" diff --quiet \
+    || ! git -C "$HYPRKARL_PATH" diff --cached --quiet; then
+  fail_apply "Tracked files in the Hyprkarl checkout have local changes. Commit or restore them before recording a configuration revision."
+fi
+
+if [[ -n "$pending" ]] && [[ "$pending" != "$head" ]]; then
+  branch=$(git -C "$HYPRKARL_PATH" branch --show-current)
+  source_branch=$(update_source_branch)
+  if [[ "$branch" != "$source_branch" ]]; then
+    fail_apply "The reviewed update targets '$source_branch', but this checkout is on '$branch'. Apply or merge it manually on this custom branch."
+  fi
+  if ! update_commit_valid "$pending"; then
+    fail_apply "The reviewed source revision is no longer available. Run hk-update sync again."
+  fi
+  if ! git -C "$HYPRKARL_PATH" merge-base --is-ancestor HEAD "$pending"; then
+    fail_apply "The checkout and reviewed source have diverged. Review and merge the source manually."
+  fi
+fi
+
+update_import_legacy_state || fail_apply "Could not import legacy update state."
+
+if hk_shell_is_running; then
+  mkdir -p "$UPDATE_STATE_DIR" || exit 1
+  : > "$UPDATE_SHELL_RESTART_MARKER" || exit 1
+  hk-shell stop || exit 1
+  restart_shell=1
+  inherited_restart=0
+fi
+
+if [[ -n "$pending" ]] && [[ "$pending" != "$head" ]]; then
+  if ! git -C "$HYPRKARL_PATH" merge --ff-only "$pending"; then
+    fail_apply "Could not fast-forward to the reviewed source revision."
+  fi
+  source_advanced=1
+fi
+
+"$HYPRKARL_PATH/bin/hk-user-migrate" || fail_apply "Personal configuration migration failed."
+
+conflicts=$(check_config_conflicts)
+if [[ -n "$conflicts" ]]; then
+  printf 'Cannot apply configuration because these paths are not managed by Hyprkarl:\n%s\n' "$conflicts" >&2
+  fail_apply "Move or rename the listed files, then run hk-update apply again."
+fi
+if ! theme_gtk_install_is_replaceable; then
+  fail_apply "GTK theme destination is not managed by Hyprkarl: $HYPRKARL_GTK_THEME_HOME"
+fi
+
+printf 'Rebuilding the selected theme...\n'
+theme_apply_current || fail_apply "Could not rebuild and apply the selected theme."
+
+printf 'Restowing shipped configuration...\n'
+stow_restow_config || fail_apply "Could not restow shipped configuration."
+remove_stale_symlinks
+
+theme_ensure_wallpaper_selection \
+  || fail_apply "The theme was rebuilt, but its wallpaper selection could not be restored."
+hk-wallpaper-init --if-ready \
+  || fail_apply "The theme was rebuilt, but its live wallpaper could not be restored."
+if pgrep -x Hyprland >/dev/null; then
+  hyprctl reload >/dev/null || fail_apply "Hyprland could not reload the applied configuration."
+fi
+hk-terminal-reload || fail_apply "Terminal configuration reload failed."
+hk-btop-reload || fail_apply "Btop configuration reload failed."
+if [[ "$restart_shell" -eq 1 ]]; then
+  if ! hk-shell start; then
+    restart_shell=0
+    fail_apply "Configuration was applied, but the Quickshell session could not restart."
+  fi
+  rm -f "$UPDATE_SHELL_RESTART_MARKER"
+  restart_shell=0
+fi
+
+update_write_configuration_revision || fail_apply "Configuration was applied, but its update state could not be recorded."
+update_clear_pending_source || fail_apply "Configuration was applied, but its pending source marker could not be cleared."
+printf 'Configuration applied.\n'

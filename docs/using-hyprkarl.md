@@ -26,6 +26,8 @@ Its top-level sections are:
   Toggles, screen recording, and other utility actions
 - `Config`
   Themes, wallpapers, defaults, and other quick settings
+- `Update`
+  Hyprkarl and system package update commands
 - `Power`
   Lock, suspend, reboot, and shutdown actions
 

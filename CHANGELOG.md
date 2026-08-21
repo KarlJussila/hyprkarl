@@ -7,6 +7,18 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Breaking: replaced the baseline-commit updater and guided TUI with a staged
+  source workflow. `hk-update sync` fetches, reviews, and pins one exact source
+  revision without moving the live checkout; `hk-update apply` fast-forwards
+  to it, migrates and restows configuration, rebuilds the selected theme and
+  GTK payload, reloads consumers, and records success. `hk-update all` now runs
+  sync, apply, packages, system migrations, then `post-update`. The retired
+  `tui` and `dotfiles` actions and their `--force` and `--adopt` paths are gone.
+- Moved update records to `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/update/`.
+  Package requirements and one-time removal reviews use an atomically replaced
+  `packages.json`; system changes are ordered files under `system/migrations/`
+  with one success marker per migration. Old checkout-local commit markers are
+  imported on first use.
 - Breaking: integrated the theme compiler into Hyprkarl and converted
   `themes/<name>/` to authoring source only. `hk-theme set` now merges shared
   defaults, a built-in source, and an optional same-name personal source;

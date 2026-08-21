@@ -397,7 +397,7 @@
       "order": 10,
       "icon": "󰚰",
       "label": "Update Hyprkarl",
-      "action": { "type": "command", "command": "hk-tui-launch hk-update-tui" }
+      "action": { "type": "command", "command": "hk-tui-launch hk-update all" }
     },
     "update.packages": {
       "parent": "update",

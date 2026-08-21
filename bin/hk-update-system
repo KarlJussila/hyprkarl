@@ -1,21 +1,42 @@
 #!/bin/bash
 # hk-update-system
-# Re-run system-level setup.
+# Run pending privileged system migrations once, in lexical order.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"
 
-baseline=$(update_read_commit system)
-head=$(update_head_commit)
+MIGRATIONS_DIR="$HYPRKARL_PATH/system/migrations"
 
-if [[ -n "$baseline" ]] && [[ "$baseline" == "$head" ]]; then
-  printf 'System already up to date.\n'
-  update_write_commit system
+update_import_legacy_system_state || exit 1
+
+pending=()
+for migration in "$MIGRATIONS_DIR"/*; do
+  [[ -f "$migration" && -x "$migration" ]] || continue
+  id=$(basename "$migration")
+  [[ -e "$UPDATE_SYSTEM_MIGRATION_DIR/$id" ]] || pending+=("$migration")
+done
+
+if [[ ${#pending[@]} -eq 0 ]]; then
+  printf 'System migrations are up to date.\n'
   exit 0
 fi
 
-printf 'Running system setup...\n'
-"$HYPRKARL_PATH/setup-system.sh" || exit 1
+printf 'Pending system migrations:\n'
+for migration in "${pending[@]}"; do
+  printf '  %s\n' "$(basename "$migration")"
+done
+if ! gum confirm 'Run these migrations? Administrator access will be requested.'; then
+  printf 'System migration cancelled.\n'
+  exit 1
+fi
 
-update_write_commit system
-printf 'System updated.\n'
+sudo -v || exit 1
+mkdir -p "$UPDATE_SYSTEM_MIGRATION_DIR" || exit 1
+for migration in "${pending[@]}"; do
+  id=$(basename "$migration")
+  printf 'Running %s...\n' "$id"
+  HYPRKARL_PATH="$HYPRKARL_PATH" "$migration" || exit 1
+  : > "$UPDATE_SYSTEM_MIGRATION_DIR/$id" || exit 1
+done
+
+printf 'System migrations complete.\n'

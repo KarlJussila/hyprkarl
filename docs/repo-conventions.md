@@ -50,6 +50,8 @@ or promise compatibility for third-party extensions.
   Files copied or rendered by setup and install commands
 - `applications/`
   Desktop files exposed under `~/.local/share/applications/`
+- `system/migrations/`
+  Focused system changes run once in lexical order and recorded in XDG state
 - `docs/`
   Documentation for using and editing Hyprkarl
 
@@ -75,8 +77,8 @@ payload because GTK does not reliably follow moving theme-directory symlinks.
 
 ## Branches and Releases
 
-- `main` is the released branch: what a fresh install clones and what
-  `hk-update` merges from.
+- `main` is the released branch: what a fresh install clones and what the
+  default `hk-update sync` source points to.
 - `develop` is the integration branch. Work lands there first and is merged to
   `main` when it's ready to ship.
 - A release is an annotated tag `vX.Y.Z` on `main`, cut together with a
@@ -92,8 +94,10 @@ payload because GTK does not reliably follow moving theme-directory symlinks.
 - Until v1.0.0, minor versions may include breaking changes; the changelog
   calls them out explicitly.
 
-`hk-update tui` shows the current version (`git describe`) in its intro, so an
-update reads as a move between releases rather than between commit hashes.
+The normal checkout stays on `main`. `hk-update sync` fetches and pins an exact
+confirmed `origin/main` commit without moving the checkout; `hk-update apply`
+performs the fast-forward. A custom branch is maintained with ordinary Git,
+then applied with `hk-update apply`.
 
 ## Stow Behavior
 
@@ -114,10 +118,10 @@ a Git branch.
 - editing a real application config under `~/.config/` is immediate and
   update-safe
 - adding or removing a tracked entry point requires re-stowing with
-  `hk-update dotfiles`
+  `hk-update apply`
 
-Do not treat `setup-dotfiles.sh` as a normal maintenance command. It belongs to
-the initial setup flow and is too aggressive for routine refreshes.
+`setup-dotfiles.sh` is the initial-setup wrapper around the same configuration
+apply command. Use `hk-update apply` directly during normal maintenance.
 
 ## Related Docs
 

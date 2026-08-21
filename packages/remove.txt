@@ -11,6 +11,7 @@ libastal-powerprofiles-git # No longer needed after the AGS removal
 libastal-tray-git # No longer needed after the AGS removal
 libastal-wireplumber-git # No longer needed after the AGS removal
 hyprpolkitagent # Replaced with the Quickshell polkit agent
+mako # Replaced with Quickshell notifications
 waybar # Replaced with Quickshell bar
 wifitui-bin # Replaced with wifitui
 wofi # Replaced with Quickshell overlays

@@ -54,17 +54,16 @@ each other.
 
 ```bash
 ./setup-all.sh          # Full setup: packages, dotfiles, system config
-./setup-packages.sh     # Install/update packages via pacman + paru
-./setup-dotfiles.sh     # Migrate personal config, then update shipped Stow links
-./setup-system.sh       # System-level config (SDDM autologin, etc.)
+./setup-packages.sh     # Bootstrap and run the package update workflow
+./setup-dotfiles.sh     # Configure source and apply shipped configuration
+./setup-system.sh       # Run pending one-time system migrations
 ./uninstall.sh          # Remove all config symlinks (reverses setup-dotfiles.sh)
 ```
 
 There are no build steps or package.json at the repo root — this is a direct
-configuration and command-script repo. There is no automated test suite;
-`tests/` holds manual, interactive sandbox harnesses (e.g.
-`tests/hk-update-tui.sh`) for exercising a command end to end without touching
-the live system. See `tests/README.md`.
+configuration and command-script repo. `tests/` holds focused scripts and
+isolated acceptance harnesses, including `tests/hk-update.sh`, which exercises
+the updater against a disposable clone and home. See `tests/README.md`.
 
 ## Releases
 
@@ -95,8 +94,39 @@ for the application-by-application ownership table.
 
 Editing a non-ignored tracked entry point edits the live running config
 directly. Renaming or deleting one leaves a **stale symlink** (a live link
-pointing at a now-missing repo file); `hk-update dotfiles` prunes them as part
+pointing at a now-missing repo file); `hk-update apply` prunes them as part
 of its run, and `hk-update remove-stale` does just that step.
+
+### Update workflow
+
+The normal checkout stays clean on the configured released branch.
+`hk-update sync` fetches the explicit `hyprkarl.updateRemote` and
+`hyprkarl.updateBranch`, shows the incoming commits and file summary, and
+records one confirmed commit under XDG state without changing the checkout.
+`hk-update apply` stops Quickshell, fast-forwards to that exact revision,
+migrates personal config, restows shipped entry points, rebuilds and activates
+the selected theme and GTK payload, reloads affected consumers, restarts the
+shell, then records configuration success. A failed operation must not clear
+the reviewed revision or claim configuration success before configuration and
+reload work completes.
+
+Direct `hk-update apply` always reapplies the current committed checkout, even
+when that revision was recorded already, so setup and repair can restore
+missing shipped links and generated output.
+
+`hk-update packages` owns one atomic `packages.json` state file. It presents
+new removal changes in one multi-select review and records the whole change as
+reviewed whether the owner removes or keeps each package. `hk-update system`
+runs pending executable files from `system/migrations/` in lexical order and
+records each only after success. All machine update records belong under
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/update/`, never in tracked or
+personal configuration.
+
+`hk-update all` runs sync, apply, packages, and system in that order, then emits
+`post-update`. A custom branch is outside automatic source sync; its owner
+merges or rebases manually and uses the remaining update commands. Do not
+restore the retired TUI, baseline-commit diffing, dotfiles subcommand, or
+force/adopt paths.
 
 ### Hyprland Configuration
 
@@ -154,7 +184,9 @@ and arbitrary user-defined structures may feed final consumer values.
 
 `hk-theme set <name>` is the public build-and-activate action. It renders and
 validates a temporary complete bundle, installs an immutable artifact below
-XDG state, then atomically changes the selector. Generated bundles never live
+XDG state, transactionally replaces the GTK payload, then publishes the
+selector. A failed GTK install must leave the prior selector and payload in
+place. Generated bundles never live
 under `themes/` or the personal configuration root. Developers may run
 `python -m theme_generator` from `theme-generator/` for direct previews,
 builds, validation, and tests; there is no sibling checkout or sync command.

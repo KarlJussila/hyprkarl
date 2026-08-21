@@ -35,10 +35,11 @@ Every selection rebuilds the theme. `hk-theme set`:
 3. renders every consumer into a temporary directory;
 4. validates the complete bundle;
 5. installs an immutable artifact under XDG state;
-6. atomically changes the active selector;
-7. materializes the GTK payload and reloads affected consumers.
+6. applies desktop settings and transactionally replaces the GTK payload;
+7. publishes the active selector and reloads affected consumers.
 
-A failed build leaves the active theme and installed GTK copy unchanged.
+A failed build or GTK installation leaves the active theme and installed GTK
+copy unchanged.
 Quickshell watches `current/theme.json`, so a successful switch applies without
 restarting the shell. Hyprkarl retains the current and immediately previous
 artifacts.

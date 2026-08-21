@@ -52,117 +52,6 @@ provisioner, or plugin marketplace.
 - Updates never need a destructive "adopt" or "force" path during ordinary
   use.
 
-## Phase 5: replace the update process
-
-This phase follows the ownership and theme work. The updater should automate
-the finished model, not preserve the old one.
-
-### Source updates
-
-The normal installation uses a clean checkout of the released branch. The
-updater:
-
-1. Fetches the explicitly configured canonical Hyprkarl remote and branch.
-2. Shows the incoming release, commits, and relevant changes.
-3. Fast-forwards the normal checkout after confirmation.
-4. Leaves personal files below `~/.config` untouched.
-
-Do not infer the upstream branch from the active branch's tracking branch. A
-person maintaining a fork may configure a different source and merge or rebase
-it themselves. The updater should identify that situation clearly rather than
-pretending it is the ordinary path.
-
-Remove routine adopt and force behavior. If a managed link meets an unrelated
-real file, stop and show the exact paths. The owner decides what to move or
-keep.
-
-### Applying configuration
-
-Applying an update is separate from fetching it. Configuration application:
-
-1. Restows shipped entry points and removes stale Hyprkarl-owned links.
-2. Runs any pending personal-path migrations.
-3. Rebuilds the currently selected theme from the updated source and personal
-   theme files.
-4. Validates and atomically activates the new artifact.
-5. Installs the GTK payload.
-6. Reloads affected applications and services.
-7. Records success only after the complete operation succeeds.
-
-An update test must change the source of the active theme, apply the update,
-and prove that both the selected artifact and installed GTK copy contain the
-new result. A failed rebuild must leave the prior selection active and the
-configuration update pending.
-
-### Package changes
-
-Keep snapshots of the last applied Hyprkarl package lists under:
-
-```text
-${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/update/
-```
-
-Do not depend on an old Git commit remaining available.
-
-When packages are added, show and install the additions. When packages are
-removed from Hyprkarl's lists:
-
-1. Present the full removal list with every package initially selected.
-2. Let the user uncheck packages they want to keep.
-3. Attempt removal of the selected packages.
-4. Record the entire removal change as handled, including packages the user
-   kept.
-5. Do not present that same removal change again on a later update.
-
-A failed removal is reported with enough information for a manual retry, but
-the updater does not nag about the same change forever. Packages that the user
-keeps become ordinary user-installed packages.
-
-### System migrations
-
-Replace routine reruns of `setup-system.sh` with ordered one-time migrations:
-
-```text
-system/migrations/<id>-<description>
-```
-
-Initial setup runs every required migration. Updates show pending migrations
-and request privilege before running them. Record a migration under XDG state
-only after it succeeds.
-
-New migrations make one focused change. They do not rerun every old SDDM,
-logind, PAM, firewall, Docker, or security operation because an unrelated
-system setting changed.
-
-Keep an explicit repair or reconciliation command only for a real supported
-recovery task. It must not become the ordinary update path.
-
-### Update records
-
-Move all update records from `config/hyprkarl/update/` to XDG state. Store the
-information needed for the next operation, such as:
-
-- the last applied source revision;
-- snapshots of applied package lists;
-- handled package-removal changes;
-- completed system migration IDs;
-- the last successfully applied configuration revision or content hash.
-
-These files describe this machine. They do not belong in the checkout or in a
-personal configuration backup.
-
-### Acceptance
-
-- Normal updates require no personal Git branch and no stash operation.
-- Source review, configuration application, packages, and privileged system
-  migrations have clear separate steps.
-- An interrupted operation does not claim success.
-- A package-removal change is presented once and remains acknowledged when the
-  user keeps some packages.
-- System updates do not rewrite unrelated `/etc` configuration.
-- `post-update` hooks run only after every selected update step succeeds, and
-  the command states clearly if the main update succeeded but a hook failed.
-
 ## Phase 6: finish the remaining shell cleanup
 
 ### Reuse the shared overlay behavior
@@ -211,8 +100,7 @@ phases, make one final pass so each document has one job:
 
 Move any still-useful requirements out of `docs/shell-product-brief.md` to the
 document that owns them, then delete the brief if nothing unique remains.
-Remove stale Rofi instructions, old branch recommendations, adopt and force
-workflows, and permanent Quickshell pinning claims.
+Remove stale Rofi instructions and permanent Quickshell pinning claims.
 
 Trim the root and Quickshell `AGENTS.md` files after the code settles. Keep
 current safety rules, directory ownership, framework lifetime facts, extension
@@ -224,10 +112,8 @@ kept beside theme data or components.
 
 Implement the work as reviewable changes in this order:
 
-1. Replace the updater, package-removal flow, and system setup with the new
-   source, apply, and migration model.
-2. Reuse the shared menu frame and investigate the remaining reload failure.
-3. Finish the documentation and agent-instruction cleanup.
+1. Reuse the shared menu frame and investigate the remaining reload failure.
+2. Finish the documentation and agent-instruction cleanup.
 
 Documentation and focused tests belong in each change. The final cleanup is
 for consolidation, not for postponing behavioral documentation.
@@ -247,15 +133,11 @@ update work:
 
 ## Completion check
 
-The overhaul is complete when a normal user can:
+The remaining overhaul is complete when:
 
-- update a clean Hyprkarl checkout without a personal branch;
-- keep every ordinary preference in a user-owned file;
-- replace any managed application configuration without update conflicts;
-- build and modify themes without a second repository;
-- disable any built-in shell module and replace it with personal QML or an
-  external program;
-- review package removals once and keep selected packages without repeat
-  prompts;
-- apply one-time system changes without rerunning unrelated setup; and
-- identify every generated or replaceable file in the configuration map.
+- the command menu uses the shared overlay frame and scrolling behavior without
+  losing its compact layout or navigation;
+- the Quickshell reload failure has a minimal reproducer and any Hyprkarl-owned
+  lifetime bug is fixed; and
+- the final documentation pass removes retired plans and leaves one current
+  owner for each configuration and operational contract.

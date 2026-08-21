@@ -1,96 +1,86 @@
 #!/bin/bash
 # hk-update-packages
-# Install new required packages, prompt for dropped ones.
+# Review one-time removals and install newly required packages.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"
 
 PACKAGES_DIR="$HYPRKARL_PATH/packages"
+PACKAGE_STATE_TOOL="$SCRIPT_DIR/lib/update_packages.py"
 
-prompt_remove() {
-  local pkg="$1" reason="$2"
-  pacman -Q "$pkg" &>/dev/null || return 0
-  gum confirm "Remove '$pkg'? ($reason)" || return 0
-  hk-pkg-remove "$pkg"
-}
+update_import_legacy_package_state || exit 1
+plan=$(python3 "$PACKAGE_STATE_TOOL" plan "$PACKAGES_DIR" "$UPDATE_PACKAGE_STATE") || exit 1
+installed=$(pacman -Qq) || exit 1
 
-baseline=$(update_read_commit packages)
-head=$(update_head_commit)
+removal_rows=()
+already_absent=()
+while IFS=$'\t' read -r package reason; do
+  [[ -z "$package" ]] && continue
+  if grep -Fxq "$package" <<<"$installed"; then
+    removal_rows+=("$package — $reason"$'\t'"$package")
+  else
+    already_absent+=("$package")
+  fi
+done < <(jq -r '.removals[] | [.package, .reason] | @tsv' <<<"$plan")
 
-if [[ -n "$baseline" ]] && ! update_commit_valid "$baseline"; then
-  printf 'Warning: recorded baseline commit is no longer in git history. Treating as no baseline.\n' >&2
-  baseline=""
+selected_removals=()
+if [[ ${#removal_rows[@]} -gt 0 ]]; then
+  printf 'Packages Hyprkarl no longer requires:\n'
+  selection=$(printf '%s\n' "${removal_rows[@]}" \
+    | gum choose --no-limit --selected '*' --label-delimiter $'\t' \
+        --header 'Uncheck anything you want to keep:')
+  choice_status=$?
+  if [[ "$choice_status" -ne 0 ]]; then
+    printf 'Package update cancelled; no removal choices were recorded.\n'
+    exit 1
+  fi
+  if [[ -n "$selection" ]]; then
+    mapfile -t selected_removals <<<"$selection"
+  fi
 fi
 
-if [[ -n "$baseline" ]] && [[ "$baseline" == "$head" ]]; then
-  printf 'Packages already up to date.\n'
-  update_write_commit packages
-  exit 0
+if [[ ${#already_absent[@]} -gt 0 ]]; then
+  printf 'Already absent: %s\n' "${already_absent[*]}"
 fi
 
-if [[ -z "$baseline" ]]; then
-  printf 'No package baseline recorded. Installing any missing required packages.\n'
-  printf 'Drop detection is unavailable until a baseline is established.\n'
-
-  mapfile -t pacman_pkgs < <(grep -v '^[[:space:]]*#' "$PACKAGES_DIR/pacman.txt" | grep -v '^[[:space:]]*$' | sed 's/[[:space:]]*#.*//')
-  mapfile -t aur_pkgs    < <(grep -v '^[[:space:]]*#' "$PACKAGES_DIR/aur.txt"    | grep -v '^[[:space:]]*$' | sed 's/[[:space:]]*#.*//')
-
-  [[ ${#pacman_pkgs[@]} -gt 0 ]] && hk-pkg-install     "${pacman_pkgs[@]}"
-  [[ ${#aur_pkgs[@]} -gt 0 ]]    && hk-pkg-install-aur "${aur_pkgs[@]}"
-
-  update_write_commit packages
-  exit 0
+removal_status=0
+if [[ ${#selected_removals[@]} -gt 0 ]]; then
+  hk-pkg-remove "${selected_removals[@]}" || removal_status=1
 fi
 
-pkg_diff "packages/pacman.txt" "$baseline"
-added_pacman="$added"
-removed_pacman="$removed"
+python3 "$PACKAGE_STATE_TOOL" record removalsReviewed \
+  "$PACKAGES_DIR" "$UPDATE_PACKAGE_STATE" || exit 1
 
-pkg_diff "packages/aur.txt" "$baseline"
-added_aur="$added"
-removed_aur="$removed"
-
-pkg_diff "packages/remove.txt" "$baseline"
-added_remove="$added"
-
-# When a package moves from pacman/aur.txt into remove.txt in the same update span it
-# would appear in both removed_pacman/removed_aur AND added_remove, causing a double
-# prompt.  Drop it from the "no longer required" lists — remove.txt already covers it
-# with a better reason string.
-while IFS= read -r pkg; do
-  [[ -z "$pkg" ]] && continue
-  [[ -n "$removed_pacman" ]] && removed_pacman=$(printf '%s\n' "$removed_pacman" | grep -v "^${pkg}$" || true)
-  [[ -n "$removed_aur" ]]    && removed_aur=$(printf '%s\n' "$removed_aur"    | grep -v "^${pkg}$" || true)
-done <<< "$added_remove"
-
-# Prompt for all removals before installing, so conflicting replacements don't block installs.
-while IFS= read -r pkg; do
-  [[ -z "$pkg" ]] && continue
-  comment=$(pkg_comment "$pkg" "$PACKAGES_DIR/remove.txt")
-  prompt_remove "$pkg" "${comment:-Added to removal list}" || exit 1
-done <<< "$added_remove"
-
-while IFS= read -r pkg; do
-  [[ -z "$pkg" ]] && continue
-  prompt_remove "$pkg" "No longer required" || exit 1
-done <<< "$removed_pacman"
-
-while IFS= read -r pkg; do
-  [[ -z "$pkg" ]] && continue
-  prompt_remove "$pkg" "AUR, no longer required" || exit 1
-done <<< "$removed_aur"
-
-if [[ -n "$added_pacman" ]]; then
-  mapfile -t pkgs <<< "$added_pacman"
-  printf 'Installing new required packages: %s\n' "${pkgs[*]}"
-  hk-pkg-install "${pkgs[@]}" || exit 1
+if [[ "$removal_status" -ne 0 ]]; then
+  printf 'Some selected packages could not be removed. Retry manually with:\n' >&2
+  printf '  hk-pkg remove %s\n' "${selected_removals[*]}" >&2
+  printf 'This removal change was recorded and will not be presented again.\n' >&2
+  exit 1
 fi
 
-if [[ -n "$added_aur" ]]; then
-  mapfile -t pkgs <<< "$added_aur"
-  printf 'Installing new required AUR packages: %s\n' "${pkgs[*]}"
-  hk-pkg-install-aur "${pkgs[@]}" || exit 1
+installed=$(pacman -Qq) || exit 1
+
+missing_pacman=()
+while IFS= read -r package; do
+  [[ -z "$package" ]] && continue
+  grep -Fxq "$package" <<<"$installed" || missing_pacman+=("$package")
+done < <(jq -r '.additions.pacman[]' <<<"$plan")
+
+missing_aur=()
+while IFS= read -r package; do
+  [[ -z "$package" ]] && continue
+  grep -Fxq "$package" <<<"$installed" || missing_aur+=("$package")
+done < <(jq -r '.additions.aur[]' <<<"$plan")
+
+if [[ ${#missing_pacman[@]} -gt 0 ]]; then
+  printf 'Installing required packages: %s\n' "${missing_pacman[*]}"
+  hk-pkg-install "${missing_pacman[@]}" || exit 1
+fi
+if [[ ${#missing_aur[@]} -gt 0 ]]; then
+  printf 'Installing required AUR packages: %s\n' "${missing_aur[*]}"
+  hk-pkg-install-aur "${missing_aur[@]}" || exit 1
 fi
 
-update_write_commit packages
+python3 "$PACKAGE_STATE_TOOL" record applied \
+  "$PACKAGES_DIR" "$UPDATE_PACKAGE_STATE" || exit 1
 printf 'Packages updated.\n'

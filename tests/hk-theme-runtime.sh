@@ -8,6 +8,7 @@ export XDG_CONFIG_HOME="$TEST_ROOT/config"
 export XDG_STATE_HOME="$TEST_ROOT/state"
 export XDG_RUNTIME_DIR="$TEST_ROOT/runtime"
 export HYPRKARL_PATH="$ORIG"
+export GSETTINGS_BACKEND=memory
 
 cleanup() {
   rm -rf "$TEST_ROOT"
@@ -36,7 +37,7 @@ printf 'shell:\n  metrics:\n    borderWidth: 5\n' \
   > "$HYPRKARL_USER_THEMES/hyprkarl/theme.yaml"
 printf 'personal wallpaper\n' \
   > "$HYPRKARL_USER_THEMES/hyprkarl/wallpapers/personal.txt"
-printf '01-hyprkarl.jpg\n' \
+printf '01-hyprkarl-wallpaper.png\n' \
   > "$HYPRKARL_USER_THEMES/hyprkarl/.wallpapers-disabled"
 
 theme_activate_bundle hyprkarl >/dev/null \
@@ -45,7 +46,7 @@ jq -e '.metrics.borderWidth == 5' "$HYPRKARL_CURRENT_THEME/quickshell.json" \
   >/dev/null || fail "personal graph did not merge before rendering"
 [[ -f "$HYPRKARL_CURRENT_THEME/wallpapers/personal.txt" ]] \
   || fail "personal wallpaper was not included"
-[[ ! -e "$HYPRKARL_CURRENT_THEME/wallpapers/01-hyprkarl.jpg" ]] \
+[[ ! -e "$HYPRKARL_CURRENT_THEME/wallpapers/01-hyprkarl-wallpaper.png" ]] \
   || fail "disabled built-in wallpaper remained in the bundle"
 
 selector_before=$(readlink "$HYPRKARL_CURRENT_THEME")
@@ -64,5 +65,30 @@ theme_install_gtk_payload || fail "GTK payload was not materialized"
   || fail "GTK install is not marked as managed"
 [[ ! -L "$HYPRKARL_GTK_THEME_HOME" ]] \
   || fail "GTK payload was installed as a symlink"
+
+selector_before=$(readlink "$HYPRKARL_CURRENT_THEME")
+gtk_before=$(sha256sum "$HYPRKARL_GTK_THEME_HOME/gtk-3.0/gtk.css")
+cp() { return 1; }
+if theme_apply_bundle hyprkarl >/dev/null 2>&1; then
+  fail "GTK installation failure unexpectedly applied a theme"
+fi
+unset -f cp
+[[ "$(readlink "$HYPRKARL_CURRENT_THEME")" == "$selector_before" ]] \
+  || fail "GTK installation failure changed the active selector"
+[[ "$(sha256sum "$HYPRKARL_GTK_THEME_HOME/gtk-3.0/gtk.css")" == "$gtk_before" ]] \
+  || fail "GTK installation failure changed the installed GTK payload"
+
+rm "$HYPRKARL_USER_THEMES/hyprkarl/wallpapers/personal.txt"
+printf '%s\n' \
+  '01-hyprkarl-wallpaper.png' \
+  '02-firewatch-illustration.jpg' \
+  '03-pixel-space.png' \
+  > "$HYPRKARL_USER_THEMES/hyprkarl/.wallpapers-disabled"
+theme_activate_bundle hyprkarl >/dev/null \
+  || fail "wallpaper-free theme did not activate"
+theme_ensure_wallpaper_selection \
+  || fail "wallpaper-free theme did not accept an empty selection"
+"$ORIG/bin/hk-wallpaper-init" --if-ready \
+  || fail "wallpaper-free theme was not a startup no-op"
 
 printf 'Theme runtime integration passed.\n'

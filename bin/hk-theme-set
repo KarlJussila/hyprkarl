@@ -18,34 +18,11 @@ source "$SCRIPT_DIR/lib/theme.sh"
 
 THEME_NAME=$(theme_normalize_name "$@")
 
-exec 9> "$HYPRKARL_THEME_LOCK"
-flock 9
-if ! theme_gtk_install_is_replaceable; then
-  printf 'GTK theme destination is not managed by Hyprkarl: %s\n' "$HYPRKARL_GTK_THEME_HOME" >&2
-  exit 1
-fi
-theme_activate_bundle "$THEME_NAME" || exit 1
-theme_install_gtk_payload || exit 1
-flock -u 9
+theme_apply_bundle "$THEME_NAME" || exit 1
 
 post_action_status=0
-if ! hk-wallpaper-init; then
-  hk-wallpaper-cycle || post_action_status=1
-fi
-
-# Apply matching GTK color scheme and icon theme.
-if [[ -f "$HYPRKARL_CURRENT_THEME/light.mode" ]]; then
-  gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
-else
-  gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
-fi
-
-GNOME_ICONS_THEME="$HYPRKARL_CURRENT_THEME/icons.theme"
-if [[ -f "$GNOME_ICONS_THEME" ]]; then
-  gsettings set org.gnome.desktop.interface icon-theme "$(<"$GNOME_ICONS_THEME")"
-else
-  gsettings set org.gnome.desktop.interface icon-theme "Yaru-purple"
-fi
+theme_ensure_wallpaper_selection || post_action_status=1
+hk-wallpaper-init --if-ready || post_action_status=1
 
 hyprctl reload >/dev/null
 hk-terminal-reload

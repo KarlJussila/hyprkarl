@@ -10,14 +10,14 @@ repo checked out at `~/.local/share/hyprkarl/`.
 
 - Read [Getting Started](getting-started.md) for installation and the symlink
   model.
-- Read [Updating](updating.md) for the update workflow, conflict resolution,
-  and package management.
+- Read [Updating](updating.md) for source review, configuration application,
+  package review, and system migrations.
 - Read [Using Hyprkarl](using-hyprkarl.md) for the standard workflow: menus,
   keybindings, themes, wallpapers, defaults, and utilities.
 - Read [Configuration Map](configuration-map.md) if you need to know where a
   change belongs before you touch anything.
-- Read [Architecture Roadmap](architecture-roadmap.md) for the planned
-  user-owned configuration, integrated theme compiler, and update overhaul.
+- Read [Architecture Roadmap](architecture-roadmap.md) for the remaining shell
+  cleanup and documentation consolidation.
 - Read [Shell Product Brief](shell-product-brief.md) for the bar and independent
   feature-panel direction.
 - Read [Shell Configuration](shell-configuration.md) for the public JSON and

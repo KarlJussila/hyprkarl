@@ -1,0 +1,5 @@
+#!/bin/bash
+# Allow LocalSend traffic through UFW.
+
+sudo ufw allow 53317/tcp || exit 1
+sudo ufw allow 53317/udp

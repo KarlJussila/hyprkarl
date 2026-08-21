@@ -6,48 +6,42 @@ does not try to document every internal script.
 ## Update
 
 - `hk-update check`
-  Report what would change across configuration, packages, and system without
-  making any changes. It reports shipped configuration changes only; personal
-  configuration stays outside the checkout.
-- `hk-update all [--force|--adopt]`
-  Run dotfiles, packages, and system updates in sequence. `--force` and
-  `--adopt` are passed through to the dotfiles step.
-- `hk-update tui`
-  Interactive guided update in a terminal: fetch and merge upstream (safe on a
-  dirty working tree, with conflict resolution), review upstream configuration
-  with package and system changes, then apply the categories you
-  select. Excludes the system package upgrade (`paru -Syu`) — see
-  `hk-pkg-upgrade` for that. Launch via the update menu or
-  `hk-tui-launch hk-update-tui`.
-- `hk-update dotfiles`
-  Re-stow config files and remove stale symlinks. Checks for conflicts first
-  and aborts if any are found.
-- `hk-update dotfiles --force`
-  Re-stow using the adopt-and-checkout flow, overwriting any conflicting files
-  in `~/.config/`. Requires a clean git working tree.
-- `hk-update dotfiles --adopt`
-  Adopt conflicting `~/.config/` files into the repo without overwriting them,
-  then report what differs so you can review and commit or discard.
+  Report pending reviewed source, configuration application, package changes,
+  and system migrations without changing them.
+- `hk-update all`
+  Run `sync`, `apply`, `packages`, and `system` in order, then run personal
+  `post-update` hooks. The update menu launches this command in a terminal.
+- `hk-update sync`
+  Fetch the configured canonical remote and branch, show incoming commits and
+  changed files, and pin one confirmed commit in XDG state. It does not move
+  the live checkout.
+- `hk-update apply`
+  Fast-forward to a reviewed commit when one is pending, migrate personal
+  configuration, restow shipped entry points, remove stale links, rebuild the
+  selected theme and GTK payload, reload affected applications, and record
+  success. With no reviewed revision, reapply the current checkout even when
+  that revision was already recorded, which also repairs shipped links and
+  generated output.
 - `hk-update remove-stale`
   Remove stale hyprkarl symlinks and empty directories from `~/.config/` and
   related directories without restowing. Useful when cleaning up after removing
   files from the repo.
 - `hk-update packages`
-  Install packages newly added to the required lists, prompt to remove packages
-  that were dropped or added to the removal list.
+  Present all newly retired packages in one multi-select review, record that
+  removal change once, and install missing requirements.
 - `hk-update system`
-  Re-run `setup-system.sh`.
+  Confirm and run pending files under `system/migrations/` in lexical order,
+  recording each successful migration in XDG state.
 - `hk-user-migrate`
   Move personal configuration from the retired checkout `user/` directory to
   `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, materialize old
   Hyprkarl-owned application links as real personal configs, seed terminal
   override files, and stop if both old and new personal locations contain
   data. The application seed migration is recorded in XDG state and does not
-  recreate later deletions. `hk-update dotfiles` runs it before restowing.
+  recreate later deletions. `hk-update apply` runs it before restowing.
 
-Full update workflows (`hk-update all` and `hk-update tui`) run the
-`post-update` lifecycle hooks after completing successfully. Individual
-category commands do not emit that event.
+`hk-update all` runs the `post-update` lifecycle hooks after every update step
+completes successfully. Individual update commands do not emit that event.
 
 ## Lifecycle Hooks
 

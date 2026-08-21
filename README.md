@@ -30,7 +30,7 @@ configuration outside the checkout.
 
 ## Warnings
 
-- The setup script enables SDDM autologin. The intention is to rely on LUKS encryption for boot authentication instead of requiring two passwords. If you prefer to disable autologin, edit `setup-system.sh` before running it, or disable it manually afterward.
+- The SDDM system migration enables autologin. The intention is to rely on LUKS encryption for boot authentication instead of requiring two passwords. If you prefer not to use autologin, disable it manually afterward.
 - Multi-user setups are not supported. You're on your own if you need one.
 
 ## Installation
@@ -60,9 +60,9 @@ cd ~/.local/share/hyprkarl
 ```
 
 Removes all of Hyprkarl's config symlinks (reversing `setup-dotfiles.sh`).
-User-owned application configs, installed packages, and `setup-system.sh`
-changes are left in place; the script lists what you may want to remove or undo
-manually.
+User-owned application configs, installed packages, and completed system
+migration changes are left in place; the script lists what you may want to
+remove or undo manually.
 
 ## After Installation
 
@@ -252,7 +252,8 @@ Routine personalization lives outside the checkout under
 Git branch. Create a fork branch only when changing Hyprkarl's shipped code or
 defaults. Routine upstream updates do not edit personal files.
 
-For the full update workflow, including when to run `hk-update`,
-`setup-packages.sh`, `setup-system.sh`, or `setup-dotfiles.sh`, see
+Run `hk-update all` to review an exact upstream revision, apply it, review
+package removals once, and run pending system migrations. For the full workflow
+and the role of the initial setup wrappers, see
 [docs/getting-started.md](docs/getting-started.md) and
 [docs/updating.md](docs/updating.md).

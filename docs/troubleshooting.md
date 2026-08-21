@@ -2,33 +2,29 @@
 
 This page covers common Hyprkarl setup and runtime problems.
 
-## `setup-dotfiles.sh` Replaced Existing Config Files
+## Configuration apply reports unmanaged paths
 
 Symptoms:
 
-- a first install replaced config you expected to keep
-- files under `~/.config/` or `~/.local/share/applications/` now point at
-  Hyprkarl
+- `setup-dotfiles.sh` or `hk-update apply` stops before restowing
+- the error lists paths under `~/.config/`,
+  `~/.local/share/applications/`, or the GTK theme destination
 
 Cause:
 
-- `setup-dotfiles.sh` uses GNU Stow for stable Hyprkarl entry points and
-  desktop files. A path that overlaps one of those entry points may become a
-  link into the checkout. Application preference files listed in the
-  configuration map are migrated to real user-owned files instead.
+- a real file or unrelated link occupies a path reserved for a shipped
+  Hyprkarl entry point
+- the GTK theme destination exists but is not a Hyprkarl-managed payload
 
 What to do:
 
-- treat `setup-dotfiles.sh` as a first-install tool
-- use `hk-update dotfiles` when you only need to expose new tracked files
-- put ordinary preferences in the documented user-owned application or
-  `~/.config/hyprkarl/` paths
-- use a personal Git branch only when changing Hyprkarl's shipped
-  implementation
+- inspect every listed path and decide whether to keep or move it
+- put ordinary preferences in the documented user-owned application paths or
+  under `~/.config/hyprkarl/`
+- after resolving the overlap, run `hk-update apply` again
 
-Note that your *committed* changes are safe: re-running `setup-dotfiles.sh`
-refuses to proceed while `config/` or `applications/` have uncommitted
-changes, because its stow step resets those paths to HEAD.
+Hyprkarl does not adopt or overwrite these paths. The owner decides how to
+resolve the overlap.
 
 ## A Change Did Not Take Effect
 
@@ -155,8 +151,8 @@ Cause:
 
 What to do:
 
-- log out and back in, or reboot, after `setup-system.sh` changes Docker group
-  membership
+- log out and back in, or reboot, after the Docker system migration changes
+  group membership
 - confirm that `id -nG "$USER"` includes `docker`
 - confirm that `docker ps` prints a container table, even if it is empty
 
@@ -212,13 +208,13 @@ Cause:
 What to do:
 
 ```bash
-hk-update dotfiles
+hk-update apply
 ```
 
 If that fails because the target path already exists, decide whether you want to
-keep that live file or replace it with a symlink to Hyprkarl. Use
-`hk-update dotfiles --adopt` to pull the conflicting file into the repo for
-review, or `hk-update dotfiles --force` to overwrite it with the repo version.
+keep that live file or replace it with a symlink to Hyprkarl. Hyprkarl will not
+adopt or overwrite it. Move or rename the file yourself, then run
+`hk-update apply` again.
 
 ## Related Docs
 

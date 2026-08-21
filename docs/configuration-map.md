@@ -17,6 +17,8 @@ would edit.
   User-owned Hyprkarl configuration, QML, themes, and hooks
 - `packages/`
   Package lists read by `setup-packages.sh` and `hk-update packages`
+- `system/migrations/`
+  Ordered one-time system changes run by setup and `hk-update system`
 - `themes/`
   Shipped theme sources, overrides, wallpapers, icons, and previews
 - `theme-generator/`
@@ -50,15 +52,24 @@ immutable generated bundle under the state directory's `themes/`;
 
 If theme or wallpaper behavior looks wrong, check this directory first.
 
-`config/hyprkarl/update/` holds the last-applied commit per update category:
+Update records live under
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/update/`:
 
-- `config/hyprkarl/update/dotfiles.commit`
-- `config/hyprkarl/update/packages.commit`
-- `config/hyprkarl/update/system.commit`
+- `pending-source.revision`
+  Exact fetched commit confirmed by `hk-update sync` but not yet applied
+- `configuration.revision`
+  Checkout revision whose configuration last completed the apply workflow
+- `packages.json`
+  Atomic snapshots of applied requirements and removal changes already reviewed
+- `restart-shell-after-apply`
+  Temporary restart intent retained when a source transition leaves Quickshell
+  stopped until configuration application succeeds
+- `system-migrations/<migration-id>`
+  Completion markers written one at a time after successful system migrations
 
-These files are machine-local and gitignored. They are written by `hk-update`
-and the setup scripts. Delete one to force `hk-update` to re-run that category
-regardless of whether anything changed.
+These files describe this installation. They are not configuration or generated
+source. Legacy commit markers under `config/hyprkarl/update/` are imported into
+this state during the first run of the corresponding new command.
 
 Personal executable lifecycle hooks live under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/`. Hyprkarl supports `post-boot`, `post-update`,

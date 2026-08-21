@@ -27,8 +27,8 @@ PURGE_PKGS=(cachyos-hypr-noctalia noctalia)
 # Pinning them here would leave them explicit forever, masquerading as orphans.
 KEEP_PKGS=(uwsm)
 
-# Noctalia / CachyOS shell configs with no Hyprkarl counterpart. Stow's --adopt
-# never claims these, so they outlive the dotfiles install unless removed here.
+# Noctalia / CachyOS shell configs with no Hyprkarl counterpart. Stow never
+# manages these, so they outlive the configuration install unless removed here.
 NOCTALIA_CONFIGS=(
   "$HOME/.config/noctalia"
   "$HOME/.config/hypr/config"

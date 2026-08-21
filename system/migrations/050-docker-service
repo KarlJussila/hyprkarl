@@ -1,0 +1,5 @@
+#!/bin/bash
+# Enable Docker and add the session user to its group.
+
+sudo systemctl enable --now docker.service || exit 1
+sudo usermod -aG docker "$USER"

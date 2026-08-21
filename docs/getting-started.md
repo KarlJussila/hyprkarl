@@ -26,24 +26,21 @@ cd ~/.local/share/hyprkarl
 `setup-all.sh` runs three scripts in order, stopping at the first failure:
 
 - `setup-packages.sh`
-  Installs the packages Hyprkarl expects.
+  Bootstraps the update command's package dependencies, then runs the same
+  one-time removal review and required-package installation used by
+  `hk-update packages`.
 - `setup-dotfiles.sh`
-  Runs the personal-config migrations, then uses GNU Stow to expose stable
-  shipped entry points under `~/.config/` and desktop files under
-  `~/.local/share/applications/`. Application configs that Hyprkarl expects
-  users to edit are copied once as real files instead of being stowed. Existing
-  real files and user-authored directory symlinks are left alone.
-  On re-runs it refuses to proceed while the repo has uncommitted `config/` or
-  `applications/` changes, since the stow step resets those paths to HEAD —
-  commit (or discard) first.
-  Before it restows, `hk-user-migrate` moves retired checkout-local personal
-  configuration to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, materializes
-  old Hyprkarl-owned application links, and seeds missing application configs
-  and terminal override files. That seed migration runs once; a later update
-  does not recreate a file you removed.
+  Configures the default source remote and branch, then runs the same apply
+  path used after an update. That path migrates personal configuration, uses
+  GNU Stow to expose shipped entry points and desktop files, builds the selected
+  theme and GTK payload, and reloads affected applications. Application configs
+  intended for personal editing are copied once as real files. Existing real
+  files and user-authored directory symlinks are left alone unless they occupy
+  a required Stow entry point, in which case setup stops and lists them.
 - `setup-system.sh`
-  Applies system-level settings such as GTK defaults, SDDM autologin, logind
-  lid handling, sudo and faillock settings, and LocalSend firewall rules.
+  Runs pending one-time system migrations. These configure SDDM autologin,
+  logind lid handling, sudo and faillock settings, LocalSend firewall rules,
+  and Docker without rerunning completed migrations on later updates.
 
 To leave Hyprkarl, `uninstall.sh` removes every config symlink (reversing
 `setup-dotfiles.sh`) and prints the user-owned configs, packages, and system
@@ -71,7 +68,8 @@ editable path for every managed application.
 
 Personalize Hyprkarl through `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`.
 Create a fork branch only when changing shipped code or defaults in
-`~/.local/share/hyprkarl/`.
+`~/.local/share/hyprkarl/`. Automatic source sync is for the clean released
+branch; maintain a custom branch with Git and use `hk-update apply` afterward.
 
 For editing guidance, see:
 
@@ -82,30 +80,28 @@ For editing guidance, see:
 
 ## Updating
 
-After initial setup, use `hk-update` to apply changes from upstream. It tracks
-which commit each category was last applied at, so it only acts when something
-has actually changed.
+After initial setup, use `hk-update` to review and apply changes from upstream.
+The review step pins one exact fetched revision without changing the live
+checkout.
 
 ```bash
-cd ~/.local/share/hyprkarl
-git fetch origin
-git merge origin/main
 hk-update all
 ```
 
-`hk-update all` runs dotfiles, packages, and system in sequence. You can also
-run each individually:
+`hk-update all` runs the complete sequence. You can also stop between steps or
+run one category yourself:
 
 ```bash
-hk-update dotfiles    # re-stow config files, remove stale symlinks
-hk-update remove-stale  # remove stale symlinks and empty dirs (no restow)
-hk-update packages    # install new required packages, prompt to remove dropped ones
-hk-update system      # re-run system-level setup
-hk-update check       # preview what would change without doing anything
+hk-update sync          # fetch, review, and pin an exact source revision
+hk-update apply         # advance to that revision and apply configuration
+hk-update packages      # review removals once and install requirements
+hk-update system        # run pending one-time system migrations
+hk-update check         # report pending work without changing it
+hk-update remove-stale  # remove broken links into the checkout only
 ```
 
-See [Updating](updating.md) for the full update workflow, conflict resolution,
-and what to do when things go wrong.
+See [Updating](updating.md) for source configuration, custom-branch handling,
+package review, and recovery details.
 
 ## Changes That Need a New Session
 
@@ -113,7 +109,7 @@ Some changes do not take effect immediately:
 
 - `~/.config/uwsm/default` changes affect new sessions
 - `hk-default-shell` changes affect the next login
-- Docker group changes made by `setup-system.sh` require a new login or reboot
+- Docker group changes made by its system migration require a new login or reboot
 - most other changes can be reloaded live
 
 ## Where to Go Next

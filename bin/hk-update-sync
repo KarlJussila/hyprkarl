@@ -1,0 +1,58 @@
+#!/bin/bash
+# hk-update-sync
+# Fetch, review, and stage one canonical source revision for later application.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/update.sh"
+
+remote=$(update_source_remote)
+source_branch=$(update_source_branch)
+branch=$(git -C "$HYPRKARL_PATH" branch --show-current)
+
+if [[ "$branch" != "$source_branch" ]]; then
+  printf "This checkout is on custom branch '%s'; automatic updates target '%s/%s'.\n" \
+    "$branch" "$remote" "$source_branch" >&2
+  printf 'Fetch and merge or rebase the source yourself, then run hk-update apply.\n' >&2
+  exit 1
+fi
+
+printf 'Fetching %s/%s...\n' "$remote" "$source_branch"
+git -C "$HYPRKARL_PATH" fetch "$remote" "$source_branch" || exit 1
+
+target=$(git -C "$HYPRKARL_PATH" rev-parse "$remote/$source_branch") || exit 1
+head=$(update_head_commit)
+
+if [[ "$head" == "$target" ]]; then
+  applied=$(update_read_configuration_revision)
+  if [[ "$applied" == "$head" ]]; then
+    update_clear_pending_source || exit 1
+  else
+    update_write_pending_source "$head" || exit 1
+  fi
+  printf 'Source is already current at %s.\n' "$(git -C "$HYPRKARL_PATH" describe --tags --always "$head")"
+  exit 0
+fi
+if ! git -C "$HYPRKARL_PATH" merge-base --is-ancestor "$head" "$target"; then
+  printf 'The local checkout and %s/%s have diverged. Merge or rebase the source manually.\n' \
+    "$remote" "$source_branch" >&2
+  exit 1
+fi
+if ! git -C "$HYPRKARL_PATH" diff --quiet \
+    || ! git -C "$HYPRKARL_PATH" diff --cached --quiet; then
+  printf 'Tracked files in the Hyprkarl checkout have local changes.\n' >&2
+  printf 'Commit or restore them before staging an automatic update.\n' >&2
+  exit 1
+fi
+
+printf '\nIncoming commits:\n'
+git -C "$HYPRKARL_PATH" log --oneline --no-decorate "$head..$target" | sed 's/^/  /'
+printf '\nChanged files:\n'
+git -C "$HYPRKARL_PATH" diff --stat "$head" "$target" | sed 's/^/  /'
+
+if ! gum confirm "Stage this exact revision for hk-update apply?"; then
+  printf 'Source update not staged.\n'
+  exit 1
+fi
+
+update_write_pending_source "$target" || exit 1
+printf 'Reviewed source revision %s is ready to apply.\n' "${target:0:12}"

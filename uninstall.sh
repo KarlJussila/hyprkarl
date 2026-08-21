@@ -17,10 +17,9 @@ rm -rf "$HOME/.local/share/themes/hyprkarl"
 
 # Catch anything a plain unstow missed (renamed files, older install layouts)
 remove_stale_symlinks
-remove_empty_dirs
 
-# Drop the update baselines so a future reinstall starts fresh
-rm -f "$HYPRKARL_PATH"/config/hyprkarl/update/*.commit
+# Drop machine update records so a future reinstall starts fresh.
+rm -rf "$UPDATE_STATE_DIR"
 
 printf 'Hyprkarl config symlinks removed.\n\n'
 printf 'Left in place:\n'

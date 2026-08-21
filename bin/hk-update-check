@@ -1,168 +1,108 @@
 #!/bin/bash
 # hk-update-check
-# Report what hk-update would change. Read-only.
+# Report pending source, configuration, package, and system work. Read-only.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"
 
 PACKAGES_DIR="$HYPRKARL_PATH/packages"
-HEAD=$(update_head_commit)
+PACKAGE_STATE_TOOL="$SCRIPT_DIR/lib/update_packages.py"
 
-check_dotfiles() {
-  local baseline
-  baseline=$(update_read_commit dotfiles)
+printf '=== Source ===\n'
+pending=$(update_read_pending_source)
+if [[ -n "$pending" ]]; then
+  printf '  Reviewed revision ready to apply: %.12s\n' "$pending"
+else
+  printf '  No reviewed source revision is pending. Run hk-update sync to fetch and review.\n'
+fi
 
-  if [[ -z "$baseline" ]]; then
-    printf '  No baseline recorded. Run setup-dotfiles.sh or hk-update dotfiles to establish one.\n'
-  elif ! update_commit_valid "$baseline"; then
-    printf '  Warning: recorded baseline commit is no longer in git history.\n'
-    printf '  Run hk-update dotfiles to re-establish a baseline.\n'
-  elif [[ "$baseline" == "$HEAD" ]]; then
-    printf '  Up to date.\n'
-  else
-    local upstream_changed
-    upstream_changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD \
-      -- config/ applications/ defaults/ themes/ 2>/dev/null)
-
-    if [[ -n "$upstream_changed" ]]; then
-      printf '  Upstream-owned configuration changes:\n'
-      printf '%s\n' "$upstream_changed" | sed 's/^/    /'
-    fi
-    if [[ -z "$upstream_changed" ]]; then
-      printf '  No configuration changes since last dotfiles update.\n'
-    fi
-  fi
-
-  local conflicts
-  conflicts=$(check_config_conflicts 2>/dev/null)
-  if [[ -n "$conflicts" ]]; then
-    printf '  Stow conflicts (would block hk-update dotfiles):\n'
-    printf '%s\n' "$conflicts" | sed 's/^/    /'
-  fi
-
-  local stale_found=0
-  while IFS= read -r link; do
-    if [[ ! -e "$link" ]]; then
-      target=$(readlink "$link")
-      if [[ "$target" == *"hyprkarl"* ]]; then
-        if [[ "$stale_found" -eq 0 ]]; then
-          printf '  Stale symlinks that would be removed:\n'
-          stale_found=1
-        fi
-        printf '    %s\n' "$link"
-      fi
-    fi
-  done < <(find "$HOME/.config" "$HOME/.local/share/applications" -type l 2>/dev/null)
-  [[ "$stale_found" -eq 0 ]] && printf '  No stale symlinks found.\n'
-}
-
-check_packages() {
-  local baseline
-  baseline=$(update_read_commit packages)
-
-  if [[ -n "$baseline" ]] && ! update_commit_valid "$baseline"; then
-    printf '  Warning: recorded baseline commit is no longer in git history.\n'
-    baseline=""
-  fi
-
-  if [[ -z "$baseline" ]]; then
-    printf '  No baseline recorded. Checking for missing required packages...\n'
-    local missing=()
-    while IFS= read -r pkg; do
-      [[ -z "$pkg" ]] && continue
-      pacman -Q "$pkg" &>/dev/null || missing+=("$pkg")
-    done < <(grep -hv '^[[:space:]]*#' "$PACKAGES_DIR/pacman.txt" "$PACKAGES_DIR/aur.txt" 2>/dev/null \
-               | grep -v '^[[:space:]]*$' | sed 's/[[:space:]]*#.*//')
-    if [[ ${#missing[@]} -gt 0 ]]; then
-      printf '  Missing required packages:\n'
-      printf '    %s\n' "${missing[@]}"
-    else
-      printf '  All required packages are installed.\n'
-    fi
-    return
-  fi
-
-  if [[ "$baseline" == "$HEAD" ]]; then
-    printf '  Up to date.\n'
-    return
-  fi
-
-  pkg_diff "packages/pacman.txt" "$baseline"
-  local ap="$added" rp="$removed"
-  pkg_diff "packages/aur.txt" "$baseline"
-  local aa="$added" ra="$removed"
-  pkg_diff "packages/remove.txt" "$baseline"
-  local ar="$added"
-
-  # Deduplicate: a package moving from pacman/aur → remove.txt appears in both
-  # lists; strip it from the "dropped" lists so it's only reported once.
-  while IFS= read -r pkg; do
-    [[ -z "$pkg" ]] && continue
-    [[ -n "$rp" ]] && rp=$(printf '%s\n' "$rp" | grep -v "^${pkg}$" || true)
-    [[ -n "$ra" ]] && ra=$(printf '%s\n' "$ra" | grep -v "^${pkg}$" || true)
-  done <<< "$ar"
-
-  local any=0
-
-  if [[ -n "$ap" ]]; then
-    printf '  New required packages to install:\n'
-    printf '%s\n' "$ap" | sed 's/^/    /'
-    any=1
-  fi
-  if [[ -n "$aa" ]]; then
-    printf '  New required AUR packages to install:\n'
-    printf '%s\n' "$aa" | sed 's/^/    /'
-    any=1
-  fi
-  if [[ -n "$ar" ]]; then
-    printf '  Packages newly added to removal list:\n'
-    printf '%s\n' "$ar" | sed 's/^/    /'
-    any=1
-  fi
-  if [[ -n "$rp" ]] || [[ -n "$ra" ]]; then
-    printf '  Packages dropped from required list (will prompt for removal):\n'
-    { [[ -n "$rp" ]] && printf '%s\n' "$rp"; [[ -n "$ra" ]] && printf '%s\n' "$ra"; } | sed 's/^/    /'
-    any=1
-  fi
-
-  [[ "$any" -eq 0 ]] && printf '  No package changes.\n'
-}
-
-check_system() {
-  local baseline
-  baseline=$(update_read_commit system)
-
-  if [[ -z "$baseline" ]]; then
-    printf '  No baseline recorded. Run setup-system.sh or hk-update system to establish one.\n'
-    return
-  fi
-
-  if ! update_commit_valid "$baseline"; then
-    printf '  Warning: recorded baseline commit is no longer in git history.\n'
-    printf '  Run hk-update system to re-establish a baseline.\n'
-    return
-  fi
-
-  if [[ "$baseline" == "$HEAD" ]]; then
-    printf '  Up to date.\n'
-    return
-  fi
-
-  local changed
-  changed=$(git -C "$HYPRKARL_PATH" diff --name-only "$baseline" HEAD -- setup-system.sh templates/setup/ 2>/dev/null)
-  if [[ -n "$changed" ]]; then
-    printf '  System setup files changed since last system update:\n'
-    printf '%s\n' "$changed" | sed 's/^/    /'
-  else
-    printf '  System setup files unchanged.\n'
-  fi
-}
-
-printf '=== Dotfiles ===\n'
-check_dotfiles
+printf '\n=== Configuration ===\n'
+configuration=$(update_read_configuration_revision)
+if [[ -z "$configuration" ]] && [[ -f "$LEGACY_UPDATE_STATE_DIR/dotfiles.commit" ]]; then
+  configuration=$(<"$LEGACY_UPDATE_STATE_DIR/dotfiles.commit")
+fi
+head=$(update_head_commit)
+if [[ "$configuration" == "$head" ]] && [[ -z "$pending" ]]; then
+  printf '  Applied at current HEAD.\n'
+elif [[ -z "$configuration" ]]; then
+  printf '  No successful configuration application is recorded.\n'
+else
+  printf '  Last applied revision: %.12s\n' "$configuration"
+  printf '  Current checkout:      %.12s\n' "$head"
+fi
+conflicts=$(check_config_conflicts)
+if [[ -n "$conflicts" ]]; then
+  printf '  Unmanaged paths blocking configuration application:\n'
+  printf '%s\n' "$conflicts" | sed 's/^/    /'
+fi
+if ! theme_gtk_install_is_replaceable; then
+  printf '  Unmanaged GTK theme target: %s\n' "$HYPRKARL_GTK_THEME_HOME"
+fi
 
 printf '\n=== Packages ===\n'
-check_packages
+package_state="$UPDATE_PACKAGE_STATE"
+temporary_state=""
+if [[ ! -f "$package_state" ]] && [[ -f "$LEGACY_UPDATE_STATE_DIR/packages.commit" ]]; then
+  legacy_revision=$(<"$LEGACY_UPDATE_STATE_DIR/packages.commit")
+  if update_commit_valid "$legacy_revision"; then
+    temporary_dir=$(mktemp -d) || exit 1
+    temporary_state="$temporary_dir/packages.json"
+    python3 "$PACKAGE_STATE_TOOL" import-legacy \
+      "$HYPRKARL_PATH" "$legacy_revision" "$temporary_state" || exit 1
+    package_state="$temporary_state"
+  fi
+fi
+plan=$(python3 "$PACKAGE_STATE_TOOL" plan "$PACKAGES_DIR" "$package_state") || exit 1
+declared_pacman=$(jq -r '.additions.pacman[]' <<<"$plan")
+declared_aur=$(jq -r '.additions.aur[]' <<<"$plan")
+removals=$(jq -r '.removals[] | "\(.package) — \(.reason)"' <<<"$plan")
+installed=$(pacman -Qq) || exit 1
+pacman_additions=""
+while IFS= read -r package; do
+  [[ -z "$package" ]] && continue
+  grep -Fxq "$package" <<<"$installed" || pacman_additions+="${package}"$'\n'
+done <<<"$declared_pacman"
+aur_additions=""
+while IFS= read -r package; do
+  [[ -z "$package" ]] && continue
+  grep -Fxq "$package" <<<"$installed" || aur_additions+="${package}"$'\n'
+done <<<"$declared_aur"
+pacman_additions=${pacman_additions%$'\n'}
+aur_additions=${aur_additions%$'\n'}
+if [[ -n "$pacman_additions" ]]; then
+  printf '  New required packages:\n%s\n' "$(sed 's/^/    /' <<<"$pacman_additions")"
+fi
+if [[ -n "$aur_additions" ]]; then
+  printf '  New required AUR packages:\n%s\n' "$(sed 's/^/    /' <<<"$aur_additions")"
+fi
+if [[ -n "$removals" ]]; then
+  printf '  Package removals awaiting one-time review:\n%s\n' "$(sed 's/^/    /' <<<"$removals")"
+fi
+if [[ -z "$pacman_additions$aur_additions$removals" ]] \
+    && [[ -n "$declared_pacman$declared_aur" ]]; then
+  printf '  Package snapshot needs recording; all newly declared packages are installed.\n'
+elif [[ -z "$pacman_additions$aur_additions$removals" ]]; then
+  printf '  Package declarations are up to date.\n'
+fi
+if [[ -n "$temporary_state" ]]; then
+  rm -rf "$(dirname "$temporary_state")"
+fi
 
 printf '\n=== System ===\n'
-check_system
+legacy_system=0
+[[ -f "$LEGACY_UPDATE_STATE_DIR/system.commit" ]] && legacy_system=1
+system_pending=0
+for migration in "$HYPRKARL_PATH/system/migrations"/*; do
+  [[ -f "$migration" && -x "$migration" ]] || continue
+  id=$(basename "$migration")
+  if [[ -e "$UPDATE_SYSTEM_MIGRATION_DIR/$id" ]]; then
+    continue
+  fi
+  if [[ "$legacy_system" -eq 1 ]] \
+      && [[ " ${UPDATE_LEGACY_SYSTEM_MIGRATIONS[*]} " == *" $id "* ]]; then
+    continue
+  fi
+  printf '  %s\n' "$id"
+  system_pending=1
+done
+[[ "$system_pending" -eq 0 ]] && printf '  System migrations are up to date.\n'

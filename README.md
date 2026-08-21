@@ -108,17 +108,13 @@ The full manual lives under `docs/`.
   Editing conventions, stowed-config model, stateful paths
 - [docs/shell-style.md](docs/shell-style.md)
   Hyprkarl's Bash/Python command scripting style
-- [docs/architecture-roadmap.md](docs/architecture-roadmap.md)
-  Completed shell-foundation work and the remaining architecture roadmap
-- [docs/shell-product-brief.md](docs/shell-product-brief.md)
-  Bar aesthetic, independent feature panels, and product direction
 - [docs/shell-configuration.md](docs/shell-configuration.md)
   Shell JSON, extension lanes, and runtime-state ownership
 - [docs/menu-configuration.md](docs/menu-configuration.md)
   Shell-native menu entries, user overrides, Python dynamic providers, and
   direct menu commands
 - [docs/authentication-surfaces.md](docs/authentication-surfaces.md)
-  Shell-native polkit ownership and the pinned-version lock-screen decision
+  Shell-native polkit ownership and the current-runtime lock-screen decision
 
 ## Themes
 

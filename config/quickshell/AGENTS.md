@@ -208,19 +208,11 @@ There is no second feature-window or legacy flyout boundary. In the power and
 network panels, facts already owned by the primary content do not become
 decorative header subtitles: battery facts belong to `BatterySummary`, and the
 connected Wi-Fi network is the selected first entry in the sorted network list.
-`BatterySummary` aligns percentage/status above indicator/rate and marks the
-rate with an up arrow while charging or a down arrow while discharging. Its
-percentage column is three monospaced glyphs wide, uses `MAX` at full charge,
-and scales the indicator to the same width; the bar battery readout uses `MAX`
-too. Every panel content exposes a reactive `preferredWidth`; the host owns
-  clamping and anchoring. Keep the default binding to `panel.width` and the
-  power variation bound to the theme-owned `panel.powerWidth`.
-`BatteryIndicator` keeps its original 18×10 primary-widget surface at the
-default `nativeScale` of 1. The panel sets `nativeScale` to allocate a larger
-canvas; do not use the item's transform scale, which blurs its texture.
-Small canvas strokes must resolve against `Screen.devicePixelRatio`; the audio
-indicator uses a two-physical-pixel stroke and is vertically centered in its
-bar row.
+Every panel content exposes a reactive `preferredWidth`; the host owns clamping
+and anchoring. Keep feature-specific widths and drawn-indicator geometry in the
+theme and owning components. Canvas indicators must allocate at their rendered
+size and resolve thin strokes against `Screen.devicePixelRatio`; do not magnify
+a smaller texture with an item transform.
 
 `features/display/DisplayPanel.qml` is a per-output view over `hk-display`.
 Opening it and its active-only timer query the bar's output; scale and
@@ -261,18 +253,12 @@ Bar labels and every calendar panel bind to it so monitor count cannot create
 divergent dates. Viewed-month offset is panel-local transient state and resets
 when that panel opens; do not persist it or use Qt's implicit `model.today` as
 a second date owner.
-The three performance widgets share `ExpandableReadout`; the tray owns the
-same clipped horizontal expansion for its dynamic item list. Its divider lives
-inside that clipped panel so it reveals between the fixed trigger and items on
-top and bottom bars. Universal host padding supplies the outer inset for the
-workspace row. The tray applies `bar.trayPaddingOffset` to its outer host inset
-and reuses the unmodified universal main-axis value between its internal
-divider and item row. When items are revealed, it also mirrors the resolved
-host inset between the fixed trigger and that divider so the trigger's visible
-width does not change. Do not turn any of these into item-to-item spacing.
-The tray's open state is independent from item availability. An open empty tray
-reveals no panel or divider; when its first item appears, the reactive reveal
-width expands without requiring another trigger click.
+The three performance widgets share `ExpandableReadout`; the tray uses the
+same clipped expansion for its dynamic item list. `WidgetHost` owns outer
+padding, while the tray owns its internal divider and item-row spacing. Keep
+the trigger's visible width stable across collapsed and expanded states. Tray
+open state is independent from item availability: an open empty tray reveals
+no panel or divider, then expands when an item appears.
 The root `shell.qml` must retain `//@ pragma UseQApplication`: Quickshell's
 installed platform-menu implementation requires `QApplication` for tray item
 menus. Tray delegates send primary activation on left click, secondary
@@ -310,19 +296,14 @@ transform entries should normally be Python executables using lists,
 dictionaries, and the standard `json` module. Bash remains appropriate for a
 provider that only validates and prints prebuilt data.
 Keep commands as leaf actions and static hierarchy in data. `MenuWindow.qml`
-owns the full-monitor overlay, exclusive keyboard focus, history navigation,
-search filtering, list scrolling, and outside-click dismissal. Keyboard
-selection positions its row immediately, including across wrap-around, while
-pointer selection changes only on actual pointer motion. Delegate pointer
-handlers must pass wheel and touchpad scroll gestures through to the
-`ListView`. Its shared wheel handler owns one continuous kinetic velocity:
-an active gesture pauses retained momentum so direct deltas have full control.
-Release adds the gesture's recent-sample weighted velocity through a soft cap;
-reversing within the gesture clears both retained momentum and earlier samples.
-Momentum uses time-normalized exponential friction. Do not hand wheel momentum
-between manual position updates and `Flickable.flick()`. Opening a menu or
-changing its search resets selection, viewport, and momentum to the first
-result.
+owns hierarchy, menu rows, search filtering, selection, navigation, and Back
+behavior. It composes `OverlayWindow` for the full-screen input plane, frame,
+search field, focus, outside-click dismissal, and reveal, and
+`MomentumScroll` for kinetic touchpad behavior. Do not fork those shared
+interactions back into the menu. Keyboard selection positions its row
+immediately, including across wrap-around, while pointer selection changes
+only on actual pointer motion. Opening a menu or changing its search resets
+selection, viewport, and momentum to the first result.
 `hk-shell menu` is the only public transport for opening static navigation.
 `features/overlay/OverlayState.qml` owns exclusivity and monitor routing across
 that menu, the application chooser, calculator, and wallpaper picker. Opening
@@ -348,15 +329,11 @@ existing thumbnail cache once per open through `hk-wallpaper-entries` and
 directly selects set or remove actions. Neither feature starts a background
 poller. Their appearance comes from the shared `menu` tokens plus the
 `applicationPicker`, `calculator`, and `wallpaperPicker` theme objects.
-The command menu deliberately blends two visual sources. Preserve the retired
-Rofi menu's compact width, centered icon-and-label rows, title band, nested
-frame, row gaps, and bordered selection. Derive its palette, font, radii,
-border color, and translucent accent states from the current shell theme. The
-nested `menu` object may override those inherited tokens and owns its distinct
-geometry and opacity modifiers. The title band has rounded top corners and a
-square lower edge; the inner frame's border continues beneath it as the title
-divider. Outside-click and Escape go to the parent from a submenu and close
-only at the root, matching the old nested menu dismissal behavior.
+The command menu keeps its compact, centered visual identity while deriving
+all appearance from the shell theme and its nested `menu` object. Visual
+geometry belongs in theme data and the shared overlay components, not agent
+instructions. Outside-click and Escape go to the parent from a submenu and
+close only at the root.
 
 `features/osd/` owns the shell-native volume, audio-output, microphone,
 display-brightness, keyboard-brightness, and media surface. Commands send
@@ -410,7 +387,7 @@ validate registration and a real prompt in the live runtime.
 
 Do not replace `hyprlock` on this runtime. Quickshell's post-0.3.0 changelog
 contains session-lock crash fixes for sleep, wake, DPMS, unlocking, and early
-surface visibility access that are absent from the pinned release. Keep
+surface visibility access that are absent from the installed release. Keep
 `hyprlock`, `hk-lock`, and the current idle/suspend path until a release with
 those fixes is admitted and re-tested. The eventual lock is a small,
 short-lived Quickshell process isolated from the long-running desktop shell;

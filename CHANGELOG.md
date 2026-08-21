@@ -79,6 +79,9 @@ surfaces) — they are called out explicitly.
   multiple identities, cancellation, and service-owned retries.
 - Replaced the static Rofi navigation tree with a theme-aware Quickshell menu
   surface, sparse user overrides, dynamic providers, and in-process search.
+- Unified the command menu with the launcher, calculator, and wallpaper picker
+  on the shared overlay frame and touchpad momentum implementation while
+  preserving its compact layout and menu-specific navigation.
 - Migrated theme selection, live keybindings, Nerd Font icons, Docker service
   selection, and the complete fingerprint workflow—including available and
   enrolled finger pickers—to Quickshell.

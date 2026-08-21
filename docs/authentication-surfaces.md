@@ -5,8 +5,8 @@ agent for polkit privilege prompts. The two surfaces have different security
 and lifecycle requirements and are not hidden behind one generic
 authentication controller.
 
-This document records the capability decision for the pinned Quickshell
-0.3.0-2.1 and Qt 6.11.1 baseline. It was checked against the exact
+This document records the capability decision for the currently installed
+Quickshell 0.3.0-2.1 and Qt 6.11.1 baseline. It was checked against the exact
 [v0.3.0 source](https://git.outfoxxed.me/quickshell/quickshell/src/tag/v0.3.0)
 and the upstream
 [post-release changelog](https://git.outfoxxed.me/quickshell/quickshell/src/branch/master/changelog/next.md).
@@ -16,7 +16,7 @@ and the upstream
 - Keep the completed polkit prompt in the existing long-running shell process.
   Quickshell 0.3.0 includes the required `PolkitAgent` and `AuthFlow` APIs;
   `hyprpolkitagent` is no longer started or installed.
-- Keep `hyprlock` as the production lock screen. Although the pinned build
+- Keep `hyprlock` as the production lock screen. Although this build
   exposes `WlSessionLock`, its release does not include later upstream fixes
   for session-lock crashes around sleep, wake, DPMS, and unlocking.
 - Re-audit the lock screen after Hyprkarl admits a Quickshell release carrying
@@ -96,7 +96,7 @@ harmless after its user service is disabled; the normal update flow removes it.
 
 ## Lock-Screen Capability and Deferral
 
-The pinned build does expose the right basic primitives:
+The installed build does expose the right basic primitives:
 
 - `WlSessionLock` requests the secure `ext-session-lock-v1` protocol, reports
   when the compositor confirms the secure state, and creates one

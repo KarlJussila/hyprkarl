@@ -5,6 +5,26 @@ live in `defaults/shell.json`; personal changes belong in the optional
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. Appearance is entirely
 theme-derived from the active bundle's `quickshell.json`.
 
+## Design Direction
+
+The shell keeps the retired AGS bar's compact, information-dense character,
+but its flyouts are not the design target. Feature panels should feel like
+deliberately composed desktop controls: direct, easy to scan, and cohesive
+without forcing audio, network, Bluetooth, power, display, and calendar into
+one generic quick-settings grid. Omarchy and macOS are references for control
+quality and hierarchy, not layouts to copy.
+
+Every visible state is theme-derived, including text, surfaces, borders,
+accents, warnings, hover, selection, and disabled treatment. Shared shells own
+window geometry, focus, dismissal, animation, and contact-aware corners;
+features own their information hierarchy and interactions. Put current state
+and common actions first, show real failures where an action occurs, and keep
+advanced controls reachable without making the default surface noisy.
+
+Top and bottom bars are first-class. Vertical bars remain a later design task;
+the current implementation keeps orientation at the layout and popup
+boundaries without carrying untested vertical branches through every widget.
+
 ## Override the Shipped Configuration
 
 Create `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` with only the values you want to

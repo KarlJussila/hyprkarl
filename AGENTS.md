@@ -230,66 +230,18 @@ root for independent surfaces or a replacement bar. Its documented context
 exposes the resolved configuration, theme, outputs, current overlay request,
 and direct overlay methods. It may publish reactive per-output notification
 positioning; there is no discovery or plugin layer.
-Each bar owns one `FeaturePanelHost`; display, audio, network, Bluetooth,
-battery/power, and clock/calendar panels compose shared panel controls inside
-that host, while feature directories own service-specific state. The display
-panel targets the bar's output and delegates discovery, live changes, and
-persistent monitor layout to `hk-display`; it does not rewrite shell JSON or
-user monitor files. Bluetooth and network use feature singletons for
-adapter-global discovery/scan ownership; clock uses one application-wide
-current-time owner.
-`config/quickshell/features/command/CommandState.qml` owns one polling or
-persistent-stream provider per provider-backed command-widget ID. Static
-command widgets, including the main-menu button, create no provider runtime.
-Polling uses non-login `bash -c`, starts a process per tick, and has a
-documented CPU and battery cost; use stream mode or native services for
-frequent updates. `config/quickshell/widgets/qml.qml` hosts explicitly
-referenced personal QML widgets below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`. Each module
-receives the narrow documented per-bar context and is instantiated once per
-output; there is no plugin discovery or implicit shared state. See
-`config/quickshell/AGENTS.md` before changing the shell. Use `hk-shell` to
-start, stop, restart, inspect, or read logs from the production bar.
-The same shell renders the command hierarchy from `defaults/menu.json` plus
-the optional deep-merged `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`. Menu entries use stable IDs; a
-menu's optional `sourceCommand` may provide validated command entries that
-must be rediscovered when it opens, as the Docker service menus do;
-`hk-shell menu` is the only public transport for opening or toggling static
-navigation. Domain-owned providers supply themes, Docker services, live
-keybindings, Nerd Font icons, and setup-aware fingerprint actions; searchable
-menus filter those entries in-process. Providers run without a login shell,
-and dynamic destinations appear only after their complete model validates;
-preformat large static catalogs instead of transforming them on every open.
-`OverlayState` gives the menu, launcher/open-with chooser, calculator, and
-wallpaper picker one exclusive focused surface and output. The launcher uses
-Quickshell's resident desktop-entry index; open-with adds Gio-owned MIME,
-default-application, and file-launch behavior behind `hk-open-with`. The
-calculator evaluates with `qalc` and keeps five recent entries in XDG state.
-The wallpaper picker presents the existing thumbnail cache and performs set or
-remove actions directly. Rofi is not part of the runtime or package set.
-The command menu preserves the
-original Rofi surface's compact width, centered rows, title band, nested frame,
-and bordered selection, while inheriting the active shell theme's semantic
-palette, typography, rounded geometry, border treatment, and interaction
-states. The nested `menu` object owns menu-specific modifiers and metrics.
-The same root owns one application-wide `OsdState` and one click-through OSD
-window per output. Typed `hk-shell osd` calls select the focused output and
-coalesce repeated volume, output, microphone, display-brightness,
-keyboard-brightness, and media updates into that one transient surface.
-It also owns one `NotificationState` and creates one non-focusable
-`NotificationWindow` per output. Quickshell is the freedesktop notification
-server; state owns tracking, filtering, silence mode, focused-monitor routing,
-and one-item visual restore. Notification icon selection is
-data-defined in shell JSON, while icon geometry and all other appearance live
-in the active theme. `ScreenSurfaces.qml` groups each output's bar and
-notification window so the default stack can share the real bar border and
-contact-aware corner geometry. User QML icon drawings use the same component
-loader as the shipped audio and battery drawings. `hk-shell notifications` is
-the only control transport.
-`config/quickshell/features/polkit/PolkitState.qml` owns the one session
-polkit agent, while one `PolkitWindow` per output provides the modal prompt on
-the output focused when the request begins. The feature binds directly to
-Quickshell's authentication flow, is not part of the feature-panel host, and
-has no public IPC command. Do not reintroduce `hyprpolkitagent` alongside it.
+The shell keeps application-wide service state separate from per-output
+presentation. Feature panels compose through one host per bar; focused menus
+and pickers compose the shared overlay frame and momentum behavior; OSD,
+notifications, and polkit each retain their own lifecycle boundary. Command
+providers exist once per provider-backed widget ID, and static widgets create
+no polling runtime. Explicit personal QML receives the documented narrow
+context without discovery, registration, or sandboxing.
+
+Read `config/quickshell/AGENTS.md` before changing shell implementation and
+`config/quickshell/README.md` for the contributor map and checks. Use
+`hk-shell` to start, stop, restart, inspect, or read logs from the production
+shell.
 
 ### `hk-*` Commands
 

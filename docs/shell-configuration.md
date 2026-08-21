@@ -6,8 +6,7 @@ version 1 structure validation, inline built-in and command widget instances,
 explicit per-bar and application-wide user-QML modules, explicit layout edits,
 and live last-valid reloads for ordinary configuration values. Built-in module
 selection is intentionally latched until a shell restart.
-Widget-specific setting validation lands with each stable module contract.
-`hk-shell config` commands and gesture persistence remain later work.
+Widget-specific setting validation belongs to each stable module contract.
 
 ## Files and Ownership
 
@@ -36,9 +35,8 @@ For example, this is a complete user file that only moves the bar:
 }
 ```
 
-The planned `hk-shell config init`, `diff`, and `reset` commands will wrap this
-contract once the public shell command is introduced. Until then, create and
-edit `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` directly.
+Create and edit `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`
+directly. It is the public, user-owned configuration surface.
 
 ## Merge and Layout Rules
 
@@ -766,9 +764,9 @@ components rely on the parsed contract.
   code.
 
 The shell watches both files and recomputes the effective configuration when
-either changes, without recreating unrelated services. `hk-shell reload` is
-the planned explicit equivalent. A failed live reload keeps the last valid
-running configuration and reports the new error.
+either changes, without recreating unrelated services. A failed JSON reload
+keeps the last valid running configuration and reports the new error. Restart
+the shell after changing module switches or dynamically loaded QML source.
 
 ## State Ownership
 
@@ -787,11 +785,6 @@ running configuration and reports the new error.
 | Output enablement, mode, position, scale, and transform captured by display actions | `hk-display` | Generated under XDG state |
 | Generated theme output and caches | XDG state/cache paths | Regenerable |
 | Secrets and machine-local environment | `~/.config/uwsm/env.local` or system service | Never shell JSON |
-
-One component owns writes to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. If drag-to-reorder or another
-shell gesture later persists configuration, it goes through that same writer
-and uses an atomic temporary-file replacement. Do not add a second layout
-state store.
 
 The shell must not persist transient panel state or copy service-owned choices
 into its configuration. Choosing an audio device or power profile changes the
@@ -817,14 +810,7 @@ widget by ID. When a future user schema version is no longer supported, the
 update must provide an explicit migration command or documented manual
 conversion before support is removed.
 
-The initial supported runtime target is the installed Arch package,
+The current supported runtime target is the installed Arch package,
 Quickshell 0.3.0-2.1 with Qt 6.11.1. Production work must record the exact
 package releases used for validation and rerun the lifecycle, popup, and
 multi-monitor checks before moving to a newer line.
-
-## Remaining Implementation Decisions
-
-- Whether tray visibility preferences belong inline on the tray widget or in a
-  separate service-owned file; choose only after the tray UI is designed.
-- Whether direct manipulation such as drag-to-reorder is part of the first
-  production release. JSON editing remains the required baseline.

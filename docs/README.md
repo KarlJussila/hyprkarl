@@ -16,16 +16,12 @@ repo checked out at `~/.local/share/hyprkarl/`.
   keybindings, themes, wallpapers, defaults, and utilities.
 - Read [Configuration Map](configuration-map.md) if you need to know where a
   change belongs before you touch anything.
-- Read [Architecture Roadmap](architecture-roadmap.md) for the remaining shell
-  cleanup and documentation consolidation.
-- Read [Shell Product Brief](shell-product-brief.md) for the bar and independent
-  feature-panel direction.
 - Read [Shell Configuration](shell-configuration.md) for the public JSON and
   runtime-state ownership contracts.
 - Read [Menu Configuration](menu-configuration.md) to add, reorder, rename, or
   hide entries in the shell-native command menu.
-- Read [Authentication Surfaces](authentication-surfaces.md) for the resolved
-  polkit migration and the pinned-version lock-screen deferral.
+- Read [Authentication Surfaces](authentication-surfaces.md) for polkit
+  ownership and the current-runtime lock-screen deferral.
 
 ## Common Tasks
 
@@ -59,8 +55,6 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - [Command Reference](commands.md)
 - [Repo Conventions](repo-conventions.md)
 - [Command Script Style](shell-style.md)
-- [Architecture Roadmap](architecture-roadmap.md)
-- [Shell Product Brief](shell-product-brief.md)
 - [Shell Configuration](shell-configuration.md)
 - [Menu Configuration](menu-configuration.md)
 - [Authentication Surfaces](authentication-surfaces.md)

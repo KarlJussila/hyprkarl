@@ -7,6 +7,18 @@
 \.claude
 
 # These are seed files for real user-owned configuration, not Stow targets.
+^/btop($|/)
+^/fastfetch($|/)
+^/fish($|/)
+^/gtk-3\.0($|/)
+^/gtk-4\.0($|/)
+^/hypr/hypr(idle|lock|paper|sunset)\.conf$
+^/nvim($|/)
+^/qt5ct($|/)
+^/qt6ct($|/)
 ^/uwsm/default$
 ^/uwsm/env\.local$
+^/xdg-desktop-portal($|/)
+^/xdg-desktop-portal-termfilechooser($|/)
 ^/xdg-terminals\.list$
+^/yazi($|/)

@@ -113,6 +113,14 @@ upstream-owned configuration. Personal files live outside the checkout under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; update commands must not
 generate, replace, reset, or adopt them.
 
+`hk-user-migrate` also owns the one-time application-config seed migration.
+Paths ignored by `config/.stow-local-ignore` are starting material, not live
+files. The migration may replace a link that points directly into Hyprkarl,
+but it must preserve real files and owner-authored symlink trees. Record a
+completed seed migration in XDG state so routine updates never recreate a file
+the user deletes. Add a new migration ID for a genuinely new seed operation;
+do not make copy-if-missing an every-update policy.
+
 `lib/theme.sh` owns the theme source-to-runtime boundary. `hk-theme set` invokes
 the integrated Python compiler with a built-in source and optional same-name
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` overlay. The compiler

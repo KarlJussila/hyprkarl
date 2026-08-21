@@ -28,40 +28,44 @@ cd ~/.local/share/hyprkarl
 - `setup-packages.sh`
   Installs the packages Hyprkarl expects.
 - `setup-dotfiles.sh`
-  Uses GNU Stow to replace the live files under `~/.config/` and
-  `~/.local/share/applications/` with symlinks to the matching files in
-  `~/.local/share/hyprkarl`. If a path does not already exist, it just creates
-  the symlink. If a path already exists, it replaces that existing file with a
-  symlink to Hyprkarl's tracked file. So after the script finishes, both new
-  paths and overlapping paths point at Hyprkarl; the difference is that
-  overlapping existing configs are overwritten unless you back them up first.
+  Runs the personal-config migrations, then uses GNU Stow to expose stable
+  shipped entry points under `~/.config/` and desktop files under
+  `~/.local/share/applications/`. Application configs that Hyprkarl expects
+  users to edit are copied once as real files instead of being stowed. Existing
+  real files and user-authored directory symlinks are left alone.
   On re-runs it refuses to proceed while the repo has uncommitted `config/` or
   `applications/` changes, since the stow step resets those paths to HEAD —
   commit (or discard) first.
   Before it restows, `hk-user-migrate` moves retired checkout-local personal
-  configuration to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/` and seeds or
-  materializes the real user-owned UWSM and terminal-default files.
+  configuration to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, materializes
+  old Hyprkarl-owned application links, and seeds missing application configs
+  and terminal override files. That seed migration runs once; a later update
+  does not recreate a file you removed.
 - `setup-system.sh`
   Applies system-level settings such as GTK defaults, SDDM autologin, logind
   lid handling, sudo and faillock settings, and LocalSend firewall rules.
 
 To leave Hyprkarl, `uninstall.sh` removes every config symlink (reversing
-`setup-dotfiles.sh`) and prints the packages and system settings it leaves in
-place for you to undo manually.
+`setup-dotfiles.sh`) and prints the user-owned configs, packages, and system
+settings it leaves in place for you to remove or undo manually.
 
 ## Understand the Symlink Model
 
 Hyprkarl is edited from `~/.local/share/hyprkarl/`.
 
-Shipped entry points under `~/.config/` and
+Stable shipped entry points under `~/.config/` and files under
 `~/.local/share/applications/` are symlinks back into that tree, so tracked
 Hyprkarl implementation files remain live. For example,
 `~/.config/hypr/hyprland.lua` points at the stable bootstrap in this checkout.
 Ordinary Hyprland personalization belongs in
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/`, not in that bootstrap or
-the shipped modules under `defaults/hypr/`. Personal Hyprkarl files and the
-real `~/.config/uwsm/default`, `env.local`, and `xdg-terminals.list` are not
-Stow links.
+the shipped modules under `defaults/hypr/`.
+
+Most application preferences are real files in the application's normal
+configuration directory. Terminal bootstraps remain linked to Hyprkarl but
+load `local.*` sidecars last. The application ownership table in
+[Configuration Map](configuration-map.md#application-configuration) names the
+editable path for every managed application.
 
 ## Editing Hyprkarl
 

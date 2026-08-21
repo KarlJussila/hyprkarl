@@ -10,6 +10,222 @@ source "$HYPRKARL_PATH/bin/lib/theme.sh"
 
 personal_paths=(shell.json menu.json hypr hooks quickshell themes)
 conflicts=()
+declare -A personal_seed_roots=()
+
+seeded_config_migration_marker="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/migrations/seeded-application-config-v1"
+seeded_config_files=(
+  btop/btop.conf
+  btop/themes/current.theme
+  fastfetch/config.jsonc
+  fastfetch/hyprkarl.txt
+  fish/config.fish
+  gtk-3.0/gtk.css
+  gtk-3.0/hyprkarl.css
+  gtk-3.0/settings.ini
+  gtk-4.0/gtk.css
+  gtk-4.0/hyprkarl.css
+  gtk-4.0/settings.ini
+  hypr/hypridle.conf
+  hypr/hyprlock.conf
+  hypr/hyprpaper.conf
+  hypr/hyprsunset.conf
+  nvim/.neoconf.json
+  nvim/LICENSE
+  nvim/colors/hyprkarl.lua
+  nvim/init.lua
+  nvim/lua/config/autocmds.lua
+  nvim/lua/config/keymaps.lua
+  nvim/lua/config/lazy.lua
+  nvim/lua/config/options.lua
+  nvim/lua/plugins/colorscheme.lua
+  nvim/lua/plugins/example.lua
+  nvim/stylua.toml
+  qt5ct/qt5ct.conf
+  qt5ct/style-colors.conf
+  qt6ct/qt6ct.conf
+  qt6ct/style-colors.conf
+  xdg-desktop-portal/portals.conf
+  xdg-desktop-portal-termfilechooser/config
+  xdg-terminals.list
+  yazi/init.lua
+  yazi/flavors/hyprkarl.yazi/flavor.toml
+  yazi/keymap.toml
+  yazi/package.toml
+  yazi/plugins/folder-rules.yazi/main.lua
+  yazi/plugins/smart-filter.yazi/LICENSE
+  yazi/plugins/smart-filter.yazi/README.md
+  yazi/plugins/smart-filter.yazi/main.lua
+  yazi/plugins/smart-switch.yazi/main.lua
+  yazi/theme.toml
+  yazi/yazi.toml
+)
+
+link_points_to_shipped_config() {
+  local path="$1" target resolved
+
+  [[ -L "$path" ]] || return 1
+  target=$(readlink "$path") || return 1
+  if [[ "$target" != /* ]]; then
+    target="$(dirname "$path")/$target"
+  fi
+  resolved=$(realpath -ms -- "$target")
+  [[ "$resolved" == "$HYPRKARL_PATH/config" \
+      || "$resolved" == "$HYPRKARL_PATH/config/"* ]]
+}
+
+record_personal_seed_roots() {
+  local relative destination root
+
+  for relative in "${seeded_config_files[@]}"; do
+    destination="$CONFIG_HOME/$relative"
+    if [[ ! -e "$destination" ]] && [[ ! -L "$destination" ]]; then
+      continue
+    fi
+    root=${relative%%/*}
+    if link_points_to_shipped_config "$CONFIG_HOME/$root"; then
+      continue
+    fi
+    if link_points_to_shipped_config "$destination"; then
+      continue
+    fi
+    personal_seed_roots["$root"]=1
+  done
+}
+
+migrate_terminal_config() {
+  local primary="$1" sidecar="$2"
+
+  if [[ ! -e "$primary" ]] && [[ ! -L "$primary" ]]; then
+    return
+  fi
+  if link_points_to_shipped_config "$primary"; then
+    return
+  fi
+  if [[ -e "$sidecar" ]] || [[ -L "$sidecar" ]]; then
+    printf 'Cannot preserve terminal config because both paths exist:\n' >&2
+    printf '  %s\n  %s\n' "$primary" "$sidecar" >&2
+    return 1
+  fi
+
+  mv "$primary" "$sidecar" || return 1
+  printf 'Moved personal terminal config from %s to %s\n' "$primary" "$sidecar"
+}
+
+prepare_seed_parent() {
+  local relative="$1" path="$CONFIG_HOME" component
+  local -a components
+
+  IFS=/ read -r -a components <<< "$(dirname "$relative")"
+  for component in "${components[@]}"; do
+    [[ "$component" == "." ]] && continue
+    path="$path/$component"
+    if link_points_to_shipped_config "$path"; then
+      unlink "$path" || return 1
+      mkdir "$path" || return 1
+    elif [[ -L "$path" ]]; then
+      return 2
+    elif [[ -e "$path" ]]; then
+      [[ -d "$path" ]] || return 2
+    else
+      mkdir "$path" || return 1
+    fi
+  done
+}
+
+seed_application_config() {
+  local relative="$1"
+  local source="$HYPRKARL_PATH/config/$relative"
+  local destination="$CONFIG_HOME/$relative"
+  local root=${relative%%/*}
+  local parent temporary
+
+  if [[ -n "${personal_seed_roots[$root]}" ]] \
+      && ! link_points_to_shipped_config "$destination"; then
+    return
+  fi
+
+  prepare_seed_parent "$relative"
+  case $? in
+    0) ;;
+    2) return 0 ;;
+    *) return 1 ;;
+  esac
+
+  if link_points_to_shipped_config "$destination"; then
+    unlink "$destination" || return 1
+  elif [[ -e "$destination" ]] || [[ -L "$destination" ]]; then
+    return 0
+  fi
+
+  parent=$(dirname "$destination")
+  temporary=$(mktemp "$parent/.hyprkarl-seed.XXXXXX") || return 1
+  if [[ -L "$source" ]]; then
+    rm -f "$temporary"
+    cp -a "$source" "$temporary" || return 1
+  else
+    if ! sed "s|@CONFIG_HOME@|$CONFIG_HOME|g" "$source" > "$temporary"; then
+      rm -f "$temporary"
+      return 1
+    fi
+    if ! chmod --reference="$source" "$temporary"; then
+      rm -f "$temporary"
+      return 1
+    fi
+  fi
+  if ! mv -T "$temporary" "$destination"; then
+    rm -f "$temporary"
+    return 1
+  fi
+  printf 'Created personal config at %s\n' "$destination"
+}
+
+seed_session_file() {
+  local source="$1" destination="$2"
+
+  if [[ -e "$destination" ]] || [[ -L "$destination" ]]; then
+    return
+  fi
+  mkdir -p "$(dirname "$destination")"
+  cp -a "$source" "$destination" || return 1
+  printf 'Created personal file at %s\n' "$destination"
+}
+
+migrate_seeded_application_configs() {
+  local relative
+
+  [[ -e "$seeded_config_migration_marker" ]] && return
+  migrate_terminal_config \
+    "$CONFIG_HOME/alacritty/alacritty.toml" \
+    "$CONFIG_HOME/alacritty/local.toml" || return 1
+  migrate_terminal_config \
+    "$CONFIG_HOME/foot/foot.ini" \
+    "$CONFIG_HOME/foot/local.ini" || return 1
+  migrate_terminal_config \
+    "$CONFIG_HOME/ghostty/config.ghostty" \
+    "$CONFIG_HOME/ghostty/local.conf" || return 1
+  migrate_terminal_config \
+    "$CONFIG_HOME/kitty/kitty.conf" \
+    "$CONFIG_HOME/kitty/local.conf" || return 1
+
+  record_personal_seed_roots
+  for relative in "${seeded_config_files[@]}"; do
+    seed_application_config "$relative" || return 1
+  done
+  seed_session_file \
+    "$HYPRKARL_PATH/templates/setup/terminals/alacritty.toml" \
+    "$CONFIG_HOME/alacritty/local.toml" || return 1
+  seed_session_file \
+    "$HYPRKARL_PATH/templates/setup/terminals/foot.ini" \
+    "$CONFIG_HOME/foot/local.ini" || return 1
+  seed_session_file \
+    "$HYPRKARL_PATH/templates/setup/terminals/ghostty.conf" \
+    "$CONFIG_HOME/ghostty/local.conf" || return 1
+  seed_session_file \
+    "$HYPRKARL_PATH/templates/setup/terminals/kitty.conf" \
+    "$CONFIG_HOME/kitty/local.conf" || return 1
+  mkdir -p "$(dirname "$seeded_config_migration_marker")" || return 1
+  : > "$seeded_config_migration_marker" || return 1
+}
 
 for relative in "${personal_paths[@]}"; do
   old_path="$HYPRKARL_PATH/user/$relative"
@@ -44,10 +260,6 @@ check_session_file \
 check_session_file \
   "$HYPRKARL_PATH/config/uwsm/env.local" \
   "$CONFIG_HOME/uwsm/env.local" 0
-check_session_file \
-  "$HYPRKARL_PATH/config/xdg-terminals.list" \
-  "$CONFIG_HOME/xdg-terminals.list" 1
-
 if [[ ${#conflicts[@]} -gt 0 ]]; then
   printf 'Personal configuration already exists at both paths:\n' >&2
   printf '  %s\n' "${conflicts[@]}" >&2
@@ -101,24 +313,12 @@ materialize_session_file \
 materialize_session_file \
   "$HYPRKARL_PATH/config/uwsm/env.local" \
   "$CONFIG_HOME/uwsm/env.local" 0 || exit 1
-materialize_session_file \
-  "$HYPRKARL_PATH/config/xdg-terminals.list" \
-  "$CONFIG_HOME/xdg-terminals.list" 1 || exit 1
-
-seed_session_file() {
-  local source="$1" destination="$2"
-
-  if [[ -e "$destination" ]] || [[ -L "$destination" ]]; then
-    return
-  fi
-  mkdir -p "$(dirname "$destination")"
-  cp -a "$source" "$destination" || return 1
-  printf 'Created personal file at %s\n' "$destination"
-}
 
 seed_session_file \
   "$HYPRKARL_PATH/templates/setup/env.local.example" \
   "$CONFIG_HOME/uwsm/env.local" || exit 1
+
+migrate_seeded_application_configs || exit 1
 
 theme_migrate_legacy_bundles || exit 1
 

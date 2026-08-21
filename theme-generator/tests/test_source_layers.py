@@ -134,14 +134,8 @@ shell:
 
             gtk3_light = (light_output / "gtk-3.0" / "gtk.css").read_text()
             gtk4_light = (light_output / "gtk-4.0" / "gtk.css").read_text()
-            self.assertEqual(
-                (light_output / "gtk-3.0" / "settings.ini").read_text(),
-                "[Settings]\ngtk-theme-name=hyprkarl\ngtk-application-prefer-dark-theme=0",
-            )
-            self.assertEqual(
-                (light_output / "gtk-4.0" / "settings.ini").read_text(),
-                "[Settings]\ngtk-theme-name=hyprkarl\ngtk-interface-color-scheme=light",
-            )
+            self.assertTrue((light_output / "light.mode").is_file())
+            self.assertFalse((dark_output / "light.mode").exists())
             self.assertNotEqual(
                 gtk3_light,
                 (dark_output / "gtk-3.0" / "gtk.css").read_text(),

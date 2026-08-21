@@ -251,15 +251,19 @@ that state tree.
 If a feature should vary by theme, read through those paths instead of
 hardcoding a specific theme.
 
-When an app can import another file, keep its main config in `config/` and
-import from the active theme. When it cannot, symlink the full config file from
-the active theme into place. Use relative symlinks.
+When an app has a useful native include mechanism, keep a small tracked
+bootstrap in `config/`, load the generated theme and shipped defaults, then
+load a real personal sidecar last. When an app cannot merge cleanly, provide a
+starting config that `hk-user-migrate` copies once and never replaces. A
+stable relative link inside that personal tree may still point at generated
+theme data.
 
 Examples:
 
 - Quickshell watches the XDG-state `theme.json` selector and reads the selected
   artifact's `quickshell.json`
-- terminal configs import from `current/theme/...`
+- terminal bootstraps import from `current/theme/...` and load their personal
+  `local.*` sidecars last
 - Hyprland `loadfile`s `current/theme/hyprland.lua` at the end of its config
 - `hyprlock` points at `current/wallpaper`
 
@@ -272,8 +276,10 @@ as the final `shell` object reference it. See [Themes](themes.md).
 
 ## Exposing New Config Files
 
-If you only edit an existing tracked file, the symlink already exists and there
-is nothing else to do.
+If you edit an existing non-ignored tracked entry point, its live symlink is
+already present. If you edit one of the ignored application seed files, that
+changes future installs only; edit the corresponding real file under
+`~/.config/` to change this machine.
 
 If you add a new file or directory under `config/` or `applications/`, run:
 
@@ -281,5 +287,6 @@ If you add a new file or directory under `config/` or `applications/`, run:
 hk-update dotfiles
 ```
 
-This re-stows the entire config package, picks up any new files, and removes
-symlinks for files that were deleted.
+This re-stows the tracked entry points, picks up new non-ignored files, and
+removes stale Hyprkarl links. Add a new seed migration deliberately when a new
+application should receive a real starting file; do not rely on Stow for it.

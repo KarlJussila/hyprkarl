@@ -12,15 +12,19 @@ Symptoms:
 
 Cause:
 
-- `setup-dotfiles.sh` is the aggressive dotfile setup script. It uses GNU Stow
-  to replace live files with symlinks to Hyprkarl's tracked `config/` and
-  `applications/` files.
+- `setup-dotfiles.sh` uses GNU Stow for stable Hyprkarl entry points and
+  desktop files. A path that overlaps one of those entry points may become a
+  link into the checkout. Application preference files listed in the
+  configuration map are migrated to real user-owned files instead.
 
 What to do:
 
 - treat `setup-dotfiles.sh` as a first-install tool
 - use `hk-update dotfiles` when you only need to expose new tracked files
-- keep your own changes on a git branch in `~/.local/share/hyprkarl`
+- put ordinary preferences in the documented user-owned application or
+  `~/.config/hyprkarl/` paths
+- use a personal Git branch only when changing Hyprkarl's shipped
+  implementation
 
 Note that your *committed* changes are safe: re-running `setup-dotfiles.sh`
 refuses to proceed while `config/` or `applications/` have uncommitted

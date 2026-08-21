@@ -1,4 +1,4 @@
-# Dynamic theme colors
+# Generated theme colors
 config-file = ?"~/.config/hyprkarl/current/theme/ghostty.conf"
 
 # Font
@@ -33,6 +33,9 @@ keybind = super+control+shift+alt+arrow_right=resize_split:right,100
 # Slowdown mouse scrolling
 mouse-scroll-multiplier = 0.95
 
-# Fix general slowness on hyprland (https://github.com/ghostty-org/ghostty/discussions/3224)
+# Fix general slowness on Hyprland (https://github.com/ghostty-org/ghostty/discussions/3224)
 async-backend = epoll
 quit-after-last-window-closed = false
+
+# Personal overrides load after this base file and the generated theme.
+config-file = ?local.conf

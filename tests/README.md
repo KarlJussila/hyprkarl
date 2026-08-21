@@ -7,9 +7,10 @@ verify the result.
 ## `hk-user-migrate.sh`
 
 Runs the personal-configuration migration against a disposable checkout and
-home. It verifies moved user files, materialized session files, idempotence,
-preservation of the existing Hyprkarl config directory, and a real destination
-conflict.
+home. It verifies moved personal files, application-link materialization,
+preservation of existing files and external symlink trees, terminal sidecars
+and theme links, the XDG-state completion marker, deletion-safe idempotence,
+and a real destination conflict.
 
 ```bash
 tests/hk-user-migrate.sh

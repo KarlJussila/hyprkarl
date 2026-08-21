@@ -39,9 +39,11 @@ does not try to document every internal script.
   Re-run `setup-system.sh`.
 - `hk-user-migrate`
   Move personal configuration from the retired checkout `user/` directory to
-  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, materialize the user-owned
-  UWSM and terminal-default files, and stop if both old and new locations
-  contain data. `hk-update dotfiles` runs it before restowing.
+  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, materialize old
+  Hyprkarl-owned application links as real personal configs, seed terminal
+  override files, and stop if both old and new personal locations contain
+  data. The application seed migration is recorded in XDG state and does not
+  recreate later deletions. `hk-update dotfiles` runs it before restowing.
 
 Full update workflows (`hk-update all` and `hk-update tui`) run the
 `post-update` lifecycle hooks after completing successfully. Individual

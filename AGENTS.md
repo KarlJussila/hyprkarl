@@ -4,9 +4,9 @@ Guidance for coding agents working in this repository.
 
 ## What This Repo Is
 
-Hyprkarl is a desktop configuration repository for CachyOS + Hyprland. Shipped
-entry points under `~/.config/` are symlinks into this checkout, while ordinary
-personal configuration lives outside it under
+Hyprkarl is a desktop configuration repository for CachyOS + Hyprland. Stable
+shipped entry points under `~/.config/` are symlinks into this checkout, while
+ordinary personal configuration lives outside it under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/` and the applications' own
 configuration directories.
 
@@ -55,7 +55,7 @@ each other.
 ```bash
 ./setup-all.sh          # Full setup: packages, dotfiles, system config
 ./setup-packages.sh     # Install/update packages via pacman + paru
-./setup-dotfiles.sh     # Re-run GNU stow to update symlinks (refuses on a dirty config/ tree)
+./setup-dotfiles.sh     # Migrate personal config, then update shipped Stow links
 ./setup-system.sh       # System-level config (SDDM autologin, etc.)
 ./uninstall.sh          # Remove all config symlinks (reverses setup-dotfiles.sh)
 ```
@@ -77,16 +77,26 @@ minor versions may include breaking changes — call them out in the changelog.
 
 ### Symlink Model
 
-`setup-dotfiles.sh` uses GNU stow to symlink:
+`setup-dotfiles.sh` uses GNU Stow to symlink the non-ignored shipped entry
+points from:
+
 - `config/` → `~/.config/`
 - `applications/` → `~/.local/share/applications/`
 
 `bin/` is not stowed; it is added to `$PATH` directly via `config/uwsm/env`.
 
-Editing files in this repo edits the live running config directly. Renaming or
-deleting a config file leaves a **stale symlink** (a live link pointing at a
-now-missing repo file); `hk-update dotfiles` prunes them as part of its run,
-and `hk-update remove-stale` does just that step.
+`config/.stow-local-ignore` also marks application starting configs that
+`hk-user-migrate` copies once as real user-owned files. Editing those seed
+files does not change an existing installation, and updates must never
+overwrite or recreate the personal copy. An XDG-state migration marker records
+that the seed operation completed. Keep native include bootstraps tracked only
+when they remain a useful stable entry point; see `docs/configuration-map.md`
+for the application-by-application ownership table.
+
+Editing a non-ignored tracked entry point edits the live running config
+directly. Renaming or deleting one leaves a **stale symlink** (a live link
+pointing at a now-missing repo file); `hk-update dotfiles` prunes them as part
+of its run, and `hk-update remove-stale` does just that step.
 
 ### Hyprland Configuration
 

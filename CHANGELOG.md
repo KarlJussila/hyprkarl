@@ -20,13 +20,21 @@ surfaces) — they are called out explicitly.
   `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/theme-backups/` instead of
   treating generated output as editable source.
 - Fixed light theme generation so GTK 3 and GTK 4 compile the light Colloid
-  variant and advertise light mode in their generated settings.
+  variant and activation applies the matching desktop color-scheme preference.
 - Breaking: moved personal shell JSON, menu JSON, Hyprland modules, hooks,
   Quickshell extensions, and themes from the checkout's `user/` tree to
   `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`. `hk-user-migrate` performs the
   one-time move before a dotfiles update and materializes UWSM defaults,
   machine-local environment, and terminal preferences as real user files.
   Ordinary personalization no longer requires a Git branch.
+- Breaking: application preferences are now user-owned files in their normal
+  `~/.config/<application>/` directories. A one-time migration materializes
+  old Stow links for Btop, Fastfetch, Fish, GTK, Hyprland helpers, Neovim, Qt,
+  portals, terminal selection, and Yazi without overwriting existing files;
+  an XDG-state marker prevents later updates from recreating deletions.
+  Alacritty, foot, Ghostty, and Kitty retain small tracked bootstraps and load
+  personal `local.*` overrides last. Ghostty's entry point is now the native
+  `config.ghostty` filename.
 - Added a per-output display panel with internal-backlight brightness, cleaned
   scale presets, and output enable/disable controls. `hk-display` now owns
   Hyprland discovery, live changes, and an XDG-state layout that survives

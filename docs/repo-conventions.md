@@ -97,15 +97,23 @@ update reads as a move between releases rather than between commit hashes.
 
 ## Stow Behavior
 
-Files under `config/` and `applications/` are exposed through GNU Stow.
+Non-ignored files under `config/` and files under `applications/` are exposed
+through GNU Stow. `config/.stow-local-ignore` separates stable tracked entry
+points from application starting configs. `hk-user-migrate` copies those seed
+configs once to their normal `~/.config/<application>/` paths and records the
+migration in XDG state. Updates never replace them or recreate files the user
+later removes.
 
 Files under `defaults/` are read directly from the checkout by stable entry
 points. Personal configuration is read from
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; it is never stowed or owned by
 a Git branch.
 
-- editing an existing tracked file needs no extra step
-- adding a new tracked file (or removing one) requires re-stowing with
+- editing an existing non-ignored tracked entry point needs no extra step
+- editing an ignored seed changes only future migrations and installs
+- editing a real application config under `~/.config/` is immediate and
+  update-safe
+- adding or removing a tracked entry point requires re-stowing with
   `hk-update dotfiles`
 
 Do not treat `setup-dotfiles.sh` as a normal maintenance command. It belongs to

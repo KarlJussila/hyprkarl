@@ -49,8 +49,9 @@ cd ~/.local/share/hyprkarl
 > ask for confirmation and is a no-op if Noctalia isn't installed.
 
 > **Warning:** If you already have configs you care about in `~/.config/` or
-> `~/.local/share/applications/`, back them up first. `setup-dotfiles.sh`
-> replaces overlapping live files with symlinks to Hyprkarl.
+> `~/.local/share/applications/`, back them up first. The initial setup keeps
+> existing user-owned application configs where possible, but shipped entry
+> points and desktop files may still overlap paths you use.
 
 ## Uninstalling
 
@@ -59,14 +60,17 @@ cd ~/.local/share/hyprkarl
 ```
 
 Removes all of Hyprkarl's config symlinks (reversing `setup-dotfiles.sh`).
-Installed packages and `setup-system.sh` changes are left in place; the script
-lists them so you can undo what you want manually.
+User-owned application configs, installed packages, and `setup-system.sh`
+changes are left in place; the script lists what you may want to remove or undo
+manually.
 
 ## After Installation
 
-Hyprkarl's shipped configs and scripts live in `~/.local/share/hyprkarl/`.
-Their live entry points are usually symlinks back into that tree. Personal
-Hyprkarl configuration lives under
+Hyprkarl's shipped defaults, entry points, and scripts live in
+`~/.local/share/hyprkarl/`. Stable entry points are symlinks back into that
+tree; application preference files are real files in their normal
+`~/.config/<application>/` locations and are never overwritten after their
+initial migration. Personal Hyprkarl configuration lives under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; normal personal commands belong
 in `~/.local/bin/`.
 

@@ -51,66 +51,6 @@ provisioner, or plugin marketplace.
 - Updates never need a destructive "adopt" or "force" path during ordinary
   use.
 
-## Phase 3: give every managed application a user-owned configuration path
-
-### Goal
-
-Let users customize every application Hyprkarl configures without routinely
-editing an upstream-owned file.
-
-### Method
-
-Audit every top-level directory under `config/`, including Alacritty, Btop,
-Fastfetch, Fish, Foot, Ghostty, Hyprland helpers, Kitty, Neovim, Qt, UWSM,
-portals, Yazi, and any configuration added before this phase lands.
-
-Choose the simplest method each application supports:
-
-1. Prefer a native include or override file. Keep the tracked entry point
-   small and load a real user-owned file from the application's normal
-   configuration directory.
-2. If the application supports a complete alternate file or directory, allow
-   the user to select or provide it directly.
-3. If the application has neither mechanism, install a real starting file only
-   when absent and let the user own it afterward. Do not overwrite it during
-   updates.
-
-Do not parse and merge unrelated configuration languages in Hyprkarl. Do not
-add a generic overlay framework merely to make every row in the audit look the
-same.
-
-GTK theme payloads remain a deliberate exception. Hyprkarl materializes those
-generated files because GTK theme discovery and assets have been unreliable
-through symlinked theme trees. Users change the theme source rather than the
-generated GTK copy.
-
-### Required audit record
-
-For each managed application, record:
-
-- the shipped entry point;
-- the personal file or directory;
-- whether the application merges it or it replaces the default;
-- which command, if any, writes it;
-- whether a restart or new session is required;
-- which files Hyprkarl may replace during an update.
-
-This belongs in `docs/configuration-map.md` once implemented. The plan should
-not guess at include behavior before checking the installed application.
-
-### Acceptance
-
-- Every managed application's documentation names a practical personal path.
-- Ordinary preference changes leave the Hyprkarl checkout clean.
-- No settings menu or `hk-*` command writes a tracked configuration file.
-- A full replacement remains possible when a small override cannot express
-  the desired change.
-- Existing user files survive setup and update.
-
-Personal package lists are not part of this phase. Users may install any extra
-packages normally. Add declarative personal lists later only if someone wants
-Hyprkarl to reproduce them on another machine.
-
 ## Phase 4: make every shell module optional and replaceable
 
 ### Goal
@@ -357,12 +297,11 @@ kept beside theme data or components.
 
 Implement the work as reviewable changes in this order:
 
-1. Audit every managed application and add its personal configuration method.
-2. Add shell module switches and complete the personal QML overlay controls.
-3. Replace the updater, package-removal flow, and system setup with the new
+1. Add shell module switches and complete the personal QML overlay controls.
+2. Replace the updater, package-removal flow, and system setup with the new
    source, apply, and migration model.
-4. Reuse the shared menu frame and investigate the remaining reload failure.
-5. Finish the documentation and agent-instruction cleanup.
+3. Reuse the shared menu frame and investigate the remaining reload failure.
+4. Finish the documentation and agent-instruction cleanup.
 
 Documentation and focused tests belong in each change. The final cleanup is
 for consolidation, not for postponing behavioral documentation.

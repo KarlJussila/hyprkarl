@@ -56,10 +56,8 @@ REQUIRED_BUNDLE_FILES = (
     "wifitui.toml",
     "yazi.toml",
     "icons.theme",
-    "gtk-3.0/settings.ini",
     "gtk-3.0/gtk.css",
     "gtk-3.0/gtk-dark.css",
-    "gtk-4.0/settings.ini",
     "gtk-4.0/gtk.css",
     "gtk-4.0/gtk-dark.css",
     "gtk-theme/index.theme",
@@ -67,9 +65,7 @@ REQUIRED_BUNDLE_FILES = (
     "gtk-theme/gtk-4.0/gtk.css",
     "nvim/colorscheme.lua",
     "nvim/custom-colors.lua",
-    "qt5ct/qt5ct.conf",
     "qt5ct/style-colors.conf",
-    "qt6ct/qt6ct.conf",
     "qt6ct/style-colors.conf",
 )
 REQUIRED_BUNDLE_DIRECTORIES = ("icons", "wallpapers")
@@ -228,9 +224,6 @@ def _copy_gtk_payload(output_root: Path, bundle_root: Path) -> None:
             raise GenerationError(f"Missing generated GTK payload: {directory_name}")
         destination = bundle_root / directory_name
         shutil.copytree(source, destination)
-        settings = destination / "settings.ini"
-        if settings.exists():
-            settings.unlink()
 
 
 def validate_bundle(bundle_root: Path) -> None:

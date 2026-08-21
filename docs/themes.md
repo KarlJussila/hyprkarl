@@ -153,7 +153,7 @@ The compiler renders the resolved graph into consumer files for:
 
 - Quickshell, Hyprland, Hyprlock, and Hyprtoolkit;
 - Alacritty, foot, Ghostty, Kitty, `btop`, `wifitui`, Yazi, and Neovim;
-- Qt 5 and Qt 6;
+- Qt 5 and Qt 6 palettes;
 - GTK 3 and GTK 4, including a palette-derived Colloid theme;
 - theme metadata, icons, wallpapers, and previews.
 
@@ -168,8 +168,8 @@ inspection. It is output, not the next authoring source.
 
 ## GTK output
 
-The active artifact contains GTK settings and a `gtk-theme/` payload.
-`hk-theme set` copies that payload to:
+The active artifact contains a `gtk-theme/` payload. `hk-theme set` copies that
+payload to:
 
 ```text
 ~/.local/share/themes/hyprkarl/
@@ -179,7 +179,9 @@ This is a marked real-file copy. GTK discovery and asset loading have been
 unreliable through moving theme-directory symlinks, so do not replace it with a
 symlink tree. Edit theme source and select the theme again instead of editing
 the installed copy. Dark sources compile Colloid's dark variant; `mode: light`
-compiles its light variant and writes matching GTK settings.
+compiles its light variant. The user-owned `~/.config/gtk-3.0/settings.ini` and
+`gtk-4.0/settings.ini` select the stable `hyprkarl` theme name; `hk-theme set`
+applies the light/dark preference through desktop settings.
 
 ## Legacy complete bundles
 

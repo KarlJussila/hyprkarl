@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Install hyprkarl's configs via symlink in ~/.config and ~/.local/share/applications.
-# WARNING: This will replace any identically named files.
-# Please back up anything that you might want to keep.
+# Migrate user-owned application config, then install Hyprkarl's stable entry
+# points as symlinks in ~/.config and ~/.local/share/applications.
+# Back up overlapping entry points or desktop files that you want to keep.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export HYPRKARL_PATH="${HYPRKARL_PATH:-$SCRIPT_DIR}"

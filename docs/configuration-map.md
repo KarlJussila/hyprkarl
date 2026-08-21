@@ -185,6 +185,42 @@ a new session.
 keys and personal settings. It is a real user-owned file. `hk-user-migrate`
 migrates an old checkout copy or creates it from a shipped example when absent.
 
+## Application Configuration
+
+`hk-user-migrate` converts the old application links and creates missing
+starting configs once. Completion is recorded at
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/migrations/seeded-application-config-v1`.
+After that marker exists, Hyprkarl does not replace or recreate these files.
+Deleting one is a valid way to return that application to its own defaults.
+If a terminal already has a real primary config, migration moves it to the
+terminal's personal sidecar before Stow installs the small bootstrap. Existing
+application trees with personal config are otherwise left intact rather than
+being filled with Hyprkarl defaults.
+
+| Application | Personal editing path | How Hyprkarl participates | Apply changes | Replaced on update |
+|---|---|---|---|---|
+| Alacritty | `~/.config/alacritty/local.toml` | Tracked `alacritty.toml` imports the generated theme, shipped terminal defaults, then this file | Automatic config reload or a new window | Bootstrap and shipped defaults only |
+| foot | `~/.config/foot/local.ini` | Tracked `foot.ini` includes the generated theme, shipped defaults, then this file | New window | Bootstrap only |
+| Ghostty | `~/.config/ghostty/local.conf` | Tracked `config.ghostty` loads the generated theme and then this optional file | Reload Ghostty's config or open a new window | Bootstrap only |
+| Kitty | `~/.config/kitty/local.conf` | Tracked `kitty.conf` includes the generated theme and then this file | `hk-terminal-reload` or a new window | Bootstrap only |
+| Btop | `~/.config/btop/` | Complete starting config with a stable active-theme link | Restart Btop; theme switches call `hk-btop-reload` | Never |
+| Fastfetch | `~/.config/fastfetch/` | Complete starting config and logo | Next run | Never |
+| Fish | `~/.config/fish/` | Complete starting config; Fish also loads its ordinary `conf.d/` files | New shell or source the changed file | Never |
+| GTK 3/4 | `~/.config/gtk-3.0/` and `~/.config/gtk-4.0/` | Personal `gtk.css` imports `hyprkarl.css`, which reads the materialized active GTK theme; `settings.ini` remains personal | Restart affected applications | Personal files never; `~/.local/share/themes/hyprkarl/` is regenerated |
+| Hypridle, Hyprlock, Hyprpaper, Hyprsunset | `~/.config/hypr/hypr*.conf` | Complete starting files; Hyprlock continues to source active theme values until the user changes it | Restart the affected service | Never |
+| Hyprtoolkit | Theme source under `~/.config/hyprkarl/themes/` | Stable tracked link to the generated active theme | `hk-theme set <name>` | Link is managed; generated target is replaced |
+| Neovim | `~/.config/nvim/` | Complete starting tree with stable theme links | Restart or reload Neovim | Never |
+| Qt5ct / Qt6ct | `~/.config/qt5ct/` and `~/.config/qt6ct/` | Personal Qt settings with stable generated palette links | Restart affected applications | Never |
+| Desktop portals | `~/.config/xdg-desktop-portal/` and `~/.config/xdg-desktop-portal-termfilechooser/` | Complete starting configs | Restart the portal services or begin a new session | Never |
+| Terminal preference | `~/.config/xdg-terminals.list` | Complete starting file used by `xdg-terminal-exec` | Next terminal launch | Never |
+| Yazi | `~/.config/yazi/` | Complete starting tree with plugins and a stable theme flavor link | Next Yazi launch | Never |
+
+The corresponding ignored paths under `config/` are shipped seed material,
+not the live personal copy. Editing one changes future first-run defaults, not
+the current user's configuration. A full replacement is always possible by
+changing or removing the personal files; the documented paths are a convenient
+layout, not a restriction.
+
 ## Quickshell Bar
 
 The production bar lives under `config/quickshell/`. Its main editing surfaces

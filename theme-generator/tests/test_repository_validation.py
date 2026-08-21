@@ -27,8 +27,6 @@ class RepositoryValidationTests(unittest.TestCase):
                     self.assertTrue((output_root / "gtk-3.0" / "gtk.css").is_file())
                     self.assertTrue((output_root / "gtk-4.0" / "gtk.css").is_file())
                     self.assertTrue((output_root / "gtk-theme" / "index.theme").is_file())
-                    self.assertFalse((output_root / "gtk-theme" / "gtk-3.0" / "settings.ini").exists())
-                    self.assertFalse((output_root / "gtk-theme" / "gtk-4.0" / "settings.ini").exists())
                     self.assertEqual(list(output_root.rglob(".internal")), [])
 
     def test_quickshell_theme_is_semantic_and_palette_derived(self):
@@ -98,10 +96,6 @@ shell:
             build_theme("hyprkarl", output_root, "renamed")
 
             self.assertIn("Name=renamed", (output_root / "gtk-theme" / "index.theme").read_text())
-            self.assertIn(
-                "gtk-theme-name=hyprkarl",
-                (output_root / "gtk-3.0" / "settings.ini").read_text(),
-            )
 
     def test_theme_without_wallpaper_assets_still_builds_complete_bundle(self):
         with tempfile.TemporaryDirectory(prefix="test-no-wallpapers-") as temporary_directory:

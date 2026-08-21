@@ -122,15 +122,11 @@ category commands do not emit that event.
 
 ## Themes and Wallpapers
 
-- `hk-theme build <source> [name]`
-  Render a typed `theme.yaml` source with the companion generator into the user-owned
-  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/` bundle. The generator defaults to the sibling
-  `../theme-generator` checkout and can be relocated with
-  `HYPRKARL_THEME_GENERATOR_PATH`.
 - `hk-theme set <theme>`
-  Validate and atomically activate a built-in theme, a complete user theme, or
-  a same-name user overlay; refresh the installed real-file GTK payload; then
-  update wallpaper and application settings and reload affected programs.
+  Build and validate a built-in source, personal source, or built-in plus
+  same-name personal overlay; atomically activate its immutable XDG-state
+  artifact; refresh the installed real-file GTK payload; then update wallpaper
+  and application settings and reload affected programs.
 - `hk-theme list`
   List installed themes.
 - `hk-theme current`

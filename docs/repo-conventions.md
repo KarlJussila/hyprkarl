@@ -37,7 +37,9 @@ or promise compatibility for third-party extensions.
 - `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
   User-owned overrides. Upstream does not add or replace personal files there.
 - `themes/`
-  Theme assets and per-theme overrides
+  Shipped theme authoring sources and assets
+- `theme-generator/`
+  Integrated compiler code, defaults, templates, tests, and vendored Colloid
 - `bin/`
   Commands meant to be run directly. Subcommands of a dispatcher (`hk-theme set`, `hk-pkg install`, …) live as their own top-level commands using the noun-first form `hk-<noun>-<action>`. The dispatcher is a thin router that `exec`s them.
 - `bin/lib/`

@@ -1,287 +1,226 @@
 # Themes
 
-Hyprkarl's shipped theme bundles live under `themes/`; personal bundles and
-overlays live under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. Selecting a theme copies those sources into
-an immutable runtime bundle under XDG state, then atomically swaps one symlink.
-Git never owns the selected theme or wallpaper.
-
-## How Theme Selection Works
-
-The authoritative state lives under:
+Hyprkarl keeps theme source and generated runtime output separate:
 
 ```text
+themes/<name>/                                  shipped authoring source
+${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/
+└── themes/<name>/                              personal source or overlay
 ${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/
-├── current/
-│   ├── theme -> ../themes/<name>.<generation>
-│   ├── theme.name
-│   ├── theme.json
-│   └── wallpaper -> theme/wallpapers/<file>
-└── themes/
-    └── <name>.<generation>/
+├── current/                                    active selectors
+└── themes/<name>.<generation>/                 generated immutable bundles
 ```
 
-`config/hyprkarl/current/{theme,theme.name,wallpaper}` are tracked, fixed
-compatibility links into this state directory. Their targets do not change
-when a theme changes, so updates can safely refresh the repository without
-overwriting personal runtime state.
+Generated bundles do not live in Git or the personal configuration directory.
+The installed GTK payload is the one deliberate copy outside XDG state.
 
-When you run:
+## Switch themes
+
+Use `Hyprkarl Menu -> Config -> Theme` or run:
 
 ```bash
 hk-theme set <theme-name>
 ```
 
-Hyprkarl takes an exclusive theme lock, assembles the built-in bundle plus an
-optional same-name `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/` overlay, validates the complete
-result, and atomically activates it. Only after activation does it:
-
-- updates the wallpaper state
-- updates GNOME and Qt settings
-- reloads Hyprland, terminals, and `btop`
-
-If assembly or validation fails, the previous runtime bundle stays active.
-Quickshell watches `current/theme.json`, then follows its immutable artifact
-name to `quickshell.json`; a switch applies without rebuilding unrelated shell
-state. Hyprkarl retains the current and immediately previous artifacts.
-
-## Switch the Active Theme
-
-The usual way to switch themes is `Hyprkarl Menu -> Config -> Theme`, but you
-can also run:
-
-```bash
-hk-theme set <theme-name>
-```
-
-To list installed themes, run:
+List available source themes with:
 
 ```bash
 hk-theme list
 ```
 
-## Theme Contents
+Every selection rebuilds the theme. `hk-theme set`:
 
-The simplest way to create a theme is to copy an existing one and keep the same
-layout.
+1. loads the built-in source, personal source, or both;
+2. merges and resolves the typed value graph;
+3. renders every consumer into a temporary directory;
+4. validates the complete bundle;
+5. installs an immutable artifact under XDG state;
+6. atomically changes the active selector;
+7. materializes the GTK payload and reloads affected consumers.
 
-A full theme in this repo includes:
+A failed build leaves the active theme and installed GTK copy unchanged.
+Quickshell watches `current/theme.json`, so a successful switch applies without
+restarting the shell. Hyprkarl retains the current and immediately previous
+artifacts.
 
-- `theme.yaml`
-  Fully merged and resolved typed token graph used to render the bundle. It
-  includes colors, fonts, shared metrics, component values, custom source
-  structures, and mode, making every generated output inspectable. Runtime
-  activation does not require this file for a complete hand-authored bundle.
+## Source layout
 
-- `hyprland.lua`
-  Theme-specific Hyprland styling (Lua — Hyprland's config is Lua since 0.55).
-  The bootstrap loads it after shipped defaults and before optional
-  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/*.lua` modules. Theme values override defaults; explicit personal
-  values can still override the theme. Typically it sets the active border, e.g.
-  `hl.config({ general = { col = { active_border = "rgb(63005A)" } } })`.
-- `hyprlock.conf`
-  Lock screen styling
-- `hyprtoolkit.conf`
-  Hyprtoolkit styling
-- `quickshell.json`
-  Quickshell's semantic `palette`, `surfaces`, `typography`, and `metrics`
-  roles, plus component-specific `bar`, `panel`, `tooltip`, `menu`, `osd`,
-  `notification`, and `polkit`
-  values.
-  It controls minimum bar thickness, spacing, island corner
-  and border geometry, radii, dividers, tooltip radius, panel gap,
-  preferred/max panel size, and transition timing. `bar.margin` controls the
-  screen, outer, and content gaps; `bar.island.corners` and `.borders` control
-  the four logical island edges. `bar.widgetPadding.main` and `.cross`
-  provide universal padding along and across top/bottom bar widgets;
-  `bar.trayPaddingOffset` adjusts the tray's main-axis inset with a zero floor,
-  while `metrics.controlPadding` belongs to panel internals.
-  `bar.minimumThickness` is only a
-  floor; the tallest naturally padded widget sets a shared island height.
-  The shell-native command menu inherits this file's semantic palette,
-  typography, radii, and borders. Its nested `menu` object owns menu-specific
-  width, nested-frame geometry, row spacing, selection treatment, backdrop,
-  and optional semantic overrides. The shipped composition carries forward
-  the original Rofi menu's compact identity without reproducing it literally.
-  The nested `osd` object controls normal/media widths, padding, spacing,
-  radius, indicator size, progress height, and transition duration; OSD
-  placement and timeouts remain behavior in `shell.json`.
-  The nested `notification` object controls normal/compact widths, padding,
-  stack spacing (zero joins the stack into one bordered surface), radius,
-  application-icon and content-image sizes, custom
-  indicator scale, progress height, and reveal timing. Notification routing,
-  docking, timing, filtering, and icon selection remain behavior in
-  `shell.json`.
-  The nested `polkit` object controls the modal prompt width, padding,
-  spacing, radius, icon size, title-band accent, and transition
-  timing. Authentication behavior remains owned by Quickshell's polkit flow.
-  All Quickshell surface colors and interaction states come from semantic
-  theme data rather than consumer-specific color aliases. See
-  [Customizing the Bar](customizing-bar.md#change-the-appearance) for the
-  geometry schema.
-  `applicationPicker`, `calculator`, and `wallpaperPicker` add their
-  interface-specific widths, row counts, icon size, thumbnail columns, scale,
-  and gap while inheriting the shared menu frame and semantic colors.
-- `alacritty.toml`, `foot.ini`, `ghostty.conf`, `kitty.conf`
-  Terminal colors
-- `btop.theme`
-  `btop` colors
-- `wifitui.toml`
-  `wifitui` colors
-- `yazi.toml`
-  Yazi theme settings
-- `qt5ct/qt5ct.conf`, `qt5ct/style-colors.conf`
-  Qt5 color palette and widget style settings
-- `qt6ct/qt6ct.conf`, `qt6ct/style-colors.conf`
-  Qt6 color palette and widget style settings
-- `gtk-3.0/settings.ini`, `gtk-4.0/settings.ini`
-  GTK settings files (stowed to `~/.config/gtk-{3,4}.0/`); point GTK apps to
-  the theme name and set the dark/light preference
-- `gtk-theme/`
-  The GTK theme payload copied to `~/.local/share/themes/hyprkarl/` on setup,
-  update, and every theme switch.
-  Contains `index.theme` (theme metadata) and the GTK3/4 stylesheets under
-  `gtk-3.0/` and `gtk-4.0/` (`gtk.css`, `gtk-dark.css`, and assets).
-  GTK apps read their colors from this real directory. Hyprkarl deliberately
-  does not make the installed theme directory or its payload files symlinks;
-  GTK theme discovery and asset loading are less reliable through moving
-  symlink trees. `.hyprkarl-managed` marks the installed copy as safe to
-  replace. An unrelated existing directory at that name is rejected unless
-  setup is explicitly run with its force/adopt path.
-- `nvim/colorscheme.lua`, `nvim/custom-colors.lua`
-  Neovim colors
-- `wallpapers/`
-  Wallpapers available to `hk-wallpaper`
-
-Optional theme files:
-
-- `light.mode`
-  Switches GNOME to `prefer-light`. Without it, Hyprkarl uses `prefer-dark`.
-- `icons.theme`
-  Single-line file naming the icon theme. Applied via `gsettings` on theme
-  switch and embedded in `gtk-theme/index.theme`.
-- `icons/`
-  Theme-local icons used by Hyprkarl helpers and shell surfaces.
-
-## Create a New Theme
-
-There are two ways to make a theme.
-
-### Generate one from a typed theme source (recommended)
-
-The themes shipped with Hyprkarl are produced by the companion tool,
-[hyprkarl-theme-generator](https://github.com/KarlJussila/hyprkarl-theme-generator).
-It renders an entire theme — every file listed under
-[Theme Contents](#theme-contents) — from one typed YAML graph, so colors,
-typography, geometry, borders, and motion stay coherent across Hyprland, the
-shell, terminals, GTK, Qt, and the rest. Shared defaults provide the complete
-non-color structure, so a minimal source still mostly defines colors. It pairs
-well with an LLM: hand it a terminal colorscheme (or describe the mood you
-want) and have it write the required color groups plus any structural changes.
-
-Keep its checkout beside Hyprkarl (the default), or set
-`HYPRKARL_THEME_GENERATOR_PATH` in `~/.config/uwsm/env.local`. Create a source
-directory with `theme.yaml`, optional `overrides/`, `wallpapers/`, and
-`previews/`, then run:
-
-```bash
-hk-theme build /path/to/my-theme
-hk-theme set my-theme
-```
-
-`hk-theme build <source> [name]` writes the complete generated bundle to
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`, never to upstream-owned `themes/`. Generator developers
-use its direct `python -m theme_generator sync ...` command when intentionally
-refreshing the checked-in built-ins. Keep the theme source outside that
-generated destination; a clean rebuild replaces the destination as one unit.
-
-Theme sources recursively merge over the generator's `defaults/theme.yaml`,
-then Jinja expressions resolve to native strings, integers, decimals, and
-booleans. Authors may define arbitrary structures and reference them from the
-final `shell` values; the shipped `metrics`, `motion`, and `typography`
-vocabulary is a default, not an allowlist. For example, a theme may define
-`widths.standard_border` and bind `shell.metrics.borderWidth` to it. Objects
-merge recursively, while arrays and scalar values replace their defaults.
-
-### Copy an existing theme
-
-For a complete hand-edited personal theme, copy a bundle into the personal
-theme directory:
-
-```bash
-cp -a ~/.local/share/hyprkarl/themes/hyprkarl \
-  "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/my-theme"
-```
-
-Then edit the copied files and activate it:
-
-```bash
-hk-theme set my-theme
-```
-
-Starting from an existing theme is easier than building one from scratch,
-because the repo already expects a specific file layout.
-
-### Move an existing custom theme
-
-An output-only theme created before token-driven generation can keep working.
-Move its complete directory from `themes/<name>/` to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`, then
-run `hk-theme set <name>`. Runtime validation checks the files consumers need;
-it does not require a historical theme to invent a source graph.
-
-To make that theme generator-owned later, create a new source directory with
-`theme.yaml`, put only genuine exceptions under `overrides/`, copy its assets,
-and use `hk-theme build`. Compare the result before replacing the old personal
-bundle.
-
-## Wallpapers in Themes
-
-Built-in wallpapers live in `themes/<name>/wallpapers/`. Personal additions
-and built-in removals are recorded under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`, then included
-the next time the bundle is assembled. Wallpaper commands also update the
-active runtime bundle immediately.
-
-To add a wallpaper to the current theme, you can run:
-
-```bash
-hk-wallpaper add /path/to/image.png
-```
-
-That copies the file into `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/wallpapers/`, copies it into the
-active runtime bundle, rebuilds its thumbnail, and selects it.
-
-You can also add wallpapers manually by copying image files into:
+A source may contain:
 
 ```text
-${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<theme>/wallpapers/
+<name>/
+├── theme.yaml
+├── overrides/
+├── wallpapers/
+├── icons/
+└── previews/
 ```
 
-Then rebuild that theme's thumbnail cache:
+- `theme.yaml` contains typed values and Jinja expressions.
+- `overrides/<relative-template-path>` completely replaces one compiler
+  template at the same relative path.
+- `wallpapers/` contains wallpaper assets. By convention, `01-*` is primary.
+- `icons/` adds or replaces generated theme-local icons.
+- `previews/` contains repository screenshots such as `busy.png`,
+  `launcher.png`, `menu.png`, and `wallpapers.png`.
+
+A personal-only theme requires `theme.yaml`. A personal directory with the
+same name as a built-in is a sparse overlay and may omit it. That makes small
+changes practical. For example:
+
+```text
+~/.config/hyprkarl/themes/hyprkarl/
+└── theme.yaml
+```
+
+```yaml
+metrics:
+  border:
+    standard: 3
+
+shell:
+  bar:
+    margin:
+      screen: 4
+```
+
+Run `hk-theme set hyprkarl` after editing it.
+
+## Merge and rendering order
+
+The value graph resolves in this order:
+
+```text
+theme-generator/defaults/theme.yaml
+  -> themes/<name>/theme.yaml
+  -> ~/.config/hyprkarl/themes/<name>/theme.yaml
+  -> recursive native Jinja resolution
+```
+
+Objects merge recursively. Arrays and scalar values replace earlier values.
+Whole-value expressions retain native strings, integers, decimals, and
+booleans. Theme authors may define their own structures and reference them from
+consumer values. The shipped `metrics`, `motion`, and `typography` names are
+defaults, not an allowlist.
+
+Templates and assets use the same ownership order:
+
+```text
+compiler template or asset -> built-in replacement -> personal replacement
+```
+
+An override replaces a whole template. It does not introduce a second merge
+language. Personal wallpaper files add to or replace built-in files.
+`.wallpapers-disabled` records inherited wallpaper paths that should be absent
+from the generated bundle.
+
+## Create a personal theme
+
+Start from a shipped source, not a generated bundle:
 
 ```bash
-hk-wallpaper cache
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/my-theme"
+cp ~/.local/share/hyprkarl/themes/hyprkarl/theme.yaml \
+  "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/my-theme/theme.yaml"
+$EDITOR "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/my-theme/theme.yaml"
+hk-theme set my-theme
 ```
 
-Wallpaper commands always operate on the active theme:
+The shared compiler defaults provide fonts, spacing, radii, border widths,
+motion, and the complete Quickshell appearance shape. Most new sources only
+need palette values and intentional changes.
+
+For direct compiler work, run the module from `theme-generator/`:
+
+```bash
+cd ~/.local/share/hyprkarl/theme-generator
+python -m theme_generator preview hyprkarl
+python -m theme_generator build hyprkarl -o /tmp/hyprkarl-theme
+python -m theme_generator build hyprkarl \
+  --overlay ~/.config/hyprkarl/themes/hyprkarl \
+  -o /tmp/hyprkarl-theme
+python -m theme_generator validate
+python -m pytest -q
+```
+
+These are authoring and test commands. `hk-theme set` remains the public
+build-and-activate action. There is no sibling generator checkout, compiler
+sync command, or `hk-theme build` action.
+
+## Generated bundle
+
+The compiler renders the resolved graph into consumer files for:
+
+- Quickshell, Hyprland, Hyprlock, and Hyprtoolkit;
+- Alacritty, foot, Ghostty, Kitty, `btop`, `wifitui`, Yazi, and Neovim;
+- Qt 5 and Qt 6;
+- GTK 3 and GTK 4, including a palette-derived Colloid theme;
+- theme metadata, icons, wallpapers, and previews.
+
+The generated `quickshell.json` owns semantic colors, typography, geometry,
+borders, spacing, and component-specific appearance for the bar, panels,
+menus, OSD, notifications, polkit, application picker, calculator, and
+wallpaper picker. See [Customizing the bar](customizing-bar.md#change-the-appearance)
+for its bar geometry.
+
+The generated `theme.yaml` contains the fully merged and resolved graph for
+inspection. It is output, not the next authoring source.
+
+## GTK output
+
+The active artifact contains GTK settings and a `gtk-theme/` payload.
+`hk-theme set` copies that payload to:
+
+```text
+~/.local/share/themes/hyprkarl/
+```
+
+This is a marked real-file copy. GTK discovery and asset loading have been
+unreliable through moving theme-directory symlinks, so do not replace it with a
+symlink tree. Edit theme source and select the theme again instead of editing
+the installed copy. Dark sources compile Colloid's dark variant; `mode: light`
+compiles its light variant and writes matching GTK settings.
+
+## Legacy complete bundles
+
+The integrated compiler no longer accepts a hand-written complete generated
+bundle as theme source. During migration, `hk-user-migrate` moves one to a
+dated backup under:
+
+```text
+${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/theme-backups/
+```
+
+It does not delete or reinterpret that bundle. To convert it, create a source
+directory under `~/.config/hyprkarl/themes/<name>/`, move the original palette
+or intentional token values into `theme.yaml`, put structural consumer changes
+under `overrides/`, and copy wallpapers, icons, and previews as assets. Build
+it with `hk-theme set <name>`, compare the result with the backup, then keep or
+remove the backup on your own schedule.
+
+## Wallpapers
+
+Built-in wallpapers live in `themes/<name>/wallpapers/`. Personal additions
+and inherited removals live under the matching personal theme source. The
+wallpaper commands update both personal source state and the active artifact:
 
 ```bash
 hk-wallpaper set <filename>
 hk-wallpaper cycle
+hk-wallpaper add /path/to/image.png
 hk-wallpaper remove <filename>
 hk-wallpaper cache [--regenerate|--single <filename>]
 ```
 
-## Sharp Edges
-
-- Theme activation rejects an incomplete bundle or invalid `quickshell.json`
-  without changing the active theme.
-- To restore wallpaper state, use:
+The current selection lives in XDG state. To recover an invalid selection,
+run:
 
 ```bash
 hk-wallpaper init || hk-wallpaper cycle
 ```
 
-## Related Docs
+## Related docs
 
 - [Using Hyprkarl](using-hyprkarl.md)
-- [Command Reference](commands.md)
+- [Command reference](commands.md)
 - [Extending Hyprkarl](extending-hyprkarl.md)

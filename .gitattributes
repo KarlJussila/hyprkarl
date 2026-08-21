@@ -1,4 +1,3 @@
-# Tell GitHub Linguist these are vendored GTK theme assets, not project source
-themes/*/gtk-theme/** linguist-vendored=true
-themes/*/gtk-3.0/**  linguist-vendored=true
-themes/*/gtk-4.0/**  linguist-vendored=true
+# Vendored Colloid GTK source is upstream data, not Hyprkarl source.
+theme-generator/vendor/colloid/** linguist-vendored
+theme-generator/vendor/colloid/** -diff

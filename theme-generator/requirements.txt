@@ -1,0 +1,9 @@
+# Python dependencies for the theme generator.
+# Install with: pip install -r requirements.txt
+#
+# GTK theme generation additionally requires the `sassc` CLI, installed via your
+# system package manager (e.g. `pacman -S sassc`, `apt install sassc`).
+
+jinja2>=3.0
+colour>=0.1.5
+pyyaml>=6.0

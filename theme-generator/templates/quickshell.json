@@ -1,0 +1,1 @@
+{{ shell | tojson(indent=2) }}{{ "\n" }}

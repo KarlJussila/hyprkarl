@@ -456,9 +456,9 @@ cmd_dotfiles_gtk_migration() {
   reset_sandbox
   seed_dotfiles_change
   mkdir -p "$FAKEHOME/.local/share/themes/hyprkarl/gtk-3.0"
-  ln -s "$CLONE/themes/hyprkarl/gtk-theme/index.theme" \
+  ln -s "$CLONE/theme-generator/templates/index.theme" \
     "$FAKEHOME/.local/share/themes/hyprkarl/index.theme"
-  ln -s "$CLONE/themes/hyprkarl/gtk-theme/gtk-3.0/gtk.css" \
+  ln -s "$CLONE/theme-generator/templates/quickshell.json" \
     "$FAKEHOME/.local/share/themes/hyprkarl/gtk-3.0/gtk.css"
   run_dotfiles; local rc=$?
   printf '\nVerification:\n'

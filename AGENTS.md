@@ -132,16 +132,22 @@ Switch themes with:
 hk-theme set <theme-name>    # hyprkarl, everforest, gruvbox
 ```
 
-Built-ins are generated from a typed `theme.yaml` graph plus explicit overrides
-with the companion
-[theme generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
-(locally at `../theme-generator/`). Shared generator defaults recursively merge
-with each source before native Jinja resolution; strings, numbers, booleans,
-and arbitrary user-defined structures may feed the final consumer values. Add
-a consumer template there and regenerate every built-in instead of hand-copying
-one new file per theme.
-`hk-theme build <source> [name]` renders a personal bundle into
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`.
+`themes/<name>/` contains authoring source only: `theme.yaml`, optional complete
+template replacements under `overrides/`, and assets. The integrated compiler
+under `theme-generator/` owns shared defaults, templates, Colloid source,
+rendering, validation, and tests. A build merges shared defaults, the built-in
+graph, and an optional same-name personal graph before native Jinja resolution.
+Compiler templates, built-in overrides, and personal overrides apply in that
+order; assets use the same precedence. A personal-only theme requires
+`theme.yaml`, while a same-name overlay may omit it. Strings, numbers, booleans,
+and arbitrary user-defined structures may feed final consumer values.
+
+`hk-theme set <name>` is the public build-and-activate action. It renders and
+validates a temporary complete bundle, installs an immutable artifact below
+XDG state, then atomically changes the selector. Generated bundles never live
+under `themes/` or the personal configuration root. Developers may run
+`python -m theme_generator` from `theme-generator/` for direct previews,
+builds, validation, and tests; there is no sibling checkout or sync command.
 
 GTK theme payloads are the deliberate exception to runtime symlink consumption.
 `theme_install_gtk_payload` materializes the active bundle's `gtk-theme/` as a

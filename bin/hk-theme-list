@@ -2,8 +2,7 @@
 # hk-theme-list
 # List built-in and user themes, formatted as "Title Case".
 
-find "$HYPRKARL_PATH/themes/" \
-  "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/" \
-  -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null \
-  | sort -u \
-  | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g'
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
+
+theme_list_names | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g'

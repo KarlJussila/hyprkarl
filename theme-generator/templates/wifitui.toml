@@ -1,0 +1,19 @@
+Primary = "{{accent.primary.bright}}"
+Subtle = "{{accent.secondary.soft}}"
+Success = "{{status.success}}"
+Error = "{{status.error}}"
+
+Normal = "{{base.foreground}}"
+Disabled = "{{bright.black}}"
+Border = "{{ui.border_inner}}"
+
+SignalHigh = ["{{bright.cyan}}", "{{bright.cyan}}"]
+SignalLow = ["{{ansi.black}}", "{{ansi.black}}"]
+
+Saved = "{{ansi.cyan}}"
+
+TitleIcon = "󰖩 "
+NetworkSecureIcon = "󰌾 "
+NetworkOpenIcon = "󰿆 "
+NetworkUnknownIcon = " "
+NetworkSavedIcon = " "

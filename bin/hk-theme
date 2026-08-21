@@ -4,7 +4,6 @@
 #
 # Usage:
 #   hk-theme current
-#   hk-theme build <theme-source> [theme-name]
 #   hk-theme list
 #   hk-theme menu-entries
 #   hk-theme set <theme-name>
@@ -12,7 +11,6 @@
 usage() {
   cat <<'EOF'
 Usage:
-  hk-theme build <theme-source> [theme-name]
   hk-theme current
   hk-theme list
   hk-theme menu-entries
@@ -24,7 +22,7 @@ action=${1:-}
 shift || true
 
 case "$action" in
-  build|current|list|menu-entries|set) exec "hk-theme-$action" "$@" ;;
+  current|list|menu-entries|set) exec "hk-theme-$action" "$@" ;;
   ""|-h|--help|help) usage; exit 0 ;;
   *) usage >&2; exit 1 ;;
 esac

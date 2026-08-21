@@ -18,7 +18,10 @@ would edit.
 - `packages/`
   Package lists read by `setup-packages.sh` and `hk-update packages`
 - `themes/`
-  Theme files and per-theme overrides
+  Shipped theme sources, overrides, wallpapers, icons, and previews
+- `theme-generator/`
+  Integrated typed-theme compiler, shared defaults, templates, tests, and
+  vendored Colloid source
 - `scripts/`
   Support scripts and backend logic
 - `docs/`
@@ -32,7 +35,8 @@ would edit.
 
 Authoritative theme and wallpaper state lives under
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/`. `current/theme` selects an
-immutable generated bundle under `themes/`; `current/theme.name`,
+immutable generated bundle under the state directory's `themes/`;
+`current/theme.name`,
 `current/theme.json`, and `current/wallpaper` carry the small selectors.
 
 `config/hyprkarl/current/` contains fixed compatibility links to that state:
@@ -194,14 +198,11 @@ are:
   Shipped command-menu hierarchy, dynamic providers, search roles, and actions
 - `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`
   Optional sparse user-owned menu additions and overrides
-- `themes/<theme>/quickshell.json`
-  Generated theme-specific semantic colors, typography, minimum bar thickness, natural widget
-  padding, logical island corners and borders, radii, and
-  screen/outer/content spacing, plus menu, OSD, notification, and polkit
-  appearance
-- `themes/<theme>/theme.yaml`
-  Fully merged and resolved typed graph retained in generator-owned built-in
-  bundles for inspection; the shell consumes `quickshell.json`
+- `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/<generation>/quickshell.json`
+  Generated semantic colors, typography, minimum bar thickness, natural
+  widget padding, logical island corners and borders, radii,
+  screen/outer/content spacing, and menu, OSD, notification, and polkit
+  appearance. The shell reaches it through the active selector.
 
 The shell watches both shell JSON paths. Ordinary user objects merge over
 the default, arrays replace completely, and explicit widget-ID layout edits are
@@ -287,8 +288,17 @@ has no runtime or theme path.
 
 ## Themes
 
-Shipped bundles live under `themes/<theme-name>/`; complete personal themes and
-same-name overlays live under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<theme-name>/`.
+Shipped source lives under `themes/<theme-name>/`. New personal themes and
+same-name sparse overlays live under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<theme-name>/`. A personal-only
+theme requires `theme.yaml`; an overlay for a built-in may omit it.
+
+The integrated compiler under `theme-generator/` merges defaults, built-in
+values, and personal values before expression resolution. It then applies
+compiler templates, built-in overrides, and personal overrides in order;
+assets use the same precedence. `hk-theme set` validates a complete bundle and
+installs it under XDG state. Neither source directory contains generated
+consumer output.
 
 See [Themes](themes.md) for the full theme layout and how
 XDG state selects the active bundle; `config/hyprkarl/current/` provides stable

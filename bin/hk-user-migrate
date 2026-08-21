@@ -6,6 +6,8 @@ HYPRKARL_PATH="${HYPRKARL_PATH:-$HOME/.local/share/hyprkarl}"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 PERSONAL_ROOT="$CONFIG_HOME/hyprkarl"
 
+source "$HYPRKARL_PATH/bin/lib/theme.sh"
+
 personal_paths=(shell.json menu.json hypr hooks quickshell themes)
 conflicts=()
 
@@ -117,5 +119,7 @@ seed_session_file() {
 seed_session_file \
   "$HYPRKARL_PATH/templates/setup/env.local.example" \
   "$CONFIG_HOME/uwsm/env.local" || exit 1
+
+theme_migrate_legacy_bundles || exit 1
 
 rmdir "$HYPRKARL_PATH/user" 2>/dev/null || true

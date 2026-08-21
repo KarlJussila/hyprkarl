@@ -51,116 +51,6 @@ provisioner, or plugin marketplace.
 - Updates never need a destructive "adopt" or "force" path during ordinary
   use.
 
-## Phase 2: integrate the theme compiler
-
-### Goal
-
-Make theme source, rendering code, templates, tests, and the shell consumers
-one versioned system. Remove the required sibling theme-generator checkout and
-the `HYPRKARL_THEME_GENERATOR_PATH` integration.
-
-### Repository layout
-
-The exact directory name may change during the move, but the responsibilities
-remain together:
-
-```text
-theme-generator/
-├── theme_generator/        compiler and command-line implementation
-├── defaults/               shared typed theme values
-├── templates/              consumer templates
-├── vendor/                 Colloid GTK source
-└── tests/
-
-themes/<name>/
-├── theme.yaml              built-in authoring source
-├── overrides/              complete consumer-specific replacements
-├── wallpapers/
-├── icons/
-└── previews/
-```
-
-Generated built-in bundles stop living in Git. `themes/` contains authoring
-sources and assets only.
-
-### User theme behavior
-
-A personal theme lives at:
-
-```text
-~/.config/hyprkarl/themes/<name>/
-```
-
-It may define a new theme or use the same name as a built-in theme. A same-name
-theme merges its typed values over the built-in source before Jinja
-expressions resolve. User template overrides and assets then replace or add to
-the corresponding built-in files.
-
-Users may define arbitrary value groups and refer to them from their own
-templates. The shipped theme vocabulary is a useful default, not an allowlist.
-
-Do not add a separate public mode for hand-writing a complete generated
-bundle. Theme values, templates, overrides, icons, and wallpapers already give
-the owner full control. Direct edits to generated state remain possible but
-are replaced by the next build.
-
-### Build and activation
-
-`hk-theme set <name>` performs the complete operation:
-
-1. Load the built-in or personal source.
-2. Merge an optional same-name personal source.
-3. Resolve the typed value graph.
-4. Render every consumer into a temporary directory.
-5. Validate the complete result.
-6. Install it as a new immutable artifact below
-   `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/`.
-7. Atomically select the artifact.
-8. Materialize the GTK payload as real files.
-9. Reload consumers and run the theme hook.
-
-Always build on theme selection at first. The current build takes less than a
-second, so a cache would add more machinery than it saves. Add content-based
-caching later only if measurements justify it.
-
-Theme application has one owner. Stow manages links; it never decides whether
-a theme artifact is current.
-
-### Theme migration
-
-Move source-form personal themes to the new configuration directory. Do not
-guess that an old generated bundle is editable source merely because it also
-contains a `theme.yaml`. Preserve legacy generated bundles in a dated backup
-and give the owner a short conversion guide for moving their original values,
-templates, and assets into the new source layout. Remove the old bundle-loading
-path after that migration rather than supporting both formats forever.
-
-The migration must not delete the only copy of a personal theme. It may use an
-available sibling generator checkout to locate source on this machine, but the
-finished installation cannot depend on that checkout.
-
-### Compiler cleanup
-
-Complete these fixes while moving the compiler:
-
-- Generate genuinely light GTK output for `mode: light`.
-- Test one complete light theme, including GTK settings and Colloid output.
-- Require and document Python 3.10 or newer.
-- Declare all compiler dependencies in Hyprkarl's package setup.
-- Remove tracked generator output and caches.
-- Remove stale Rofi output claims.
-- Preserve or migrate useful compiler and theme-authoring tests.
-
-### Acceptance
-
-- A fresh Hyprkarl clone can build every shipped theme without another
-  repository.
-- Built-in themes are reproducible from their tracked sources.
-- A failed build leaves the active theme and GTK copy unchanged.
-- A light source produces light GTK output.
-- A personal source can add its own values and templates.
-- Theme switching does not dirty the checkout.
-
 ## Phase 3: give every managed application a user-owned configuration path
 
 ### Goal
@@ -406,7 +296,7 @@ personal configuration backup.
 - `post-update` hooks run only after every selected update step succeeds, and
   the command states clearly if the main update succeeded but a hook failed.
 
-## Phase 6: finish the remaining shell and compiler cleanup
+## Phase 6: finish the remaining shell cleanup
 
 ### Reuse the shared overlay behavior
 
@@ -454,8 +344,8 @@ phases, make one final pass so each document has one job:
 
 Move any still-useful requirements out of `docs/shell-product-brief.md` to the
 document that owns them, then delete the brief if nothing unique remains.
-Remove stale Rofi instructions, old branch recommendations, companion-generator
-paths, adopt and force workflows, and permanent Quickshell pinning claims.
+Remove stale Rofi instructions, old branch recommendations, adopt and force
+workflows, and permanent Quickshell pinning claims.
 
 Trim the root and Quickshell `AGENTS.md` files after the code settles. Keep
 current safety rules, directory ownership, framework lifetime facts, extension
@@ -467,13 +357,12 @@ kept beside theme data or components.
 
 Implement the work as reviewable changes in this order:
 
-1. Integrate the theme compiler and convert built-in themes to source-only.
-2. Audit every managed application and add its personal configuration method.
-3. Add shell module switches and complete the personal QML overlay controls.
-4. Replace the updater, package-removal flow, and system setup with the new
+1. Audit every managed application and add its personal configuration method.
+2. Add shell module switches and complete the personal QML overlay controls.
+3. Replace the updater, package-removal flow, and system setup with the new
    source, apply, and migration model.
-5. Reuse the shared menu frame and investigate the remaining reload failure.
-6. Finish the documentation and agent-instruction cleanup.
+4. Reuse the shared menu frame and investigate the remaining reload failure.
+5. Finish the documentation and agent-instruction cleanup.
 
 Documentation and focused tests belong in each change. The final cleanup is
 for consolidation, not for postponing behavioral documentation.

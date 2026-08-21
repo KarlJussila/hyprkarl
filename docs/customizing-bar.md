@@ -150,14 +150,14 @@ a module source; JSON layout changes still apply live.
 ## Change the Appearance
 
 Every bar color, plus typography, thickness, spacing, borders, radii, panel
-sizing, and transition timing, comes from
-the generated bundle's `quickshell.json`. Generator-owned appearance begins in
-the companion repository's typed `defaults/theme.yaml` graph; its final
-`shell` object is serialized as that JSON contract. Add a corresponding
-consumer value there and regenerate every built-in when introducing a required
-theme property. Individual themes may override it directly or derive it from
-their own token vocabulary. The running shell watches the selected runtime
-artifact and applies theme switches without a restart.
+sizing, and transition timing, comes from the active generated bundle's
+`quickshell.json`. Shared appearance begins in the integrated compiler's typed
+`theme-generator/defaults/theme.yaml` graph; its final `shell` object is
+serialized as that JSON contract. Add a corresponding consumer value there
+when introducing a required theme property. Individual built-in or personal
+sources may override it directly or derive it from their own token vocabulary.
+`hk-theme set` rebuilds the selected source, and the running shell watches the
+new runtime artifact without requiring a restart.
 
 The island silhouette is theme-owned too. For example, the shipped themes use:
 

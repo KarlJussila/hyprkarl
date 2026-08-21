@@ -1,0 +1,57 @@
+theme[main_bg]       = "{{base.background}}"
+theme[title]         = "{{accent.secondary.bright}}"
+theme[hi_fg]         = "{{accent.secondary.soft}}"
+
+theme[selected_bg]   = "{{ui.panel}}"
+theme[selected_fg]   = "{{base.foreground}}"
+theme[inactive_fg]   = "{{bright.black}}"
+
+theme[cpu_box]       = "{{ui.border_inner}}"
+theme[mem_box]       = "{{ui.border_inner}}"
+theme[net_box]       = "{{ui.border_inner}}"
+theme[proc_box]      = "{{ui.border_inner}}"
+theme[div_line]      = "{{ui.border_inner}}"
+
+theme[graph_text]    = "{{accent.tertiary.bright}}"
+theme[proc_misc]     = "{{accent.tertiary.bright}}"
+
+# temperature gradient (semantic → keep warning scale)
+theme[temp_start]    = "{{base.background}}"
+theme[temp_mid]      = "{{status.warning}}"
+theme[temp_end]      = "{{accent.primary.bright}}"
+
+# cpu (hot → critical)
+theme[cpu_start]     = "{{status.error}}"
+theme[cpu_mid]       = "{{status.urgent}}"
+theme[cpu_end]       = "{{accent.primary.bright}}"
+
+# memory (capacity / availability → calm/positive)
+theme[free_start]        = "{{base.layer1}}"
+theme[free_mid]          = "{{accent.tertiary.base}}"
+theme[free_end]          = "{{accent.tertiary.bright}}"
+
+theme[cached_start]      = "{{base.layer1}}"
+theme[cached_mid]        = "{{accent.tertiary.base}}"
+theme[cached_end]        = "{{accent.tertiary.bright}}"
+
+theme[available_start]   = "{{base.layer1}}"
+theme[available_mid]     = "{{accent.tertiary.base}}"
+theme[available_end]     = "{{accent.tertiary.bright}}"
+
+theme[used_start]        = "{{accent.secondary.soft}}"
+theme[used_mid]          = "{{accent.secondary.base}}"
+theme[used_end]          = "{{accent.secondary.bright}}"
+
+# network (distinct but not semantic-danger)
+theme[download_start]    = "{{accent.secondary.soft}}"
+theme[download_mid]      = "{{accent.secondary.base}}"
+theme[download_end]      = "{{accent.primary.base}}"
+
+theme[upload_start]      = "{{accent.tertiary.soft}}"
+theme[upload_mid]        = "{{accent.tertiary.base}}"
+theme[upload_end]        = "{{accent.primary.bright}}"
+
+# process (neutral activity → use secondary)
+theme[process_start]     = "{{accent.secondary.soft}}"
+theme[process_mid]       = "{{accent.secondary.base}}"
+theme[process_end]       = "{{accent.secondary.bright}}"

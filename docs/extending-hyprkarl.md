@@ -25,7 +25,9 @@ Use this rule of thumb:
 - `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
   Personal shell and Hyprland configuration that upstream does not replace
 - `themes/`
-  Theme assets and per-theme overrides
+  Shipped theme sources, overrides, and assets
+- `theme-generator/`
+  Integrated compiler defaults, templates, rendering code, and tests
 - `templates/`
   Files copied or rendered by setup and install commands
 - `applications/`
@@ -226,10 +228,10 @@ To add a built-in widget kind:
 3. If it opens a panel, put service-specific state and panel composition under
    `config/quickshell/features/<kind>/` and use the existing per-monitor
    `FeaturePanelHost` rather than creating another popup window.
-4. Add required appearance values to the companion generator's shared
-   `defaults/theme.yaml` `shell` object, regenerate every built-in, and expose
-   only the semantic QML property the component needs. Theme-specific sources
-   may derive that final value from any custom token structure.
+4. Add required appearance values to
+   `theme-generator/defaults/theme.yaml` under the final `shell` object and
+   expose only the semantic QML property the component needs. Theme-specific
+   sources may derive that final value from any custom token structure.
 
 Add a shared component only when multiple widgets genuinely use the same
 interaction or visual structure.
@@ -239,9 +241,10 @@ validation commands.
 
 ## Add a Theme-Aware Feature
 
-Hyprkarl assembles a built-in theme plus an optional `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/`
-overlay into an immutable XDG-state artifact. It atomically points
-`current/theme` at that artifact and `current/wallpaper` at the selection.
+`hk-theme set` compiles a built-in source plus an optional
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/` overlay into an immutable XDG-state artifact. It
+atomically points `current/theme` at that artifact and `current/wallpaper` at
+the selection.
 The paths under `config/hyprkarl/current/` are fixed compatibility links into
 that state tree.
 
@@ -260,11 +263,11 @@ Examples:
 - Hyprland `loadfile`s `current/theme/hyprland.lua` at the end of its config
 - `hyprlock` points at `current/wallpaper`
 
-Generator-owned themes use a typed `theme.yaml` source. It recursively merges
-over the companion generator's shared defaults, then resolves Jinja
+Themes use a typed `theme.yaml` source. The integrated compiler merges its
+shared defaults, built-in values, and personal values before resolving Jinja
 expressions without coercing numbers or booleans to strings. The shipped
-`metrics`, `motion`, and `typography` groups are conventions, not a schema:
-authors can define their own vocabulary as long as consumer-facing values such
+`metrics`, `motion`, and `typography` groups are conventions, not a schema.
+Authors can define their own vocabulary as long as consumer-facing values such
 as the final `shell` object reference it. See [Themes](themes.md).
 
 ## Exposing New Config Files

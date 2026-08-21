@@ -1,0 +1,105 @@
+[mgr]
+cwd = { fg = "{{accent.secondary.base}}" }
+
+find_keyword  = { fg = "{{accent.primary.base}}", bold = true }
+find_position = { fg = "{{accent.secondary.base}}", bold = true }
+
+marker_copied   = { fg = "{{status.success}}", bg = "{{status.success}}" }
+marker_cut      = { fg = "{{status.error}}", bg = "{{status.error}}" }
+marker_marked   = { fg = "{{accent.secondary.bright}}", bg = "{{accent.secondary.bright}}" }
+marker_selected = { fg = "{{status.warning}}", bg = "{{status.warning}}" }
+
+border_style = { fg = "{{ui.border}}" }
+
+syntect_theme = ""
+
+# Tabs
+[tabs]
+sep_outer = { open = "", close = "" }
+sep_inner = { open = "", close = "" }
+
+active   = { bg = "{{accent.secondary.base}}", fg = "{{base.background}}", bold = true }
+inactive = { fg = "{{accent.secondary.base}}", bg = "{{base.surface_soft}}" }
+
+# Mode
+[mode]
+normal_main = { bg = "{{accent.secondary.base}}", fg = "{{base.background}}", bold = true }
+normal_alt  = { fg = "{{accent.secondary.base}}", bg = "{{base.surface_soft}}" }
+
+select_main = { bg = "{{accent.primary.base}}", fg = "{{base.background}}", bold = true }
+select_alt  = { fg = "{{accent.primary.base}}", bg = "{{base.surface_soft}}" }
+
+unset_main = { bg = "{{status.error}}", fg = "{{base.background}}", bold = true }
+unset_alt  = { fg = "{{status.error}}", bg = "{{base.surface_soft}}" }
+
+# Status
+[status]
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+
+perm_sep   = { fg = "{{base.foreground_dim}}" }
+perm_type  = { fg = "{{status.success}}" }
+perm_read  = { fg = "{{status.warning}}" }
+perm_write = { fg = "{{status.error}}" }
+perm_exec  = { fg = "{{accent.secondary.base}}" }
+
+progress_normal = { fg = "{{status.success}}", bg = "{{base.surface}}" }
+progress_error  = { fg = "{{status.warning}}", bg = "{{status.error}}" }
+
+# Which menu
+[which]
+mask = { bg = "{{base.background}}" }
+cand = { fg = "{{accent.secondary.base}}" }
+rest = { fg = "{{base.foreground_dim}}" }
+desc = { fg = "{{accent.primary.base}}" }
+
+# Confirm
+[confirm]
+border = { fg = "{{accent.secondary.base}}" }
+title  = { fg = "{{accent.secondary.base}}" }
+
+# Notifications
+[notify]
+title_info  = { fg = "{{status.success}}" }
+title_warn  = { fg = "{{status.warning}}" }
+title_error = { fg = "{{status.error}}" }
+
+# Picker
+[pick]
+border = { fg = "{{accent.secondary.base}}" }
+active = { fg = "{{accent.primary.base}}", bold = true }
+
+# Input
+[input]
+border = { fg = "{{accent.secondary.base}}" }
+
+# Completion
+[cmp]
+border = { fg = "{{accent.secondary.base}}" }
+
+# Tasks
+[tasks]
+border  = { fg = "{{accent.secondary.base}}" }
+hovered = { fg = "{{accent.primary.base}}", bold = true }
+
+# Help
+[help]
+on      = { fg = "{{accent.secondary.base}}" }
+run     = { fg = "{{accent.primary.base}}" }
+desc    = { fg = "{{base.foreground}}" }
+footer  = { fg = "{{base.background}}", bg = "{{base.foreground}}" }
+
+# Filetypes
+[filetype]
+rules = [
+  { mime = "image/*", fg = "{{status.warning}}" },
+  { mime = "{audio,video}/*", fg = "{{accent.primary.base}}" },
+  { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma}", fg = "{{status.error}}" },
+  { mime = "application/{pdf,doc,rtf}", fg = "{{accent.secondary.base}}" },
+  { url = "*", is = "exec", fg = "{{status.success}}" },
+  { url = "*/", fg = "{{accent.secondary.base}}" }
+]
+
+# Indicator
+[indicator]
+padding = { open = "█", close = "█" }

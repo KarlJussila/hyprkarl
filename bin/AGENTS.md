@@ -113,12 +113,15 @@ upstream-owned configuration. Personal files live outside the checkout under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; update commands must not
 generate, replace, reset, or adopt them.
 
-`lib/theme.sh` owns the theme source-to-runtime boundary. Theme selection must
-copy a built-in plus an optional same-name `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` overlay into a new
-XDG-state artifact, validate it, and atomically swap the selector before any
-reloads. The repository's `config/hyprkarl/current/` entries are fixed
-compatibility links. Wallpaper additions/removals persist under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`;
-never mutate checked-in theme sources from a public command.
+`lib/theme.sh` owns the theme source-to-runtime boundary. `hk-theme set` invokes
+the integrated Python compiler with a built-in source and optional same-name
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` overlay. The compiler
+renders and validates a complete temporary bundle before the command installs
+an immutable XDG-state artifact and atomically swaps the selector. The
+repository's `config/hyprkarl/current/` entries are fixed compatibility links.
+Wallpaper additions and removals persist under the personal theme source;
+never mutate checked-in theme sources from a public command. Do not restore
+`hk-theme build`, a sibling generator path, or a generated-bundle input mode.
 The same library owns installation of the GTK payload as a marked real-file
 copy. `hk-theme-set` refreshes it while holding the theme lock; setup/update
 uses the same helper and may replace an unrelated destination only on the

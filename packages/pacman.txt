@@ -42,12 +42,16 @@ pipewire-pulse
 playerctl
 psmisc
 python
+python-colour
 python-gobject
+python-jinja
+python-yaml
 qt5ct
 qt6ct
 quickshell
 resvg
 satty
+sassc
 stow
 ttf-iosevka-nerd
 ttf-jetbrains-mono-nerd

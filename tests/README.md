@@ -15,6 +15,17 @@ conflict.
 tests/hk-user-migrate.sh
 ```
 
+## `hk-theme-runtime.sh`
+
+Builds a shipped theme into disposable XDG state, applies a sparse same-name
+source overlay, checks wallpaper precedence, proves that a failed build leaves
+the active selector unchanged, and verifies that GTK installs as marked real
+files.
+
+```bash
+tests/hk-theme-runtime.sh
+```
+
 ## `hk-update-tui.sh`
 
 Exercises [`hk-update tui`](../docs/updating.md#guided-update-tui) (the guided

@@ -11,8 +11,28 @@ from pathlib import Path
 
 
 def main() -> int:
-    themes_path = Path(os.environ["HYPRKARL_PATH"]) / "themes"
-    themes = sorted(path.name for path in themes_path.iterdir() if path.is_dir())
+    hyprkarl_path = Path(os.environ["HYPRKARL_PATH"])
+    config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+    roots = (hyprkarl_path / "themes", config_home / "hyprkarl" / "themes")
+
+    def is_legacy_bundle(path: Path) -> bool:
+        return (
+            (path / "quickshell.json").is_file()
+            and (path / "hyprland.lua").is_file()
+            and (path / "gtk-theme").is_dir()
+        )
+
+    themes = sorted(
+        {
+            path.name
+            for root in roots
+            if root.is_dir()
+            for path in root.iterdir()
+            if path.is_dir()
+            and (path / "theme.yaml").is_file()
+            and not is_legacy_bundle(path)
+        }
+    )
     entries = [
         {
             "id": f"theme.{theme}",

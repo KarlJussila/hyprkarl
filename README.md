@@ -12,12 +12,12 @@ configuration outside the checkout.
 
 <table>
   <tr>
-    <td><img src="themes/hyprkarl/screenshots/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
-    <td><img src="themes/hyprkarl/screenshots/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
+    <td><img src="themes/hyprkarl/previews/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/hyprkarl/previews/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
   </tr>
   <tr>
-    <td><img src="themes/hyprkarl/screenshots/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
-    <td><img src="themes/hyprkarl/screenshots/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+    <td><img src="themes/hyprkarl/previews/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/hyprkarl/previews/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
   </tr>
 </table>
 
@@ -122,7 +122,7 @@ Shipped themes live under `themes/`; personal themes and overlays live under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. Selection atomically assembles an immutable runtime bundle
 under `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl`, so switching never
 edits tracked files. Quickshell watches the runtime selector and applies theme
-switches without restarting. Built-ins are generated from typed `theme.yaml`
+switches without restarting. Built-ins are authored as typed `theme.yaml`
 graphs whose strings, numbers, booleans, shared defaults, and arbitrary custom
 structures can feed stable consumer values. The semantic `quickshell.json`
 controls island corner shapes,
@@ -162,12 +162,11 @@ Switch themes from `Hyprkarl Menu -> Config -> Theme` or with:
 hk-theme set <theme-name>
 ```
 
-To build your own theme, create a typed source and generate it into
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` with
-`hk-theme build <source> [name]` and the adjacent
-[hyprkarl-theme-generator](https://github.com/KarlJussila/hyprkarl-theme-generator)
-(recommended), or copy an existing bundle there and edit it. See
-[docs/themes.md](docs/themes.md) for both approaches and the full theme layout.
+To create your own theme, add a source directory under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. A new theme needs
+`theme.yaml`; a same-name overlay may contain only sparse values, template
+overrides, or assets. `hk-theme set` builds, validates, and activates it. See
+[docs/themes.md](docs/themes.md) for the source layout and merge order.
 
 Provided themes:
 <details>
@@ -175,12 +174,12 @@ Provided themes:
 
 <table>
   <tr>
-    <td><img src="themes/hyprkarl/screenshots/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
-    <td><img src="themes/hyprkarl/screenshots/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
+    <td><img src="themes/hyprkarl/previews/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/hyprkarl/previews/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
   </tr>
   <tr>
-    <td><img src="themes/hyprkarl/screenshots/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
-    <td><img src="themes/hyprkarl/screenshots/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+    <td><img src="themes/hyprkarl/previews/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/hyprkarl/previews/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
   </tr>
 </table>
 
@@ -191,12 +190,12 @@ Provided themes:
 
 <table>
   <tr>
-    <td><img src="themes/everforest/screenshots/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
-    <td><img src="themes/everforest/screenshots/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
+    <td><img src="themes/everforest/previews/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/everforest/previews/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
   </tr>
   <tr>
-    <td><img src="themes/everforest/screenshots/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
-    <td><img src="themes/everforest/screenshots/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+    <td><img src="themes/everforest/previews/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/everforest/previews/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
   </tr>
 </table>
 
@@ -207,12 +206,12 @@ Provided themes:
 
 <table>
   <tr>
-    <td><img src="themes/gruvbox/screenshots/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
-    <td><img src="themes/gruvbox/screenshots/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
+    <td><img src="themes/gruvbox/previews/busy.png" alt="Busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/gruvbox/previews/launcher.png" alt="App launcher"/><br/><sub>App launcher</sub></td>
   </tr>
   <tr>
-    <td><img src="themes/gruvbox/screenshots/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
-    <td><img src="themes/gruvbox/screenshots/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+    <td><img src="themes/gruvbox/previews/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/gruvbox/previews/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
   </tr>
 </table>
 

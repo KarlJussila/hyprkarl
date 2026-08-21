@@ -1,0 +1,163 @@
+typography:
+  ui_family: "JetBrains Mono Nerd Font Propo"
+  mono_family: "JetBrains Mono Nerd Font"
+  body_size: 13
+  readout_size: "{{typography.body_size}}"
+  weight: 700
+  style: "Bold"
+
+metrics:
+  spacing:
+    compact: 3
+    small: 6
+    medium: 8
+    large: 10
+    xlarge: 12
+    xxlarge: 14
+  radius:
+    entry: 4
+    tooltip: 6
+    control: 8
+    popup: 10
+  border:
+    standard: 2
+    subtle: 1
+  opacity:
+    header_accent: 0.3
+    selection_accent: 0.16
+
+motion:
+  surface: 140
+
+shell:
+  palette:
+    foreground: "{{ui.text_secondary}}"
+    muted: "{{base.foreground_muted}}"
+    accent: "{{accent.primary.bright}}"
+    border: "{{base.layer4}}"
+    urgent: "{{status.error}}"
+    warning: "{{status.warning}}"
+
+  surfaces:
+    window: "#00000000"
+    bar: "{{base.background}}"
+    popup: "{{base.background}}"
+    tooltip: "{{base.background}}"
+    notification: "{{base.background}}"
+    control: "#00000000"
+
+  typography:
+    uiFamily: "{{typography.ui_family}}"
+    monoFamily: "{{typography.mono_family}}"
+    bodySize: "{{typography.body_size}}"
+    readoutSize: "{{typography.readout_size}}"
+    weight: "{{typography.weight}}"
+    style: "{{typography.style}}"
+
+  metrics:
+    radius: "{{metrics.radius.control}}"
+    borderWidth: "{{metrics.border.standard}}"
+    controlPadding: "{{metrics.spacing.medium}}"
+
+  bar:
+    minimumThickness: 22
+    showDividers: true
+    widgetPadding:
+      main: "{{metrics.spacing.small}}"
+      cross: "{{metrics.spacing.compact}}"
+    trayPaddingOffset: -2
+    margin:
+      screen: 0
+      outer: 0
+      content: 0
+    island:
+      radius: "{{metrics.radius.control}}"
+      curveSize: "{{metrics.spacing.xlarge}}"
+      curveRadius: "{{metrics.radius.entry}}"
+      corners:
+        screenOuter: "square"
+        screenInner: "curve"
+        contentOuter: "square"
+        contentInner: "round"
+      borders:
+        screen: false
+        content: true
+        outer: false
+        inner: true
+
+  panel:
+    gap: 0
+    width: 360
+    powerWidth: 300
+    padding: "{{metrics.spacing.xlarge}}"
+    spacing: "{{metrics.spacing.large}}"
+    radius: "{{metrics.radius.popup}}"
+    transitionDuration: "{{motion.surface}}"
+
+  tooltip:
+    radius: "{{metrics.radius.tooltip}}"
+
+  osd:
+    width: 300
+    mediaWidth: 380
+    padding: "{{metrics.spacing.xlarge}}"
+    spacing: "{{metrics.spacing.large}}"
+    radius: "{{metrics.radius.popup}}"
+    iconSize: 20
+    progressHeight: "{{metrics.spacing.small}}"
+    transitionDuration: "{{motion.surface}}"
+
+  notification:
+    width: 420
+    compactWidth: "{{shell.notification.width // 2}}"
+    padding: "{{metrics.spacing.large}}"
+    spacing: "{{metrics.spacing.medium}}"
+    stackSpacing: 0
+    radius: "{{metrics.radius.popup}}"
+    iconSize: 32
+    indicatorScale: 1.5
+    progressHeight: "{{metrics.spacing.small}}"
+    transitionDuration: "{{motion.surface}}"
+
+  polkit:
+    width: 440
+    padding: "{{metrics.spacing.xxlarge}}"
+    spacing: "{{metrics.spacing.large}}"
+    radius: "{{metrics.radius.popup}}"
+    iconSize: 36
+    headerAccentOpacity: "{{metrics.opacity.header_accent}}"
+    transitionDuration: "{{motion.surface}}"
+
+  menu:
+    scrim: "#22000000"
+    fontSize: 14
+    width: 280
+    searchWidth: "{{shell.menu.width * 2}}"
+    referenceWidth: 800
+    searchRows: 10
+    outerRadius: "{{metrics.radius.popup}}"
+    innerRadius: "{{metrics.radius.tooltip}}"
+    entryRadius: "{{metrics.radius.entry}}"
+    outerBorderWidth: "{{metrics.border.standard}}"
+    outerPadding: "{{metrics.spacing.small}}"
+    innerBorderWidth: "{{metrics.border.standard}}"
+    headerPadding: "{{metrics.spacing.small}}"
+    entryMargin: "{{metrics.radius.entry}}"
+    entryPadding: 7
+    selectionBorderWidth: "{{metrics.border.subtle}}"
+    headerAccentOpacity: "{{metrics.opacity.header_accent}}"
+    selectionAccentOpacity: "{{metrics.opacity.selection_accent}}"
+
+  applicationPicker:
+    width: "{{shell.menu.searchWidth}}"
+    rows: 7
+    iconSize: 32
+
+  calculator:
+    width: 480
+    historyRows: 5
+
+  wallpaperPicker:
+    columns: 3
+    thumbnailScreenFraction: 0.25
+    gap: "{{metrics.spacing.xxlarge}}"

@@ -22,6 +22,8 @@ mkdir -p \
   "$FAKE_REPO/user/hooks/theme-set.d" \
   "$FAKE_REPO/user/quickshell/modules" \
   "$FAKE_REPO/user/themes/test/wallpapers" \
+  "$FAKE_REPO/user/themes/legacy/gtk-theme" \
+  "$FAKE_REPO/bin/lib" \
   "$FAKE_REPO/config/uwsm" \
   "$FAKE_REPO/templates/setup" \
   "$CONFIG_HOME/uwsm" \
@@ -35,11 +37,15 @@ chmod +x "$FAKE_REPO/user/hooks/theme-set.d/10-test"
 printf 'import QtQuick\nItem {}\n' \
   > "$FAKE_REPO/user/quickshell/modules/Test.qml"
 printf 'theme source\n' > "$FAKE_REPO/user/themes/test/theme.yaml"
+printf 'generated bundle\n' > "$FAKE_REPO/user/themes/legacy/quickshell.json"
+printf 'generated config\n' > "$FAKE_REPO/user/themes/legacy/hyprland.lua"
+printf 'resolved graph\n' > "$FAKE_REPO/user/themes/legacy/theme.yaml"
 printf 'terminal and editor\n' > "$FAKE_REPO/config/uwsm/default"
 printf 'secret value\n' > "$FAKE_REPO/config/uwsm/env.local"
 printf 'kitty.desktop\n' > "$FAKE_REPO/config/xdg-terminals.list"
 printf 'env template\n' > "$FAKE_REPO/templates/setup/env.local.example"
 printf 'keep me\n' > "$CONFIG_HOME/hyprkarl/current/marker"
+cp "$ORIG/bin/lib/theme.sh" "$FAKE_REPO/bin/lib/theme.sh"
 
 ln -s "$FAKE_REPO/config/uwsm/default" "$CONFIG_HOME/uwsm/default"
 ln -s "$FAKE_REPO/config/uwsm/env.local" "$CONFIG_HOME/uwsm/env.local"
@@ -56,6 +62,11 @@ HOME="$FAKE_HOME" XDG_CONFIG_HOME="$CONFIG_HOME" HYPRKARL_PATH="$FAKE_REPO" \
   || fail "QML module was not moved"
 [[ -f "$CONFIG_HOME/hyprkarl/themes/test/theme.yaml" ]] \
   || fail "theme was not moved"
+[[ ! -e "$CONFIG_HOME/hyprkarl/themes/legacy" ]] \
+  || fail "legacy generated bundle was treated as a source"
+find "$CONFIG_HOME/hyprkarl/theme-backups" -maxdepth 1 -type d \
+  -name 'legacy.*.legacy' -print -quit | grep -q . \
+  || fail "legacy generated bundle was not backed up"
 [[ -f "$CONFIG_HOME/hyprkarl/current/marker" ]] \
   || fail "existing config-root state was changed"
 

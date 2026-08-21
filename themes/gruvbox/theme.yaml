@@ -1,208 +1,78 @@
-typography:
-  ui_family: JetBrains Mono Nerd Font Propo
-  mono_family: JetBrains Mono Nerd Font
-  body_size: 13
-  readout_size: 13
-  weight: 700
-  style: Bold
-metrics:
-  spacing:
-    compact: 3
-    small: 6
-    medium: 8
-    large: 10
-    xlarge: 12
-    xxlarge: 14
-  radius:
-    entry: 4
-    tooltip: 6
-    control: 8
-    popup: 10
-  border:
-    standard: 2
-    subtle: 1
-  opacity:
-    header_accent: 0.3
-    selection_accent: 0.16
-motion:
-  surface: 140
-shell:
-  palette:
-    foreground: '#a9b665'
-    muted: '#a89984'
-    accent: '#d8a657'
-    border: '#524942'
-    urgent: '#ea6962'
-    warning: '#e78a4e'
-  surfaces:
-    window: '#00000000'
-    bar: '#282828'
-    popup: '#282828'
-    tooltip: '#282828'
-    notification: '#282828'
-    control: '#00000000'
-  typography:
-    uiFamily: JetBrains Mono Nerd Font Propo
-    monoFamily: JetBrains Mono Nerd Font
-    bodySize: 13
-    readoutSize: 13
-    weight: 700
-    style: Bold
-  metrics:
-    radius: 8
-    borderWidth: 2
-    controlPadding: 8
-  bar:
-    minimumThickness: 22
-    showDividers: true
-    widgetPadding:
-      main: 6
-      cross: 3
-    trayPaddingOffset: -2
-    margin:
-      screen: 0
-      outer: 0
-      content: 0
-    island:
-      radius: 8
-      curveSize: 12
-      curveRadius: 4
-      corners:
-        screenOuter: square
-        screenInner: curve
-        contentOuter: square
-        contentInner: round
-      borders:
-        screen: false
-        content: true
-        outer: false
-        inner: true
-  panel:
-    gap: 0
-    width: 360
-    powerWidth: 300
-    padding: 12
-    spacing: 10
-    radius: 10
-    transitionDuration: 140
-  tooltip:
-    radius: 6
-  osd:
-    width: 300
-    mediaWidth: 380
-    padding: 12
-    spacing: 10
-    radius: 10
-    iconSize: 20
-    progressHeight: 6
-    transitionDuration: 140
-  notification:
-    width: 420
-    compactWidth: 210
-    padding: 10
-    spacing: 8
-    stackSpacing: 0
-    radius: 10
-    iconSize: 32
-    indicatorScale: 1.5
-    progressHeight: 6
-    transitionDuration: 140
-  polkit:
-    width: 440
-    padding: 14
-    spacing: 10
-    radius: 10
-    iconSize: 36
-    headerAccentOpacity: 0.3
-    transitionDuration: 140
-  menu:
-    scrim: '#22000000'
-    fontSize: 14
-    width: 280
-    searchWidth: 560
-    referenceWidth: 800
-    searchRows: 10
-    outerRadius: 10
-    innerRadius: 6
-    entryRadius: 4
-    outerBorderWidth: 2
-    outerPadding: 6
-    innerBorderWidth: 2
-    headerPadding: 6
-    entryMargin: 4
-    entryPadding: 7
-    selectionBorderWidth: 1
-    headerAccentOpacity: 0.3
-    selectionAccentOpacity: 0.16
-  applicationPicker:
-    width: 560
-    rows: 7
-    iconSize: 32
-  calculator:
-    width: 480
-    historyRows: 5
-  wallpaperPicker:
-    columns: 3
-    thumbnailScreenFraction: 0.25
-    gap: 14
+# Theme-specific colors and optional token overrides.
 mode: dark
+
 base:
-  background: '#282828'
-  layer0: '#282828'
-  layer1: '#302c29'
-  layer2: '#3b3530'
-  layer3: '#47403a'
-  layer4: '#524942'
-  surface_soft: '#302c29'
-  surface: '#3b3530'
-  surface_alt: '#524942'
-  foreground: '#d4be98'
-  foreground_muted: '#a89984'
-  foreground_dim: '#928374'
+  background: "#282828"
+
+  layer0: "{{base.background}}"
+  layer1: "#302c29"
+  layer2: "#3b3530"
+  layer3: "#47403a"
+  layer4: "#524942"
+
+  surface_soft: "{{base.layer1}}"
+  surface: "{{base.layer2}}"
+  surface_alt: "{{base.layer4}}"
+
+  foreground: "#d4be98"
+  foreground_muted: "#a89984"
+  foreground_dim: "#928374"
+
 ansi:
-  black: '#665c54'
-  red: '#ea6962'
-  green: '#a9b665'
-  yellow: '#e78a4e'
-  blue: '#7daea3'
-  magenta: '#d3869b'
-  cyan: '#89b482'
-  white: '#d4be98'
+  black: "#665c54"
+  red: "#ea6962"
+  green: "#a9b665"
+  yellow: "#e78a4e"
+  blue: "#7daea3"
+  magenta: "#d3869b"
+  cyan: "#89b482"
+  white: "#d4be98"
+
 bright:
-  black: '#928374'
-  red: '#ea6962'
-  green: '#a9b665'
-  yellow: '#d8a657'
-  blue: '#7daea3'
-  magenta: '#d3869b'
-  cyan: '#89b482'
-  white: '#d4be98'
+  black: "#928374"
+  red: "{{ansi.red}}"
+  green: "{{ansi.green}}"
+  yellow: "#d8a657"
+  blue: "{{ansi.blue}}"
+  magenta: "{{ansi.magenta}}"
+  cyan: "{{ansi.cyan}}"
+  white: "{{ansi.white}}"
+
 accent:
   primary:
-    base: '#e78a4e'
-    soft: '#a04c16'
-    bright: '#d8a657'
+    base: "{{ansi.yellow}}"     # core gruvbox identity
+    soft: "{{darken(accent.primary.base,25)}}"
+    bright: "{{bright.yellow}}"
+
   secondary:
-    base: '#7daea3'
-    soft: '#426a61'
-    bright: '#7daea3'
+    base: "{{ansi.blue}}"         # main contrast color
+    soft: "{{darken(accent.secondary.base,25)}}"
+    bright: "{{bright.blue}}"
+
   tertiary:
-    base: '#a9b665'
-    soft: '#616932'
-    bright: '#a9b665'
+    base: "{{ansi.green}}"        # semantic / calm accent
+    soft: "{{darken(accent.tertiary.base,25)}}"
+    bright: "{{bright.green}}"
+
 status:
-  success: '#a9b665'
-  warning: '#e78a4e'
-  error: '#ea6962'
-  urgent: '#ea6962'
+  success: "{{accent.tertiary.base}}"   # green
+  warning: "{{accent.primary.base}}"    # yellow
+  error: "{{ansi.red}}"
+  urgent: "{{bright.red}}"
+
 ui:
-  cursor: '#a89984'
-  text: '#d4be98'
-  text_secondary: '#a9b665'
-  selection_bg: '#524942'
-  selection_fg: '#d4be98'
-  panel: '#3b3530'
-  border: '#e78a4e'
-  border_inner: '#665c54'
-  border_soft: '#a04c16'
-  highlight: '#d8a657'
+  cursor: "#a89984"
+
+  text: "{{base.foreground}}"
+  text_secondary: "{{accent.tertiary.base}}"
+
+  selection_bg: "{{base.layer4}}"
+  selection_fg: "{{base.foreground}}"
+
+  panel: "{{base.surface}}"
+
+  border: "{{accent.primary.base}}"
+  border_inner: "#665c54"
+  border_soft: "{{accent.primary.soft}}"
+
+  highlight: "{{accent.primary.bright}}"

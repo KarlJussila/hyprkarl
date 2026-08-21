@@ -52,16 +52,16 @@ Symptoms:
 
 Cause:
 
-- the selected theme is missing a file Hyprkarl expects
-- a theme file contains invalid config, CSS, or theme data
+- the selected source or an override fails to render or validate
+- generated CSS or application configuration is valid but looks wrong
 - the affected app has not reloaded yet
 
 What to do:
 
-- compare the theme against a working theme such as `themes/hyprkarl/`
-- check that the expected theme files exist
-- inspect the specific theme file used by the app that looks wrong
-- run `hk-theme set <theme-name>` again
+- run `hk-theme set <theme-name>` and read the compiler error
+- compare personal values and overrides with a working source such as
+  `themes/hyprkarl/`
+- inspect the active artifact through `config/hyprkarl/current/theme/`
 - if needed, restart the affected app
 
 ## Wallpaper State Looks Wrong

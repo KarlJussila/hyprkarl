@@ -7,6 +7,20 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Breaking: integrated the theme compiler into Hyprkarl and converted
+  `themes/<name>/` to authoring source only. `hk-theme set` now merges shared
+  defaults, a built-in source, and an optional same-name personal source;
+  renders and validates a complete bundle; and activates an immutable XDG-state
+  artifact. The sibling generator dependency, `hk-theme build`, and generator
+  `sync` command are gone.
+- Personal themes now live as source under
+  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. A new theme requires
+  `theme.yaml`; a same-name overlay may contain only sparse values, overrides,
+  or assets. Migration moves legacy complete bundles to dated backups under
+  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/theme-backups/` instead of
+  treating generated output as editable source.
+- Fixed light theme generation so GTK 3 and GTK 4 compile the light Colloid
+  variant and advertise light mode in their generated settings.
 - Breaking: moved personal shell JSON, menu JSON, Hyprland modules, hooks,
   Quickshell extensions, and themes from the checkout's `user/` tree to
   `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`. `hk-user-migrate` performs the

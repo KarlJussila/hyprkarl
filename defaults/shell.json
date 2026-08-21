@@ -1,5 +1,16 @@
 {
   "version": 1,
+  "modules": {
+    "bar": true,
+    "panels": true,
+    "notifications": true,
+    "osd": true,
+    "polkit": true,
+    "menu": true,
+    "applications": true,
+    "calculator": true,
+    "wallpaper": true
+  },
   "osd": {
     "edge": "bottom",
     "margin": 40,
@@ -36,7 +47,6 @@
     }
   },
   "bar": {
-    "enabled": true,
     "edge": "top",
     "exclusive": true,
     "layout": {

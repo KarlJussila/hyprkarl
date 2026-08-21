@@ -27,6 +27,22 @@ files.
 tests/hk-theme-runtime.sh
 ```
 
+## `hk-shell-modules.sh`
+
+Starts an isolated Quickshell instance with every built-in module disabled and
+an explicitly referenced personal QML root. It checks that disabled IPC targets
+are absent, the bar system monitor does not start, and the root receives the
+resolved configuration, theme, outputs, and overlay open/replace/toggle/close
+context.
+
+It needs a running Hyprland session with at least one output, plus `qs`,
+`jq`, `hyprctl`, and the installed Quickshell QML modules. It copies the shell
+into a temporary directory and removes it afterward.
+
+```bash
+tests/hk-shell-modules.sh
+```
+
 ## `hk-update-tui.sh`
 
 Exercises [`hk-update tui`](../docs/updating.md#guided-update-tui) (the guided

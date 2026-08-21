@@ -44,86 +44,13 @@ provisioner, or plugin marketplace.
 - Shipped files provide defaults and stable entry points. Settings commands do
   not modify those files.
 - Generated files have one writer and are kept out of Git.
-- Disabled shell modules create no windows, services, timers, watchers, or IPC
-  targets.
+- Disabled built-in shell groups create none of the windows, services, timers,
+  watchers, or IPC targets they own. The panels group only owns the popup host;
+  bar status widgets remain until the owner removes them from the layout.
 - Each application uses the simplest customization method it supports. There
   is no universal configuration merger.
 - Updates never need a destructive "adopt" or "force" path during ordinary
   use.
-
-## Phase 4: make every shell module optional and replaceable
-
-### Goal
-
-Allow users to keep any subset of the built-in Quickshell shell or disable it
-all and supply their own composition.
-
-### Built-in module switches
-
-Add clear enable switches for at least:
-
-- the bar;
-- feature panels and their feature-owned services;
-- notifications;
-- the OSD;
-- polkit authentication;
-- the command menu;
-- the launcher and open-with picker;
-- the calculator;
-- the wallpaper picker.
-
-The final JSON grouping should follow actual runtime ownership. It does not
-need one arbitrary flag per QML file.
-
-Disabling a module prevents construction of its windows, singleton state,
-timers, watchers, background commands, service registrations, and IPC targets.
-For example, disabling notifications must allow another notification daemon to
-register, and disabling polkit must allow another authentication agent.
-
-Applying module switches may require `hk-shell restart`. Live creation and
-destruction are not required unless Quickshell already makes that simpler.
-
-### User QML
-
-The application-wide personal QML file must load independently of the built-in
-bar. Give it a small documented object containing:
-
-- the resolved shell configuration;
-- the active theme data, including user-defined values;
-- the current output list;
-- notification positioning support;
-- the currently requested overlay name, output, and values;
-- methods to open, replace, toggle, and close an overlay.
-
-This completes the menu behavior that is currently only half documented. A
-menu entry can request a user-defined overlay by name, and personal QML can
-actually observe that request and display its window.
-
-Built-in overlays should use the same overlay controller instead of a private
-shortcut. Do not add plugin discovery, manifests, registration, or permission
-checks.
-
-### Authoring examples
-
-The documentation and checks must cover:
-
-1. Disabling one built-in module, such as notifications, and using an external
-   replacement.
-2. Adding one personal overlay and opening it from a menu entry.
-3. Disabling the built-in bar and supplying a personal bar with reactive
-   notification positioning.
-4. Disabling every built-in window and running a complete personal QML
-   composition.
-
-### Acceptance
-
-- Every listed built-in module can be disabled independently.
-- Disabled modules are inert and release exclusive system services.
-- The custom QML root works when the built-in bar is disabled.
-- A user-defined menu overlay opens, receives its values, and closes through
-  the documented object.
-- Owner-authored QML receives normal QML errors without Hyprkarl trying to
-  sandbox it.
 
 ## Phase 5: replace the update process
 
@@ -297,11 +224,10 @@ kept beside theme data or components.
 
 Implement the work as reviewable changes in this order:
 
-1. Add shell module switches and complete the personal QML overlay controls.
-2. Replace the updater, package-removal flow, and system setup with the new
+1. Replace the updater, package-removal flow, and system setup with the new
    source, apply, and migration model.
-3. Reuse the shared menu frame and investigate the remaining reload failure.
-4. Finish the documentation and agent-instruction cleanup.
+2. Reuse the shared menu frame and investigate the remaining reload failure.
+3. Finish the documentation and agent-instruction cleanup.
 
 Documentation and focused tests belong in each change. The final cleanup is
 for consolidation, not for postponing behavioral documentation.

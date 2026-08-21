@@ -6,6 +6,7 @@ Scope {
 
   required property var shellConfig
   required property var theme
+  required property var overlayState
 
   readonly property var item: moduleLoader.item
 
@@ -15,6 +16,27 @@ Scope {
     readonly property var configuration: root.shellConfig.values
     readonly property var settings: root.shellConfig.userRootSettings
     readonly property var theme: root.theme
+    readonly property var outputs: Quickshell.screens
+    readonly property string overlayName: root.overlayState.activeSurface
+    readonly property string overlayOutput: root.overlayState.screenName
+    readonly property var overlayValues: root.overlayState.parameters
+    readonly property int overlayRevision: root.overlayState.openRevision
+
+    function openOverlay(name: string, output: string, values: var): bool {
+      return root.overlayState.open(name, output, values)
+    }
+
+    function replaceOverlay(name: string, output: string, values: var): bool {
+      return root.overlayState.replace(name, output, values)
+    }
+
+    function toggleOverlay(name: string, output: string, values: var): bool {
+      return root.overlayState.toggle(name, output, values)
+    }
+
+    function closeOverlay(): void {
+      root.overlayState.closeCurrent()
+    }
   }
 
   property Loader moduleLoader: Loader {

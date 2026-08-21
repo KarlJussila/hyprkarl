@@ -42,10 +42,21 @@ surfaces) — they are called out explicitly.
 - Fixed notification icon paths and sizing. Absolute sender paths now load as
   files, every icon source uses `notification.iconSize`, and the redundant
   `notification.imageSize` theme token has been removed.
-- Added `bar.enabled` so the built-in bar and its bar-only polling can be
-  removed without stopping menus, notifications, OSD, or polkit. Added one
-  explicitly referenced application-wide user QML root with open theme data
-  and reactive per-output notification positioning for custom bars.
+- Breaking: replaced `bar.enabled` with the top-level `modules` object. Its
+  nine switches independently select the bar, panels, notifications, OSD,
+  polkit, menu, applications/open-with, calculator, and wallpaper. Module
+  changes require `hk-shell restart`; disabled modules no longer construct
+  their built-in windows, state, services, timers, watchers, processes, or IPC
+  targets. `modules.panels` disables popup panels only, so status widgets stay
+  in an enabled bar until a layout edit removes them.
+- Expanded the explicitly referenced application-wide user QML root. Its
+  context now exposes current outputs and direct overlay request and control
+  fields, so personal QML can receive a custom menu overlay and close or
+  replace it without a plugin registry.
+- Added `tests/hk-shell-modules.sh`, an isolated Quickshell check for disabled
+  module IPC, bar polling, and the personal overlay context.
+- Fixed `hk-shell stop` returning during a reload-generation gap while the
+  Quickshell daemon remained alive and able to restart the shell.
 - Breaking: renamed generator-owned `palette.yaml` sources to `theme.yaml` and
   expanded them into an open, typed token graph. Shared defaults now own fonts,
   spacing, radii, border widths, motion, and the complete Quickshell appearance

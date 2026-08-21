@@ -2,7 +2,6 @@ pragma Singleton
 
 import QtQml
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
 import "../../config"
 import "../overlay"
@@ -411,7 +410,7 @@ QtObject {
     dynamicEntries = loadedEntries
     dynamicError = error
     openRevision++
-    OverlayState.open(surface, screen, {})
+    OverlayState.replace(surface, screen, {})
   }
 
   function enterMenu(screen: string, nextHistory, menuId: string): bool {
@@ -450,17 +449,13 @@ QtObject {
       loadedEntries, errorMessage)
   }
 
-  function focusedScreenName(): string {
-    return Hyprland.focusedMonitor?.name ?? Quickshell.screens[0]?.name ?? ""
-  }
-
   function openForScreen(name: string, menu: string): bool {
     if (!ready || name.length === 0 || !menus[menu]) return false
     return enterMenu(name, [menu], menu)
   }
 
   function openOnFocusedScreen(menu: string): bool {
-    return openForScreen(focusedScreenName(), menu)
+    return openForScreen(OverlayState.focusedScreenName(), menu)
   }
 
   function toggleForScreen(name: string, menu: string): bool {
@@ -476,7 +471,7 @@ QtObject {
   }
 
   function toggleOnFocusedScreen(menu: string): bool {
-    return toggleForScreen(focusedScreenName(), menu)
+    return toggleForScreen(OverlayState.focusedScreenName(), menu)
   }
 
   function close(): void {
@@ -504,7 +499,7 @@ QtObject {
       return
     }
     if (entry.action.type === "surface") {
-      OverlayState.open(entry.action.surface, screenName,
+      OverlayState.replace(entry.action.surface, screenName,
         clone(entry.action.parameters ?? {}))
       return
     }

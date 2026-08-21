@@ -4,11 +4,10 @@ pragma ComponentBehavior: Bound
 import QtQml
 import Quickshell
 import "config"
-import "features/command"
 import "features/menu"
 import "features/notifications"
 import "features/osd"
-import "features/polkit"
+import "features/overlay"
 import "state"
 
 ShellRoot {
@@ -18,34 +17,33 @@ ShellRoot {
     id: userRootObject
     shellConfig: configObject
     theme: themeObject
+    overlayState: OverlayState
   }
-  SystemState {
-    id: stateObject
+  LazyLoader {
+    id: barRuntimeLoader
     active: configObject.barEnabled
-  }
-  OsdState {
-    id: osdStateObject
-    shellConfig: configObject
-  }
-  NotificationState {
-    id: notificationStateObject
-    shellConfig: configObject
+
+    BarRuntime { shellConfig: configObject }
   }
 
-  property var polkitState: PolkitState
+  LazyLoader {
+    id: osdStateLoader
+    active: configObject.osdEnabled
 
-  Connections {
-    target: configObject
-
-    function onCommandProvidersChanged(): void {
-      CommandState.configure(configObject.commandProviders)
-    }
+    OsdState { shellConfig: configObject }
   }
 
-  Component.onCompleted: CommandState.configure(configObject.commandProviders)
+  LazyLoader {
+    id: notificationStateLoader
+    active: configObject.notificationsEnabled
+
+    NotificationState { shellConfig: configObject }
+  }
 
   Variants {
-    model: configObject.ready && themeObject.ready && MenuState.ready
+    model: configObject.ready
+      && themeObject.ready
+      && (!configObject.menuEnabled || MenuState.ready)
       ? Quickshell.screens
       : []
 
@@ -55,9 +53,9 @@ ShellRoot {
       output: modelData
       shellConfig: configObject
       theme: themeObject
-      systemState: stateObject
-      osdState: osdStateObject
-      notificationState: notificationStateObject
+      systemState: barRuntimeLoader.item
+      osdState: osdStateLoader.item
+      notificationState: notificationStateLoader.item
       userRoot: userRootObject
     }
   }

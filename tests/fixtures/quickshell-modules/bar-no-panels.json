@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "modules": {
+    "bar": true,
+    "panels": false,
+    "notifications": false,
+    "osd": false,
+    "polkit": false,
+    "menu": false,
+    "applications": false,
+    "calculator": false,
+    "wallpaper": false
+  }
+}

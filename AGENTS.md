@@ -174,8 +174,13 @@ the upstream-owned `defaults/shell.json` and applies the optional sparse
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` override. Objects merge recursively, arrays replace as
 complete ordered values, and `bar.layoutEdits` provides explicit widget-ID
 operations for surgical layout changes. Widget instances are defined inline
-in the default layout, `bar.enabled` controls whether the built-in per-output
-bar exists, and version 1 accepts top and bottom bars only. Keep
+in the default layout. The top-level `modules` object selects the nine optional
+built-in runtimes: bar, panels, notifications, OSD, polkit, menu,
+applications/open-with, calculator, and wallpaper. Module choices latch at
+shell startup, so `hk-shell restart` is required after changing them;
+`modules.bar` controls the built-in per-output bars, while
+`modules.panels` controls only their feature-panel popup hosts. Version 1
+accepts top and bottom bars only. Keep
 appearance in each theme's `quickshell.json`; shell JSON owns placement and
 behavior. Island corner shapes, selective borders, and
 screen/outer/content margins are theme data rendered once by
@@ -189,8 +194,10 @@ offset, resolved with a zero floor; the tray binds this to
 `metrics.controlPadding` token. `Theme.qml` watches the canonical XDG-state
 `current/theme.json` selector, then reads the immutable artifact named there.
 One optional `userRoot.source` loads a trusted application-wide QML composition
-root for independent surfaces or a replacement bar. It may publish reactive
-per-output notification positioning; there is no discovery or plugin layer.
+root for independent surfaces or a replacement bar. Its documented context
+exposes the resolved configuration, theme, outputs, current overlay request,
+and direct overlay methods. It may publish reactive per-output notification
+positioning; there is no discovery or plugin layer.
 Each bar owns one `FeaturePanelHost`; display, audio, network, Bluetooth,
 battery/power, and clock/calendar panels compose shared panel controls inside
 that host, while feature directories own service-specific state. The display

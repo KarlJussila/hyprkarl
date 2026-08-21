@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "modules": {
+    "bar": false,
+    "panels": false,
+    "notifications": false,
+    "osd": false,
+    "polkit": false,
+    "menu": false,
+    "applications": false,
+    "calculator": false,
+    "wallpaper": false
+  },
+  "userRoot": {
+    "source": "Extensions.qml",
+    "settings": {
+      "fixture": true
+    }
+  }
+}

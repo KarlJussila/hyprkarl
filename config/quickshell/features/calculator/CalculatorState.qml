@@ -18,11 +18,11 @@ QtObject {
     target: "calculator"
 
     function open(): bool {
-      return OverlayState.openFocused(root.surface)
+      return OverlayState.replaceFocused(root.surface, {})
     }
 
     function openForScreen(screen: string): bool {
-      return OverlayState.open(root.surface, screen, {})
+      return OverlayState.replace(root.surface, screen, {})
     }
 
     function toggle(): bool {
@@ -30,7 +30,7 @@ QtObject {
     }
 
     function toggleForScreen(screen: string): bool {
-      return OverlayState.toggle(root.surface, screen)
+      return OverlayState.toggle(root.surface, screen, {})
     }
 
     function close(): void {

@@ -61,12 +61,30 @@ bar/output; application-wide state is not implicitly created for user modules.
 Dynamically referenced sources are outside Quickshell's static reload graph, so
 source edits require `hk-shell restart`.
 
-`bar.enabled` controls instantiation, not merely visibility. When false, do not
-retain the per-output bar windows or run the application-wide hardware and
-command-widget providers used only by them. The other shell surfaces remain
-independent. `config/UserRoot.qml` loads one trusted application-wide user QML
-root for independent surfaces or a replacement bar; do not turn it into
-directory discovery or a plugin registry.
+The top-level `modules` object owns built-in runtime selection. It has nine
+booleans: `bar`, `panels`, `notifications`, `osd`, `polkit`, `menu`,
+`applications`, `calculator`, and `wallpaper`. ShellConfig latches this object
+when the process starts. JSON reloads may update ordinary settings live, but a
+changed module choice only logs a warning; the owner must run `hk-shell
+restart`. Do not try to unload already-created global services on a live JSON
+change.
+
+`modules.bar` controls instantiation, not merely visibility. When false, do
+not retain per-output bar windows or run the system monitor and command-widget
+providers used only by them. `modules.panels` controls the `FeaturePanelHost`.
+It intentionally leaves status widgets in the bar; an owner removes those with
+`bar.layoutEdits` when desired. The remaining switches gate both a module's
+windows and the state, watchers, timers, service registrations, processes, and
+IPC targets that exist only for it. A disabled implementation does not rewrite
+its existing keybindings, command widgets, or menu entries, so users remove or
+replace those entry points in their own configuration.
+
+`config/UserRoot.qml` loads one trusted application-wide user QML root for
+independent surfaces or a replacement bar. Its direct context fields expose
+the resolved configuration, theme, outputs, and requested overlay; its direct
+methods open, replace, toggle, or close that overlay. Keep the optional
+`notificationPosition(outputName)` hook. Do not turn any of this into directory
+discovery or a plugin registry.
 
 When `notifications.edge` is `bar`, `ScreenSurfaces.qml` resolves one reactive
 position object per output. The built-in bar supplies the fallback; a user
@@ -78,12 +96,13 @@ the built-in bar window.
 
 ## Architecture
 
-`shell.qml` creates shared configuration, theme, and system state objects, then
-uses one `Variants` model to create a `ScreenSurfaces` group per screen after
-configuration, theme, and menu data are ready. That group owns the screen's
-optional bar, menu, OSD, and notification windows. It resolves notification
-placement from a small reactive position object rather than exposing the bar
-window to notification presentation.
+`shell.qml` creates shared configuration, theme, user-root, and overlay state,
+then gates each optional built-in runtime before using one `Variants` model to
+create a `ScreenSurfaces` group per screen. `BarRuntime.qml` owns the system
+monitor and command registry only while the bar is enabled. The surface group
+owns the screen's optional bar, menu, OSD, notification, and polkit windows.
+It resolves notification placement from a small reactive position object rather
+than exposing the bar window to notification presentation.
 It creates one `MenuWindow` per screen. The
 menu singleton selects exactly one requested monitor, owns navigation history,
 and exposes the public `menu` IPC target. Each inactive window stays hidden and

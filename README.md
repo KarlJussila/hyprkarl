@@ -151,9 +151,12 @@ use the same kind without starting a timer or process. More specialized
 personal bar widgets can be explicitly loaded from
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/` through a small per-bar context, without turning the
 shell into a plugin platform. The built-in bar can also be disabled while the
-other shell services stay active; one explicitly referenced application-wide
-user QML root under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/` can compose replacement surfaces, consume open-ended theme data,
-and publish reactive notification positioning for a custom bar.
+other built-in modules remain independently selectable through the nine
+top-level `modules` switches in shell JSON. Restart the shell after changing a
+switch. One explicitly referenced application-wide user QML root under
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/` can compose replacement surfaces, consume open-ended theme data,
+observe and control overlay requests, and publish reactive notification
+positioning for a custom bar.
 The app launcher, open-with chooser, calculator, and wallpaper picker are also
 Quickshell-native. They share the shell's focused-overlay frame and interaction
 model while keeping application, calculation, and wallpaper behavior in small

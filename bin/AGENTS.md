@@ -62,6 +62,11 @@ Bindings and helpers must use that typed surface rather than call a daemon
 control tool or internal QML object. Notification producers continue to use
 the standard freedesktop service through `notify-send` or their toolkit.
 
+`hk-shell stop` owns the whole daemon boundary, not only the current config
+generation. A reload can briefly remove a run ID while its daemon remains able
+to publish another generation; stop both the listed run IDs and their daemon
+PIDs, then report success only after neither remains.
+
 `hk-display` is the single display-control boundary. Its Python library owns
 Hyprland output discovery, live scale and enable/disable changes, internal
 backlight control, and the generated layout under

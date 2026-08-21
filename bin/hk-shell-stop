@@ -12,12 +12,28 @@ if [[ -z "$instances" ]]; then
   exit 0
 fi
 
+pids="$(jq -r '.[].pid' <<<"$instances")"
+
 while read -r instance_id; do
   qs kill -i "$instance_id" >/dev/null || exit 1
 done < <(jq -r '.[].id' <<<"$instances")
 
-for _ in {1..40}; do
-  if ! hk_shell_is_running; then
+while read -r pid; do
+  if kill -0 "$pid" 2>/dev/null; then
+    kill "$pid" || exit 1
+  fi
+done <<<"$pids"
+
+for _ in {1..100}; do
+  daemon_running=false
+  while read -r pid; do
+    if kill -0 "$pid" 2>/dev/null; then
+      daemon_running=true
+      break
+    fi
+  done <<<"$pids"
+
+  if [[ "$daemon_running" == false ]] && ! hk_shell_is_running; then
     echo "Shell stopped."
     exit 0
   fi

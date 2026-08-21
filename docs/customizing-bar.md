@@ -28,22 +28,27 @@ Deleting the user file returns to the shipped configuration. Valid edits apply
 live; an invalid edit is rejected and the last valid layout remains running.
 Version 1 supports top and bottom bars.
 
-Set `bar.enabled` to `false` to remove the built-in bar without stopping the
-rest of the shell:
+Set `modules.bar` to `false` to remove the built-in bar without stopping the
+other built-in modules:
 
 ```json
 {
   "version": 1,
-  "bar": { "enabled": false }
+  "modules": { "bar": false }
 }
 ```
 
 This destroys the per-output bar windows and makes their system monitor and
-command-widget providers inert. Menus, notifications, OSD, and polkit remain
-available. See
+command-widget providers inert. Module choices latch at shell start, so run
+`hk-shell restart` after editing this value. See
 [Application-wide user QML](shell-configuration.md#application-wide-user-qml)
 for composing a replacement bar and publishing its reactive notification
 extent.
+
+`modules.panels: false` is narrower: it removes the feature-panel popup host
+but leaves the bar's status widgets. Remove individual status widgets with
+`bar.layoutEdits`. [Shell configuration](shell-configuration.md#built-in-modules)
+lists every built-in module switch.
 
 See [Shell Configuration](shell-configuration.md) for the full merge contract,
 widget schema, and layout-edit examples.

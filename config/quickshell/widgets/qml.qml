@@ -53,11 +53,11 @@ Item {
     }
 
     function togglePanel(trigger: Item, content: Component): void {
-      root.panelHost.toggle(widgetId, trigger, content)
+      if (root.panelHost) root.panelHost.toggle(widgetId, trigger, content)
     }
 
     function closePanel(): void {
-      root.panelHost.close()
+      if (root.panelHost) root.panelHost.close()
     }
 
     function launchPanelCommand(command: string): void {

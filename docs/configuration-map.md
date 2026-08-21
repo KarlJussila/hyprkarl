@@ -245,13 +245,15 @@ the default, arrays replace completely, and explicit widget-ID layout edits are
 applied afterward. Deleting the user file returns to the default, while an
 invalid live edit keeps the last valid configuration running. Version 1
 supports top and bottom bars plus built-in, command, and explicitly referenced
-user-QML widget kinds. `bar.enabled` can remove the built-in bar while keeping
-the other shell surfaces alive. Personal per-bar modules live below
+user-QML widget kinds. The top-level `modules` object independently selects
+the bar, panels, notifications, OSD, polkit, menu, applications, calculator,
+and wallpaper runtimes. Module changes latch until `hk-shell restart`; ordinary
+shell JSON values still reload live. Personal per-bar modules live below
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`, receive one narrow context per bar/output, and are
 not discovered as plugins. An optional `userRoot.source` names one
 application-wide QML composition root below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/`; it may create
-independent surfaces and provide reactive notification positioning for a
-custom bar. Static
+independent surfaces, receive direct overlay controls, and provide reactive
+notification positioning for a custom bar. Static
 command widgets, including the main-menu button, have no provider runtime.
 Configured providers are application-wide rather than duplicated per monitor.
 Poll mode starts one process per tick, while stream mode holds one

@@ -17,7 +17,17 @@ QtObject {
   property string defaultReadError: ""
   property string userReadError: ""
   property bool userMissing: true
+  property var runtimeModules: ({})
 
+  readonly property bool barEnabled: ready && (runtimeModules.bar ?? true)
+  readonly property bool panelsEnabled: ready && (runtimeModules.panels ?? true)
+  readonly property bool notificationsEnabled: ready && (runtimeModules.notifications ?? true)
+  readonly property bool osdEnabled: ready && (runtimeModules.osd ?? true)
+  readonly property bool polkitEnabled: ready && (runtimeModules.polkit ?? true)
+  readonly property bool menuEnabled: ready && (runtimeModules.menu ?? true)
+  readonly property bool applicationsEnabled: ready && (runtimeModules.applications ?? true)
+  readonly property bool calculatorEnabled: ready && (runtimeModules.calculator ?? true)
+  readonly property bool wallpaperEnabled: ready && (runtimeModules.wallpaper ?? true)
   readonly property var bar: values.bar ?? ({})
   readonly property var osd: values.osd ?? ({})
   readonly property var notifications: values.notifications ?? ({})
@@ -44,7 +54,6 @@ QtObject {
   readonly property var userRoot: values.userRoot ?? ({})
   readonly property string userRootSource: userRoot.source ?? ""
   readonly property var userRootSettings: userRoot.settings ?? ({})
-  readonly property bool barEnabled: bar.enabled ?? true
   readonly property string edge: bar.edge ?? "top"
   readonly property bool exclusive: bar.exclusive ?? true
   readonly property var layout: bar.layout ?? ({})
@@ -253,6 +262,23 @@ QtObject {
       fail(path + ".version", "unsupported shell configuration version '" + document.version + "'")
     }
 
+    requireObject(document.modules, path + ".modules")
+    for (const name of [
+      "bar",
+      "panels",
+      "notifications",
+      "osd",
+      "polkit",
+      "menu",
+      "applications",
+      "calculator",
+      "wallpaper"
+    ]) {
+      if (typeof document.modules[name] !== "boolean") {
+        fail(path + ".modules." + name, "expected a boolean")
+      }
+    }
+
     requireObject(document.osd, path + ".osd")
     if (document.osd.edge !== "top" && document.osd.edge !== "bottom") {
       fail(path + ".osd.edge", "expected 'top' or 'bottom'")
@@ -316,9 +342,6 @@ QtObject {
     }
 
     requireObject(document.bar, path + ".bar")
-    if (typeof document.bar.enabled !== "boolean") {
-      fail(path + ".bar.enabled", "expected a boolean")
-    }
     if (document.bar.edge !== "top" && document.bar.edge !== "bottom") {
       fail(path + ".bar.edge", "version 1 supports only 'top' and 'bottom'")
     }
@@ -375,6 +398,9 @@ QtObject {
     }
     if (document.bar !== undefined) {
       requireObject(document.bar, userPath + ".bar")
+    }
+    if (document.modules !== undefined) {
+      requireObject(document.modules, userPath + ".modules")
     }
     if (document.osd !== undefined) {
       requireObject(document.osd, userPath + ".osd")
@@ -535,6 +561,11 @@ QtObject {
   }
 
   function apply(document, path): void {
+    if (Object.keys(runtimeModules).length === 0) {
+      runtimeModules = clone(document.modules)
+    } else if (JSON.stringify(runtimeModules) !== JSON.stringify(document.modules)) {
+      console.warn("Shell module changes require hk-shell restart")
+    }
     values = document
     sourcePath = path
     lastError = ""

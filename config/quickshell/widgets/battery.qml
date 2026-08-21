@@ -16,7 +16,9 @@ ShellButton {
   readonly property int percentage: Math.round((battery?.percentage ?? 0) * 100)
   readonly property string percentageText: percentage >= 100 ? "MAX" : percentage + "%"
   readonly property bool charging: battery?.state === UPowerDeviceState.Charging
-  readonly property bool panelOpen: panelHost.activeId === widgetId
+  readonly property bool panelOpen: panelHost
+    ? panelHost.activeId === widgetId
+    : false
 
   visible: battery?.isPresent ?? false
   contentComponent: Component {
@@ -47,7 +49,9 @@ ShellButton {
   }
   tooltip: `${charging ? "Charging" : "Battery"}: ${percentage}%`
   tooltipSuppressed: panelOpen
-  onPrimary: () => panelHost.toggle(widgetId, root, panelComponent)
+  onPrimary: panelHost
+    ? () => panelHost.toggle(widgetId, root, panelComponent)
+    : null
   secondaryCommand: config.powerCommand
 
   Component {

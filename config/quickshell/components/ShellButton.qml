@@ -37,7 +37,7 @@ Item {
   }
 
   function launchPanelCommand(command: string): void {
-    root.panelHost.close()
+    if (root.panelHost) root.panelHost.close()
     runCommand(command)
   }
 

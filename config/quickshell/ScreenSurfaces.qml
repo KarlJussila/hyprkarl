@@ -64,43 +64,71 @@ Scope {
     }
   }
 
-  property MenuWindow menu: MenuWindow {
-    output: root.output
-    theme: root.theme
+  LazyLoader {
+    active: root.shellConfig.menuEnabled
+
+    MenuWindow {
+      output: root.output
+      theme: root.theme
+    }
   }
 
-  property ApplicationPickerWindow applications: ApplicationPickerWindow {
-    output: root.output
-    theme: root.theme
+  LazyLoader {
+    active: root.shellConfig.applicationsEnabled
+
+    ApplicationPickerWindow {
+      output: root.output
+      theme: root.theme
+    }
   }
 
-  property CalculatorWindow calculator: CalculatorWindow {
-    output: root.output
-    theme: root.theme
+  LazyLoader {
+    active: root.shellConfig.calculatorEnabled
+
+    CalculatorWindow {
+      output: root.output
+      theme: root.theme
+    }
   }
 
-  property WallpaperPickerWindow wallpaperPicker: WallpaperPickerWindow {
-    output: root.output
-    theme: root.theme
+  LazyLoader {
+    active: root.shellConfig.wallpaperEnabled
+
+    WallpaperPickerWindow {
+      output: root.output
+      theme: root.theme
+    }
   }
 
-  property NotificationWindow notifications: NotificationWindow {
-    output: root.output
-    notificationState: root.notificationState
-    position: root.notificationPosition
-    shellConfig: root.shellConfig
-    theme: root.theme
+  LazyLoader {
+    active: root.shellConfig.notificationsEnabled
+
+    NotificationWindow {
+      output: root.output
+      notificationState: root.notificationState
+      position: root.notificationPosition
+      shellConfig: root.shellConfig
+      theme: root.theme
+    }
   }
 
-  property OsdWindow osd: OsdWindow {
-    output: root.output
-    osdState: root.osdState
-    shellConfig: root.shellConfig
-    theme: root.theme
+  LazyLoader {
+    active: root.shellConfig.osdEnabled
+
+    OsdWindow {
+      output: root.output
+      osdState: root.osdState
+      shellConfig: root.shellConfig
+      theme: root.theme
+    }
   }
 
-  property PolkitWindow polkit: PolkitWindow {
-    output: root.output
-    theme: root.theme
+  LazyLoader {
+    active: root.shellConfig.polkitEnabled
+
+    PolkitWindow {
+      output: root.output
+      theme: root.theme
+    }
   }
 }

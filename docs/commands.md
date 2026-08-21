@@ -235,8 +235,9 @@ shell.
   instance and reports QML load failures.
 - `hk-shell stop`
   Stop every running instance of the Hyprkarl Quickshell configuration. It is
-  safe to run when the bar is already stopped and does not return until
-  Quickshell has unregistered the stopped instances.
+  safe to run when the bar is already stopped and does not return until both
+  the registered config generations and their Quickshell daemon processes have
+  exited.
 - `hk-shell restart`
   Stop and start the bar after shutdown completes.
 - `hk-shell status`

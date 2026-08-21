@@ -215,8 +215,10 @@ For an interface that is not owned by one bar widget, explicitly reference one
 application-wide QML root through `userRoot.source` in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. It
 can create independent or per-output surfaces, consume arbitrary custom values
 from `context.theme.document`, and optionally supply reactive notification
-positioning for a personal bar. Set `bar.enabled` to false when that module
-replaces the built-in bar. See
+positioning for a personal bar. Its direct context also exposes the current
+overlay request and methods to open, replace, toggle, or close it. Set
+`modules.bar` to `false` when that root replaces the built-in bar, then run
+`hk-shell restart`. See
 [Application-wide user QML](shell-configuration.md#application-wide-user-qml).
 
 To add a built-in widget kind:

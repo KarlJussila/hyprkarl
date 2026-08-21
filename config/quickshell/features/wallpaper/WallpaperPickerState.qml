@@ -68,7 +68,7 @@ QtObject {
 
   function openForScreen(screen: string, nextAction: string): bool {
     if (screen.length === 0 || !["set", "remove"].includes(nextAction)) return false
-    return OverlayState.open(surface, screen, { "action": nextAction })
+    return OverlayState.replace(surface, screen, { "action": nextAction })
   }
 
   function load(nextAction: string): void {

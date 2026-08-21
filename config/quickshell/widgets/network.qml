@@ -12,7 +12,9 @@ ShellButton {
   required property var systemState
 
   readonly property var connectedNetwork: NetworkState.connectedNetwork
-  readonly property bool panelOpen: panelHost.activeId === widgetId
+  readonly property bool panelOpen: panelHost
+    ? panelHost.activeId === widgetId
+    : false
 
   text: !NetworkState.wifiDevice || !NetworkState.wifiHardwareEnabled || !NetworkState.wifiEnabled
     ? "󰤭"
@@ -21,7 +23,9 @@ ShellButton {
     ? "Wi-Fi unavailable" : !NetworkState.wifiEnabled ? "Wi-Fi off"
     : connectedNetwork ? connectedNetwork.name : "Not connected"
   tooltipSuppressed: panelOpen
-  onPrimary: () => panelHost.toggle(widgetId, root, panelComponent)
+  onPrimary: panelHost
+    ? () => panelHost.toggle(widgetId, root, panelComponent)
+    : null
   secondaryCommand: config.secondaryCommand
 
   function signalIcon(strength: real): string {

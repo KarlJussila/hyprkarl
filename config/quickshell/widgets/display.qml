@@ -12,12 +12,16 @@ ShellButton {
   required property var config
   required property var systemState
 
-  readonly property bool panelOpen: panelHost.activeId === widgetId
+  readonly property bool panelOpen: panelHost
+    ? panelHost.activeId === widgetId
+    : false
 
   text: Quickshell.screens.length > 1 ? "󰍺" : "󰍹"
   tooltip: "Display"
   tooltipSuppressed: panelOpen
-  onPrimary: () => panelHost.toggle(widgetId, root, panelComponent)
+  onPrimary: panelHost
+    ? () => panelHost.toggle(widgetId, root, panelComponent)
+    : null
 
   Component {
     id: panelComponent

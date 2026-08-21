@@ -12,12 +12,16 @@ ShellButton {
   required property var systemState
 
   property bool alternate: false
-  readonly property bool panelOpen: panelHost.activeId === widgetId
+  readonly property bool panelOpen: panelHost
+    ? panelHost.activeId === widgetId
+    : false
 
   text: Qt.formatDateTime(ClockState.now, alternate ? config.alternate : config.primary)
   tooltip: Qt.formatDateTime(ClockState.now, "dddd, MMMM d, yyyy h:mm:ss AP")
   tooltipSuppressed: panelOpen
-  onPrimary: () => panelHost.toggle(widgetId, root, panelComponent)
+  onPrimary: panelHost
+    ? () => panelHost.toggle(widgetId, root, panelComponent)
+    : null
   onSecondary: () => alternate = !alternate
 
   Component {

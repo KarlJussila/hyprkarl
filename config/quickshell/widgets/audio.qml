@@ -14,7 +14,9 @@ ShellButton {
 
   readonly property var audio: Pipewire.defaultAudioSink?.audio
   readonly property int percentage: Math.round((audio?.volume ?? 0) * 100)
-  readonly property bool panelOpen: panelHost.activeId === widgetId
+  readonly property bool panelOpen: panelHost
+    ? panelHost.activeId === widgetId
+    : false
 
   contentComponent: Component {
     Row {
@@ -40,7 +42,9 @@ ShellButton {
   }
   tooltip: audio?.muted ? "Muted" : `Volume: ${percentage}%`
   tooltipSuppressed: panelOpen
-  onPrimary: () => panelHost.toggle(widgetId, root, panelComponent)
+  onPrimary: panelHost
+    ? () => panelHost.toggle(widgetId, root, panelComponent)
+    : null
   secondaryCommand: config.secondaryCommand
 
   PwObjectTracker { objects: [Pipewire.defaultAudioSink] }

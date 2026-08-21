@@ -122,16 +122,16 @@ QtObject {
   }
 
   function openLauncher(screen: string): bool {
-    return OverlayState.open(launcherSurface, screen, {})
+    return OverlayState.replace(launcherSurface, screen, {})
   }
 
   function toggleLauncher(screen: string): bool {
-    return OverlayState.toggle(launcherSurface, screen)
+    return OverlayState.toggle(launcherSurface, screen, {})
   }
 
   function openFile(screen: string, path: string): bool {
     if (screen.length === 0 || path.length === 0) return false
-    return OverlayState.open(openWithSurface, screen, { "path": path })
+    return OverlayState.replace(openWithSurface, screen, { "path": path })
   }
 
   function loadFile(path: string): void {

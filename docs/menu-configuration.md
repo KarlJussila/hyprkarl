@@ -85,6 +85,39 @@ need no parameters. The surface ID and optional parameter object are passed
 through as authored, so a user composition may respond to its own surface IDs
 and parameter vocabulary without changing the menu engine.
 
+For example, this personal entry asks a user root to show a dashboard on the
+selected output:
+
+```json
+{
+  "version": 1,
+  "entries": {
+    "main.dashboard": {
+      "parent": "main",
+      "order": 45,
+      "icon": "󰨇",
+      "label": "Dashboard",
+      "action": {
+        "type": "surface",
+        "surface": "dashboard",
+        "parameters": { "section": "weather" }
+      }
+    }
+  }
+}
+```
+
+The action replaces the menu request with `dashboard`. An application-wide
+user root reads `context.overlayName`, `context.overlayOutput`, and
+`context.overlayValues`, creates its own window for that name, and calls
+`context.closeOverlay()` when it closes it. See [Application-wide user
+QML](shell-configuration.md#application-wide-user-qml) for the full context.
+
+If `modules.menu` is disabled, the menu IPC target and its windows do not
+exist. Disabling another built-in module does not rewrite menu rows that point
+to it. Hide a no-longer-useful shipped row with `enabled: false`, or replace it
+with an entry for the program or personal overlay that takes over that job.
+
 Keyboard navigation keeps the selected row immediately in view, including
 when wrapping between the first and last entries. Moving the pointer selects
 the row beneath it, but a stationary pointer does not override keyboard

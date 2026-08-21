@@ -17,9 +17,10 @@ Use `qs -p config/quickshell` instead when a foreground process is useful for
 development. `hk-shell start` is idempotent, starts the shell in a UWSM scope,
 and reports a failed QML load even though daemonized `qs` itself exits
 successfully in that case. `hk-shell stop` waits until Quickshell unregisters
-the instance, so `hk-shell restart` cannot race a process that is still
-shutting down. `hk-shell logs` reads the newest instance and accepts native
-`qs log` options such as `--follow` and `--tail 100`.
+the config generation and exits its daemon, so `hk-shell restart` cannot race
+a process that is still shutting down. `hk-shell logs` reads the newest
+instance and accepts native `qs log` options such as `--follow` and
+`--tail 100`.
 
 The command menu uses the same running instance:
 
@@ -84,7 +85,6 @@ bar without editing that upstream default, create a sparse override at
 {
   "version": 1,
   "bar": {
-    "enabled": true,
     "edge": "bottom"
   }
 }
@@ -103,7 +103,9 @@ examples and the full merge contract.
 Version 1 supports top and bottom bars. The shell watches both paths: default
 updates and valid user edits are resolved live, deleting the user file returns
 to the shipped default, and a rejected live edit leaves the last valid layout
-running with an actionable log message. The current bar implements built-in,
+running with an actionable log message. Module choices are latched for the
+running shell and require `hk-shell restart`. The current bar implements
+built-in,
 command, and user-QML widget kinds. A user-QML instance names a relative file
 below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/` and receives the documented per-bar context;
 modules are never discovered or registered implicitly. A command widget can
@@ -113,14 +115,21 @@ and battery cost; stream mode is intended for frequent updates. Static command
 buttons omit the provider command and create no timer or process; the shipped
 main-menu button uses that form.
 
-`bar.enabled: false` destroys the built-in per-output bar windows and makes
-their application-wide hardware monitor and command providers inert; the
-menu, notifications, OSD, and polkit remain active. One optional
+The top-level `modules` object controls the optional built-ins: `bar`,
+`panels`, `notifications`, `osd`, `polkit`, `menu`, `applications`,
+`calculator`, and `wallpaper`. `modules.bar: false` destroys the built-in
+per-output bars and makes their system monitor and command providers inert.
+`modules.panels: false` removes panel popups but leaves status widgets in an
+enabled bar; remove those with layout edits if needed. The other switches gate
+their matching window, state, service, timer, watcher, process, and IPC
+runtime. Change a module switch, then run `hk-shell restart`. One optional
 `userRoot.source` loads an application-wide QML composition root from
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/`. It can own independent or per-screen surfaces and may
-publish a reactive notification position for each output. This is one
-explicitly referenced user module, not a discovered plugin collection. See
-`docs/shell-configuration.md` for its context and positioning contract.
+publish a reactive notification position for each output. Its context directly
+exposes configuration, theme, outputs, the requested overlay, and overlay
+open/replace/toggle/close methods. This is one explicitly referenced user
+module, not a discovered plugin collection. See
+`docs/shell-configuration.md` for the module and context contracts.
 
 The shipped menu hierarchy lives in `defaults/menu.json`; an optional sparse
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json` adds or overrides menus and entries by stable ID. Ordinary
@@ -216,8 +225,8 @@ schema and override examples.
 
 ## Structure
 
-- `shell.qml` retains application-wide feature singletons and creates one
-  surface group per Quickshell screen after configuration and theme data load.
+- `shell.qml` gates optional built-in runtimes and creates one surface group
+  per Quickshell screen after configuration and theme data load.
   `ScreenSurfaces.qml` groups that screen's bar, focused overlays, OSD,
   notification, and polkit windows so each surface receives the correct output.
 - `config/ShellConfig.qml` selects, validates, and watches shell JSON.
@@ -254,8 +263,8 @@ schema and override examples.
   provider per provider-backed command-widget ID. Static action buttons do not
   enter that registry.
 - `components/` contains shared buttons, tooltips, and panel controls.
-- `state/SystemState.qml` owns the one polling process used by CPU, GPU, RAM,
-  and recording widgets.
+- `state/BarRuntime.qml` owns `SystemState.qml` and command providers while
+  the bar module is enabled.
 
 Keep new behavior in the widget that owns it. Add a shared component only when
 multiple widgets genuinely use the same interaction or visual structure.

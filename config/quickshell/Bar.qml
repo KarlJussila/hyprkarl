@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
@@ -11,6 +13,7 @@ PanelWindow {
   required property var theme
   required property var systemState
 
+  readonly property var panelHost: panelHostLoader.item
   readonly property int totalThickness: theme.barMarginScreen
     + barLayout.contentHeight
     + theme.barMarginContent
@@ -33,11 +36,15 @@ PanelWindow {
   WlrLayershell.namespace: "hyprkarl-quickshell-bar"
   WlrLayershell.layer: WlrLayer.Top
 
-  FeaturePanelHost {
-    id: panelHost
-    barWindow: root
-    edge: root.shellConfig.edge
-    theme: root.theme
+  LazyLoader {
+    id: panelHostLoader
+    active: root.shellConfig.panelsEnabled
+
+    FeaturePanelHost {
+      barWindow: root
+      edge: root.shellConfig.edge
+      theme: root.theme
+    }
   }
 
   BarLayout {
@@ -47,6 +54,6 @@ PanelWindow {
     shellConfig: root.shellConfig
     theme: root.theme
     systemState: root.systemState
-    panelHost: panelHost
+    panelHost: root.panelHost
   }
 }

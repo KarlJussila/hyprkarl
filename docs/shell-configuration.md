@@ -4,7 +4,8 @@ This document defines the lasting public configuration boundary for the
 Quickshell shell. The production bar implements default/user resolution, common
 version 1 structure validation, inline built-in and command widget instances,
 explicit per-bar and application-wide user-QML modules, explicit layout edits,
-and live last-valid reloads.
+and live last-valid reloads for ordinary configuration values. Built-in module
+selection is intentionally latched until a shell restart.
 Widget-specific setting validation lands with each stable module contract.
 `hk-shell config` commands and gesture persistence remain later work.
 
@@ -106,6 +107,52 @@ not removal, and an upstream widget can be added without rewriting the user's
 file. Operation order also permits deliberate sequences such as removing a
 widget and inserting a different implementation under the same ID.
 
+## Built-in modules
+
+The top-level `modules` object selects the built-in runtime groups. Every
+shipped value is `true`; a sparse personal override need only name the groups
+to disable:
+
+```json
+{
+  "version": 1,
+  "modules": {
+    "bar": false,
+    "notifications": false
+  }
+}
+```
+
+| Key | Owns when enabled |
+|---|---|
+| `bar` | Per-output bar windows, the shared system monitor, and command-widget providers. |
+| `panels` | The per-output feature-panel popup host. Status widgets remain in the bar. |
+| `notifications` | The freedesktop notification server, its IPC target, and toast windows. |
+| `osd` | The OSD state, dismissal timer, IPC target, and windows. |
+| `polkit` | The session authentication agent and its focused prompt. |
+| `menu` | Command-menu state, JSON watchers, dynamic commands, IPC target, and windows. |
+| `applications` | The launcher and open-with state, desktop-entry access, IPC targets, and windows. |
+| `calculator` | Calculator history state, IPC target, and window. |
+| `wallpaper` | Wallpaper-picker state, IPC target, and window. |
+
+Module values are read once when the shell starts. The JSON watcher still
+accepts an edited file and uses its ordinary settings, but it keeps the
+existing module set and logs a restart warning if it changed. Run
+`hk-shell restart` after changing `modules`. This avoids leaving a global
+notification server, authentication agent, timer, watcher, or IPC handler from
+the previous selection alive in the running process.
+
+`modules.panels: false` removes the feature-panel popup host. It does not
+remove audio, battery, Bluetooth, clock, display, or network status widgets
+from a running bar. Remove those separately with `bar.layoutEdits` if the bar
+should not show them.
+
+Disabling an implementation also leaves its existing entry points alone. For
+example, a shipped binding, menu row, or command widget may still refer to a
+disabled menu, launcher, calculator, or wallpaper picker. Remove that entry
+from personal layout, menu, or Hyprland configuration, or point it at the
+replacement you run instead. A menu entry can be hidden with `enabled: false`.
+
 ## Version 1 Shape
 
 Widget instances live inline where they are placed. This avoids a separate ID
@@ -114,6 +161,17 @@ map when an instance is referenced only once.
 ```json
 {
   "version": 1,
+  "modules": {
+    "bar": true,
+    "panels": true,
+    "notifications": true,
+    "osd": true,
+    "polkit": true,
+    "menu": true,
+    "applications": true,
+    "calculator": true,
+    "wallpaper": true
+  },
   "osd": {
     "edge": "bottom",
     "margin": 40,
@@ -140,7 +198,6 @@ map when an instance is referenced only once.
     }
   },
   "bar": {
-    "enabled": true,
     "edge": "top",
     "exclusive": true,
     "layout": {
@@ -297,12 +354,14 @@ away from it. This preserves the deliberate centered-island composition of
 the current bar without encoding the implementation's QML object shape as a
 public API.
 
-`bar.enabled` controls whether the built-in bar is instantiated. When it is
-false, its per-output windows, panels, widgets, application-wide command
-providers, and hardware polling process are absent or inactive. Menu, OSD,
-notifications, and polkit remain available. With the default
-`notifications.edge: "bar"`, notifications fall back to the configured bar
-edge with zero extent and therefore sit directly against the monitor edge.
+`modules.bar` controls whether the built-in bar is instantiated. With it off,
+the per-output bar windows, shared system monitor, and command-widget
+providers do not start. The other module switches are independent. With the
+default `notifications.edge: "bar"`, a notification stack without a built-in
+or personal bar position falls back to the configured bar edge with zero
+extent and sits directly against the monitor edge. See [Built-in
+modules](#built-in-modules) for the complete switch contract and restart
+boundary.
 
 Version 1 accepts `top` and `bottom`. Left and right are added only when
 vertical layouts and panel behavior are implemented and tested. The current
@@ -535,9 +594,9 @@ resolves `source` from the documented module directory and passes `settings`
 through; stepping outside the contract is allowed to work or fail according to
 normal QML behavior.
 
-Changes to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` remain live; after editing a dynamically
-referenced QML source, run `hk-shell restart` because it is outside
-Quickshell's statically scanned reload graph.
+Ordinary changes to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` remain live. Run `hk-shell
+restart` after changing `modules` or a dynamically referenced QML source; the
+latter is outside Quickshell's statically scanned reload graph.
 
 Feature panels remain separate surfaces. A built-in feature widget can declare
 its corresponding built-in panel; a user QML widget may use the shared panel
@@ -560,7 +619,7 @@ Configure it in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`:
 ```json
 {
   "version": 1,
-  "bar": { "enabled": false },
+  "modules": { "bar": false },
   "userRoot": {
     "source": "Extensions.qml",
     "settings": {}
@@ -570,13 +629,61 @@ Configure it in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`:
 
 The documented source location is `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/Extensions.qml`. Its root
 may be any QML object and declares `required property var context`. The context
-contains `settings`, the complete merged shell `configuration`, and the live
-`theme`. The ordinary typed theme properties remain available, while
+has these direct members:
+
+| Member | Meaning |
+|---|---|
+| `configuration` | The complete resolved shell JSON. |
+| `settings` | `userRoot.settings` from that JSON. |
+| `theme` | The live typed theme object. |
+| `outputs` | The current `Quickshell.screens` list. |
+| `overlayName`, `overlayOutput`, `overlayValues`, `overlayRevision` | The requested exclusive overlay and its change counter. |
+| `openOverlay(name, output, values)` | Opens only when no overlay is active. |
+| `replaceOverlay(name, output, values)` | Replaces the current overlay request. |
+| `toggleOverlay(name, output, values)` | Closes the matching request or replaces it. |
+| `closeOverlay()` | Closes the current overlay. |
+
+The ordinary typed theme properties remain available, while
 `context.theme.document` exposes the complete generated `quickshell.json` for
 custom values such as
 `context.theme.document.extensions.dashboard.background`. Theme authors may
 derive those values from any source vocabulary by placing the final values
 under `shell` in `theme.yaml`.
+
+The same context lets a personal root handle a menu-defined overlay without
+registering anything. A menu action such as this:
+
+```json
+{
+  "type": "surface",
+  "surface": "dashboard",
+  "parameters": { "section": "weather" }
+}
+```
+
+sets `context.overlayName` to `dashboard`, passes the object as
+`context.overlayValues`, and selects `context.overlayOutput`. The root creates
+its own window when that name is active and calls `context.closeOverlay()` when
+it closes it. The built-in menu and picker modules use this same controller.
+
+The root can keep that decision as ordinary QML state:
+
+```qml
+import QtQuick
+
+Item {
+  required property var context
+
+  readonly property bool dashboardRequested: context.overlayName === "dashboard"
+  readonly property string section: dashboardRequested
+    ? context.overlayValues.section ?? ""
+    : ""
+
+  function closeDashboard(): void {
+    context.closeOverlay()
+  }
+}
+```
 
 An optional root method can override notification positioning per output while
 `notifications.edge` is `bar`:
@@ -635,8 +742,9 @@ edge. These are ordinary QML bindings: changing a property read by the method
 repositions an existing notification window immediately.
 
 The module is trusted, unsandboxed user code. Its source and private settings
-are not schema-policed. Changes to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` apply live; restart the
-shell after editing the dynamically loaded QML source.
+are not schema-policed. Ordinary changes to
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` apply live. Restart the shell after
+editing dynamically loaded QML source or changing `modules`.
 
 ## Validation and Resolution
 

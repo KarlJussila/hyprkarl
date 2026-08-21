@@ -78,6 +78,8 @@ reset_sandbox() {
 reset_fakehome() {
   rm -rf "$FAKEHOME"
   mkdir -p "$FAKEHOME/.config" \
+           "$FAKEHOME/.cache" \
+           "$FAKEHOME/.local/state" \
            "$FAKEHOME/.local/share/applications" \
            "$FAKEHOME/.local/share/themes/hyprkarl"
 }
@@ -152,16 +154,25 @@ plant_stow_conflict() {
 
 # ─── run wrappers ─────────────────────────────────────────────────────────
 
+run_with_fakehome() {
+  HOME="$FAKEHOME" \
+    XDG_CONFIG_HOME="$FAKEHOME/.config" \
+    XDG_STATE_HOME="$FAKEHOME/.local/state" \
+    XDG_CACHE_HOME="$FAKEHOME/.cache" \
+    XDG_DATA_HOME="$FAKEHOME/.local/share" \
+    "$@"
+}
+
 run_check() {
   HYPRKARL_PATH="$CLONE" PATH="$ORIG/bin:$PATH" hk-update check
 }
 
 run_dotfiles() {
-  HOME="$FAKEHOME" HYPRKARL_PATH="$CLONE" PATH="$ORIG/bin:$PATH" hk-update-dotfiles "$@"
+  run_with_fakehome env HYPRKARL_PATH="$CLONE" PATH="$ORIG/bin:$PATH" hk-update-dotfiles "$@"
 }
 
 run_packages_mock() {
-  HOME="$FAKEHOME" HYPRKARL_PATH="$CLONE" \
+  run_with_fakehome env HYPRKARL_PATH="$CLONE" \
     PATH="$MOCKBIN:$ORIG/bin:$PATH" hk-update-packages
 }
 
@@ -170,7 +181,7 @@ run_packages_real() {
 }
 
 run_remove_stale() {
-  HOME="$FAKEHOME" HYPRKARL_PATH="$CLONE" PATH="$ORIG/bin:$PATH" hk-update-remove-stale
+  run_with_fakehome env HYPRKARL_PATH="$CLONE" PATH="$ORIG/bin:$PATH" hk-update-remove-stale
 }
 
 # ─── verification helpers ─────────────────────────────────────────────────
@@ -434,7 +445,7 @@ cmd_dotfiles_stale() {
   reset_sandbox
   seed_dotfiles_change
   # Pre-stow to create real symlinks
-  HOME="$FAKEHOME" HYPRKARL_PATH="$CLONE" \
+  run_with_fakehome env HYPRKARL_PATH="$CLONE" \
     stow --restow --no-folding --ignore='@girs' --ignore='node_modules' \
       --dir="$CLONE" --target="$FAKEHOME/.config" config 2>/dev/null || true
   # Plant a broken symlink pointing to a nonexistent file in the clone
@@ -492,7 +503,7 @@ cmd_remove_stale() {
   printf 'Expected: both removed; valid symlinks and real files are preserved.\n\n'
   reset_sandbox
   # Stow to produce real symlinks first (they should survive)
-  HOME="$FAKEHOME" HYPRKARL_PATH="$CLONE" \
+  run_with_fakehome env HYPRKARL_PATH="$CLONE" \
     stow --restow --no-folding --ignore='@girs' --ignore='node_modules' \
       --dir="$CLONE" --target="$FAKEHOME/.config" config 2>/dev/null || true
   # Plant two broken symlinks into the clone path

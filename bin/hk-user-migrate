@@ -50,7 +50,6 @@ seeded_config_files=(
   yazi/init.lua
   yazi/flavors/hyprkarl.yazi/flavor.toml
   yazi/keymap.toml
-  yazi/package.toml
   yazi/plugins/folder-rules.yazi/main.lua
   yazi/plugins/smart-filter.yazi/LICENSE
   yazi/plugins/smart-filter.yazi/README.md

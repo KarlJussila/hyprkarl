@@ -30,7 +30,7 @@ PanelRow {
   }
 
   function batteryDetail(): string {
-    return device.batteryAvailable ? ` · ${Math.round(device.battery * 100)}%` : ""
+    return device.batteryAvailable ? `${Math.round(device.battery * 100)}%` : ""
   }
 
   function deviceDetail(): string {
@@ -38,8 +38,8 @@ PanelRow {
     if (device.pairing) return "pairing"
     if (device.state === BluetoothDeviceState.Connecting) return "connecting"
     if (device.state === BluetoothDeviceState.Disconnecting) return "disconnecting"
-    if (device.connected) return `connected${batteryDetail()}`
-    return device.paired ? "paired" : "available"
+    if (device.connected) return batteryDetail()
+    return ""
   }
 
   function activateDevice(): void {

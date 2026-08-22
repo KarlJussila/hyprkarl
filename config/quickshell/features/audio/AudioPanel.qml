@@ -37,21 +37,16 @@ Item {
     objects: root.trackedNodes
   }
 
-  Column {
+  PanelLayout {
     id: content
 
     width: parent.width
-    spacing: root.theme.panelSpacing
-
-    PanelHeader {
-      width: parent.width
-      theme: root.theme
-      title: "Audio"
-      subtitle: root.output ? root.nodeName(root.output) : "No output device"
-      action: root.config.secondaryCommand?.length > 0
-        ? () => root.externalCommandRequested(root.config.secondaryCommand)
-        : null
-    }
+    theme: root.theme
+    title: "Audio"
+    subtitle: root.output ? root.nodeName(root.output) : "No output device"
+    action: root.config.secondaryCommand?.length > 0
+      ? () => root.externalCommandRequested(root.config.secondaryCommand)
+      : null
 
     AudioLevel {
       width: parent.width
@@ -77,7 +72,6 @@ Item {
         theme: root.theme
         icon: "󰓃"
         title: root.nodeName(modelData)
-        detail: selected ? "default" : ""
         selected: modelData === Pipewire.defaultAudioSink
         busy: modelData === Pipewire.preferredDefaultAudioSink && !selected
         action: () => Pipewire.preferredDefaultAudioSink = modelData
@@ -109,7 +103,6 @@ Item {
         theme: root.theme
         icon: "󰍬"
         title: root.nodeName(modelData)
-        detail: selected ? "default" : ""
         selected: modelData === Pipewire.defaultAudioSource
         busy: modelData === Pipewire.preferredDefaultAudioSource && !selected
         action: () => Pipewire.preferredDefaultAudioSource = modelData

@@ -283,12 +283,17 @@ See `config/quickshell/README.md` for its structure, checks, and interactions.
 The display, audio, network, Bluetooth, battery/power, and clock/calendar
 panels share a per-monitor host under `config/quickshell/panels/`; their
 feature-specific views and state live under `config/quickshell/features/`.
+The host owns their nested frame, while `components/PanelLayout.qml` owns the
+shared header band and padded body. Rows, actions, sliders, and the custom
+switch primitive live beside it under `config/quickshell/components/`.
 The display view delegates discovery, live changes, and persistence to
 `hk-display` rather than owning a second QML state store.
 Network scanning and Bluetooth discovery use feature-owned singletons because
 those operations are global to an adapter while panels are per monitor.
 Network scanning follows panel activity; Bluetooth discovery begins only from
-the panel's explicit scan action. Clock uses one application-wide current-time
+the panel's explicit scan action. That action is replaced by the
+available-device section after it runs during the current panel opening. Clock
+uses one application-wide current-time
 singleton while viewed-month navigation remains local to each panel. There is
 no separate feature-flyout boundary.
 

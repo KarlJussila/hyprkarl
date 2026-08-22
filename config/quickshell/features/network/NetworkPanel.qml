@@ -46,28 +46,23 @@ Item {
   Component.onCompleted: NetworkState.requestScanning(root, active)
   Component.onDestruction: NetworkState.requestScanning(root, false)
 
-  Column {
+  PanelLayout {
     id: content
 
     width: parent.width
-    spacing: root.theme.panelSpacing
-
-    PanelHeader {
-      width: parent.width
-      theme: root.theme
-      title: "Network"
-      action: root.config.secondaryCommand?.length > 0
-        ? () => root.externalCommandRequested(root.config.secondaryCommand)
-        : null
-    }
+    theme: root.theme
+    title: "Network"
+    action: root.config.secondaryCommand?.length > 0
+      ? () => root.externalCommandRequested(root.config.secondaryCommand)
+      : null
 
     PanelRow {
       width: parent.width
       theme: root.theme
       icon: Networking.wifiEnabled ? "󰖩" : "󰖪"
       title: "Wi-Fi"
-      detail: Networking.wifiEnabled ? "on" : "off"
-      selected: Networking.wifiEnabled
+      switchVisible: true
+      switchActive: Networking.wifiEnabled
       enabled: Networking.wifiHardwareEnabled
       action: () => Networking.wifiEnabled = !Networking.wifiEnabled
     }
@@ -84,11 +79,11 @@ Item {
       text: !Networking.wifiEnabled
         ? "Turn on Wi-Fi to view nearby networks."
         : root.wifiDevice === null ? "No Wi-Fi adapter is available." : "No networks found yet."
-      color: root.theme.foreground
+      color: root.theme.panelForeground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.uiFontFamily
-      font.pixelSize: root.theme.bodyFontSize
+      font.family: root.theme.panelFont
+      font.pixelSize: root.theme.panelFontSize
     }
 
     Repeater {
@@ -135,31 +130,31 @@ Item {
           width: parent.width
           implicitHeight: 38
           visible: networkEntry.enteringPassword
-          color: root.theme.controlSurface
-          border.color: password.activeFocus ? root.theme.accent : root.theme.border
-          border.width: root.theme.borderWidth
-          radius: root.theme.controlRadius
+          color: root.theme.panelBackground
+          border.color: password.activeFocus ? root.theme.panelAccent : root.theme.panelBorder
+          border.width: root.theme.panelSelectionBorderWidth
+          radius: root.theme.panelEntryRadius
 
           Text {
             anchors.left: parent.left
-            anchors.leftMargin: root.theme.controlPadding
+            anchors.leftMargin: root.theme.panelEntryPadding
             anchors.verticalCenter: parent.verticalCenter
             visible: password.text.length === 0 && !password.activeFocus
             text: "Password"
-            color: root.theme.foreground
+            color: root.theme.panelForeground
             opacity: 0.5
-            font.family: root.theme.uiFontFamily
-            font.pixelSize: root.theme.bodyFontSize
+            font.family: root.theme.panelFont
+            font.pixelSize: root.theme.panelFontSize
           }
 
           TextInput {
             id: password
 
             anchors.fill: parent
-            anchors.margins: root.theme.controlPadding
-            color: root.theme.foreground
+            anchors.margins: root.theme.panelEntryPadding
+            color: root.theme.panelForeground
             font.family: root.theme.monoFontFamily
-            font.pixelSize: root.theme.bodyFontSize
+            font.pixelSize: root.theme.panelFontSize
             echoMode: TextInput.Password
             selectByMouse: true
             activeFocusOnTab: true

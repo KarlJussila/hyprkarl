@@ -10,20 +10,52 @@ Item {
   property var action: null
 
   implicitWidth: parent?.width ?? 0
-  implicitHeight: subtitle.length > 0 ? 43 : 24
+  implicitHeight: labels.implicitHeight + root.theme.panelHeaderPadding * 2
 
-  Text {
+  Rectangle {
+    anchors.fill: parent
+    color: root.theme.panelBackground
+
+    Rectangle {
+      anchors.fill: parent
+      color: root.theme.panelAccent
+      opacity: root.theme.panelHeaderAccentOpacity
+    }
+  }
+
+  Column {
+    id: labels
+
     anchors.left: parent.left
     anchors.right: headerAction.visible ? headerAction.left : parent.right
-    anchors.rightMargin: headerAction.visible ? root.theme.panelSpacing : 0
-    anchors.top: parent.top
-    text: root.title
-    color: root.theme.foreground
-    font.family: root.theme.uiFontFamily
-    font.pixelSize: root.theme.bodyFontSize + 1
-    font.weight: root.theme.fontWeight
-    font.styleName: root.theme.fontStyle
-    elide: Text.ElideRight
+    anchors.leftMargin: root.theme.panelHeaderPadding
+    anchors.rightMargin: headerAction.visible
+      ? root.theme.panelSpacing
+      : root.theme.panelHeaderPadding
+    anchors.verticalCenter: parent.verticalCenter
+    spacing: 2
+
+    Text {
+      width: parent.width
+      text: root.title
+      color: root.theme.panelForeground
+      font.family: root.theme.panelFont
+      font.pixelSize: root.theme.panelFontSize + 1
+      font.weight: root.theme.panelFontWeight
+      font.styleName: root.theme.fontStyle
+      elide: Text.ElideRight
+    }
+
+    Text {
+      width: parent.width
+      visible: root.subtitle.length > 0
+      text: root.subtitle
+      color: root.theme.panelForeground
+      opacity: 0.65
+      font.family: root.theme.panelFont
+      font.pixelSize: root.theme.readoutFontSize
+      elide: Text.ElideRight
+    }
   }
 
   Item {
@@ -33,23 +65,38 @@ Item {
     width: 24
     height: 24
     anchors.right: parent.right
-    anchors.top: parent.top
+    anchors.rightMargin: root.theme.panelHeaderPadding
+    anchors.verticalCenter: parent.verticalCenter
     activeFocusOnTab: visible && enabled
 
     Rectangle {
       anchors.fill: parent
-      color: root.theme.accent
-      opacity: headerAction.activeFocus ? 0.30 : actionMouse.containsMouse ? 0.22 : 0.14
-      radius: root.theme.controlRadius
+      color: "transparent"
+      border.color: headerAction.activeFocus || actionMouse.containsMouse
+        ? root.theme.panelAccent
+        : "transparent"
+      border.width: headerAction.activeFocus || actionMouse.containsMouse
+        ? root.theme.panelSelectionBorderWidth
+        : 0
+      radius: root.theme.panelEntryRadius
+
+      Rectangle {
+        anchors.fill: parent
+        color: root.theme.panelAccent
+        opacity: headerAction.activeFocus || actionMouse.containsMouse
+          ? root.theme.panelSelectionAccentOpacity
+          : 0
+        radius: parent.radius
+      }
     }
 
     Text {
       anchors.centerIn: parent
       text: root.actionIcon
-      color: root.theme.foreground
-      font.family: root.theme.uiFontFamily
-      font.pixelSize: root.theme.bodyFontSize
-      font.weight: root.theme.fontWeight
+      color: root.theme.panelForeground
+      font.family: root.theme.panelFont
+      font.pixelSize: root.theme.panelFontSize
+      font.weight: root.theme.panelFontWeight
     }
 
     MouseArea {
@@ -68,16 +115,4 @@ Item {
     }
   }
 
-  Text {
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: parent.bottom
-    visible: root.subtitle.length > 0
-    text: root.subtitle
-    color: root.theme.foreground
-    opacity: 0.65
-    font.family: root.theme.uiFontFamily
-    font.pixelSize: root.theme.readoutFontSize
-    elide: Text.ElideRight
-  }
 }

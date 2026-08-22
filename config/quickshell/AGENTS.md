@@ -193,12 +193,15 @@ bottom-bar panels expand upward while anchoring within the bar surface.
 Panel contents must not create their own popup window or reproduce geometry.
 
 Display, audio, network, Bluetooth, battery/power, and clock/calendar now
-exercise this host with six different compositions. Their repeated header,
-section, row, and action controls are the stable baseline vocabulary;
+exercise this host with six different compositions. `PanelLayout` owns their
+shared left-aligned accent header and padded body, while the host owns the
+theme-configured nested outer and inner frame. Their repeated section, row,
+action, slider, and switch controls are the stable baseline vocabulary;
 feature-specific summaries, sliders, calendar cells, and navigation remain
 with their features. `components/PanelSlider.qml` owns the shared normalized
 slider used by display brightness and audio levels; do not fork its interaction
-for another percentage control.
+for another percentage control. Boolean panel rows use the shared
+`ToggleIndicator` switch instead of spelling state as `on`, `off`, or `muted`.
 `PanelHeader` owns the compact optional header action; audio, network, and
 Bluetooth place their advanced-settings cog there instead of adding a wide
 footer action.
@@ -241,7 +244,9 @@ scan. `features/bluetooth/BluetoothState.qml` owns the equivalent
 adapter-global discovery lifetime and stops discovery only when this shell
 started it. Opening a Bluetooth panel does not request discovery; only its
 explicit scan action registers that panel as an owner, and closing the panel
-releases it. Bluetooth device and power-profile actions otherwise write the
+releases it. Keep the available-device section hidden until that action runs
+during the current panel opening, then replace the scan action with that
+section. Bluetooth device and power-profile actions otherwise write the
 Quickshell service objects directly; do not add generic controllers around
 them. The installed Bluetooth API does not expose pairing-agent prompts or
 action failure reasons, so keep `hk-bluetooth-launch` as the advanced route
@@ -351,11 +356,14 @@ resolves expiry, synchronous replacement, filters, silence mode, and
 one visual restore snapshot, and exposes the `notifications` IPC target.
 There is one `NotificationWindow` per output; windows never request keyboard
 focus. Toast delegates own hover-paused timers, click-to-dismiss behavior,
-content images, and progress rendering. The default stack docks to the bar and
-right screen edge, overlaps the bar border, and joins adjacent toasts along a
-single shared border. Only corners reached by the adjacent toast sharpen;
-width overhangs remain rounded. It sharpens the outer corner that touches both
-surfaces, and reveals into the workspace. Do not restore a
+content images, and progress rendering. A `ScriptModel` keyed by entry serial
+keeps existing delegates and their timers alive when the stack changes. New
+toasts reveal at the free end; closing toasts collapse toward the bar before
+state removes them. The default stack docks to the bar and right screen edge,
+overlaps the bar border, and joins adjacent toasts along a single shared
+border. Only corners reached by the adjacent toast sharpen; width overhangs
+remain rounded. It sharpens the outer corner that touches both surfaces, and
+reveals into the workspace. Do not restore a
 permanent close control or generic action-button row without a new interaction
 design.
 

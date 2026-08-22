@@ -38,8 +38,9 @@ Item {
       theme: root.theme
       icon: root.audio?.muted ? "󰝟" : root.showPeak ? "󰍬" : "󰕾"
       title: root.title
-      detail: root.audio ? (root.audio.muted ? "muted" : root.nodeName) : "unavailable"
-      selected: root.audio?.muted ?? false
+      detail: root.audio ? root.nodeName : "unavailable"
+      switchVisible: root.audio !== null
+      switchActive: root.audio !== null && !root.audio.muted
       enabled: root.audio !== null
       action: root.audio ? () => root.audio.muted = !root.audio.muted : null
     }
@@ -57,13 +58,13 @@ Item {
       width: parent.width
       height: visible ? 3 : 0
       radius: 2
-      color: root.theme.border
+      color: root.theme.panelBorder
 
       Rectangle {
         width: parent.width * Math.max(0, Math.min(1, peakMonitor.peak))
         height: parent.height
         radius: parent.radius
-        color: root.theme.accent
+        color: root.theme.panelAccent
       }
     }
   }

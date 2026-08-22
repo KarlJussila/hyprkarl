@@ -27,18 +27,13 @@ Item {
     monthOffset = 0
   }
 
-  Column {
+  PanelLayout {
     id: content
 
     width: parent.width
-    spacing: root.theme.panelSpacing
-
-    PanelHeader {
-      width: parent.width
-      theme: root.theme
-      title: Qt.formatDate(ClockState.now, "dddd, MMMM d")
-      subtitle: Qt.formatDateTime(ClockState.now, "yyyy · h:mm:ss AP")
-    }
+    theme: root.theme
+    title: Qt.formatDate(ClockState.now, "dddd, MMMM d")
+    subtitle: Qt.formatDateTime(ClockState.now, "yyyy · h:mm:ss AP")
 
     Row {
       width: parent.width
@@ -53,12 +48,12 @@ Item {
         width: parent.width - 68
         height: 34
         text: Qt.formatDate(root.viewedMonth, "MMMM yyyy")
-        color: root.theme.foreground
+        color: root.theme.panelForeground
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.family: root.theme.uiFontFamily
-        font.pixelSize: root.theme.bodyFontSize + 1
-        font.weight: root.theme.fontWeight
+        font.family: root.theme.panelFont
+        font.pixelSize: root.theme.panelFontSize + 1
+        font.weight: root.theme.panelFontWeight
         font.styleName: root.theme.fontStyle
       }
 
@@ -85,7 +80,7 @@ Item {
         width: weekdayRow.width / 7
         height: weekdayRow.height
         text: model.shortName
-        color: root.theme.foreground
+        color: root.theme.panelForeground
         opacity: 0.65
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -125,21 +120,29 @@ Item {
           width: Math.min(parent.width, parent.height) - 4
           height: width
           visible: dayCell.isToday
-          color: root.theme.accent
-          opacity: 0.20
-          radius: width / 2
+          color: root.theme.panelBackground
+          border.color: root.theme.panelAccent
+          border.width: root.theme.panelSelectionBorderWidth
+          radius: root.theme.panelEntryRadius
+
+          Rectangle {
+            anchors.fill: parent
+            color: root.theme.panelAccent
+            opacity: root.theme.panelSelectionAccentOpacity
+            radius: parent.radius
+          }
         }
 
         Text {
           anchors.fill: parent
           text: dayCell.model.day
-          color: dayCell.isToday ? root.theme.accent : root.theme.foreground
+          color: dayCell.isToday ? root.theme.panelAccent : root.theme.panelForeground
           opacity: dayCell.inViewedMonth ? 1 : 0.35
           horizontalAlignment: Text.AlignHCenter
           verticalAlignment: Text.AlignVCenter
           font.family: root.theme.monoFontFamily
           font.pixelSize: root.theme.readoutFontSize
-          font.weight: dayCell.isToday ? root.theme.fontWeight : Font.Normal
+          font.weight: dayCell.isToday ? root.theme.panelFontWeight : Font.Normal
         }
       }
     }

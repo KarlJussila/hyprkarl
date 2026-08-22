@@ -70,17 +70,12 @@ Item {
     }
   }
 
-  Column {
+  PanelLayout {
     id: content
 
     width: parent.width
-    spacing: root.theme.panelSpacing
-
-    PanelHeader {
-      width: parent.width
-      theme: root.theme
-      title: "Power"
-    }
+    theme: root.theme
+    title: "Power"
 
     BatterySummary {
       visible: root.battery?.isPresent ?? false
@@ -102,10 +97,10 @@ Item {
       visible: PowerProfiles.holds.length > 0
       width: parent.width
       text: `${PowerProfiles.holds.length} application hold${PowerProfiles.holds.length === 1 ? "" : "s"} the current profile. Choosing another profile releases ${PowerProfiles.holds.length === 1 ? "it" : "them"}.`
-      color: root.theme.foreground
+      color: root.theme.panelForeground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.uiFontFamily
+      font.family: root.theme.panelFont
       font.pixelSize: root.theme.readoutFontSize
     }
 

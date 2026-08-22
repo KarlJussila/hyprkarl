@@ -265,7 +265,9 @@ touching both, and reveals from the bar into the workspace. The shipped
 theme's zero `notification.stackSpacing` joins adjacent toasts along one border
 and sharpens only corners the neighboring toast actually reaches; overhanging
 corners stay rounded. A positive value restores separate rounded toasts. New
-notifications appear on the focused monitor.
+notifications appear on the focused monitor and reveal at the free end of its
+stack. Each toast keeps its own timeout as the stack changes and collapses
+toward the bar before removal.
 `defaultTimeout` applies when a sender does not request a timeout,
 `statusTimeout` applies to shell-owned status messages, and `maxVisible` caps
 each stack. A sender timeout of zero and every critical notification remain

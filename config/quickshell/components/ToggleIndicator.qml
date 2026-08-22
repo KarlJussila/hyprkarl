@@ -9,8 +9,12 @@ Item {
   required property var theme
 
   property real progress: active ? 1 : 0
-  property color trackColor: active ? theme.accent : theme.barSurface
-  property color borderColor: active ? theme.accent : theme.border
+  property color surfaceColor: theme.barSurface
+  property color accentColor: theme.accent
+  property color outlineColor: theme.border
+  property color foregroundColor: theme.foreground
+  property color trackColor: active ? accentColor : surfaceColor
+  property color borderColor: active ? accentColor : outlineColor
 
   implicitWidth: 28
   implicitHeight: 18
@@ -54,7 +58,7 @@ Item {
         context.stroke()
 
         roundedRect(thumbX, 1, 16, 16, 8)
-        context.fillStyle = root.theme.barSurface
+        context.fillStyle = root.surfaceColor
         context.fill()
         context.strokeStyle = root.borderColor
         context.stroke()
@@ -69,7 +73,7 @@ Item {
       horizontalAlignment: Text.AlignHCenter
       verticalAlignment: Text.AlignVCenter
       text: root.active ? root.onGlyph : root.offGlyph
-      color: root.theme.foreground
+      color: root.foregroundColor
       font.family: root.theme.uiFontFamily
       font.pixelSize: 9
     }
@@ -78,4 +82,7 @@ Item {
   onProgressChanged: canvas.requestPaint()
   onTrackColorChanged: canvas.requestPaint()
   onBorderColorChanged: canvas.requestPaint()
+  onSurfaceColorChanged: canvas.requestPaint()
+  onAccentColorChanged: canvas.requestPaint()
+  onOutlineColorChanged: canvas.requestPaint()
 }

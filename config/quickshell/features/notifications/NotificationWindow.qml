@@ -18,8 +18,8 @@ PanelWindow {
   readonly property var screenEntries:
     notificationState.entriesForScreen(output.name)
   readonly property var entries: resolvedEdge === "top"
-    ? screenEntries
-    : screenEntries.slice().reverse()
+    ? screenEntries.slice().reverse()
+    : screenEntries
   readonly property bool touchesSurface: surfaceExtent !== 0
     && position.connected === true
     && shellConfig.notificationGap === 0
@@ -71,9 +71,14 @@ PanelWindow {
       : root.theme.notificationStackSpacing
 
     Repeater {
-      model: root.entries
+      model: ScriptModel {
+        values: root.entries
+        objectProp: "serial"
+      }
 
       Item {
+        id: delegate
+
         required property var modelData
         required property int index
 
@@ -107,8 +112,25 @@ PanelWindow {
           }
         }
 
+        Timer {
+          id: removalTimer
+
+          interval: root.theme.notificationTransitionDuration
+          onTriggered: root.notificationState.finishRemoval(delegate.modelData)
+        }
+
+        onModelDataChanged: {
+          if (modelData.closing) {
+            reveal = 0
+            removalTimer.restart()
+          }
+        }
+
         Component.onCompleted: {
-          if (!modelData.revealed) {
+          if (modelData.closing) {
+            reveal = 0
+            removalTimer.start()
+          } else if (!modelData.revealed) {
             modelData.revealed = true
             reveal = 1
           }

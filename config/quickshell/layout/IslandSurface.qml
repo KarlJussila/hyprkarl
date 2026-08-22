@@ -80,28 +80,56 @@ Item {
       context.stroke()
     }
 
+    function strokeCurvedSide(context, side, x, startY, endY, y0, y1): void {
+      const size = Math.min(root.theme.cornerCurveSize, height)
+      const control = root.theme.cornerCurveRadius * 0.6
+      const clipDepth = root.theme.borderWidth
+      const top = root.edge === "top"
+
+      context.beginPath()
+      if (side === "left" && top) {
+        context.moveTo(0, y0 - clipDepth)
+        context.bezierCurveTo(root.bodyLeft - control, y0 - clipDepth, x, y0 - clipDepth, x, size - clipDepth)
+        context.lineTo(x, endY)
+      } else if (side === "right" && top) {
+        context.moveTo(width, y0 - clipDepth)
+        context.bezierCurveTo(root.bodyRight + control, y0 - clipDepth, x, y0 - clipDepth, x, size - clipDepth)
+        context.lineTo(x, endY)
+      } else if (side === "left") {
+        context.moveTo(x, startY)
+        context.lineTo(x, height - size + clipDepth)
+        context.bezierCurveTo(x, y1 + clipDepth, root.bodyLeft - control, y1 + clipDepth, 0, y1 + clipDepth)
+      } else {
+        context.moveTo(x, startY)
+        context.lineTo(x, height - size + clipDepth)
+        context.bezierCurveTo(x, y1 + clipDepth, root.bodyRight + control, y1 + clipDepth, width, y1 + clipDepth)
+      }
+      context.stroke()
+    }
+
     function drawCurve(context, side): void {
       const size = Math.min(root.theme.cornerCurveSize, height)
       const control = root.theme.cornerCurveRadius * 0.6
+      const clipDepth = root.theme.borderWidth
       const top = root.edge === "top"
 
       context.beginPath()
       if (side === "left" && top) {
         context.moveTo(root.bodyLeft, 0)
-        context.lineTo(root.bodyLeft, size)
-        context.bezierCurveTo(root.bodyLeft, 0, root.bodyLeft - control, 0, 0, 0)
+        context.lineTo(root.bodyLeft, size - clipDepth)
+        context.bezierCurveTo(root.bodyLeft, -clipDepth, root.bodyLeft - control, -clipDepth, 0, -clipDepth)
       } else if (side === "right" && top) {
         context.moveTo(root.bodyRight, 0)
-        context.lineTo(root.bodyRight, size)
-        context.bezierCurveTo(root.bodyRight, 0, root.bodyRight + control, 0, width, 0)
+        context.lineTo(root.bodyRight, size - clipDepth)
+        context.bezierCurveTo(root.bodyRight, -clipDepth, root.bodyRight + control, -clipDepth, width, -clipDepth)
       } else if (side === "left") {
         context.moveTo(root.bodyLeft, height)
-        context.lineTo(root.bodyLeft, height - size)
-        context.bezierCurveTo(root.bodyLeft, height, root.bodyLeft - control, height, 0, height)
+        context.lineTo(root.bodyLeft, height - size + clipDepth)
+        context.bezierCurveTo(root.bodyLeft, height + clipDepth, root.bodyLeft - control, height + clipDepth, 0, height + clipDepth)
       } else {
         context.moveTo(root.bodyRight, height)
-        context.lineTo(root.bodyRight, height - size)
-        context.bezierCurveTo(root.bodyRight, height, root.bodyRight + control, height, width, height)
+        context.lineTo(root.bodyRight, height - size + clipDepth)
+        context.bezierCurveTo(root.bodyRight, height + clipDepth, root.bodyRight + control, height + clipDepth, width, height + clipDepth)
       }
       context.closePath()
       context.fill()
@@ -125,7 +153,7 @@ Item {
       roundedBody(context, root.bodyLeft, 0, root.bodyRight, height, topLeft, topRight, bottomRight, bottomLeft)
       context.fill()
 
-      context.fillStyle = root.theme.border
+      context.fillStyle = root.theme.barSurface
       if (root.leftCurve) drawCurve(context, "left")
       if (root.rightCurve) drawCurve(context, "right")
 
@@ -152,10 +180,34 @@ Item {
       context.lineCap = "butt"
       context.lineJoin = "round"
 
-      if (topBorder) strokeLine(context, x0 + tl, y0, x1 - tr, y0)
-      if (rightBorder) strokeLine(context, x1, y0 + tr, x1, y1 - br)
-      if (bottomBorder) strokeLine(context, x1 - br, y1, x0 + bl, y1)
-      if (leftBorder) strokeLine(context, x0, y1 - bl, x0, y0 + tl)
+      if (topBorder) strokeLine(
+        context,
+        root.edge === "top" && root.leftCurve ? root.bodyLeft : x0 + tl,
+        y0,
+        root.edge === "top" && root.rightCurve ? root.bodyRight : x1 - tr,
+        y0
+      )
+      if (rightBorder) {
+        if (root.rightCurve) {
+          strokeCurvedSide(context, "right", x1, y0 + tr, y1 - br, y0, y1)
+        } else {
+          strokeLine(context, x1, y0 + tr, x1, y1 - br)
+        }
+      }
+      if (bottomBorder) strokeLine(
+        context,
+        root.edge === "bottom" && root.rightCurve ? root.bodyRight : x1 - br,
+        y1,
+        root.edge === "bottom" && root.leftCurve ? root.bodyLeft : x0 + bl,
+        y1
+      )
+      if (leftBorder) {
+        if (root.leftCurve) {
+          strokeCurvedSide(context, "left", x0, y0 + tl, y1 - bl, y0, y1)
+        } else {
+          strokeLine(context, x0, y1 - bl, x0, y0 + tl)
+        }
+      }
 
       if (tr > 0 && (topBorder || rightBorder)) {
         strokeCorner(context, x1 - tr, y0, x1, y0, x1, y0 + tr)

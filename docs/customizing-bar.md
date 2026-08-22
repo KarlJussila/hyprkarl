@@ -241,6 +241,17 @@ audio surfaces. Panel height is content-driven and grows as far as the
 remaining monitor height; scrolling begins only after content exceeds that
 physical limit, so there is no theme height cap to configure.
 
+Feature panels use the same visual vocabulary as the shell menus while keeping
+their own independently overridable theme values. `panel.outerRadius`,
+`innerRadius`, `outerBorderWidth`, `outerPadding`, and `innerBorderWidth` shape
+the nested frame. `headerPadding` and `headerAccentOpacity` shape the left-aligned
+title band. `entryRadius`, `entryPadding`, `selectionBorderWidth`, and
+`selectionAccentOpacity` control rows and actions. The panel color and type
+defaults are `background`, `foreground`, `accent`, `border`, `font`, `fontSize`,
+and `fontWeight`. These fields derive from the same shared palette, typography,
+radii, borders, and opacity tokens as `menu` by default; either surface can
+still be changed without changing the other.
+
 The shell-native command menu uses the nested `menu` object in the same theme
 file. Its width, nested-frame metrics, row spacing, and selection treatment
 preserve the earlier Rofi menu's compact visual identity. Colors, typography,

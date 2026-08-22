@@ -6,6 +6,7 @@ Item {
   required property var theme
   property string text: ""
   property var action: null
+  readonly property bool highlighted: root.activeFocus || mouse.containsMouse
 
   activeFocusOnTab: enabled && action !== null
   implicitWidth: 34
@@ -13,18 +14,26 @@ Item {
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.accent
-    opacity: root.activeFocus ? 0.30 : mouse.containsMouse ? 0.22 : 0.10
-    radius: root.theme.controlRadius
+    color: root.theme.panelBackground
+    border.color: root.highlighted ? root.theme.panelAccent : "transparent"
+    border.width: root.highlighted ? root.theme.panelSelectionBorderWidth : 0
+    radius: root.theme.panelEntryRadius
+
+    Rectangle {
+      anchors.fill: parent
+      color: root.theme.panelAccent
+      opacity: root.highlighted ? root.theme.panelSelectionAccentOpacity : 0
+      radius: parent.radius
+    }
   }
 
   Text {
     anchors.centerIn: parent
     text: root.text
-    color: root.theme.foreground
-    font.family: root.theme.uiFontFamily
-    font.pixelSize: root.theme.bodyFontSize
-    font.weight: root.theme.fontWeight
+    color: root.theme.panelForeground
+    font.family: root.theme.panelFont
+    font.pixelSize: root.theme.panelFontSize
+    font.weight: root.theme.panelFontWeight
   }
 
   MouseArea {

@@ -57,3 +57,7 @@ require("windows/screenshots")
 hl.window_rule({ match = { tag = "default-opacity" }, opacity = "1.0 0.8" })
 
 -- Layer rules ----------------------------------------------------------------
+hl.layer_rule({
+    match = { namespace = "^hyprkarl-quickshell-.*$" },
+    no_anim = true,
+})

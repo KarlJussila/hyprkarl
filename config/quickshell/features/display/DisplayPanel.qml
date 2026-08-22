@@ -177,20 +177,15 @@ Item {
     // qmllint enable signal-handler-parameters
   }
 
-  Column {
+  PanelLayout {
     id: content
 
     width: parent.width
-    spacing: root.theme.panelSpacing
-
-    PanelHeader {
-      width: parent.width
-      theme: root.theme
-      title: "Display"
-      subtitle: root.target.description?.length > 0
-        ? `${root.displayState.target} · ${root.target.description}`
-        : root.displayState.target
-    }
+    theme: root.theme
+    title: "Display"
+    subtitle: root.target.description?.length > 0
+      ? `${root.displayState.target} · ${root.target.description}`
+      : root.displayState.target
 
     PanelSectionLabel {
       visible: root.displayState.brightness.available
@@ -226,6 +221,8 @@ Item {
         model: root.displayState.scalePresets
 
         Item {
+          id: scaleOption
+
           required property real modelData
 
           readonly property bool selected: Math.abs(
@@ -236,19 +233,31 @@ Item {
 
           Rectangle {
             anchors.fill: parent
-            color: root.theme.accent
-            opacity: parent.activeFocus ? 0.30
-              : scaleMouse.containsMouse ? 0.22
-              : parent.selected ? 0.14 : 0
-            border.color: parent.selected ? root.theme.accent : root.theme.border
-            border.width: root.theme.borderWidth
-            radius: root.theme.controlRadius
+            color: root.theme.panelBackground
+            border.color: parent.activeFocus || scaleMouse.containsMouse || parent.selected
+              ? root.theme.panelAccent
+              : "transparent"
+            border.width: parent.activeFocus || scaleMouse.containsMouse || parent.selected
+              ? root.theme.panelSelectionBorderWidth
+              : 0
+            radius: root.theme.panelEntryRadius
+
+            Rectangle {
+              anchors.fill: parent
+              color: root.theme.panelAccent
+              opacity: scaleOption.activeFocus
+                || scaleMouse.containsMouse
+                || scaleOption.selected
+                ? root.theme.panelSelectionAccentOpacity
+                : 0
+              radius: parent.radius
+            }
           }
 
           Text {
             anchors.centerIn: parent
             text: `${Number(parent.modelData.toFixed(2))}×`
-            color: parent.selected ? root.theme.accent : root.theme.foreground
+            color: parent.selected ? root.theme.panelAccent : root.theme.panelForeground
             font.family: root.theme.monoFontFamily
             font.pixelSize: root.theme.readoutFontSize
           }
@@ -290,10 +299,9 @@ Item {
         theme: root.theme
         icon: modelData.name.match(/^(eDP|LVDS|DSI)-/) ? "󰌢" : "󰍹"
         title: modelData.description || modelData.name
-        detail: modelData.enabled
-          ? (modelData.name === root.displayState.target ? "this display" : "on")
-          : "off"
-        selected: modelData.enabled
+        detail: modelData.name === root.displayState.target ? "this display" : ""
+        switchVisible: true
+        switchActive: modelData.enabled
         busy: root.currentAction === "toggle" && root.actionTarget === modelData.name
         enabled: !isOnlyActive && root.currentAction.length === 0
         action: enabled
@@ -308,7 +316,7 @@ Item {
       text: root.error
       color: root.theme.urgent
       wrapMode: Text.Wrap
-      font.family: root.theme.uiFontFamily
+      font.family: root.theme.panelFont
       font.pixelSize: root.theme.readoutFontSize
     }
   }

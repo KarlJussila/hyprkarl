@@ -140,6 +140,8 @@ QtObject {
       "synchronousKey": synchronousKey(notification),
       "glyph": "",
       "revealed": false,
+      "closing": false,
+      "closeMode": "",
       "remember": true
     }
   }
@@ -161,6 +163,8 @@ QtObject {
       "synchronousKey": "",
       "glyph": entry.glyph,
       "revealed": false,
+      "closing": false,
+      "closeMode": "",
       "remember": true
     }
   }
@@ -168,6 +172,30 @@ QtObject {
   function removeEntry(entry): void {
     visibleNotifications = visibleNotifications.filter(candidate =>
       candidate.serial !== entry.serial)
+  }
+
+  function beginRemoval(entry, shouldRemember, closeMode): void {
+    const current = visibleNotifications.find(candidate =>
+      candidate.serial === entry.serial)
+    if (!current || current.closing) return
+
+    if (shouldRemember) remember(current)
+    const closing = Object.assign({}, current, {
+      "closing": true,
+      "closeMode": closeMode
+    })
+    visibleNotifications = visibleNotifications.map(candidate =>
+      candidate.serial === closing.serial ? closing : candidate)
+  }
+
+  function finishRemoval(entry): void {
+    const current = visibleNotifications.find(candidate =>
+      candidate.serial === entry.serial)
+    if (!current || !current.closing) return
+
+    removeEntry(current)
+    if (current.closeMode === "expire") closeSource(current, true)
+    else if (current.closeMode === "dismiss") closeSource(current, false)
   }
 
   function remember(entry): void {
@@ -220,19 +248,15 @@ QtObject {
   }
 
   function sourceClosed(entry): void {
-    removeEntry(entry)
+    beginRemoval(entry, false, "")
   }
 
   function expire(entry): void {
-    remember(entry)
-    removeEntry(entry)
-    closeSource(entry, true)
+    beginRemoval(entry, true, "expire")
   }
 
   function dismissEntry(entry): void {
-    remember(entry)
-    removeEntry(entry)
-    closeSource(entry, false)
+    beginRemoval(entry, true, "dismiss")
   }
 
   function dismissLatest(): void {
@@ -240,12 +264,11 @@ QtObject {
   }
 
   function dismissAll(): void {
-    if (visibleNotifications.length === 0) return
+    const entries = visibleNotifications.filter(entry => !entry.closing)
+    if (entries.length === 0) return
 
-    remember(visibleNotifications[0])
-    const entries = visibleNotifications
-    visibleNotifications = []
-    for (const entry of entries) closeSource(entry, false)
+    remember(entries[0])
+    for (const entry of entries) beginRemoval(entry, false, "dismiss")
   }
 
   function restoreLatest(): void {
@@ -274,6 +297,8 @@ QtObject {
       "synchronousKey": "",
       "glyph": glyph,
       "revealed": false,
+      "closing": false,
+      "closeMode": "",
       "remember": false
     })
   }

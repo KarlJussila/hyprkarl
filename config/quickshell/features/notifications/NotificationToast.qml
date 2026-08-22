@@ -58,7 +58,7 @@ ClippingRectangle {
     id: expiryTimer
 
     interval: root.timeout
-    running: root.timeout > 0 && !hover.hovered
+    running: !root.entry.closing && root.timeout > 0 && !hover.hovered
     onTriggered: root.notificationState.expire(root.entry)
   }
 

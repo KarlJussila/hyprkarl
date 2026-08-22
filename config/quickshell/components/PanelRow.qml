@@ -10,7 +10,10 @@ Item {
   property string error: ""
   property bool selected: false
   property bool busy: false
+  property bool switchVisible: false
+  property bool switchActive: false
   property var action: null
+  readonly property bool highlighted: root.activeFocus || mouse.containsMouse || root.selected
 
   activeFocusOnTab: enabled && action !== null
   implicitWidth: parent?.width ?? 0
@@ -18,23 +21,31 @@ Item {
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.accent
-    opacity: root.activeFocus ? 0.24 : mouse.containsMouse ? 0.16 : root.selected ? 0.10 : 0
-    radius: root.theme.controlRadius
+    color: root.theme.panelBackground
+    border.color: root.highlighted ? root.theme.panelAccent : "transparent"
+    border.width: root.highlighted ? root.theme.panelSelectionBorderWidth : 0
+    radius: root.theme.panelEntryRadius
+
+    Rectangle {
+      anchors.fill: parent
+      color: root.theme.panelAccent
+      opacity: root.highlighted ? root.theme.panelSelectionAccentOpacity : 0
+      radius: parent.radius
+    }
   }
 
   Text {
     id: iconLabel
 
     anchors.left: parent.left
-    anchors.leftMargin: root.theme.controlPadding
+    anchors.leftMargin: root.theme.panelEntryPadding
     anchors.verticalCenter: rowArea.verticalCenter
     width: 22
     visible: root.icon.length > 0
     text: root.icon
-    color: root.selected ? root.theme.accent : root.theme.foreground
-    font.family: root.theme.uiFontFamily
-    font.pixelSize: root.theme.bodyFontSize
+    color: root.selected ? root.theme.panelAccent : root.theme.panelForeground
+    font.family: root.theme.panelFont
+    font.pixelSize: root.theme.panelFontSize
     horizontalAlignment: Text.AlignHCenter
   }
 
@@ -48,46 +59,64 @@ Item {
 
     Text {
       anchors.left: parent.left
-      anchors.leftMargin: root.theme.controlPadding + (root.icon.length > 0 ? 28 : 0)
-      anchors.right: detailLabel.left
-      anchors.rightMargin: root.theme.controlPadding
+      anchors.leftMargin: root.theme.panelEntryPadding + (root.icon.length > 0 ? 28 : 0)
+      anchors.right: detailLabel.visible
+        ? detailLabel.left
+        : switchIndicator.visible ? switchIndicator.left : parent.right
+      anchors.rightMargin: root.theme.panelEntryPadding
       anchors.verticalCenter: parent.verticalCenter
       text: root.title
-      color: root.enabled ? root.theme.foreground : root.theme.border
-      font.family: root.theme.uiFontFamily
-      font.pixelSize: root.theme.bodyFontSize
-      font.weight: root.selected ? root.theme.fontWeight : Font.Normal
+      color: root.enabled ? root.theme.panelForeground : root.theme.panelBorder
+      font.family: root.theme.panelFont
+      font.pixelSize: root.theme.panelFontSize
+      font.weight: root.selected ? root.theme.panelFontWeight : Font.Normal
       elide: Text.ElideRight
     }
 
     Text {
       id: detailLabel
 
-      anchors.right: parent.right
-      anchors.rightMargin: root.theme.controlPadding
+      anchors.right: switchIndicator.visible ? switchIndicator.left : parent.right
+      anchors.rightMargin: root.theme.panelEntryPadding
       anchors.verticalCenter: parent.verticalCenter
+      visible: root.busy || root.detail.length > 0
       width: Math.min(implicitWidth, parent.width * 0.46)
       text: root.busy ? "…" : root.detail
-      color: root.selected ? root.theme.accent : root.theme.foreground
+      color: root.selected ? root.theme.panelAccent : root.theme.panelForeground
       opacity: root.selected ? 1 : 0.65
       font.family: root.theme.monoFontFamily
       font.pixelSize: root.theme.readoutFontSize
       horizontalAlignment: Text.AlignRight
       elide: Text.ElideRight
     }
+
+    ToggleIndicator {
+      id: switchIndicator
+
+      anchors.right: parent.right
+      anchors.rightMargin: root.theme.panelEntryPadding
+      anchors.verticalCenter: parent.verticalCenter
+      visible: root.switchVisible && !root.busy
+      active: root.switchActive
+      surfaceColor: root.theme.panelBackground
+      accentColor: root.theme.panelAccent
+      outlineColor: root.theme.panelBorder
+      foregroundColor: root.theme.panelForeground
+      theme: root.theme
+    }
   }
 
   Text {
     anchors.left: parent.left
-    anchors.leftMargin: root.theme.controlPadding + (root.icon.length > 0 ? 28 : 0)
+    anchors.leftMargin: root.theme.panelEntryPadding + (root.icon.length > 0 ? 28 : 0)
     anchors.right: parent.right
-    anchors.rightMargin: root.theme.controlPadding
+    anchors.rightMargin: root.theme.panelEntryPadding
     anchors.bottom: parent.bottom
     height: 20
     visible: root.error.length > 0
     text: root.error
     color: root.theme.urgent
-    font.family: root.theme.uiFontFamily
+    font.family: root.theme.panelFont
     font.pixelSize: root.theme.readoutFontSize
     elide: Text.ElideRight
   }

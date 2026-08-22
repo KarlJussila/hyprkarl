@@ -25,17 +25,17 @@ Item {
 
     anchors.left: parent.left
     anchors.right: valueLabel.left
-    anchors.rightMargin: root.theme.controlPadding
+    anchors.rightMargin: root.theme.panelEntryPadding
     anchors.verticalCenter: parent.verticalCenter
     height: 6
     radius: 3
-    color: root.theme.border
+    color: root.theme.panelBorder
 
     Rectangle {
       width: parent.width * Math.max(0, Math.min(1, root.value))
       height: parent.height
       radius: parent.radius
-      color: root.theme.accent
+      color: root.theme.panelAccent
     }
 
     Rectangle {
@@ -44,7 +44,7 @@ Item {
       width: root.activeFocus ? 12 : 10
       height: width
       radius: width / 2
-      color: root.theme.foreground
+      color: root.theme.panelForeground
     }
 
     MouseArea {
@@ -67,7 +67,7 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
     width: 38
     text: `${Math.round(root.value * 100)}%`
-    color: root.theme.foreground
+    color: root.theme.panelForeground
     font.family: root.theme.monoFontFamily
     font.pixelSize: root.theme.readoutFontSize
     horizontalAlignment: Text.AlignRight

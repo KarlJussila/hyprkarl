@@ -23,6 +23,7 @@ Item {
   readonly property var connectedDevices: sortedDevices.filter(device => device.connected)
   readonly property var pairedDevices: sortedDevices.filter(device => device.paired && !device.connected)
   readonly property var availableDevices: sortedDevices.filter(device => !device.paired)
+  property bool discoveryRequested: false
 
   implicitWidth: parent?.width ?? 0
   implicitHeight: content.implicitHeight
@@ -40,30 +41,27 @@ Item {
   }
 
   function startDiscovery(): void {
+    discoveryRequested = true
     BluetoothState.requestDiscovery(root, true)
   }
 
   onActiveChanged: {
     if (active) return
+    discoveryRequested = false
     BluetoothState.requestDiscovery(root, false)
   }
   Component.onDestruction: BluetoothState.requestDiscovery(root, false)
 
-  Column {
+  PanelLayout {
     id: content
 
     width: parent.width
-    spacing: root.theme.panelSpacing
-
-    PanelHeader {
-      width: parent.width
-      theme: root.theme
-      title: "Bluetooth"
-      subtitle: root.adapterSubtitle()
-      action: root.config.secondaryCommand?.length > 0
-        ? () => root.externalCommandRequested(root.config.secondaryCommand)
-        : null
-    }
+    theme: root.theme
+    title: "Bluetooth"
+    subtitle: root.adapterSubtitle()
+    action: root.config.secondaryCommand?.length > 0
+      ? () => root.externalCommandRequested(root.config.secondaryCommand)
+      : null
 
     PanelRow {
       visible: root.adapter !== null
@@ -71,8 +69,8 @@ Item {
       theme: root.theme
       icon: root.adapter?.enabled ? "󰂯" : "󰂲"
       title: "Bluetooth"
-      detail: root.adapter?.enabled ? "on" : "off"
-      selected: root.adapter?.enabled ?? false
+      switchVisible: true
+      switchActive: root.adapter?.enabled ?? false
       busy: root.adapter?.state === BluetoothAdapterState.Enabling
         || root.adapter?.state === BluetoothAdapterState.Disabling
       enabled: root.adapter?.state !== BluetoothAdapterState.Blocked
@@ -83,11 +81,11 @@ Item {
       visible: root.adapter === null
       width: parent.width
       text: "No Bluetooth adapter is available."
-      color: root.theme.foreground
+      color: root.theme.panelForeground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.uiFontFamily
-      font.pixelSize: root.theme.bodyFontSize
+      font.family: root.theme.panelFont
+      font.pixelSize: root.theme.panelFontSize
     }
 
     PanelSectionLabel {
@@ -125,34 +123,37 @@ Item {
     }
 
     PanelSectionLabel {
-      visible: root.adapter?.enabled ?? false
+      visible: root.discoveryRequested && (root.adapter?.enabled ?? false)
       theme: root.theme
       text: root.adapter?.discovering ? "Available devices · scanning" : "Available devices"
     }
 
     PanelAction {
-      visible: root.adapter?.enabled ?? false
+      visible: !root.discoveryRequested && (root.adapter?.enabled ?? false)
       width: parent.width
       theme: root.theme
-      icon: "󰑓"
-      text: root.adapter?.discovering ? "Scanning for devices" : "Scan for devices"
-      enabled: !(root.adapter?.discovering ?? false)
+      icon: "󰍉"
+      text: "Scan for devices"
       action: () => root.startDiscovery()
     }
 
     Text {
-      visible: root.adapter?.enabled && root.availableDevices.length === 0
+      visible: root.discoveryRequested
+        && root.adapter?.enabled
+        && root.availableDevices.length === 0
       width: parent.width
       text: "No nearby devices found yet."
-      color: root.theme.foreground
+      color: root.theme.panelForeground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.uiFontFamily
-      font.pixelSize: root.theme.bodyFontSize
+      font.family: root.theme.panelFont
+      font.pixelSize: root.theme.panelFontSize
     }
 
     Repeater {
-      model: root.adapter?.enabled ? root.availableDevices : []
+      model: root.discoveryRequested && root.adapter?.enabled
+        ? root.availableDevices
+        : []
 
       BluetoothDeviceRow {
         required property var modelData

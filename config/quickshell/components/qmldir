@@ -4,6 +4,7 @@ BatteryIndicator 1.0 BatteryIndicator.qml
 ExpandableReadout 1.0 ExpandableReadout.qml
 PanelAction 1.0 PanelAction.qml
 PanelHeader 1.0 PanelHeader.qml
+PanelLayout 1.0 PanelLayout.qml
 PanelRow 1.0 PanelRow.qml
 PanelSectionLabel 1.0 PanelSectionLabel.qml
 PanelSlider 1.0 PanelSlider.qml

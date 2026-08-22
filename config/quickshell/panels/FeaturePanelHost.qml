@@ -26,6 +26,10 @@ Scope {
   readonly property bool sharpTopRight: touchesBar && edge === "top" && touchesRight
   readonly property bool sharpBottomLeft: touchesBar && edge === "bottom" && touchesLeft
   readonly property bool sharpBottomRight: touchesBar && edge === "bottom" && touchesRight
+  readonly property real frameInset: theme.panelOuterPadding
+  readonly property real frameOverhead: theme.panelOuterBorderWidth * 2
+    + frameInset * 2
+    + theme.panelInnerBorderWidth * 2
 
   function toggle(id: string, item: Item, component: Component): void {
     if (activeId === id) {
@@ -103,16 +107,16 @@ Scope {
     visible: root.open || root.reveal > 0
     implicitWidth: Math.min(loadedContent?.preferredWidth ?? root.theme.panelWidth, root.barWindow.width)
     implicitHeight: Math.min(
-      contentHeight + root.theme.panelPadding * 2 + root.theme.borderWidth * 2,
+      contentHeight + root.frameOverhead,
       availableHeight
     )
     mask: Region {
       width: root.open ? panel.width : 0
       height: root.open ? panel.height : 0
-      topLeftRadius: root.sharpTopLeft ? 0 : root.theme.panelRadius
-      topRightRadius: root.sharpTopRight ? 0 : root.theme.panelRadius
-      bottomLeftRadius: root.sharpBottomLeft ? 0 : root.theme.panelRadius
-      bottomRightRadius: root.sharpBottomRight ? 0 : root.theme.panelRadius
+      topLeftRadius: root.sharpTopLeft ? 0 : root.theme.panelOuterRadius
+      topRightRadius: root.sharpTopRight ? 0 : root.theme.panelOuterRadius
+      bottomLeftRadius: root.sharpBottomLeft ? 0 : root.theme.panelOuterRadius
+      bottomRightRadius: root.sharpBottomRight ? 0 : root.theme.panelOuterRadius
     }
 
     anchor {
@@ -126,8 +130,8 @@ Scope {
         if (!root.trigger) return
 
         const relativeY = root.edge === "top"
-          ? root.trigger.height + root.theme.barMarginContent + root.theme.panelGap - root.theme.borderWidth
-          : root.theme.borderWidth - root.theme.barMarginContent - root.theme.panelGap
+          ? root.trigger.height + root.theme.barMarginContent + root.theme.panelGap - root.theme.panelOuterBorderWidth
+          : root.theme.panelOuterBorderWidth - root.theme.barMarginContent - root.theme.panelGap
         const point = root.trigger.QsWindow.contentItem.mapFromItem(
           root.trigger,
           root.trigger.width / 2 - panel.width / 2,
@@ -140,47 +144,75 @@ Scope {
       }
     }
 
-    ClippingRectangle {
-      id: frame
+    Item {
+      id: revealClip
 
-      anchors.fill: parent
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: root.edge === "top" ? parent.top : undefined
+      anchors.bottom: root.edge === "bottom" ? parent.bottom : undefined
+      height: parent.height * root.reveal
+      clip: true
       opacity: root.reveal
-      color: root.theme.popupSurface
-      border.color: root.theme.border
-      border.width: root.theme.borderWidth
-      radius: root.theme.panelRadius
-      topLeftRadius: root.sharpTopLeft ? 0 : radius
-      topRightRadius: root.sharpTopRight ? 0 : radius
-      bottomLeftRadius: root.sharpBottomLeft ? 0 : radius
-      bottomRightRadius: root.sharpBottomRight ? 0 : radius
 
-      FocusScope {
-        id: panelFocus
+      ClippingRectangle {
+        id: frame
 
-        anchors.fill: parent
-        anchors.margins: root.theme.panelPadding
-        focus: panel.visible
-        Keys.onEscapePressed: event => {
-          root.close()
-          event.accepted = true
-        }
+        width: parent.width
+        height: panel.height
+        anchors.top: root.edge === "top" ? parent.top : undefined
+        anchors.bottom: root.edge === "bottom" ? parent.bottom : undefined
+        color: root.theme.panelBackground
+        border.color: root.theme.panelBorder
+        border.width: root.theme.panelOuterBorderWidth
+        radius: root.theme.panelOuterRadius
+        topLeftRadius: root.sharpTopLeft ? 0 : radius
+        topRightRadius: root.sharpTopRight ? 0 : radius
+        bottomLeftRadius: root.sharpBottomLeft ? 0 : radius
+        bottomRightRadius: root.sharpBottomRight ? 0 : radius
 
-        Flickable {
-          id: viewport
+        ClippingRectangle {
+          id: innerFrame
 
           anchors.fill: parent
-          contentWidth: width
-          contentHeight: panel.loadedContent?.implicitHeight ?? 0
-          clip: true
-          interactive: contentHeight > height
-          boundsBehavior: Flickable.StopAtBounds
+          anchors.margins: root.frameInset
+          color: root.theme.panelBackground
+          border.color: root.theme.panelBorder
+          border.width: root.theme.panelInnerBorderWidth
+          radius: root.theme.panelInnerRadius
+          topLeftRadius: root.sharpTopLeft ? 0 : radius
+          topRightRadius: root.sharpTopRight ? 0 : radius
+          bottomLeftRadius: root.sharpBottomLeft ? 0 : radius
+          bottomRightRadius: root.sharpBottomRight ? 0 : radius
 
-          Loader {
-            id: contentLoader
+          FocusScope {
+            id: panelFocus
 
-            width: viewport.width
-            height: panel.loadedContent?.implicitHeight ?? 0
-            sourceComponent: root.contentComponent
+            anchors.fill: parent
+            focus: panel.visible
+            Keys.onEscapePressed: event => {
+              root.close()
+              event.accepted = true
+            }
+
+            Flickable {
+              id: viewport
+
+              anchors.fill: parent
+              contentWidth: width
+              contentHeight: panel.loadedContent?.implicitHeight ?? 0
+              clip: true
+              interactive: contentHeight > height
+              boundsBehavior: Flickable.StopAtBounds
+
+              Loader {
+                id: contentLoader
+
+                width: viewport.width
+                height: panel.loadedContent?.implicitHeight ?? 0
+                sourceComponent: root.contentComponent
+              }
+            }
           }
         }
       }

@@ -7,16 +7,25 @@ Item {
   property string text: ""
   property string icon: ""
   property var action: null
+  readonly property bool highlighted: root.activeFocus || mouse.containsMouse
 
   activeFocusOnTab: enabled && action !== null
-  implicitWidth: parent?.width ?? label.implicitWidth + root.theme.controlPadding * 2
+  implicitWidth: parent?.width ?? label.implicitWidth + root.theme.panelEntryPadding * 2
   implicitHeight: 34
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.accent
-    opacity: root.activeFocus ? 0.30 : mouse.containsMouse ? 0.22 : 0.14
-    radius: root.theme.controlRadius
+    color: root.theme.panelBackground
+    border.color: root.highlighted ? root.theme.panelAccent : root.theme.panelBorder
+    border.width: root.theme.panelSelectionBorderWidth
+    radius: root.theme.panelEntryRadius
+
+    Rectangle {
+      anchors.fill: parent
+      color: root.theme.panelAccent
+      opacity: root.highlighted ? root.theme.panelSelectionAccentOpacity : 0
+      radius: parent.radius
+    }
   }
 
   Text {
@@ -24,10 +33,10 @@ Item {
 
     anchors.centerIn: parent
     text: root.icon.length > 0 ? `${root.icon}  ${root.text}` : root.text
-    color: root.theme.foreground
-    font.family: root.theme.uiFontFamily
-    font.pixelSize: root.theme.bodyFontSize
-    font.weight: root.theme.fontWeight
+    color: root.theme.panelForeground
+    font.family: root.theme.panelFont
+    font.pixelSize: root.theme.panelFontSize
+    font.weight: root.theme.panelFontWeight
   }
 
   MouseArea {

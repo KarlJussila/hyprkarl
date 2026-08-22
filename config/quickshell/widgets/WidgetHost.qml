@@ -46,6 +46,13 @@ Item {
     height: parent.height
   }
 
+  Binding {
+    target: loader.item
+    property: "panelHost"
+    value: root.panelHost
+    when: loader.status === Loader.Ready
+  }
+
   function loadWidget(): void {
     loader.source = ""
     loader.setSource(Qt.resolvedUrl(root.definition.kind + ".qml"), {

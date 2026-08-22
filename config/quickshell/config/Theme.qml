@@ -65,7 +65,25 @@ QtObject {
   readonly property int powerPanelWidth: panel.powerWidth ?? panelWidth
   readonly property int panelPadding: panel.padding ?? 0
   readonly property int panelSpacing: panel.spacing ?? 0
-  readonly property int panelRadius: panel.radius ?? controlRadius
+  readonly property color panelBackground: panel.background ?? popupSurface
+  readonly property color panelForeground: panel.foreground ?? foreground
+  readonly property color panelAccent: panel.accent ?? accent
+  readonly property color panelBorder: panel.border ?? border
+  readonly property string panelFont: panel.font ?? uiFontFamily
+  readonly property int panelFontSize: panel.fontSize ?? bodyFontSize
+  readonly property int panelFontWeight: panel.fontWeight ?? fontWeight
+  readonly property int panelOuterRadius: panel.outerRadius ?? controlRadius
+  readonly property int panelInnerRadius: panel.innerRadius ?? controlRadius
+  readonly property int panelEntryRadius: panel.entryRadius ?? controlRadius
+  readonly property int panelOuterBorderWidth: panel.outerBorderWidth ?? borderWidth
+  readonly property int panelOuterPadding: panel.outerPadding ?? 0
+  readonly property int panelInnerBorderWidth: panel.innerBorderWidth ?? borderWidth
+  readonly property int panelHeaderPadding: panel.headerPadding ?? controlPadding
+  readonly property int panelEntryPadding: panel.entryPadding ?? controlPadding
+  readonly property int panelSelectionBorderWidth: panel.selectionBorderWidth ?? 0
+  readonly property real panelHeaderAccentOpacity: panel.headerAccentOpacity ?? 0
+  readonly property real panelSelectionAccentOpacity: panel.selectionAccentOpacity ?? 0
+  readonly property int panelRadius: panelOuterRadius
   readonly property int panelTransitionDuration: panel.transitionDuration ?? 0
 
   readonly property var tooltip: values.tooltip ?? ({})

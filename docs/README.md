@@ -1,7 +1,8 @@
 # Hyprkarl Manual
 
-Hyprkarl is meant to be edited directly after installation. This manual covers
-setup, daily use, repo layout, and customization.
+Hyprkarl keeps shipped configuration live from its checkout while personal
+settings live in the standard XDG configuration directories. This manual
+covers setup, daily use, repo layout, and customization.
 
 The expected setup is a single-user CachyOS + Hyprland + UWSM system, with the
 repo checked out at `~/.local/share/hyprkarl/`.

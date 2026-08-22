@@ -39,9 +39,10 @@ in the same change** — both audiences:
 - **Human-facing docs** — `README.md` and `docs/` (getting-started, themes,
   commands, configuration-map, extending, repo-conventions, shell-style,
   updating, …).
-- **Agent-facing docs** — the canonical `AGENTS.md` files: this one,
-  `bin/AGENTS.md` (command authoring), and `config/quickshell/AGENTS.md` (the
-  active bar).
+- **Agent-facing docs** — this file owns repository-wide rules;
+  `bin/AGENTS.md` owns command authoring, `config/quickshell/AGENTS.md` owns the
+  active shell, `theme-generator/AGENTS.md` owns compiler work, and
+  `themes/AGENTS.md` owns theme authoring.
   Each adjacent `CLAUDE.md` only imports its `AGENTS.md` counterpart for Claude
   Code compatibility; keep shared guidance in `AGENTS.md`.
 
@@ -181,6 +182,8 @@ Compiler templates, built-in overrides, and personal overrides apply in that
 order; assets use the same precedence. A personal-only theme requires
 `theme.yaml`, while a same-name overlay may omit it. Strings, numbers, booleans,
 and arbitrary user-defined structures may feed final consumer values.
+Read `themes/AGENTS.md` before changing a built-in theme source and
+`theme-generator/AGENTS.md` before changing the compiler or its templates.
 
 `hk-theme set <name>` is the public build-and-activate action. It renders and
 validates a temporary complete bundle, installs an immutable artifact below

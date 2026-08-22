@@ -168,7 +168,7 @@ accent:
 Available color functions are `lighten`, `darken`, `mix`, `saturate`,
 `rotate`, `rgba`, `hyprrgb`, `strip_hash`, `contrast`, `luminance`, and
 `ensure_contrast`. The complete color contract and authoring workflow are in
-[AGENTS.md](AGENTS.md).
+[the theme authoring instructions](../themes/AGENTS.md).
 
 Invalid required colors, missing semantic color roles, unresolved expressions,
 and template errors fail the build at its public boundary. Custom token names

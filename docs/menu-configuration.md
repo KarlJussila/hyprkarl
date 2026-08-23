@@ -328,7 +328,7 @@ launcher`, `hk-shell calculator`, and `hk-shell wallpaper` for the dedicated
 overlays.
 
 Keyboard navigation supports Up/Down (or J/K), Home/End, Enter/Space/Right (or
-L) to choose, and Escape/Left/Backspace to go back. In a searchable menu,
+L) to choose, and Escape/Left (or H)/Backspace to go back. In a searchable menu,
 typing edits the query, Up/Down changes the selection, and Escape clears a
 non-empty query before navigating back. Going back from the root closes the
 menu. Clicking outside goes back from a submenu and closes the root.

@@ -83,8 +83,11 @@ replace those entry points in their own configuration.
 independent surfaces or a replacement bar. Its direct context fields expose
 the resolved configuration, theme, outputs, and requested overlay; its direct
 methods open, replace, toggle, or close that overlay. Keep the optional
-`notificationPosition(outputName)` hook. Do not turn any of this into directory
-discovery or a plugin registry.
+`notificationPosition(outputName)` hook. `Hyprkarl.Modal` is the public
+declarative frame for personal modals; `hk-shell start` supplies its module
+import path. Modal names are a cooperative convention, not a registry or
+allowlist. Do not turn any of this into directory discovery or a plugin
+registry.
 
 When `notifications.edge` is `bar`, `ScreenSurfaces.qml` resolves one reactive
 position object per output. The built-in bar supplies the fallback; a user
@@ -98,7 +101,8 @@ the built-in bar window.
 
 `shell.qml` creates shared configuration, theme, user-root, and overlay state,
 then gates each optional built-in runtime before using one `Variants` model to
-create a `ScreenSurfaces` group per screen. `BarRuntime.qml` owns the system
+create a `ScreenSurfaces` group per screen. The display arranger is one
+application-wide modal composition enabled with panels. `BarRuntime.qml` owns the system
 monitor and command registry only while the bar is enabled. The surface group
 owns the screen's optional bar, menu, OSD, notification, and polkit windows.
 It resolves notification placement from a small reactive position object rather
@@ -192,6 +196,28 @@ It also owns edge-dependent popup gravity: top-bar panels expand downward and
 bottom-bar panels expand upward while anchoring within the bar surface.
 Panel contents must not create their own popup window or reproduce geometry.
 
+The host also applies `KeyboardNavigator` to every visible, enabled descendant
+with `activeFocusOnTab`: arrows and H/J/K/L move spatially within its
+`navigationSection`, Tab and Shift+Tab move between sections, and focused
+items scroll into view. Escape or Q closes the panel. Shared controls already
+activate on Enter or Space and render focus through their normal accent state.
+Give related controls the same non-empty `navigationSection`; Tab always leaves
+that section, and entry prefers its `navigationSelected` item. Do not add a
+second focus overlay or hand-maintained focus chain. `NavigationState` owns one
+current control and section across pointer and keyboard input. Pointer motion
+transfers the current control to the item below it; spatial or section keyboard
+movement transfers it back. Shared controls render one solid, full-inner-width
+`panel.sectionBackground` band behind the current section's normal transparent
+controls. The first and last body sections extend that band through the body's
+top and bottom padding. The current control uses the accent wash, while a
+persistent selection uses accent text and border. Section headings do not
+change type or color. Do
+not combine raw `containsMouse` and `activeFocus` styling again. Hyprland may assign the focus grab's keyboard enter
+to either the bar or its popup, so the bar forwards Tab to the section handler
+before the popup's focused control and uses the host navigator as the final
+fallback. Window shortcuts preserve section-only Tab traversal when the popup
+itself has keyboard enter.
+
 Display, audio, network, Bluetooth, battery/power, and clock/calendar now
 exercise this host with six different compositions. `PanelLayout` owns their
 shared left-aligned accent header and padded body, while the host owns the
@@ -202,9 +228,13 @@ with their features. `components/PanelSlider.qml` owns the shared normalized
 slider used by display brightness and audio levels; do not fork its interaction
 for another percentage control. Boolean panel rows use the shared
 `ToggleIndicator` switch instead of spelling state as `on`, `off`, or `muted`.
-`PanelHeader` owns the compact optional header action; audio, network, and
-Bluetooth place their advanced-settings cog there instead of adding a wide
-footer action.
+Audio's output level, device choices, input level, and input-device choices are
+one spatial navigation section; arrows traverse the whole composition without
+a Tab boundary between its row-shaped level headings.
+`PanelHeader` owns separate compact leading and trailing actions. Nested-panel
+back controls use the leading action before the title; audio, network, and
+Bluetooth place their advanced-settings cog in the trailing action instead of
+adding a wide footer action.
 Feature-panel actions that launch an external command request it through their
 bar entry point, which closes the owning panel before spawning the command.
 There is no second feature-window or legacy flyout boundary. In the power and
@@ -218,14 +248,33 @@ size and resolve thin strokes against `Screen.devicePixelRatio`; do not magnify
 a smaller texture with an item transform.
 
 `features/display/DisplayPanel.qml` is a per-output view over `hk-display`.
-Opening it and its active-only timer query the bar's output; scale and
-brightness act on that same output, while the display rows enable or disable
-named outputs. The backend—not QML—owns Hyprland discovery, scale cleanup,
-live application, and the generated XDG-state layout. Never disable the last
-active output. Internal backlight brightness is shown only when the target
-exposes it; external DDC brightness, mode/position editing, and global text
-size are not part of this first display slice. Text size is an accessibility
-and theme concern, not per-output monitor state.
+Its overview lists connected outputs; choosing one opens an in-panel detail
+view that stages enablement, resolution, refresh rate, and scale. Resolution
+and refresh rate open separate nested pickers. The refresh picker contains only
+modes available at the drafted resolution. Back discards that draft. Apply
+submits one complete connected-output layout to the
+backend trial, then closes the feature panel only after the trial starts.
+The detail view omits controls that cannot act in the current draft, including
+mode and scale while disabled, unavailable refresh selection, and Apply while
+unchanged. Do not render those as disabled settings rows.
+`DisplayConfirmationState` routes the confirmation to the output that owned
+the open feature panel when it remains available, or another active output
+when that panel output was disabled. The modal
+counts down for ten seconds, but the backend watchdog—not QML—owns guaranteed
+rollback. Never allow a submitted layout to disable every output. Internal
+backlight brightness is immediate service state and remains on the overview
+when the bar's output exposes it.
+
+With multiple active outputs, the overview closes before opening the global
+`DisplayArrangement`, whose transient draft contains positions and transforms.
+Drag frames to position them and right-click a frame to rotate it clockwise;
+the inset line marks the display's physical bottom edge. Reject overlapping
+draft rectangles before applying one complete active-output arrangement
+directly through `hk-display`. Preserve mode, refresh rate, and scale.
+Arrangement does not use the keep-or-revert trial. Frames are border-and-text
+objects with no ordinal badges or shadows. External DDC brightness and global
+text size remain out of scope.
+Text size is an accessibility and theme concern, not per-output monitor state.
 While brightness is changing, the slider's local value owns presentation and
 the state poller pauses. Writes start immediately and collapse any movement
 during an active command to the newest value; do not restore an idle debounce
@@ -311,10 +360,16 @@ only on actual pointer motion. Opening a menu or changing its search resets
 selection, viewport, and momentum to the first result.
 `hk-shell menu` is the only public transport for opening static navigation.
 `features/overlay/OverlayState.qml` owns exclusivity and monitor routing across
-that menu, the application chooser, calculator, and wallpaper picker. Opening
+that menu, the application chooser, calculator, wallpaper picker, display
+arranger, and personal modals. Opening
 one replaces the active focused overlay instead of leaving another visible
-behind it. `OverlayWindow` owns their shared shell-styled frame, search field,
-focus, scrim, and reveal, while each feature owns its body and key semantics.
+behind it. `ModalWindow` owns the full-screen focus plane, scrim, nested frame,
+outside-click handling, and reveal. `OverlayWindow` adds the shared picker
+header and search field. Public `Hyprkarl.Modal` adds a general header, lazy
+body, optional footer, and the shared spatial/section keyboard navigator while
+leaving content with the caller. User modal controls participate when they set
+`activeFocusOnTab`; an optional string `navigationSection` groups controls for
+Tab movement. Escape and Q use the modal's dismissal action.
 `MomentumScroll` owns the kinetic touchpad behavior shared by long picker
 lists and grids.
 
@@ -414,8 +469,9 @@ hk-shell stop
 ```
 
 The live launch is authoritative because Quickshell's installed qmltypes omit
-some internal types used by its public QML API. Use `qs -p config/quickshell`
-only when a foreground development process is useful.
+some internal types used by its public QML API. Use
+`QML_IMPORT_PATH=config/quickshell qs -p config/quickshell` only when a
+foreground development process is useful.
 
 `hk-shell` is the public lifecycle boundary for the production bar. Hyprland
 session startup calls `hk-shell start`; use the same command family for normal

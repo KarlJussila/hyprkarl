@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""Keep a pending display-layout trial."""
+
+import sys
+
+from lib.display import confirm_layout
+
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        print("Usage: hk-display-confirm <token>", file=sys.stderr)
+        return 1
+    try:
+        confirm_layout(sys.argv[1])
+        return 0
+    except Exception as error:
+        print(f"Could not confirm display layout: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

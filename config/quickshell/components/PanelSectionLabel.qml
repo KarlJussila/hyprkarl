@@ -2,6 +2,7 @@ import QtQuick
 
 Text {
   required property var theme
+  property string navigationSection: ""
 
   color: theme.panelForeground
   opacity: 0.7

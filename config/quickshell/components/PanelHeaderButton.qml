@@ -4,24 +4,21 @@ Item {
   id: root
 
   required property var theme
-  property string text: ""
   property string icon: ""
-  property bool selected: false
-  property string navigationSection: "main"
+  property string navigationSection: "header"
   property var action: null
-  readonly property bool navigationSelected: root.selected
   readonly property bool current: NavigationState.currentItem === root
-  readonly property bool highlighted: root.current || root.selected
+  readonly property bool highlighted: root.current
 
-  activeFocusOnTab: enabled && action !== null
-  implicitWidth: parent?.width ?? label.implicitWidth + root.theme.panelEntryPadding * 2
-  implicitHeight: 34
+  activeFocusOnTab: visible && enabled && action !== null
+  implicitWidth: 24
+  implicitHeight: 24
 
   Rectangle {
     anchors.fill: parent
     color: "transparent"
-    border.color: root.highlighted ? root.theme.panelAccent : root.theme.panelBorder
-    border.width: root.theme.panelSelectionBorderWidth
+    border.color: root.highlighted ? root.theme.panelAccent : "transparent"
+    border.width: root.highlighted ? root.theme.panelSelectionBorderWidth : 0
     radius: root.theme.panelEntryRadius
 
     Rectangle {
@@ -33,11 +30,9 @@ Item {
   }
 
   Text {
-    id: label
-
     anchors.centerIn: parent
-    text: root.icon.length > 0 ? `${root.icon}  ${root.text}` : root.text
-    color: root.selected ? root.theme.panelAccent : root.theme.panelForeground
+    text: root.icon
+    color: root.theme.panelForeground
     font.family: root.theme.panelFont
     font.pixelSize: root.theme.panelFontSize
     font.weight: root.theme.panelFontWeight
@@ -61,7 +56,8 @@ Item {
   }
 
   Keys.onPressed: event => {
-    if (!root.action || (event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Space)) return
+    if (!root.action || (event.key !== Qt.Key_Return
+        && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Space)) return
     NavigationState.useKeyboard(root, Qt.ShortcutFocusReason, root.navigationSection)
     root.action()
     event.accepted = true

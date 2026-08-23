@@ -54,6 +54,7 @@ Item {
       title: "Output"
       node: root.output
       active: root.active
+      navigationSection: "audio"
     }
 
     PanelSectionLabel {
@@ -70,6 +71,7 @@ Item {
 
         width: parent.width
         theme: root.theme
+        navigationSection: "audio"
         icon: "󰓃"
         title: root.nodeName(modelData)
         selected: modelData === Pipewire.defaultAudioSink
@@ -84,6 +86,7 @@ Item {
       title: "Microphone"
       node: root.input
       active: root.active
+      navigationSection: "audio"
       showPeak: true
     }
 
@@ -101,6 +104,7 @@ Item {
 
         width: parent.width
         theme: root.theme
+        navigationSection: "audio"
         icon: "󰍬"
         title: root.nodeName(modelData)
         selected: modelData === Pipewire.defaultAudioSource

@@ -137,8 +137,14 @@ routing, progress, silence mode, one-item restore, bar-connected geometry, and
 data-defined application icon overrides with user QML drawings; Mako is no
 longer part of the session. Polkit privilege requests also use a focused,
 theme-aware Quickshell prompt; the separate `hyprpolkitagent` process is no
-longer part of the session. A per-output display panel controls internal
-backlight brightness, scale, and output enablement through one persistent
+longer part of the session. The display panel opens a staged submenu for each
+output with enablement, resolution, refresh rate, and scale controls. Resolution
+and refresh rate use separate pickers, and the latter lists only rates supported
+at the selected resolution. Those changes
+use a ten-second keep-or-revert confirmation on the panel's display when
+possible. Internal backlight brightness remains immediate. A global
+drag-to-arrange modal changes positions and rotates a frame clockwise on
+right-click, rejecting overlaps before applying directly through the persistent
 `hk-display` backend; explicit personal Hyprland monitor rules still have the
 final say. Personal command widgets can add bar readouts
 without editing QML using one application-wide polling or persistent-stream
@@ -152,7 +158,8 @@ top-level `modules` switches in shell JSON. Restart the shell after changing a
 switch. One explicitly referenced application-wide user QML root under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/` can compose replacement surfaces, consume open-ended theme data,
 observe and control overlay requests, and publish reactive notification
-positioning for a custom bar.
+positioning for a custom bar. The public `Hyprkarl.Modal` QML component lets
+that root add shell-styled, lazy-content modals without registering a plugin.
 The app launcher, open-with chooser, calculator, and wallpaper picker are also
 Quickshell-native. They share the shell's focused-overlay frame and interaction
 model while keeping application, calculation, and wallpaper behavior in small

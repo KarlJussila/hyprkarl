@@ -290,12 +290,17 @@ shell.
   gamma dimming).
 - `hk-caffeine`
   Toggle idle behaviors (hypridle).
-- `hk-display <state|scale|toggle|brightness> [arguments]`
+- `hk-display <state|arrange|preview|confirm|revert|scale|toggle|brightness> [arguments]`
   Query or change display state through the backend used by the Quickshell
-  display panel. `state [output]` prints JSON; `scale <output> <factor>` and
-  `toggle <output>` apply and persist Hyprland layout changes; `brightness
-  <output> <percent>` controls an available internal backlight without adding
-  it to the monitor layout.
+  display panel. `state [output]` prints JSON; `arrange <arrangement-json>`
+  accepts one `{ "output": { "x": 0, "y": 0, "transform": 0 } }` entry for
+  every active output and rejects overlapping transformed rectangles. The
+  display panel uses `preview <layout-json>` to apply a complete
+  connected-output layout for ten seconds, followed by `confirm <token>` or
+  `revert <token>`; an independent watchdog also reverts an expired trial.
+  `scale <output> <factor>` and `toggle <output>` are direct command-line
+  changes. `brightness <output> <percent>` controls an available internal
+  backlight without adding it to the monitor layout.
 - `hk-playerctl`
   Control media playback and show track state in the shell OSD.
 - `hk-volume`
@@ -322,8 +327,10 @@ completeness so they can be discovered with grep:
 - Launching glue: `hk-tui-launch`, `hk-app-restart`
 - Hardware actions bound to function keys: `hk-brightness-display`,
   `hk-brightness-keyboard`, `hk-audio-switch`, `hk-battery-monitor`; display
-  dispatcher actions: `hk-display-state`, `hk-display-scale`,
-  `hk-display-toggle`, `hk-display-brightness`
+  dispatcher actions: `hk-display-state`, `hk-display-arrange`,
+  `hk-display-preview`, `hk-display-confirm`, `hk-display-revert`,
+  `hk-display-scale`, `hk-display-toggle`, `hk-display-brightness`; internal
+  timeout helper: `hk-display-watch`
 - Notification helpers: `hk-battery-notify`, `hk-notify-window-class`,
   `hk-show-done`, `hk-suggest-reboot`
 - Lookup helpers: `hk-battery-find`, `hk-icon-find`, `hk-cmd-present`,

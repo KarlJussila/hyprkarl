@@ -21,7 +21,7 @@ PanelWindow {
 
   color: theme.windowSurface
   aboveWindows: true
-  focusable: false
+  focusable: root.panelHost?.open ?? false
   exclusionMode: shellConfig.exclusive ? ExclusionMode.Normal : ExclusionMode.Ignore
   exclusiveZone: shellConfig.exclusive ? totalThickness : 0
 
@@ -35,6 +35,11 @@ PanelWindow {
 
   WlrLayershell.namespace: "hyprkarl-quickshell-bar"
   WlrLayershell.layer: WlrLayer.Top
+
+  contentItem {
+    focus: root.panelHost?.open ?? false
+    Keys.forwardTo: root.panelHost?.keyTargets ?? []
+  }
 
   LazyLoader {
     id: panelHostLoader

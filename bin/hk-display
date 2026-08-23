@@ -6,6 +6,10 @@ usage() {
   cat <<'EOF'
 Usage:
   hk-display state [output]
+  hk-display arrange <arrangement-json>
+  hk-display preview <layout-json>
+  hk-display confirm <token>
+  hk-display revert <token>
   hk-display scale <output> <factor>
   hk-display toggle <output>
   hk-display brightness <output> <percent>
@@ -16,7 +20,7 @@ action=${1:-}
 shift || true
 
 case "$action" in
-  state|scale|toggle|brightness) exec "hk-display-$action" "$@" ;;
+  state|arrange|preview|confirm|revert|scale|toggle|brightness) exec "hk-display-$action" "$@" ;;
   ""|-h|--help|help) usage; exit 0 ;;
   *) usage >&2; exit 1 ;;
 esac

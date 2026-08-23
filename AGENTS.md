@@ -231,11 +231,13 @@ offset, resolved with a zero floor; the tray binds this to
 One optional `userRoot.source` loads a trusted application-wide QML composition
 root for independent surfaces or a replacement bar. Its documented context
 exposes the resolved configuration, theme, outputs, current overlay request,
-and direct overlay methods. It may publish reactive per-output notification
-positioning; there is no discovery or plugin layer.
+and direct overlay methods. Personal roots may import `Hyprkarl.Modal` for the
+same shell-styled exclusive modal boundary as built-in surfaces. It may publish
+reactive per-output notification positioning; there is no discovery or plugin
+layer.
 The shell keeps application-wide service state separate from per-output
-presentation. Feature panels compose through one host per bar; focused menus
-and pickers compose the shared overlay frame and momentum behavior; OSD,
+presentation. Feature panels compose through one host per bar; focused menus,
+pickers, and the display arranger compose the shared modal frame; OSD,
 notifications, and polkit each retain their own lifecycle boundary. Command
 providers exist once per provider-backed widget ID, and static widgets create
 no polling runtime. Explicit personal QML receives the documented narrow

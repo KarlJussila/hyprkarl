@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
+import "../components"
 
 Scope {
   id: root
@@ -18,6 +19,14 @@ Scope {
   property bool open: false
   property real reveal: open ? 1 : 0
   property real anchorX: 0
+  readonly property Item focusedControl: root.open
+    ? NavigationState.currentItem
+    : null
+  readonly property var keyTargets: !root.open
+    ? []
+    : focusedControl && focusedControl !== panelFocus
+      ? [sectionKeyTarget, focusedControl, panelFocus]
+      : [sectionKeyTarget, panelFocus]
 
   readonly property bool touchesBar: theme.panelGap === 0 && theme.barMarginContent === 0
   readonly property bool touchesLeft: anchorX <= 0.5
@@ -61,6 +70,7 @@ Scope {
     if (!open && activeId.length === 0) return
     activeId = ""
     open = false
+    NavigationState.clear()
     unloadTimer.restart()
   }
 
@@ -68,6 +78,28 @@ Scope {
     if (!open) return
     panelFocus.forceActiveFocus()
     panel.anchor.updateAnchor()
+    Qt.callLater(() => {
+      if (!root.open) return
+      navigator.focusInitialItem()
+      barWindow.contentItem.forceActiveFocus()
+      barWindow.requestActivate()
+    })
+  }
+
+  KeyboardNavigator {
+    id: navigator
+    navigationRoot: panel.loadedContent
+    viewport: viewport
+  }
+
+  Item {
+    id: sectionKeyTarget
+
+    Keys.onPressed: event => {
+      if (event.key !== Qt.Key_Tab && event.key !== Qt.Key_Backtab) return
+      navigator.handleKey(event)
+      event.accepted = true
+    }
   }
 
   Behavior on reveal {
@@ -117,6 +149,20 @@ Scope {
       topRightRadius: root.sharpTopRight ? 0 : root.theme.panelOuterRadius
       bottomLeftRadius: root.sharpBottomLeft ? 0 : root.theme.panelOuterRadius
       bottomRightRadius: root.sharpBottomRight ? 0 : root.theme.panelOuterRadius
+    }
+
+    Shortcut {
+      sequence: "Tab"
+      context: Qt.WindowShortcut
+      enabled: root.open
+      onActivated: navigator.moveSection(1)
+    }
+
+    Shortcut {
+      sequence: "Shift+Tab"
+      context: Qt.WindowShortcut
+      enabled: root.open
+      onActivated: navigator.moveSection(-1)
     }
 
     anchor {
@@ -190,8 +236,12 @@ Scope {
 
             anchors.fill: parent
             focus: panel.visible
-            Keys.onEscapePressed: event => {
-              root.close()
+            Keys.onPressed: event => {
+              if (event.key === Qt.Key_Escape || event.key === Qt.Key_Q) {
+                root.close()
+              } else if (!navigator.handleKey(event)) {
+                return
+              }
               event.accepted = true
             }
 
@@ -205,12 +255,41 @@ Scope {
               interactive: contentHeight > height
               boundsBehavior: Flickable.StopAtBounds
 
+              Rectangle {
+                readonly property rect sectionRect: navigator.currentSectionRect
+                readonly property rect sectionBounds: navigator.currentSectionBounds
+                readonly property rect contentBounds: navigator.currentContentBounds
+                readonly property real verticalInset: root.theme.panelSpacing / 2
+                readonly property bool firstSection: contentBounds.height > 0
+                  && Math.abs(sectionRect.y - contentBounds.y) < 0.5
+                readonly property bool lastSection: contentBounds.height > 0
+                  && Math.abs(
+                    sectionRect.y + sectionRect.height
+                      - contentBounds.y - contentBounds.height
+                  ) < 0.5
+                readonly property real topInset: firstSection
+                  ? sectionRect.y - sectionBounds.y
+                  : verticalInset
+                readonly property real bottomInset: lastSection
+                  ? sectionBounds.y + sectionBounds.height
+                    - sectionRect.y - sectionRect.height
+                  : verticalInset
+
+                x: root.theme.panelInnerBorderWidth
+                y: Math.max(0, sectionRect.y - topInset)
+                width: Math.max(0, viewport.width - x * 2)
+                height: sectionRect.height + topInset + bottomInset
+                visible: root.open && sectionRect.width > 0 && sectionRect.height > 0
+                color: root.theme.panelSectionBackground
+              }
+
               Loader {
                 id: contentLoader
 
                 width: viewport.width
                 height: panel.loadedContent?.implicitHeight ?? 0
                 sourceComponent: root.contentComponent
+                onLoaded: if (root.open) Qt.callLater(navigator.focusInitialItem)
               }
             }
           }

@@ -1,2 +1,6 @@
 module qs.features.display
+DisplayArrangement 1.0 DisplayArrangement.qml
+singleton DisplayArrangementState 1.0 DisplayArrangementState.qml
+DisplayConfirmation 1.0 DisplayConfirmation.qml
+singleton DisplayConfirmationState 1.0 DisplayConfirmationState.qml
 DisplayPanel 1.0 DisplayPanel.qml

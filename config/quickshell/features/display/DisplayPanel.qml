@@ -11,9 +11,29 @@ Item {
   required property bool active
   required property string outputName
 
+  signal arrangeRequested()
+  signal trialRequested(var layout, string panelOutput)
+  signal trialStarted()
+
   readonly property real preferredWidth: theme.panelWidth
   readonly property var target: displayState.outputs.find(
     output => output.name === displayState.target) ?? ({})
+  readonly property var selectedOutput: displayState.outputs.find(
+    output => output.name === selectedName) ?? ({})
+  readonly property var selectedModes: selectedOutput.modes ?? []
+  readonly property var draftModeEntry: selectedModes.find(
+    mode => mode.value === draftMode) ?? null
+  readonly property string draftResolution: draftMode === "preferred"
+    ? "preferred"
+    : draftModeEntry
+      ? modeResolution(draftModeEntry)
+      : draftMode.split("@")[0]
+  readonly property real draftRefreshRate: draftModeEntry
+    ? draftModeEntry.refreshRate
+    : Number(draftMode.split("@")[1] ?? 0)
+  readonly property var resolutionOptions: buildResolutionOptions()
+  readonly property var refreshOptions: selectedModes.filter(
+    mode => modeResolution(mode) === draftResolution)
   readonly property int activeOutputCount: displayState.outputs.filter(
     output => output.enabled).length
   readonly property int currentBrightness: brightnessPreview >= 0
@@ -21,6 +41,16 @@ Item {
     : displayState.brightness.percent
   readonly property bool brightnessBusy: brightnessPreview >= 0
     || brightnessProcess.running
+  readonly property bool draftDirty: selectedName.length > 0 && (
+    draftEnabled !== selectedOutput.enabled
+    || draftMode !== selectedOutput.mode
+    || draftScale !== selectedOutput.scale
+  )
+  property string page: "overview"
+  property string selectedName: ""
+  property bool draftEnabled: true
+  property string draftMode: "preferred"
+  property var draftScale: "auto"
   property var displayState: ({
     "target": outputName,
     "outputs": [],
@@ -33,15 +63,13 @@ Item {
   property int brightnessInFlight: -1
   property int brightnessRevision: 0
   property int stateBrightnessRevision: 0
-  property string currentAction: ""
-  property string actionTarget: ""
   property string error: ""
 
   implicitWidth: parent?.width ?? 0
   implicitHeight: content.implicitHeight
 
   function refresh(): void {
-    if (stateProcess.running || brightnessBusy) return
+    if (stateProcess.running || brightnessBusy || page !== "overview") return
     stateBrightnessRevision = brightnessRevision
     stateProcess.exec(["hk-display", "state", outputName])
   }
@@ -60,14 +88,67 @@ Item {
     }
   }
 
-  function runAction(action: string, output: string, argument: string): void {
-    if (actionProcess.running) return
-    currentAction = action
-    actionTarget = output
+  function openDetails(name: string): void {
+    const output = displayState.outputs.find(item => item.name === name)
+    if (!output) return
+    selectedName = name
+    draftEnabled = output.enabled
+    draftMode = output.mode
+    draftScale = output.scale
     error = ""
-    const command = ["hk-display", action, output]
-    if (argument.length > 0) command.push(argument)
-    actionProcess.exec(command)
+    page = "detail"
+  }
+
+  function showOverview(): void {
+    page = "overview"
+    selectedName = ""
+    error = ""
+    refresh()
+  }
+
+  function showDetails(): void {
+    page = "detail"
+    error = ""
+  }
+
+  function goBack(): void {
+    if (page === "detail") showOverview()
+    else showDetails()
+  }
+
+  function setEnabled(value: bool): void {
+    if (!value && selectedOutput.enabled && activeOutputCount === 1) {
+      error = "The last active display cannot be disabled"
+      return
+    }
+    draftEnabled = value
+    error = ""
+  }
+
+  function buildLayout(): var {
+    const outputs = {}
+    for (const output of displayState.outputs) {
+      outputs[output.name] = output.name === selectedName ? {
+        "enabled": draftEnabled,
+        "mode": draftMode,
+        "position": output.position,
+        "scale": draftScale,
+        "transform": output.transform
+      } : {
+        "enabled": output.enabled,
+        "mode": output.mode,
+        "position": output.position,
+        "scale": output.scale,
+        "transform": output.transform
+      }
+    }
+    return { "version": 1, "outputs": outputs }
+  }
+
+  function applyDraft(): void {
+    if (!draftDirty || DisplayConfirmationState.previewing) return
+    error = ""
+    trialRequested(buildLayout(), outputName)
   }
 
   function commitBrightness(percent: int): void {
@@ -97,11 +178,78 @@ Item {
     if (!brightnessProcess.running) startBrightnessWrite()
   }
 
-  onActiveChanged: if (active) refresh()
+  function outputDetail(output: var): string {
+    if (!output.enabled) return "off"
+    const refresh = Number(output.refreshRate.toFixed(1))
+    return `${output.width}×${output.height} · ${refresh} Hz`
+  }
+
+  function scaleSelected(value: var): bool {
+    if (value === "auto" || draftScale === "auto") return value === draftScale
+    return Math.abs(Number(value) - Number(draftScale)) < 0.01
+  }
+
+  function modeResolution(mode: var): string {
+    return `${mode.width}x${mode.height}`
+  }
+
+  function buildResolutionOptions(): var {
+    const options = []
+    const seen = new Set()
+    for (const mode of selectedModes) {
+      const value = modeResolution(mode)
+      if (seen.has(value)) continue
+      seen.add(value)
+      options.push({
+        "value": value,
+        "width": mode.width,
+        "height": mode.height
+      })
+    }
+    return options
+  }
+
+  function selectResolution(value: string): void {
+    if (value === "preferred") {
+      draftMode = "preferred"
+      showDetails()
+      return
+    }
+
+    const modes = selectedModes.filter(
+      mode => modeResolution(mode) === value)
+    const matchingRefresh = modes.find(mode =>
+      Math.abs(mode.refreshRate - draftRefreshRate) < 0.001)
+    draftMode = (matchingRefresh ?? modes[0]).value
+    showDetails()
+  }
+
+  function selectRefresh(value: string): void {
+    draftMode = value
+    showDetails()
+  }
+
+  function resolutionDetail(): string {
+    if (draftResolution === "preferred") return "Preferred"
+    return draftResolution.replace("x", " × ")
+  }
+
+  function refreshDetail(): string {
+    if (draftResolution === "preferred") return "Automatic"
+    return `${Number(draftRefreshRate.toFixed(3))} Hz`
+  }
+
+  onActiveChanged: {
+    if (active) {
+      page = "overview"
+      selectedName = ""
+      refresh()
+    }
+  }
 
   Timer {
     interval: 3000
-    running: root.active
+    running: root.active && root.page === "overview"
     repeat: true
     triggeredOnStart: true
     onTriggered: root.refresh()
@@ -127,24 +275,6 @@ Item {
       } else {
         root.error = stateError.text.trim() || "Could not read display state"
       }
-    }
-    // qmllint enable signal-handler-parameters
-  }
-
-  Process {
-    id: actionProcess
-
-    stdout: StdioCollector {}
-    stderr: StdioCollector { id: actionError }
-
-    // qmllint disable signal-handler-parameters
-    onExited: exitCode => {
-      if (exitCode !== 0) {
-        root.error = actionError.text.trim() || "Display change failed"
-      }
-      root.currentAction = ""
-      root.actionTarget = ""
-      settleRefresh.restart()
     }
     // qmllint enable signal-handler-parameters
   }
@@ -177,137 +307,49 @@ Item {
     // qmllint enable signal-handler-parameters
   }
 
+  Connections {
+    target: DisplayConfirmationState
+
+    function onTrialStarted(source: string): void {
+      if (source === "display-panel") root.trialStarted()
+    }
+
+    function onTrialFailed(source: string, message: string): void {
+      if (source === "display-panel") root.error = message
+    }
+  }
+
   PanelLayout {
     id: content
 
     width: parent.width
     theme: root.theme
-    title: "Display"
-    subtitle: root.target.description?.length > 0
-      ? `${root.displayState.target} · ${root.target.description}`
-      : root.displayState.target
+    title: root.page === "overview"
+      ? "Displays"
+      : root.page === "resolution"
+        ? "Resolution"
+        : root.page === "refresh"
+          ? "Refresh rate"
+          : root.selectedOutput.description || root.selectedName
+    subtitle: root.page === "overview"
+      ? `${root.activeOutputCount} active`
+      : root.page === "resolution" || root.page === "refresh"
+        ? root.selectedOutput.description || root.selectedName
+      : root.selectedOutput.description?.length > 0
+        ? root.selectedName
+        : "Display settings"
+    leadingActionIcon: "󰁍"
+    leadingAction: root.page !== "overview" ? () => root.goBack() : null
 
-    PanelSectionLabel {
-      visible: root.displayState.brightness.available
-      theme: root.theme
-      text: "Brightness"
-    }
-
-    PanelSlider {
-      visible: root.displayState.brightness.available
+    Loader {
       width: parent.width
-      theme: root.theme
-      value: root.currentBrightness / 100
-      stepSize: 0.05
-      onEdited: value => root.queueBrightness(value)
-    }
-
-    PanelSectionLabel {
-      theme: root.theme
-      text: "Scale"
-    }
-
-    Row {
-      id: scales
-
-      width: parent.width
-      spacing: 4
-      readonly property real itemWidth: root.displayState.scalePresets.length > 0
-        ? (width - spacing * (root.displayState.scalePresets.length - 1))
-          / root.displayState.scalePresets.length
-        : 0
-
-      Repeater {
-        model: root.displayState.scalePresets
-
-        Item {
-          id: scaleOption
-
-          required property real modelData
-
-          readonly property bool selected: Math.abs(
-            modelData - root.displayState.scale) < 0.01
-          width: scales.itemWidth
-          height: 32
-          activeFocusOnTab: true
-
-          Rectangle {
-            anchors.fill: parent
-            color: root.theme.panelBackground
-            border.color: parent.activeFocus || scaleMouse.containsMouse || parent.selected
-              ? root.theme.panelAccent
-              : "transparent"
-            border.width: parent.activeFocus || scaleMouse.containsMouse || parent.selected
-              ? root.theme.panelSelectionBorderWidth
-              : 0
-            radius: root.theme.panelEntryRadius
-
-            Rectangle {
-              anchors.fill: parent
-              color: root.theme.panelAccent
-              opacity: scaleOption.activeFocus
-                || scaleMouse.containsMouse
-                || scaleOption.selected
-                ? root.theme.panelSelectionAccentOpacity
-                : 0
-              radius: parent.radius
-            }
-          }
-
-          Text {
-            anchors.centerIn: parent
-            text: `${Number(parent.modelData.toFixed(2))}×`
-            color: parent.selected ? root.theme.panelAccent : root.theme.panelForeground
-            font.family: root.theme.monoFontFamily
-            font.pixelSize: root.theme.readoutFontSize
-          }
-
-          MouseArea {
-            id: scaleMouse
-
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.runAction(
-              "scale", root.displayState.target, String(parent.modelData))
-          }
-
-          Keys.onPressed: event => {
-            if (event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Space) return
-            root.runAction("scale", root.displayState.target, String(modelData))
-            event.accepted = true
-          }
-        }
-      }
-    }
-
-    PanelSectionLabel {
-      visible: root.displayState.outputs.length > 1
-      theme: root.theme
-      text: "Displays"
-    }
-
-    Repeater {
-      model: root.displayState.outputs.length > 1 ? root.displayState.outputs : []
-
-      PanelRow {
-        required property var modelData
-
-        readonly property bool isOnlyActive: modelData.enabled
-          && root.activeOutputCount === 1
-        width: parent.width
-        theme: root.theme
-        icon: modelData.name.match(/^(eDP|LVDS|DSI)-/) ? "󰌢" : "󰍹"
-        title: modelData.description || modelData.name
-        detail: modelData.name === root.displayState.target ? "this display" : ""
-        switchVisible: true
-        switchActive: modelData.enabled
-        busy: root.currentAction === "toggle" && root.actionTarget === modelData.name
-        enabled: !isOnlyActive && root.currentAction.length === 0
-        action: enabled
-          ? () => root.runAction("toggle", modelData.name, "")
-          : null
-      }
+      sourceComponent: root.page === "overview"
+        ? overviewComponent
+        : root.page === "resolution"
+          ? resolutionComponent
+          : root.page === "refresh"
+            ? refreshComponent
+            : detailComponent
     }
 
     Text {
@@ -318,6 +360,217 @@ Item {
       wrapMode: Text.Wrap
       font.family: root.theme.panelFont
       font.pixelSize: root.theme.readoutFontSize
+    }
+  }
+
+  Component {
+    id: overviewComponent
+
+    Column {
+      width: parent?.width ?? 0
+      spacing: root.theme.panelSpacing
+
+      PanelSectionLabel {
+        visible: root.displayState.brightness.available
+        theme: root.theme
+        navigationSection: "brightness"
+        text: "Brightness"
+      }
+
+      PanelSlider {
+        visible: root.displayState.brightness.available
+        width: parent.width
+        theme: root.theme
+        navigationSection: "brightness"
+        value: root.currentBrightness / 100
+        stepSize: 0.05
+        onEdited: value => root.queueBrightness(value)
+      }
+
+      PanelSectionLabel {
+        theme: root.theme
+        navigationSection: "displays"
+        text: "Connected displays"
+      }
+
+      Repeater {
+        model: root.displayState.outputs
+
+        PanelRow {
+          required property var modelData
+
+          width: parent.width
+          theme: root.theme
+          navigationSection: "displays"
+          icon: modelData.name.match(/^(eDP|LVDS|DSI)-/) ? "󰌢" : "󰍹"
+          title: modelData.description || modelData.name
+          detail: root.outputDetail(modelData)
+          action: () => root.openDetails(modelData.name)
+        }
+      }
+
+      PanelAction {
+        visible: root.activeOutputCount > 1
+        width: parent.width
+        theme: root.theme
+        navigationSection: "displays"
+        icon: "󰍹"
+        text: "Arrange displays"
+        action: () => root.arrangeRequested()
+      }
+    }
+  }
+
+  Component {
+    id: detailComponent
+
+    Column {
+      width: parent?.width ?? 0
+      spacing: root.theme.panelSpacing
+
+      PanelRow {
+        readonly property bool canToggle: !root.draftEnabled
+          || !root.selectedOutput.enabled
+          || root.activeOutputCount > 1
+
+        visible: canToggle
+        width: parent.width
+        theme: root.theme
+        navigationSection: "enabled"
+        title: "Enabled"
+        switchVisible: true
+        switchActive: root.draftEnabled
+        action: () => root.setEnabled(!root.draftEnabled)
+      }
+
+      PanelSectionLabel {
+        visible: root.draftEnabled
+        theme: root.theme
+        navigationSection: "mode"
+        text: "Display mode"
+      }
+
+      PanelRow {
+        visible: root.draftEnabled
+        width: parent.width
+        theme: root.theme
+        navigationSection: "mode"
+        title: "Resolution"
+        detail: root.resolutionDetail()
+        action: () => root.page = "resolution"
+      }
+
+      PanelRow {
+        visible: root.draftEnabled
+          && root.draftResolution !== "preferred"
+          && root.refreshOptions.length > 0
+        width: parent.width
+        theme: root.theme
+        navigationSection: "mode"
+        title: "Refresh rate"
+        detail: root.refreshDetail()
+        action: () => root.page = "refresh"
+      }
+
+      PanelSectionLabel {
+        visible: root.draftEnabled
+        theme: root.theme
+        navigationSection: "scale"
+        text: "Scale"
+      }
+
+      Flow {
+        visible: root.draftEnabled
+        width: parent.width
+        spacing: 4
+
+        Repeater {
+          model: [{ "value": "auto", "label": "Auto" }].concat(
+            (root.selectedOutput.scalePresets ?? []).map(value => ({
+              "value": value,
+              "label": `${Number(value.toFixed(2))}×`
+            })))
+
+          PanelAction {
+            required property var modelData
+
+            width: 58
+            theme: root.theme
+            navigationSection: "scale"
+            text: modelData.label
+            selected: root.scaleSelected(modelData.value)
+            action: () => root.draftScale = modelData.value
+          }
+        }
+      }
+
+      PanelAction {
+        visible: root.draftDirty && !DisplayConfirmationState.previewing
+        width: parent.width
+        theme: root.theme
+        navigationSection: "apply"
+        icon: "󰄬"
+        text: "Apply changes"
+        action: () => root.applyDraft()
+      }
+    }
+  }
+
+  Component {
+    id: resolutionComponent
+
+    Column {
+      width: parent?.width ?? 0
+      spacing: root.theme.panelSpacing
+
+      PanelRow {
+        width: parent.width
+        theme: root.theme
+        navigationSection: "resolution"
+        title: "Preferred"
+        detail: "automatic"
+        selected: root.draftResolution === "preferred"
+        action: () => root.selectResolution("preferred")
+      }
+
+      Repeater {
+        model: root.resolutionOptions
+
+        PanelRow {
+          required property var modelData
+
+          width: parent.width
+          theme: root.theme
+          navigationSection: "resolution"
+          title: `${modelData.width} × ${modelData.height}`
+          selected: root.draftResolution === modelData.value
+          action: () => root.selectResolution(modelData.value)
+        }
+      }
+    }
+  }
+
+  Component {
+    id: refreshComponent
+
+    Column {
+      width: parent?.width ?? 0
+      spacing: root.theme.panelSpacing
+
+      Repeater {
+        model: root.refreshOptions
+
+        PanelRow {
+          required property var modelData
+
+          width: parent.width
+          theme: root.theme
+          navigationSection: "refresh"
+          title: `${Number(modelData.refreshRate.toFixed(3))} Hz`
+          selected: root.draftMode === modelData.value
+          action: () => root.selectRefresh(modelData.value)
+        }
+      }
     }
   }
 }

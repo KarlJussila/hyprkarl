@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 import QtQml
 import Quickshell
 import "config"
+import "features/display"
 import "features/menu"
 import "features/notifications"
 import "features/osd"
@@ -18,6 +19,16 @@ ShellRoot {
     shellConfig: configObject
     theme: themeObject
     overlayState: OverlayState
+  }
+  LazyLoader {
+    active: configObject.panelsEnabled && themeObject.ready
+
+    DisplayArrangement { shellContext: userRootObject.context }
+  }
+  LazyLoader {
+    active: configObject.panelsEnabled && themeObject.ready
+
+    DisplayConfirmation { shellContext: userRootObject.context }
   }
   LazyLoader {
     id: barRuntimeLoader

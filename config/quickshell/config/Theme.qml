@@ -66,6 +66,8 @@ QtObject {
   readonly property int panelPadding: panel.padding ?? 0
   readonly property int panelSpacing: panel.spacing ?? 0
   readonly property color panelBackground: panel.background ?? popupSurface
+  readonly property color panelSectionBackground:
+    panel.sectionBackground ?? panelBorder
   readonly property color panelForeground: panel.foreground ?? foreground
   readonly property color panelAccent: panel.accent ?? accent
   readonly property color panelBorder: panel.border ?? border
@@ -167,6 +169,14 @@ QtObject {
     wallpaperPicker.thumbnailScreenFraction ?? 0.25
   readonly property int wallpaperPickerGap:
     wallpaperPicker.gap ?? menuOuterPadding * 2
+
+  readonly property var displayArrangement: values.displayArrangement ?? ({})
+  readonly property int displayArrangementWidth:
+    displayArrangement.width ?? 960
+  readonly property int displayArrangementHeight:
+    displayArrangement.height ?? 600
+  readonly property real displayArrangementBezelFraction:
+    displayArrangement.bezelFraction ?? 0.08
 
   readonly property string stateHome: (Quickshell.env("XDG_STATE_HOME")
     ?? Quickshell.env("HOME") + "/.local/state") + "/hyprkarl"

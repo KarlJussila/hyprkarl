@@ -88,9 +88,13 @@ Display-panel layout state lives separately under
   scale, and transform for known outputs
 - `monitors.lua`
   The generated Hyprland rules loaded on configuration reload
+- `pending.json`
+  A temporary unconfirmed layout with its prior live and persistent state;
+  removed when the ten-second trial is confirmed or reverted
 
 `hk-display` is the only writer. These are machine state, not personal editing
-surfaces; use `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua` for explicit authored rules.
+surfaces; use the shell arranger for active-output positioning and rotation and
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua` for explicit authored rules.
 
 The shell calculator keeps its five most recent expression/result pairs in
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/calculator-history.json`.
@@ -264,7 +268,9 @@ shell JSON values still reload live. Personal per-bar modules live below
 not discovered as plugins. An optional `userRoot.source` names one
 application-wide QML composition root below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/`; it may create
 independent surfaces, receive direct overlay controls, and provide reactive
-notification positioning for a custom bar. Static
+notification positioning for a custom bar. It may import the public
+`Hyprkarl.Modal` component for a shell-styled exclusive modal without any
+discovery or registration step. Static
 command widgets, including the main-menu button, have no provider runtime.
 Configured providers are application-wide rather than duplicated per monitor.
 Poll mode starts one process per tick, while stream mode holds one
@@ -277,8 +283,9 @@ named immutable artifact's `quickshell.json`. Theme switches apply without
 restarting the shell.
 
 Hyprland starts it with `hk-shell start`; use `hk-shell status`, `hk-shell
-logs`, and `hk-shell stop` to inspect and manage it. A direct `qs -p
-config/quickshell` launch remains useful for foreground development.
+logs`, and `hk-shell stop` to inspect and manage it. A direct
+`QML_IMPORT_PATH=config/quickshell qs -p config/quickshell` launch remains
+useful for foreground development.
 See `config/quickshell/README.md` for its structure, checks, and interactions.
 The display, audio, network, Bluetooth, battery/power, and clock/calendar
 panels share a per-monitor host under `config/quickshell/panels/`; their
@@ -286,8 +293,15 @@ feature-specific views and state live under `config/quickshell/features/`.
 The host owns their nested frame, while `components/PanelLayout.qml` owns the
 shared header band and padded body. Rows, actions, sliders, and the custom
 switch primitive live beside it under `config/quickshell/components/`.
-The display view delegates discovery, live changes, and persistence to
-`hk-display` rather than owning a second QML state store.
+`KeyboardNavigator.qml` gives feature panels and public modals the same
+spatial arrow/HJKL movement and Tab-by-section behavior; controls join it by
+being focusable and may declare a `navigationSection` string.
+The display view delegates discovery, live trials, rollback, and persistence
+to `hk-display` rather than owning a second QML state store. Per-output drafts
+use a ten-second confirmation whose rollback survives the Quickshell process.
+Its global arranger uses the same public modal frame as personal QML and owns
+a temporary position-and-rotation draft; non-overlapping arrangements apply
+directly.
 Network scanning and Bluetooth discovery use feature-owned singletons because
 those operations are global to an adapter while panels are per monitor.
 Network scanning follows panel activity; Bluetooth discovery begins only from

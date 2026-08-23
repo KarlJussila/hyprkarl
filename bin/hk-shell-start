@@ -11,7 +11,12 @@ if hk_shell_is_running; then
   exit 0
 fi
 
-launch_output="$(uwsm app -- qs -d -p "$HK_SHELL_CONFIG" 2>&1)"
+shell_import_path=$HK_SHELL_CONFIG
+if [[ -n ${QML_IMPORT_PATH:-} ]]; then
+  shell_import_path="$shell_import_path:$QML_IMPORT_PATH"
+fi
+launch_output="$(uwsm app -- env QML_IMPORT_PATH="$shell_import_path" \
+  qs -d -p "$HK_SHELL_CONFIG" 2>&1)"
 
 # Daemonized qs exits successfully even when loading the QML configuration fails.
 if ! hk_shell_is_running; then

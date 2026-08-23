@@ -41,6 +41,7 @@ Item {
       CalendarNavButton {
         theme: root.theme
         text: "󰅁"
+        navigationSection: "month"
         action: () => root.monthOffset--
       }
 
@@ -60,6 +61,7 @@ Item {
       CalendarNavButton {
         theme: root.theme
         text: "󰅂"
+        navigationSection: "month"
         action: () => root.monthOffset++
       }
     }
@@ -151,6 +153,7 @@ Item {
       visible: root.monthOffset !== 0
       width: parent.width
       theme: root.theme
+      navigationSection: "month-reset"
       icon: "󰃭"
       text: `Return to ${Qt.formatDate(ClockState.now, "MMMM")}`
       action: () => root.monthOffset = 0

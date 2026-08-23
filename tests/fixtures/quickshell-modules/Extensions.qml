@@ -1,11 +1,26 @@
-import QtQml
+import QtQuick
 import Quickshell
 import Quickshell.Io
+import Hyprkarl
 
 Scope {
   id: root
 
   required property var context
+  property int modalLoads: 0
+
+  Modal {
+    context: root.context
+    name: "user.fixture"
+    title: "Personal modal"
+    subtitle: "Loaded through the public module"
+    preferredWidth: 480
+    preferredHeight: 320
+
+    body: Component {
+      Item { Component.onCompleted: root.modalLoads++ }
+    }
+  }
 
   IpcHandler {
     target: "userTest"
@@ -19,7 +34,8 @@ Scope {
         "name": root.context.overlayName,
         "output": root.context.overlayOutput,
         "values": root.context.overlayValues,
-        "revision": root.context.overlayRevision
+        "revision": root.context.overlayRevision,
+        "modalLoads": root.modalLoads
       })
     }
 

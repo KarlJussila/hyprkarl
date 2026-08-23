@@ -12,8 +12,9 @@ hk-shell status
 hk-shell logs --tail 100 --no-color
 ```
 
-Use `qs -p config/quickshell` only when a foreground development process is
-useful. Stop the production shell before editing QML: Quickshell watches its
+Use `QML_IMPORT_PATH=config/quickshell qs -p config/quickshell` only when a
+foreground development process is useful. Stop the production shell before
+editing QML: Quickshell watches its
 source tree, so a multi-file edit can otherwise load a temporary inconsistent
 generation. JSON configuration and theme changes have their own last-valid or
 atomic live-reload boundaries.
@@ -51,7 +52,10 @@ Each output's `ScreenSurfaces.qml` composes its optional bar, focused overlays,
 OSD, notification stack, and polkit prompt. Application-wide state chooses the
 target output; presentation stays per-output. The optional user root can own
 independent surfaces or replace the bar and may publish reactive notification
-positioning without entering a discovery or plugin system.
+positioning without entering a discovery or plugin system. The app-wide
+display arranger, display-change confirmation, and personal `Hyprkarl.Modal`
+declarations use the same exclusive modal boundary. The display confirmation's
+ten-second rollback is also enforced by a detached backend watchdog.
 
 ## Contributor Map
 
@@ -69,17 +73,26 @@ positioning without entering a discovery or plugin system.
   host padding. `widgets/qml.qml` adapts explicitly referenced personal QML
   modules to the documented per-bar context.
 - `panels/FeaturePanelHost.qml` owns the per-output popup, anchoring, focus,
-  dismissal, available-height scrolling, animation, and contact-aware corners.
-  Feature content must not create another popup boundary.
+  dismissal, spatial keyboard navigation, section traversal, focused-item
+  scrolling, animation, and contact-aware corners. Feature content must not
+  create another popup boundary.
+- `components/NavigationState.qml` owns the single current pointer-or-keyboard
+  control and active section. Shared panel controls use it instead of styling
+  `containsMouse` and `activeFocus` independently.
 - `features/display/`, `audio/`, `network/`, `bluetooth/`, `power/`, and
-  `clock/` own their service-specific state and panel compositions.
+  `clock/` own their service-specific state and panel compositions. Display
+  also owns staged per-output settings, backend-confirmed layout trials, and
+  the global position-and-rotation arrangement draft and content.
 - `features/command/` owns one provider per provider-backed command-widget ID.
   Static command widgets never enter that registry.
 - `features/menu/` owns menu data, hierarchy, rows, selection, search, and
   navigation. It composes the shared overlay frame and momentum behavior.
-- `features/overlay/` owns exclusive focused-surface routing,
-  `OverlayWindow.qml`, and `MomentumScroll.qml` for menus and dedicated
-  pickers.
+- `features/overlay/` owns exclusive focused-surface routing, the generic
+  `ModalWindow.qml` frame, picker-specific `OverlayWindow.qml`, and
+  `MomentumScroll.qml`.
+- `Hyprkarl/` is the public QML module. `Modal.qml` gives the explicit personal
+  root a styled, keyboard-navigable modal with lazy body/footer content and no
+  registration layer.
 - `features/applications/`, `calculator/`, and `wallpaper/` own their dedicated
   picker state and presentation without adding another window framework.
 - `features/osd/` owns typed transient state and one click-through surface per

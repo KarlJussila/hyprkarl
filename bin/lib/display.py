@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import fcntl
 import json
 import math
 import os
 import re
 import subprocess
 import tempfile
+import time
+import uuid
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -18,7 +22,11 @@ STATE_HOME = (
 )
 STATE_PATH = STATE_HOME / "layout.json"
 LUA_PATH = STATE_HOME / "monitors.lua"
+PENDING_PATH = STATE_HOME / "pending.json"
+LOCK_PATH = STATE_HOME / "pending.lock"
 INTERNAL_OUTPUT = re.compile(r"^(eDP|LVDS|DSI)-")
+MODE = re.compile(r"^(\d+)x(\d+)@(\d+(?:\.\d+)?)(?:Hz)?$")
+POSITION = re.compile(r"^-?\d+x-?\d+$")
 SCALE_PRESETS = (1.0, 1.25, 1.5, 1.6, 2.0, 3.0, 4.0)
 
 
@@ -45,6 +53,40 @@ def load_layout() -> dict[str, Any]:
 def mode_string(monitor: dict[str, Any]) -> str:
     refresh = f"{float(monitor['refreshRate']):.3f}".rstrip("0").rstrip(".")
     return f"{monitor['width']}x{monitor['height']}@{refresh}"
+
+
+def normalize_mode(value: str) -> str:
+    match = MODE.fullmatch(value)
+    if match is None:
+        raise RuntimeError(f"Invalid display mode: {value}")
+    width, height, refresh = match.groups()
+    normalized_refresh = f"{float(refresh):.3f}".rstrip("0").rstrip(".")
+    return f"{width}x{height}@{normalized_refresh}"
+
+
+def available_modes(monitor: dict[str, Any]) -> list[dict[str, Any]]:
+    values: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for raw_mode in monitor.get("availableModes", []):
+        try:
+            value = normalize_mode(raw_mode)
+        except RuntimeError:
+            continue
+        if value in seen:
+            continue
+        seen.add(value)
+        match = MODE.fullmatch(value)
+        assert match is not None
+        width, height, refresh = match.groups()
+        values.append(
+            {
+                "value": value,
+                "width": int(width),
+                "height": int(height),
+                "refreshRate": float(refresh),
+            }
+        )
+    return values
 
 
 def active_config(monitor: dict[str, Any]) -> dict[str, Any]:
@@ -138,6 +180,16 @@ def apply_monitor(name: str, config: dict[str, Any]) -> None:
         raise RuntimeError(result)
 
 
+def apply_monitors(configs: dict[str, dict[str, Any]]) -> None:
+    ordered = sorted(
+        configs.items(), key=lambda item: not item[1].get("enabled", False)
+    )
+    code = "\n".join(monitor_lua(name, config) for name, config in ordered)
+    result = run(["hyprctl", "eval", code]).strip()
+    if result != "ok":
+        raise RuntimeError(result)
+
+
 def apply_layout_change(
     previous: dict[str, Any],
     layout: dict[str, Any],
@@ -227,6 +279,15 @@ def set_brightness(output: str, percent: int) -> int:
     return percent
 
 
+def logical_size(monitor: dict[str, Any]) -> tuple[int, int]:
+    scale = float(monitor.get("scale", 1) or 1)
+    width = round((monitor.get("width", 0) or 0) / scale)
+    height = round((monitor.get("height", 0) or 0) / scale)
+    if int(monitor.get("transform", 0)) % 2 == 1:
+        return height, width
+    return width, height
+
+
 def display_state(requested: str) -> dict[str, Any]:
     current = monitors()
     target = resolve_target(current, requested)
@@ -237,6 +298,14 @@ def display_state(requested: str) -> dict[str, Any]:
     for monitor in current:
         enabled = not monitor.get("disabled", False)
         saved = saved_outputs.get(monitor["name"], {})
+        config = active_config(monitor) if enabled else {
+            "enabled": False,
+            "mode": saved.get("mode", "preferred"),
+            "position": saved.get("position", "auto"),
+            "scale": saved.get("scale", "auto"),
+            "transform": saved.get("transform", 0),
+        }
+        logical_width, logical_height = logical_size(monitor)
         outputs.append(
             {
                 "name": monitor["name"],
@@ -246,7 +315,16 @@ def display_state(requested: str) -> dict[str, Any]:
                 "width": monitor.get("width", 0) or 0,
                 "height": monitor.get("height", 0) or 0,
                 "refreshRate": monitor.get("refreshRate", 0) or 0,
-                "scale": monitor.get("scale", saved.get("scale", 1)),
+                "mode": config["mode"],
+                "position": config["position"],
+                "scale": config["scale"],
+                "transform": config["transform"],
+                "x": monitor.get("x", 0) or 0,
+                "y": monitor.get("y", 0) or 0,
+                "logicalWidth": logical_width,
+                "logicalHeight": logical_height,
+                "modes": available_modes(monitor),
+                "scalePresets": scale_presets(monitor),
             }
         )
 
@@ -259,6 +337,280 @@ def display_state(requested: str) -> dict[str, Any]:
         "scalePresets": scale_presets(target),
         "brightness": brightness(target["name"]),
     }
+
+
+def normalize_layout(
+    requested: dict[str, Any],
+    current: list[dict[str, Any]],
+    saved_layout: dict[str, Any],
+) -> dict[str, Any]:
+    requested_outputs = requested.get("outputs")
+    if not isinstance(requested_outputs, dict):
+        raise RuntimeError("Display layout must contain an outputs object")
+
+    connected_names = {monitor["name"] for monitor in current}
+    if set(requested_outputs) != connected_names:
+        raise RuntimeError("Display layout must cover every connected display")
+
+    normalized: dict[str, dict[str, Any]] = {}
+    for monitor in current:
+        name = monitor["name"]
+        raw = requested_outputs[name]
+        if not isinstance(raw, dict) or type(raw.get("enabled")) is not bool:
+            raise RuntimeError(f"Display {name} must specify whether it is enabled")
+        saved = saved_layout.get("outputs", {}).get(name, {})
+        fallback = (
+            active_config(monitor)
+            if not monitor.get("disabled", False)
+            else {
+                "mode": saved.get("mode", "preferred"),
+                "position": saved.get("position", "auto"),
+                "scale": saved.get("scale", "auto"),
+                "transform": saved.get("transform", 0),
+            }
+        )
+
+        mode = raw.get("mode", fallback["mode"])
+        if mode != "preferred":
+            if not isinstance(mode, str):
+                raise RuntimeError(f"Display {name} has an invalid mode")
+            mode = normalize_mode(mode)
+
+        position = raw.get("position", fallback["position"])
+        if position != "auto" and (
+            not isinstance(position, str) or POSITION.fullmatch(position) is None
+        ):
+            raise RuntimeError(f"Display {name} has an invalid position")
+
+        scale = raw.get("scale", fallback["scale"])
+        if scale != "auto":
+            if type(scale) not in (int, float) or not 1 <= scale <= 4:
+                raise RuntimeError(f"Display {name} scale must be between 1 and 4")
+            scale = float(scale)
+
+        transform = raw.get("transform", fallback["transform"])
+        if type(transform) is not int or not 0 <= transform <= 7:
+            raise RuntimeError(f"Display {name} has an invalid transform")
+
+        normalized[name] = {
+            "enabled": raw["enabled"],
+            "mode": mode,
+            "position": position,
+            "scale": scale,
+            "transform": transform,
+        }
+
+    if not any(config["enabled"] for config in normalized.values()):
+        raise RuntimeError("The layout must keep at least one display enabled")
+    return {"version": 1, "outputs": normalized}
+
+
+def live_configs(current: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    configs: dict[str, dict[str, Any]] = {}
+    for monitor in current:
+        if monitor.get("disabled", False):
+            configs[monitor["name"]] = {"enabled": False}
+        else:
+            configs[monitor["name"]] = active_config(monitor)
+    return configs
+
+
+@contextmanager
+def transaction_lock():
+    STATE_HOME.mkdir(parents=True, exist_ok=True)
+    with LOCK_PATH.open("a+") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        yield
+
+
+def load_pending() -> dict[str, Any] | None:
+    if not PENDING_PATH.exists():
+        return None
+    with PENDING_PATH.open(encoding="utf-8") as source:
+        return json.load(source)
+
+
+def save_pending(transaction: dict[str, Any]) -> None:
+    atomic_write(
+        PENDING_PATH,
+        json.dumps(transaction, ensure_ascii=False, separators=(",", ":")) + "\n",
+    )
+
+
+def clear_pending() -> None:
+    PENDING_PATH.unlink(missing_ok=True)
+
+
+def spawn_watchdog(token: str, deadline: int) -> None:
+    command = Path(__file__).resolve().parents[1] / "hk-display-watch"
+    subprocess.Popen(
+        [str(command), token, str(deadline)],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+
+
+def restore_transaction(transaction: dict[str, Any]) -> None:
+    apply_monitors(transaction["previousConfigs"])
+    save_layout(transaction["previousLayout"])
+    clear_pending()
+
+
+def preview_layout(
+    requested: dict[str, Any], timeout: int = 10, now: float | None = None
+) -> dict[str, Any]:
+    current = monitors()
+    previous_layout = load_layout()
+    normalized = normalize_layout(requested, current, previous_layout)
+    persisted_outputs = dict(previous_layout.get("outputs", {}))
+    persisted_outputs.update(normalized["outputs"])
+    proposed_layout = {"version": 1, "outputs": persisted_outputs}
+    token = str(uuid.uuid4())
+    deadline = round(((time.time() if now is None else now) + timeout) * 1000)
+    transaction = {
+        "version": 1,
+        "token": token,
+        "deadline": deadline,
+        "previousLayout": previous_layout,
+        "previousConfigs": live_configs(current),
+        "proposedLayout": proposed_layout,
+    }
+
+    with transaction_lock():
+        pending = load_pending()
+        if pending is not None:
+            current_time = time.time() if now is None else now
+            if current_time * 1000 < pending["deadline"]:
+                raise RuntimeError("Another display change is waiting for confirmation")
+            restore_transaction(pending)
+        save_pending(transaction)
+        try:
+            spawn_watchdog(token, deadline)
+            apply_monitors(normalized["outputs"])
+        except Exception as error:
+            try:
+                apply_monitors(transaction["previousConfigs"])
+                save_layout(previous_layout)
+                clear_pending()
+            except Exception as rollback_error:
+                raise RuntimeError(
+                    f"{error}; restoring the previous layout also failed: {rollback_error}"
+                ) from error
+            raise
+    return {"token": token, "deadline": deadline}
+
+
+def confirm_layout(token: str, now: float | None = None) -> None:
+    with transaction_lock():
+        transaction = load_pending()
+        if transaction is None or transaction.get("token") != token:
+            raise RuntimeError("No matching display change is waiting for confirmation")
+        current_time = time.time() if now is None else now
+        if current_time * 1000 >= transaction["deadline"]:
+            restore_transaction(transaction)
+            raise RuntimeError("The display confirmation period expired")
+        save_layout(transaction["proposedLayout"])
+        clear_pending()
+
+
+def revert_layout(token: str) -> None:
+    with transaction_lock():
+        transaction = load_pending()
+        if transaction is None or transaction.get("token") != token:
+            return
+        restore_transaction(transaction)
+
+
+def arrangement_size(monitor: dict[str, Any], transform: int) -> tuple[int, int]:
+    scale = float(monitor.get("scale", 1) or 1)
+    width = round((monitor.get("width", 0) or 0) / scale)
+    height = round((monitor.get("height", 0) or 0) / scale)
+    return (height, width) if transform % 2 == 1 else (width, height)
+
+
+def validate_arrangement(
+    active: list[dict[str, Any]],
+    arrangement: dict[str, dict[str, int]],
+) -> None:
+    rectangles = []
+    for monitor in active:
+        name = monitor["name"]
+        entry = arrangement[name]
+        width, height = arrangement_size(monitor, entry["transform"])
+        rectangles.append(
+            (name, entry["x"], entry["y"], width, height)
+        )
+
+    for index, first in enumerate(rectangles):
+        first_name, first_x, first_y, first_width, first_height = first
+        for second in rectangles[index + 1 :]:
+            second_name, second_x, second_y, second_width, second_height = second
+            if (
+                first_x < second_x + second_width
+                and first_x + first_width > second_x
+                and first_y < second_y + second_height
+                and first_y + first_height > second_y
+            ):
+                raise RuntimeError(
+                    f"Display rectangles overlap: {first_name} and {second_name}"
+                )
+
+
+def arrange(
+    requested: dict[str, dict[str, int]],
+) -> dict[str, dict[str, int]]:
+    current = monitors()
+    active = [monitor for monitor in current if not monitor.get("disabled", False)]
+    active_names = {monitor["name"] for monitor in active}
+    if set(requested) != active_names:
+        raise RuntimeError("Arrangement must cover every active display")
+
+    normalized: dict[str, dict[str, int]] = {}
+    for monitor in active:
+        name = monitor["name"]
+        entry = requested[name]
+        if not isinstance(entry, dict):
+            raise RuntimeError(f"Arrangement for {name} must be an object")
+        x = entry.get("x")
+        y = entry.get("y")
+        transform = entry.get("transform")
+        if type(x) is not int or type(y) is not int:
+            raise RuntimeError(f"Position for {name} must use integer coordinates")
+        if type(transform) is not int or not 0 <= transform <= 7:
+            raise RuntimeError(f"Transform for {name} must be an integer from 0 to 7")
+        normalized[name] = {"x": x, "y": y, "transform": transform}
+
+    validate_arrangement(active, normalized)
+
+    previous = load_layout()
+    layout = capture_layout(current, previous)
+    previous_configs = {monitor["name"]: active_config(monitor) for monitor in active}
+    next_configs: dict[str, dict[str, Any]] = {}
+    for monitor in active:
+        name = monitor["name"]
+        entry = normalized[name]
+        config = active_config(monitor)
+        config["position"] = f"{entry['x']}x{entry['y']}"
+        config["transform"] = entry["transform"]
+        layout["outputs"][name] = config
+        next_configs[name] = config
+
+    save_layout(layout)
+    try:
+        apply_monitors(next_configs)
+    except Exception as error:
+        save_layout(previous)
+        try:
+            apply_monitors(previous_configs)
+        except Exception as rollback_error:
+            raise RuntimeError(
+                f"{error}; restoring the previous live layout also failed: "
+                f"{rollback_error}"
+            ) from error
+        raise
+    return normalized
 
 
 def set_scale(name: str, requested: float) -> float:

@@ -30,6 +30,15 @@ ShellButton {
       theme: root.theme
       active: root.panelOpen
       outputName: root.barWindow.screen.name
+      onArrangeRequested: {
+        root.panelHost.close()
+        DisplayArrangementState.open(root.barWindow.screen.name)
+      }
+      onTrialRequested: (layout, panelOutput) => {
+        DisplayConfirmationState.preview(
+          layout, panelOutput, "display-panel")
+      }
+      onTrialStarted: root.panelHost.close()
     }
   }
 }

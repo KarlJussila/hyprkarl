@@ -67,6 +67,7 @@ Item {
       visible: root.adapter !== null
       width: parent.width
       theme: root.theme
+      navigationSection: "adapter"
       icon: root.adapter?.enabled ? "󰂯" : "󰂲"
       title: "Bluetooth"
       switchVisible: true
@@ -91,6 +92,7 @@ Item {
     PanelSectionLabel {
       visible: root.connectedDevices.length > 0
       theme: root.theme
+      navigationSection: "connected"
       text: "Connected"
     }
 
@@ -102,12 +104,14 @@ Item {
         width: parent.width
         theme: root.theme
         device: modelData
+        navigationSection: "connected"
       }
     }
 
     PanelSectionLabel {
       visible: root.pairedDevices.length > 0
       theme: root.theme
+      navigationSection: "paired"
       text: "Paired devices"
     }
 
@@ -119,12 +123,14 @@ Item {
         width: parent.width
         theme: root.theme
         device: modelData
+        navigationSection: "paired"
       }
     }
 
     PanelSectionLabel {
       visible: root.discoveryRequested && (root.adapter?.enabled ?? false)
       theme: root.theme
+      navigationSection: "available"
       text: root.adapter?.discovering ? "Available devices · scanning" : "Available devices"
     }
 
@@ -132,6 +138,7 @@ Item {
       visible: !root.discoveryRequested && (root.adapter?.enabled ?? false)
       width: parent.width
       theme: root.theme
+      navigationSection: "available"
       icon: "󰍉"
       text: "Scan for devices"
       action: () => root.startDiscovery()
@@ -160,6 +167,7 @@ Item {
         width: parent.width
         theme: root.theme
         device: modelData
+        navigationSection: "available"
       }
     }
   }

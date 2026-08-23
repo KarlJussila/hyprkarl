@@ -93,7 +93,8 @@ OverlayWindow {
         MenuState.activate(menuList.model[menuList.currentIndex])
       }
     } else if (!editing
-        && (event.key === Qt.Key_Left || event.key === Qt.Key_Backspace)) {
+        && (event.key === Qt.Key_Left || event.key === Qt.Key_H
+          || event.key === Qt.Key_Backspace)) {
       MenuState.back()
     } else {
       return

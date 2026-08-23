@@ -92,6 +92,7 @@ shell:
     padding: "{{metrics.spacing.xlarge}}"
     spacing: "{{metrics.spacing.large}}"
     background: "{{shell.surfaces.popup}}"
+    sectionBackground: "{{base.surface_soft}}"
     foreground: "{{shell.palette.foreground}}"
     accent: "{{shell.palette.accent}}"
     border: "{{shell.palette.border}}"
@@ -178,3 +179,8 @@ shell:
     columns: 3
     thumbnailScreenFraction: 0.25
     gap: "{{metrics.spacing.xxlarge}}"
+
+  displayArrangement:
+    width: 960
+    height: 600
+    bezelFraction: 0.08

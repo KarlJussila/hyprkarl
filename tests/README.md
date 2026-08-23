@@ -32,7 +32,8 @@ Starts an isolated Quickshell instance with every built-in module disabled and
 an explicitly referenced personal QML root. It checks that disabled IPC targets
 are absent, the bar system monitor does not start, and the root receives the
 resolved configuration, theme, outputs, and overlay open/replace/toggle/close
-context.
+context. It also imports `Hyprkarl.Modal` from the public QML module and proves
+that personal modal content is created on demand and recreated after closing.
 
 It needs a running Hyprland session with at least one output, plus `qs`,
 `jq`, `hyprctl`, and the installed Quickshell QML modules. It copies the shell
@@ -71,4 +72,15 @@ acknowledgement, and atomic state replacement.
 
 ```bash
 python3 -m unittest tests/test_update_packages.py
+```
+
+## `test_display.py`
+
+Unit checks for logical output geometry, normalized display modes, complete
+arrangement validation, position-and-transform persistence, overlap rejection,
+and one-call live layout application. They also cover all-disabled rejection
+plus preview, confirm, and rollback transaction behavior.
+
+```bash
+python3 -m unittest tests/test_display.py
 ```

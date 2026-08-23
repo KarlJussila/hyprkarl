@@ -68,13 +68,23 @@ to publish another generation; stop both the listed run IDs and their daemon
 PIDs, then report success only after neither remains.
 
 `hk-display` is the single display-control boundary. Its Python library owns
-Hyprland output discovery, live scale and enable/disable changes, internal
+Hyprland output discovery, mode, scale, transform, position, and enable/disable changes, internal
 backlight control, and the generated layout under
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`. The Quickshell panel
 must call this command rather than write Hyprland rules or persistence itself.
 Generated `monitors.lua` loads before `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`, so personal Lua
 remains the final authority. Do not add a second shell-JSON display-state store
 or make the backend rewrite user-authored monitor configuration.
+Arrangement accepts one integer position and transform for every active output,
+rejects overlapping transformed rectangles, and applies the complete layout
+while preserving each output's current mode, refresh rate, and scale.
+Per-output panel changes submit a complete connected-output layout to
+`preview`; the backend records the prior live and persistent layouts, applies
+the trial, and starts its own ten-second watchdog. `confirm` persists the
+proposed layout and `revert` restores the prior one. Keep timeout ownership
+outside Quickshell so a lost panel, output, or shell process cannot strand an
+unconfirmed topology. Position-and-rotation arrangement remains a direct apply
+and does not use this trial.
 
 `hk-hook-run` is the only lifecycle-hook runner. It accepts exactly
 `post-boot`, `post-update`, `theme-set`, or `wallpaper-set`, then runs

@@ -97,9 +97,22 @@ with a layout edit if monitor controls do not belong in your bar:
 }
 ```
 
-Its panel can change internal-backlight brightness, select a cleaned scale,
-and enable or disable connected outputs. Those actions go through
-`hk-display`; they do not rewrite personal shell JSON or Hyprland Lua.
+Its overview controls internal-backlight brightness and opens a staged settings
+page for each connected output. That page controls enablement, resolution,
+refresh rate, and cleaned scale. Resolution and refresh rate open separate
+pickers; the available refresh rates come only from modes matching the drafted
+resolution. Apply starts a ten-second trial: keep it in
+the confirmation modal or the backend restores the previous layout, even if
+the shell disappears. Confirmation opens on the display that owns the panel,
+falling back to another active display only if that output was disabled. With
+two or more active outputs,
+`Arrange displays` opens a global modal where the output frames can be dragged
+into position or right-clicked to rotate clockwise. A line inside each frame
+marks its physical bottom edge, and overlapping frames must be separated before
+Apply. Arrangement preserves mode, refresh rate, and scale and does not show
+the trial confirmation. Those actions go through `hk-display`; they do not
+rewrite personal shell JSON or Hyprland Lua. Brightness remains immediate
+because it is backlight service state rather than monitor-layout state.
 
 ## Add a Command Widget
 
@@ -246,11 +259,28 @@ their own independently overridable theme values. `panel.outerRadius`,
 `innerRadius`, `outerBorderWidth`, `outerPadding`, and `innerBorderWidth` shape
 the nested frame. `headerPadding` and `headerAccentOpacity` shape the left-aligned
 title band. `entryRadius`, `entryPadding`, `selectionBorderWidth`, and
-`selectionAccentOpacity` control rows and actions. The panel color and type
-defaults are `background`, `foreground`, `accent`, `border`, `font`, `fontSize`,
-and `fontWeight`. These fields derive from the same shared palette, typography,
-radii, borders, and opacity tokens as `menu` by default; either surface can
-still be changed without changing the other.
+`selectionAccentOpacity` control rows and actions. `sectionBackground` is the
+alternate solid background behind the current navigation section. The panel
+color and type defaults are `background`, `foreground`, `accent`, `border`,
+`font`, `fontSize`, and `fontWeight`. These fields derive from the same shared
+palette, typography, radii, borders, and opacity tokens as `menu` by default;
+either surface can still be changed without changing the other.
+
+Feature panels focus the current choice in their first section when available,
+or that section's first control otherwise. Up/Down/Left/Right or H/J/K/L move
+between controls in the current section; Tab and Shift+Tab jump
+between sections even when the current section has several controls. Entering
+a selectable section focuses its current selection instead of its first row.
+Enter or Space activates the focused row or action. On a slider, Left/Right or
+H/L changes its value while Up/Down or J/K continues through the section.
+Escape or Q closes the panel. The current section switches from the normal
+panel background to `sectionBackground`; its heading keeps the same color and
+weight. Only the current control gets the accent wash. A selected value keeps
+accent text and a border, so selection remains distinct from navigation.
+Pointer motion makes the item below the pointer current; the next keyboard
+navigation key takes control back. The panel never shows separate mouse-hover
+and keyboard focus cursors. Audio treats output, input, and their device choices
+as one section because its level headings are controls themselves.
 
 The shell-native command menu uses the nested `menu` object in the same theme
 file. Its width, nested-frame metrics, row spacing, and selection treatment
@@ -284,8 +314,8 @@ hk-shell status
 hk-shell logs --tail 100 --no-color
 ```
 
-Use `qs -p config/quickshell` only when a foreground development process is
-useful. See `config/quickshell/README.md` for the implemented interactions,
+Use `QML_IMPORT_PATH=config/quickshell qs -p config/quickshell` only when a
+foreground development process is useful. See `config/quickshell/README.md` for the implemented interactions,
 internal structure, and validation commands.
 
 ## Related Docs

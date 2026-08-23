@@ -51,6 +51,29 @@ surfaces) — they are called out explicitly.
   scale presets, and output enable/disable controls. `hk-display` now owns
   Hyprland discovery, live changes, and an XDG-state layout that survives
   reloads without editing tracked or user-authored monitor files.
+- Added a global display-arrangement modal that changes active-output positions
+  and rotations while preserving mode, refresh rate, and scale. Right-click
+  rotates a frame clockwise; its physical-bottom marker rotates with it, and
+  overlapping drafts cannot be applied. The
+  same reusable `Hyprkarl.Modal` component is available to the explicit
+  personal QML root, with no discovery or registration layer.
+- Replaced display-list enable switches with staged per-output settings for
+  enablement, resolution, refresh rate, and scale. Resolution and refresh rate
+  have separate nested pickers, and refresh options are filtered to modes
+  supported at the selected resolution. Applying opens a
+  ten-second confirmation modal on the output that owned the panel when it
+  remains active; an independent backend watchdog restores the prior live
+  layout unless the change is explicitly kept.
+- Added shared spatial keyboard navigation to feature panels and public
+  modals. Arrow keys and H/J/K/L move within a section, Tab moves between
+  sections and restores the current choice, Enter/Space activate controls,
+  and Escape or Q dismisses the surface. Nested display back actions now sit
+  before the header title. Display details omit settings that cannot act on
+  the current draft instead of presenting disabled rows. Pointer and keyboard
+  navigation now share one current control, while the solid alternate panel
+  background identifies its active section without changing section-heading
+  typography. Audio uses one spatial section for output, input, and device
+  choices.
 - Fixed notification icon paths and sizing. Absolute sender paths now load as
   files, every icon source uses `notification.iconSize`, and the redundant
   `notification.imageSize` theme token has been removed.
@@ -66,7 +89,8 @@ surfaces) — they are called out explicitly.
   fields, so personal QML can receive a custom menu overlay and close or
   replace it without a plugin registry.
 - Added `tests/hk-shell-modules.sh`, an isolated Quickshell check for disabled
-  module IPC, bar polling, and the personal overlay context.
+  module IPC, bar polling, the personal overlay context, and lazy public modal
+  composition.
 - Fixed `hk-shell stop` returning during a reload-generation gap while the
   Quickshell daemon remained alive and able to restart the shell.
 - Breaking: renamed generator-owned `palette.yaml` sources to `theme.yaml` and

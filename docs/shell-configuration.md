@@ -662,28 +662,63 @@ registering anything. A menu action such as this:
 ```
 
 sets `context.overlayName` to `dashboard`, passes the object as
-`context.overlayValues`, and selects `context.overlayOutput`. The root creates
-its own window when that name is active and calls `context.closeOverlay()` when
-it closes it. The built-in menu and picker modules use this same controller.
+`context.overlayValues`, and selects `context.overlayOutput`. The built-in
+menu, picker, and display-arrangement surfaces use this same controller.
 
-The root can keep that decision as ordinary QML state:
+For a shell-styled modal, import the public module and declare the modal in the
+personal root. Its body and optional footer are instantiated only while the
+modal is opening or visible. `Hyprkarl.Modal` owns output routing, the focused
+layer-shell window, scrim, frame, reveal, outside-click dismissal, and keyboard
+traversal; the personal file owns its content and request name:
 
 ```qml
 import QtQuick
+import Quickshell
+import Hyprkarl
 
-Item {
+Scope {
+  id: root
   required property var context
 
-  readonly property bool dashboardRequested: context.overlayName === "dashboard"
-  readonly property string section: dashboardRequested
-    ? context.overlayValues.section ?? ""
-    : ""
+  Modal {
+    context: root.context
+    name: "user.dashboard"
+    title: "Dashboard"
+    subtitle: root.context.overlayValues.section ?? ""
+    preferredWidth: 720
+    preferredHeight: 480
 
-  function closeDashboard(): void {
-    context.closeOverlay()
+    body: Component {
+      Item {
+        Text {
+          anchors.centerIn: parent
+          text: "Personal modal content"
+          color: root.context.theme.menuForeground
+        }
+      }
+    }
   }
 }
 ```
+
+Use a distinctive name such as `user.dashboard` to avoid accidental overlap
+with shipped surfaces; this is a naming convention, not an allowlist. A menu
+entry can request it by setting `surface` to the same name. The component also
+provides `open(output, values)`, `replace(output, values)`, `toggle(output,
+values)`, and `close()` convenience methods. Personal QML remains trusted and
+may create its own windows when the shared modal presentation is not suitable.
+Set `dismissAction` when outside click, Escape, or Q should do more than close,
+such as reverting a pending operation.
+
+Visible, enabled modal descendants with `activeFocusOnTab: true` join the
+modal's keyboard navigation automatically. Arrow keys or H/J/K/L move
+spatially within a section, Tab and Shift+Tab move between sections, and
+Enter/Space remain the control's activation keys. Escape or Q invokes
+`dismissAction`. Controls use the default `main` section unless they declare a
+string property such as `property string navigationSection: "filters"`;
+built-in modal footer buttons share the `footer` section. Tab always leaves the
+current section. Add `property bool navigationSelected: true` to its selected
+control when section entry should restore a current choice.
 
 An optional root method can override notification positioning per output while
 `notifications.edge` is `bar`:
@@ -794,14 +829,22 @@ underlying service; it does not rewrite shell JSON.
 
 The display panel follows the same separation. Its per-output QML view queries
 and invokes `hk-display`; it does not own a second monitor model or write shell
-JSON. Scale and output enablement persist in
+JSON. Confirmed output enablement, resolution, refresh rate, and scale persist in
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`, whose generated Lua
 loads after shipped monitor defaults and before explicit
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`. Brightness is backlight service state and is not
-copied into that layout. Version 1 exposes cleaned scale presets, internal
-backlight brightness when available, and output enable/disable; mode and
-position editing, external DDC brightness, and global text sizing remain
-outside this panel slice.
+copied into that layout. The overview exposes it when available and opens a
+staged settings page for each connected output. Resolution and refresh rate
+have separate pickers, with refresh options filtered to modes reported for the
+drafted resolution. Apply starts a ten-second
+backend-owned trial; confirm persists it, while dismissal, timeout, or a lost
+shell restores the previous layout. Confirmation targets the output that owns
+the feature panel and falls back only if that output was disabled. The global
+arranger applies one complete active-output position-and-transform map directly
+after rejecting overlaps, while preserving each output's current mode, refresh
+rate, and scale. The detail page omits settings that cannot act on the current
+draft instead of displaying disabled rows. External DDC brightness and global
+text sizing remain outside this panel slice.
 
 ## Update Contract
 

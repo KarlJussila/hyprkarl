@@ -11,6 +11,7 @@ Item {
   required property string title
   required property var node
   required property bool active
+  property string navigationSection: "main"
   property bool showPeak: false
 
   readonly property var audio: node?.audio ?? null
@@ -36,6 +37,7 @@ Item {
     PanelRow {
       width: parent.width
       theme: root.theme
+      navigationSection: root.navigationSection
       icon: root.audio?.muted ? "󰝟" : root.showPeak ? "󰍬" : "󰕾"
       title: root.title
       detail: root.audio ? root.nodeName : "unavailable"
@@ -48,6 +50,7 @@ Item {
     PanelSlider {
       width: parent.width
       theme: root.theme
+      navigationSection: root.navigationSection
       enabled: root.audio !== null
       value: root.audio?.volume ?? 0
       onEdited: value => root.audio.volume = value

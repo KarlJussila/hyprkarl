@@ -12,8 +12,11 @@ Item {
   property bool busy: false
   property bool switchVisible: false
   property bool switchActive: false
+  property string navigationSection: "main"
   property var action: null
-  readonly property bool highlighted: root.activeFocus || mouse.containsMouse || root.selected
+  readonly property bool navigationSelected: root.selected
+  readonly property bool current: NavigationState.currentItem === root
+  readonly property bool highlighted: root.current || root.selected
 
   activeFocusOnTab: enabled && action !== null
   implicitWidth: parent?.width ?? 0
@@ -21,7 +24,7 @@ Item {
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.panelBackground
+    color: "transparent"
     border.color: root.highlighted ? root.theme.panelAccent : "transparent"
     border.width: root.highlighted ? root.theme.panelSelectionBorderWidth : 0
     radius: root.theme.panelEntryRadius
@@ -29,7 +32,7 @@ Item {
     Rectangle {
       anchors.fill: parent
       color: root.theme.panelAccent
-      opacity: root.highlighted ? root.theme.panelSelectionAccentOpacity : 0
+      opacity: root.current ? root.theme.panelSelectionAccentOpacity : 0
       radius: parent.radius
     }
   }
@@ -128,11 +131,19 @@ Item {
     hoverEnabled: true
     enabled: root.enabled && root.action !== null
     cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+    onPressed: NavigationState.usePointer(root, root.navigationSection)
     onClicked: root.action()
+  }
+
+  HoverHandler {
+    enabled: root.enabled && root.action !== null
+    blocking: false
+    onPointChanged: if (hovered) NavigationState.usePointer(root, root.navigationSection)
   }
 
   Keys.onPressed: event => {
     if (!root.action || (event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Space)) return
+    NavigationState.useKeyboard(root, Qt.ShortcutFocusReason, root.navigationSection)
     root.action()
     event.accepted = true
   }

@@ -9,6 +9,7 @@ Scope {
   required property var overlayState
 
   readonly property var item: moduleLoader.item
+  readonly property var context: userContext
 
   property QtObject userContext: QtObject {
     id: userContext

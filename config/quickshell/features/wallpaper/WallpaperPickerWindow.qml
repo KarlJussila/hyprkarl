@@ -41,13 +41,13 @@ OverlayWindow {
   function handleKey(event): void {
     if (event.key === Qt.Key_Escape) {
       WallpaperPickerState.close()
-    } else if (event.key === Qt.Key_Right) {
+    } else if (event.key === Qt.Key_Right || event.key === Qt.Key_L) {
       selectIndex(wallpaperGrid.currentIndex + 1)
-    } else if (event.key === Qt.Key_Left) {
+    } else if (event.key === Qt.Key_Left || event.key === Qt.Key_H) {
       selectIndex(wallpaperGrid.currentIndex - 1)
-    } else if (event.key === Qt.Key_Down) {
+    } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
       selectIndex(wallpaperGrid.currentIndex + columns)
-    } else if (event.key === Qt.Key_Up) {
+    } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
       selectIndex(wallpaperGrid.currentIndex - columns)
     } else if (event.key === Qt.Key_Home) {
       selectIndex(0)

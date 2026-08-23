@@ -90,6 +90,7 @@ Item {
 
     PanelSectionLabel {
       theme: root.theme
+      navigationSection: "profiles"
       text: "Power profile"
     }
 
@@ -107,6 +108,7 @@ Item {
     PanelRow {
       width: parent.width
       theme: root.theme
+      navigationSection: "profiles"
       icon: "󰌪"
       title: "Power saver"
       detail: PowerProfiles.profile === PowerProfile.PowerSaver ? "active" : ""
@@ -117,6 +119,7 @@ Item {
     PanelRow {
       width: parent.width
       theme: root.theme
+      navigationSection: "profiles"
       icon: "󰾅"
       title: "Balanced"
       detail: PowerProfiles.profile === PowerProfile.Balanced ? "active" : ""
@@ -128,6 +131,7 @@ Item {
       visible: PowerProfiles.hasPerformanceProfile
       width: parent.width
       theme: root.theme
+      navigationSection: "profiles"
       icon: "󰓅"
       title: "Performance"
       detail: root.performanceDetail()
@@ -139,6 +143,7 @@ Item {
       visible: root.config.powerCommand?.length > 0
       width: parent.width
       theme: root.theme
+      navigationSection: "actions"
       icon: "󰐥"
       text: "Power actions"
       action: () => root.externalCommandRequested(root.config.powerCommand)

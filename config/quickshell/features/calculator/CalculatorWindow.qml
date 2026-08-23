@@ -61,11 +61,14 @@ OverlayWindow {
     if (event.key === Qt.Key_Escape) {
       if (editing && query.length > 0) query = ""
       else CalculatorState.close()
-    } else if (event.key === Qt.Key_Down) {
+    } else if (event.key === Qt.Key_Down
+        || (!editing && event.key === Qt.Key_J)) {
       selectIndex(calculationList.currentIndex + 1)
-    } else if (event.key === Qt.Key_Up) {
+    } else if (event.key === Qt.Key_Up
+        || (!editing && event.key === Qt.Key_K)) {
       selectIndex(calculationList.currentIndex - 1)
-    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+        || (!editing && event.key === Qt.Key_Space)) {
       if (calculationList.currentIndex >= 0) {
         copyEntry(rows[calculationList.currentIndex])
       }

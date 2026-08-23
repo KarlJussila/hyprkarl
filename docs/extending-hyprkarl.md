@@ -149,7 +149,13 @@ before reloading.
 
 Display-panel changes persist through `hk-display` under XDG state. They do
 not modify `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`; any monitor rules you place there load
-later and remain authoritative on reload.
+later and remain authoritative on reload. The arranger submits positions and
+transforms for the complete active layout while preserving the current mode,
+refresh rate, and scale of every output. It rejects overlapping transformed
+rectangles before applying directly. Per-output enablement, resolution, refresh
+rate, and scale changes are staged together and use a ten-second backend trial
+before they are persisted. The refresh-rate picker derives its options from
+the selected resolution's reported modes.
 
 ## Add a New Keybinding
 
@@ -216,7 +222,10 @@ application-wide QML root through `userRoot.source` in `${XDG_CONFIG_HOME:-$HOME
 can create independent or per-output surfaces, consume arbitrary custom values
 from `context.theme.document`, and optionally supply reactive notification
 positioning for a personal bar. Its direct context also exposes the current
-overlay request and methods to open, replace, toggle, or close it. Set
+overlay request and methods to open, replace, toggle, or close it. Personal
+shell-styled overlays can use the public `Hyprkarl.Modal` component instead of
+reimplementing the focused window, scrim, frame, dismissal, and output
+routing. Set
 `modules.bar` to `false` when that root replaces the built-in bar, then run
 `hk-shell restart`. See
 [Application-wide user QML](shell-configuration.md#application-wide-user-qml).

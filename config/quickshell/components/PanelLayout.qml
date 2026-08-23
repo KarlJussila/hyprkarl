@@ -6,9 +6,23 @@ Item {
   required property var theme
   property alias title: header.title
   property alias subtitle: header.subtitle
+  property alias leadingActionIcon: header.leadingActionIcon
+  property alias leadingAction: header.leadingAction
   property alias actionIcon: header.actionIcon
   property alias action: header.action
   default property alias bodyData: body.data
+  readonly property rect navigationSectionBounds: Qt.rect(
+    0,
+    bodyContainer.y,
+    width,
+    bodyContainer.height
+  )
+  readonly property rect navigationContentBounds: Qt.rect(
+    body.x,
+    bodyContainer.y + body.y,
+    body.width,
+    body.implicitHeight
+  )
 
   implicitWidth: parent?.width ?? 0
   implicitHeight: layout.implicitHeight
@@ -33,6 +47,8 @@ Item {
     }
 
     Item {
+      id: bodyContainer
+
       width: parent.width
       implicitHeight: body.implicitHeight
         + root.theme.panelPadding * 2

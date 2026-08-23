@@ -59,6 +59,7 @@ Item {
     PanelRow {
       width: parent.width
       theme: root.theme
+      navigationSection: "wifi"
       icon: Networking.wifiEnabled ? "󰖩" : "󰖪"
       title: "Wi-Fi"
       switchVisible: true
@@ -70,6 +71,7 @@ Item {
     PanelSectionLabel {
       visible: Networking.wifiEnabled && root.wifiDevice !== null
       theme: root.theme
+      navigationSection: "networks"
       text: root.wifiDevice?.scannerEnabled ? "Available networks · scanning" : "Available networks"
     }
 
@@ -100,7 +102,11 @@ Item {
         implicitHeight: networkRow.implicitHeight + (enteringPassword ? passwordBox.implicitHeight + 4 : 0)
 
         onEnteringPasswordChanged: {
-          if (enteringPassword) Qt.callLater(password.forceActiveFocus)
+          if (!enteringPassword) return
+          Qt.callLater(() => {
+            password.forceActiveFocus()
+            NavigationState.select(password, NavigationState.keyboardActive, "networks")
+          })
         }
 
         PanelRow {
@@ -108,6 +114,7 @@ Item {
 
           width: parent.width
           theme: root.theme
+          navigationSection: "networks"
           icon: root.signalIcon(networkEntry.modelData.signalStrength)
           title: networkEntry.modelData.name
           detail: networkEntry.modelData.security === WifiSecurityType.Open
@@ -130,8 +137,10 @@ Item {
           width: parent.width
           implicitHeight: 38
           visible: networkEntry.enteringPassword
-          color: root.theme.panelBackground
-          border.color: password.activeFocus ? root.theme.panelAccent : root.theme.panelBorder
+          color: "transparent"
+          border.color: NavigationState.currentItem === password
+            ? root.theme.panelAccent
+            : root.theme.panelBorder
           border.width: root.theme.panelSelectionBorderWidth
           radius: root.theme.panelEntryRadius
 
@@ -157,8 +166,13 @@ Item {
             font.pixelSize: root.theme.panelFontSize
             echoMode: TextInput.Password
             selectByMouse: true
+            property string navigationSection: "networks"
             activeFocusOnTab: true
             clip: true
+            HoverHandler {
+              blocking: false
+              onPointChanged: if (hovered) NavigationState.usePointer(password, "networks")
+            }
             Keys.onEscapePressed: event => {
               root.passwordNetwork = null
               text = ""

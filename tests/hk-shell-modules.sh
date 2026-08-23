@@ -22,6 +22,7 @@ fail() {
 
 start_shell() {
   XDG_CONFIG_HOME="$CONFIG_HOME" XDG_STATE_HOME="$STATE_HOME" \
+    QML_IMPORT_PATH="$SHELL_ROOT" \
     qs -d -p "$SHELL_ROOT" --no-color \
     || fail "Quickshell did not start"
 
@@ -149,6 +150,26 @@ call_user_test close >/dev/null || fail "closeOverlay failed"
 jq -e '.name == ""' <<< "$(call_user_test snapshot)" >/dev/null \
   || fail "closeOverlay left a request open"
 
+call_user_test open user.fixture "$output" modal >/dev/null \
+  || fail "public personal modal did not open"
+for _ in {1..20}; do
+  [[ $(call_user_test snapshot | jq -r '.modalLoads') -eq 1 ]] && break
+  sleep 0.05
+done
+jq -e '.name == "user.fixture" and .modalLoads == 1' \
+  <<< "$(call_user_test snapshot)" >/dev/null \
+  || fail "public personal modal body did not load on demand"
+call_user_test close >/dev/null || fail "public personal modal did not close"
+call_user_test open user.fixture "$output" modal >/dev/null \
+  || fail "public personal modal did not reopen"
+for _ in {1..20}; do
+  [[ $(call_user_test snapshot | jq -r '.modalLoads') -eq 2 ]] && break
+  sleep 0.05
+done
+jq -e '.modalLoads == 2' <<< "$(call_user_test snapshot)" >/dev/null \
+  || fail "public personal modal content was not recreated"
+call_user_test close >/dev/null || fail "public personal modal did not close"
+
 if pgrep -af "$SHELL_ROOT/scripts/read-system-state.sh" >/dev/null; then
   fail "bar system monitor started while the bar was disabled"
 fi
@@ -169,4 +190,4 @@ fi
 pgrep -af "$SHELL_ROOT/scripts/read-system-state.sh" >/dev/null \
   || fail "bar system monitor did not start with the bar enabled"
 
-printf 'Shell module and personal overlay checks passed.\n'
+printf 'Shell module and personal modal checks passed.\n'

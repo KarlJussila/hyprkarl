@@ -48,15 +48,18 @@ OverlayWindow {
     if (event.key === Qt.Key_Escape) {
       if (editing && query.length > 0) query = ""
       else ApplicationPickerState.close()
-    } else if (event.key === Qt.Key_Down) {
+    } else if (event.key === Qt.Key_Down
+        || (!editing && event.key === Qt.Key_J)) {
       moveSelection(1)
-    } else if (event.key === Qt.Key_Up) {
+    } else if (event.key === Qt.Key_Up
+        || (!editing && event.key === Qt.Key_K)) {
       moveSelection(-1)
     } else if (event.key === Qt.Key_Home) {
       selectIndex(0)
     } else if (event.key === Qt.Key_End) {
       selectIndex(applicationList.count - 1)
-    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+        || (!editing && event.key === Qt.Key_Space)) {
       if (applicationList.currentIndex >= 0) {
         ApplicationPickerState.activate(entries[applicationList.currentIndex])
       }

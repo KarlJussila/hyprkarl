@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"""Revert an unconfirmed display-layout trial at its deadline."""
+
+import sys
+import time
+
+from lib.display import revert_layout
+
+
+def main() -> int:
+    if len(sys.argv) != 3:
+        print("Usage: hk-display-watch <token> <deadline-ms>", file=sys.stderr)
+        return 1
+    try:
+        deadline = int(sys.argv[2]) / 1000
+        time.sleep(max(0, deadline - time.time()))
+        revert_layout(sys.argv[1])
+        return 0
+    except Exception as error:
+        print(f"Could not automatically revert display layout: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

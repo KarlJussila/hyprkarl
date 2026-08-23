@@ -6,6 +6,8 @@ Item {
   required property var theme
   property string title: ""
   property string subtitle: ""
+  property string leadingActionIcon: "󰁍"
+  property var leadingAction: null
   property string actionIcon: "󰒓"
   property var action: null
 
@@ -26,9 +28,13 @@ Item {
   Column {
     id: labels
 
-    anchors.left: parent.left
+    anchors.left: leadingHeaderAction.visible
+      ? leadingHeaderAction.right
+      : parent.left
     anchors.right: headerAction.visible ? headerAction.left : parent.right
-    anchors.leftMargin: root.theme.panelHeaderPadding
+    anchors.leftMargin: leadingHeaderAction.visible
+      ? root.theme.panelSpacing
+      : root.theme.panelHeaderPadding
     anchors.rightMargin: headerAction.visible
       ? root.theme.panelSpacing
       : root.theme.panelHeaderPadding
@@ -58,7 +64,21 @@ Item {
     }
   }
 
-  Item {
+  PanelHeaderButton {
+    id: leadingHeaderAction
+
+    visible: root.leadingAction !== null
+    width: 24
+    height: 24
+    anchors.left: parent.left
+    anchors.leftMargin: root.theme.panelHeaderPadding
+    anchors.verticalCenter: parent.verticalCenter
+    theme: root.theme
+    icon: root.leadingActionIcon
+    action: root.leadingAction
+  }
+
+  PanelHeaderButton {
     id: headerAction
 
     visible: root.action !== null
@@ -67,52 +87,8 @@ Item {
     anchors.right: parent.right
     anchors.rightMargin: root.theme.panelHeaderPadding
     anchors.verticalCenter: parent.verticalCenter
-    activeFocusOnTab: visible && enabled
-
-    Rectangle {
-      anchors.fill: parent
-      color: "transparent"
-      border.color: headerAction.activeFocus || actionMouse.containsMouse
-        ? root.theme.panelAccent
-        : "transparent"
-      border.width: headerAction.activeFocus || actionMouse.containsMouse
-        ? root.theme.panelSelectionBorderWidth
-        : 0
-      radius: root.theme.panelEntryRadius
-
-      Rectangle {
-        anchors.fill: parent
-        color: root.theme.panelAccent
-        opacity: headerAction.activeFocus || actionMouse.containsMouse
-          ? root.theme.panelSelectionAccentOpacity
-          : 0
-        radius: parent.radius
-      }
-    }
-
-    Text {
-      anchors.centerIn: parent
-      text: root.actionIcon
-      color: root.theme.panelForeground
-      font.family: root.theme.panelFont
-      font.pixelSize: root.theme.panelFontSize
-      font.weight: root.theme.panelFontWeight
-    }
-
-    MouseArea {
-      id: actionMouse
-
-      anchors.fill: parent
-      hoverEnabled: true
-      cursorShape: Qt.PointingHandCursor
-      onClicked: root.action()
-    }
-
-    Keys.onPressed: event => {
-      if (event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Space) return
-      root.action()
-      event.accepted = true
-    }
+    theme: root.theme
+    icon: root.actionIcon
+    action: root.action
   }
-
 }

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell
 import Quickshell.Networking
 import "../../components"
 
@@ -15,10 +16,6 @@ Item {
 
   readonly property real preferredWidth: theme.panelWidth
   readonly property var wifiDevice: NetworkState.wifiDevice
-  readonly property var sortedNetworks: NetworkState.networks.slice().sort((left, right) => {
-    if (left.connected !== right.connected) return left.connected ? -1 : 1
-    return right.signalStrength - left.signalStrength
-  })
   property var passwordNetwork: null
 
   implicitWidth: parent?.width ?? 0
@@ -45,6 +42,15 @@ Item {
   onActiveChanged: NetworkState.requestScanning(root, active)
   Component.onCompleted: NetworkState.requestScanning(root, active)
   Component.onDestruction: NetworkState.requestScanning(root, false)
+
+  ScriptModel {
+    id: networkModel
+
+    values: !Networking.wifiEnabled ? [] : NetworkState.networks.slice().sort((left, right) => {
+      if (left.connected !== right.connected) return left.connected ? -1 : 1
+      return right.signalStrength - left.signalStrength
+    })
+  }
 
   PanelLayout {
     id: content
@@ -76,7 +82,7 @@ Item {
     }
 
     Text {
-      visible: !Networking.wifiEnabled || root.wifiDevice === null || root.sortedNetworks.length === 0
+      visible: !Networking.wifiEnabled || root.wifiDevice === null || networkModel.values.length === 0
       width: parent.width
       text: !Networking.wifiEnabled
         ? "Turn on Wi-Fi to view nearby networks."
@@ -89,7 +95,7 @@ Item {
     }
 
     Repeater {
-      model: Networking.wifiEnabled ? root.sortedNetworks : []
+      model: networkModel
 
       Item {
         id: networkEntry

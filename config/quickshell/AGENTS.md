@@ -289,7 +289,9 @@ CPU, GPU, RAM, and recording state share the single long-running process in
 `features/network/NetworkState.qml` is a feature-owned singleton because scan
 requests are application-global while panels are per monitor; it reference
 counts panel requesters so closing one monitor's panel cannot stop another's
-scan. `features/bluetooth/BluetoothState.qml` owns the equivalent
+scan. `NetworkPanel.qml` feeds its changing sorted network list through
+`ScriptModel` so scan updates add, remove, or move rows without recreating the
+whole panel body. `features/bluetooth/BluetoothState.qml` owns the equivalent
 adapter-global discovery lifetime and stops discovery only when this shell
 started it. Opening a Bluetooth panel does not request discovery; only its
 explicit scan action registers that panel as an owner, and closing the panel

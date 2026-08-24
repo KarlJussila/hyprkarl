@@ -304,10 +304,11 @@ a temporary position-and-rotation draft; non-overlapping arrangements apply
 directly.
 Network scanning and Bluetooth discovery use feature-owned singletons because
 those operations are global to an adapter while panels are per monitor.
-Network scanning follows panel activity; Bluetooth discovery begins only from
-the panel's explicit scan action. That action is replaced by the
-available-device section after it runs during the current panel opening. Clock
-uses one application-wide current-time
+Network scanning follows panel activity, and its sorted results update the
+visible row model incrementally instead of rebuilding the list. Bluetooth
+discovery begins only from the panel's explicit scan action. That action is
+replaced by the available-device section after it runs during the current
+panel opening. Clock uses one application-wide current-time
 singleton while viewed-month navigation remains local to each panel. There is
 no separate feature-flyout boundary.
 

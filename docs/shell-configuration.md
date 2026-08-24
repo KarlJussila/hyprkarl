@@ -640,8 +640,10 @@ has these direct members:
 | `overlayName`, `overlayOutput`, `overlayValues`, `overlayRevision` | The requested exclusive overlay and its change counter. |
 | `openOverlay(name, output, values)` | Opens only when no overlay is active. |
 | `replaceOverlay(name, output, values)` | Replaces the current overlay request. |
+| `pushOverlay(name, output, values)` | Opens a request that may return to the current overlay. |
 | `toggleOverlay(name, output, values)` | Closes the matching request or replaces it. |
 | `closeOverlay()` | Closes the current overlay. |
+| `backOverlay()` | Restores the last request saved by `pushOverlay`, when one exists. |
 
 The ordinary typed theme properties remain available, while
 `context.theme.document` exposes the complete generated `quickshell.json` for

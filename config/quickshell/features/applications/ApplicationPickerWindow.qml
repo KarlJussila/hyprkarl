@@ -46,8 +46,11 @@ OverlayWindow {
 
   function handleKey(event, editing): void {
     if (event.key === Qt.Key_Escape) {
-      if (editing && query.length > 0) query = ""
-      else ApplicationPickerState.close()
+      ApplicationPickerState.close()
+    } else if (query.length === 0
+        && (event.key === Qt.Key_Left || event.key === Qt.Key_Backspace
+          || (!editing && event.key === Qt.Key_H))) {
+      if (!ApplicationPickerState.back()) ApplicationPickerState.close()
     } else if (event.key === Qt.Key_Down
         || (!editing && event.key === Qt.Key_J)) {
       moveSelection(1)

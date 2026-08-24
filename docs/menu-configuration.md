@@ -43,9 +43,11 @@ shipped definition.
 command widget. That widget passes its output context so a click opens the menu
 on the same monitor.
 Each object in `menus` supplies a title and may also define `sourceCommand`
-plus `emptyLabel` for entries discovered when that menu opens. Set
-`searchable` to `true` for an in-process fuzzy-search field. `widthRole` may be
-`default`, `search`, or `reference` and selects the corresponding themed menu
+plus `emptyLabel` for entries discovered when that menu opens. Every menu has
+an in-process fuzzy-search field. It searches the current menu and every
+declared descendant, keeps direct matches before deeper matches, and shows the
+parent path on deeper rows. `widthRole` may be `default`, `search`, or
+`reference` and selects the corresponding themed width. Searching keeps that
 width. `entryAlignment` may be `left`, `center`, or `right`; it defaults to
 `center`. Each object in `entries` has a stable dotted ID and:
 
@@ -54,6 +56,8 @@ width. `entryAlignment` may be `left`, `center`, or `right`; it defaults to
 - `label`: displayed text
 - `icon`: optional displayed glyph
 - `enabled`: optional boolean; `false` removes the entry from rendering
+- `disabled`: optional boolean; `true` leaves the entry dimmed in its own menu
+  but prevents selection and omits it from search results
 - `checkedCommand`: optional command evaluated when the menu opens; exit zero
   replaces the icon with a check mark
 - `action`: a `menu` destination, shell `command`, Quickshell `surface`, or
@@ -69,7 +73,8 @@ rows and actions do not fit the command-menu data contract. Package pickers
 retain their focused terminal interfaces.
 
 A `surface` action switches directly to another Quickshell overlay without
-starting a process or calling back through shell IPC:
+starting a process or calling back through shell IPC. The menu remains its
+return destination until the new overlay closes or replaces the request:
 
 ```json
 {
@@ -83,7 +88,9 @@ The shipped surface IDs are `launcher`, `calculator`, and `wallpaper`.
 `wallpaper` accepts an `action` parameter of `set` or `remove`; the other two
 need no parameters. The surface ID and optional parameter object are passed
 through as authored, so a user composition may respond to its own surface IDs
-and parameter vocabulary without changing the menu engine.
+and parameter vocabulary without changing the menu engine. In the launcher,
+Left or Backspace on an empty query returns to the menu that opened it. A
+directly opened launcher closes because it has no return destination.
 
 For example, this personal entry asks a user root to show a dashboard on the
 selected output:
@@ -107,10 +114,12 @@ selected output:
 }
 ```
 
-The action replaces the menu request with `dashboard`. An application-wide
+The action replaces the visible menu with `dashboard` while retaining the menu
+as its return destination. An application-wide
 user root reads `context.overlayName`, `context.overlayOutput`, and
 `context.overlayValues`, creates its own window for that name, and calls
-`context.closeOverlay()` when it closes it. See [Application-wide user
+`context.backOverlay()` to return or `context.closeOverlay()` to close the
+whole request chain. See [Application-wide user
 QML](shell-configuration.md#application-wide-user-qml) for the full context.
 
 If `modules.menu` is disabled, the menu IPC target and its windows do not
@@ -118,26 +127,28 @@ exist. Disabling another built-in module does not rewrite menu rows that point
 to it. Hide a no-longer-useful shipped row with `enabled: false`, or replace it
 with an entry for the program or personal overlay that takes over that job.
 
-Keyboard navigation keeps the selected row immediately in view, including
-when wrapping between the first and last entries. Moving the pointer selects
-the row beneath it, but a stationary pointer does not override keyboard
-selection as the list moves. Wheel and touchpad gestures scroll the list
-directly with shared kinetic behavior. Repeated gestures in the same direction
-build momentum through a soft cap. Starting another gesture pauses existing
-momentum so the gesture has direct control. On release, a recency-weighted
-velocity from that gesture is added through the soft cap. Reversing within the
-gesture clears both the retained momentum and its earlier samples. Opening a
-menu or changing a search starts at the first result and the top of the list.
+Keyboard navigation skips disabled rows and keeps the selected row immediately
+in view, including when wrapping between the first and last entries. Moving
+the pointer selects the row beneath it, but a stationary pointer does not
+override keyboard selection as the list moves. Wheel and touchpad gestures
+scroll the list directly with shared kinetic behavior. Repeated gestures in the
+same direction build momentum through a soft cap. Starting another gesture
+pauses existing momentum so the gesture has direct control. On release, a
+recency-weighted velocity from that gesture is added through the soft cap.
+Reversing within the gesture clears both the retained momentum and its earlier
+samples. Opening a fresh menu or changing a search starts at the first result
+and the top of the list. Returning from a submenu or the launcher restores the
+previous query, selected entry, and scroll position.
 
 Use `checkedCommand` only for a cheap external state probe whose status belongs
 in the menu. Checks run when the menu opens; they are not long-running monitors
 and do not replace shell-native service state in feature panels.
 
 A `sourceCommand` must print one JSON array and exit. Each array item has a
-stable `id`, a `label`, optional `icon` and `searchText` fields, and a
-`command`, `menu`, `surface`, or `dismiss` action; array order is display order.
-The shell validates the result before rendering it, shows `emptyLabel` for an
-empty array, and reports provider or schema failure in the menu and
+stable `id`, a `label`, optional `icon`, `searchText`, and `disabled` fields,
+and a `command`, `menu`, `surface`, or `dismiss` action; array order is display
+order. The shell validates the result before rendering it, shows `emptyLabel`
+for an empty array, and reports provider or schema failure in the menu and
 `hk-shell logs`.
 Sources refresh on every open and when returning to a dynamic parent, so
 filesystem, hardware, and service state do not go stale. Domain commands own
@@ -146,6 +157,11 @@ enrolled fingers and `hk-docker menu-entries install` supplies only missing
 services. Docker service manifests are loaded independently; a broken shipped
 manifest is logged and skipped without preventing the other services from
 appearing.
+
+Global search walks the declared static hierarchy. It includes provider rows
+already loaded for the current menu, but it does not start every descendant
+provider merely because the owner typed a query. Selecting a dynamic submenu
+loads its current rows through the normal provider boundary.
 
 The shell runs both providers and command actions with `bash -c`, inheriting
 the session environment without starting a login shell. A dynamic destination
@@ -162,8 +178,8 @@ handles quoting and Unicode without shell string manipulation. Bash remains a
 good fit when a provider only validates and prints an already-generated JSON
 file.
 
-For example, a personal searchable menu needs only a menu declaration, an
-entry that navigates to it, and a provider on `$PATH`:
+For example, a personal dynamic menu needs only a menu declaration, an entry
+that navigates to it, and a provider on `$PATH`:
 
 ```json
 {
@@ -172,7 +188,6 @@ entry that navigates to it, and a provider on `$PATH`:
     "projects": {
       "title": "Projects",
       "sourceCommand": "my-project-menu-entries",
-      "searchable": true,
       "widthRole": "search",
       "emptyLabel": "No projects"
     }
@@ -258,6 +273,9 @@ field without copying the entry:
     },
     "main.uninstall": {
       "enabled": false
+    },
+    "main.update": {
+      "disabled": true
     }
   }
 }
@@ -307,7 +325,8 @@ corresponding top-level shell theme values, so a new theme normally needs only
 the menu-specific metrics and modifiers. `innerBorderWidth` sets both the
 nested frame thickness and the divider that supports the title band; the
 band's lower corners stay square against it. `searchRows` fixes the visible
-viewport height of searchable menus while their contents filter.
+maximum viewport height while a query filters the current menu and its
+descendants. Short result sets use only their natural height.
 
 ## Opening Menus Directly
 
@@ -327,8 +346,8 @@ bindings call the relevant `hk-shell` boundary directly. Use `hk-shell
 launcher`, `hk-shell calculator`, and `hk-shell wallpaper` for the dedicated
 overlays.
 
-Keyboard navigation supports Up/Down (or J/K), Home/End, Enter/Space/Right (or
-L) to choose, and Escape/Left (or H)/Backspace to go back. In a searchable menu,
-typing edits the query, Up/Down changes the selection, and Escape clears a
-non-empty query before navigating back. Going back from the root closes the
-menu. Clicking outside goes back from a submenu and closes the root.
+Keyboard navigation supports Up/Down, Home/End, and Enter to choose. Escape or
+an unmodified lowercase Q closes the whole menu. Left or Backspace on an empty
+query goes to the parent, closing at the root, while Right enters the selected
+submenu. Clicking outside closes the whole menu. Typing filters the current
+menu and all declared descendants.

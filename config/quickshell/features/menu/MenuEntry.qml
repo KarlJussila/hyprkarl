@@ -10,6 +10,7 @@ Item {
   required property int refreshToken
   property bool selected: false
   property bool checked: false
+  readonly property bool disabled: entry.disabled === true
 
   signal pointerMoved(real sceneX, real sceneY)
   signal chosen()
@@ -32,9 +33,10 @@ Item {
     }
   }
 
-  implicitHeight: label.implicitHeight
+  implicitHeight: content.implicitHeight
     + root.theme.menuEntryPadding * 2
     + root.theme.menuEntryMargin * 2
+  opacity: disabled ? 0.45 : 1
 
   Rectangle {
     anchors.fill: parent
@@ -53,35 +55,52 @@ Item {
       radius: root.theme.menuEntryRadius
     }
 
-    Text {
-      id: label
+    Column {
+      id: content
 
       anchors.fill: parent
       anchors.margins: root.theme.menuEntryPadding
-      text: root.checked
-        ? "󰄬 " + root.entry.label
-        : root.entry.icon
-        ? root.entry.icon + " " + root.entry.label
-        : root.entry.label
-      color: root.theme.menuForeground
-      font.family: root.theme.menuFont
-      font.pixelSize: root.theme.menuFontSize
-      font.weight: root.theme.menuFontWeight
-      horizontalAlignment: root.textAlignment
-      verticalAlignment: Text.AlignVCenter
-      elide: Text.ElideRight
+
+      Text {
+        width: parent.width
+        text: root.checked
+          ? "󰄬 " + root.entry.label
+          : root.entry.icon
+          ? root.entry.icon + " " + root.entry.label
+          : root.entry.label
+        color: root.theme.menuForeground
+        font.family: root.theme.menuFont
+        font.pixelSize: root.theme.menuFontSize
+        font.weight: root.theme.menuFontWeight
+        horizontalAlignment: root.textAlignment
+        elide: Text.ElideRight
+      }
+
+      Text {
+        width: parent.width
+        visible: text.length > 0
+        text: root.entry.searchDetail ?? ""
+        color: root.theme.menuForeground
+        opacity: 0.55
+        font.family: root.theme.menuFont
+        font.pixelSize: Math.max(10, root.theme.menuFontSize - 2)
+        font.weight: root.theme.menuFontWeight
+        horizontalAlignment: root.textAlignment
+        elide: Text.ElideRight
+      }
     }
   }
 
   HoverHandler {
     id: hover
 
-    cursorShape: Qt.PointingHandCursor
-    onPointChanged: root.pointerMoved(point.scenePosition.x,
-      point.scenePosition.y)
+    cursorShape: root.disabled ? Qt.ArrowCursor : Qt.PointingHandCursor
+    onPointChanged: if (!root.disabled) root.pointerMoved(
+      point.scenePosition.x, point.scenePosition.y)
   }
 
   TapHandler {
+    enabled: !root.disabled
     onTapped: root.chosen()
   }
 }

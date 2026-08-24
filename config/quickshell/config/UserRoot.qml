@@ -31,12 +31,20 @@ Scope {
       return root.overlayState.replace(name, output, values)
     }
 
+    function pushOverlay(name: string, output: string, values: var): bool {
+      return root.overlayState.push(name, output, values)
+    }
+
     function toggleOverlay(name: string, output: string, values: var): bool {
       return root.overlayState.toggle(name, output, values)
     }
 
     function closeOverlay(): void {
       root.overlayState.closeCurrent()
+    }
+
+    function backOverlay(): bool {
+      return root.overlayState.back()
     }
   }
 

@@ -47,12 +47,20 @@ Scope {
       return root.context.replaceOverlay(name, output, { "section": section })
     }
 
+    function push(name: string, output: string, section: string): bool {
+      return root.context.pushOverlay(name, output, { "section": section })
+    }
+
     function toggle(name: string, output: string, section: string): bool {
       return root.context.toggleOverlay(name, output, { "section": section })
     }
 
     function close(): void {
       root.context.closeOverlay()
+    }
+
+    function back(): bool {
+      return root.context.backOverlay()
     }
   }
 }

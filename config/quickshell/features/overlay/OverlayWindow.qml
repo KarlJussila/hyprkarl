@@ -8,6 +8,7 @@ ModalWindow {
   property string title: ""
   property string placeholder: "Search…"
   property bool searchable: true
+  property bool clearQueryOnShow: true
   property real requestedBodyHeight: 0
   property alias query: searchInput.text
   property alias body: pickerBody
@@ -24,7 +25,7 @@ ModalWindow {
     + root.requestedBodyHeight
 
   function resetInput(): void {
-    searchInput.clear()
+    if (clearQueryOnShow) searchInput.clear()
     if (searchable) searchInput.forceActiveFocus()
     else contentItem.forceActiveFocus()
   }

@@ -148,6 +148,10 @@ QtObject {
     if (active) OverlayState.close(OverlayState.activeSurface)
   }
 
+  function back(): bool {
+    return OverlayState.back()
+  }
+
   function matches(entry, terms): bool {
     const searchText = entry.searchText.toLowerCase()
     return terms.every(term => searchText.includes(term))

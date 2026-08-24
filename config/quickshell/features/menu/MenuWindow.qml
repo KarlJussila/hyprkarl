@@ -10,8 +10,14 @@ OverlayWindow {
     && output.name === MenuState.screenName
   readonly property string widthRole:
     MenuState.menus[MenuState.currentMenu]?.widthRole ?? "default"
+  readonly property real baseWidth: widthRole === "reference"
+    ? theme.menuReferenceWidth
+    : widthRole === "search"
+      ? theme.menuSearchWidth
+      : theme.menuWidth
   readonly property string entryAlignment:
     MenuState.menus[MenuState.currentMenu]?.entryAlignment ?? "center"
+  readonly property bool searching: query.trim().length > 0
   readonly property int entryTextAlignment: entryAlignment === "left"
     ? Text.AlignLeft
     : entryAlignment === "right"
@@ -20,47 +26,101 @@ OverlayWindow {
   readonly property real rowHeight: emptyLabel.implicitHeight
     + theme.menuEntryPadding * 2
     + theme.menuEntryMargin * 2
-  readonly property real bodyHeight: searchable
-    ? rowHeight * theme.menuSearchRows
-    : menuList.count > 0
-      ? menuList.contentHeight
-      : rowHeight
+  readonly property real bodyHeight: menuList.count > 0
+    ? searching
+      ? Math.min(menuList.contentHeight, rowHeight * theme.menuSearchRows)
+      : menuList.contentHeight
+    : rowHeight
   property bool pointerPositionKnown: false
   property point pointerPosition: Qt.point(0, 0)
+  property bool restoringView: false
 
   shown: active
   title: MenuState.menus[MenuState.currentMenu]?.title ?? ""
   placeholder: "Search…"
-  searchable: MenuState.menus[MenuState.currentMenu]?.searchable === true
-  requestedWidth: widthRole === "reference"
-    ? theme.menuReferenceWidth
-    : widthRole === "search"
-      ? theme.menuSearchWidth
-      : theme.menuWidth
+  searchable: true
+  clearQueryOnShow: false
+  requestedWidth: baseWidth
   requestedBodyHeight: bodyHeight
 
-  function selectIndex(index): void {
-    if (menuList.count === 0) {
-      menuList.currentIndex = -1
-      return
-    }
+  function selectableIndex(index, direction): int {
+    if (menuList.count === 0) return -1
 
-    const nextIndex = (index + menuList.count) % menuList.count
+    const step = direction < 0 ? -1 : 1
+    let nextIndex = (index + menuList.count) % menuList.count
+    for (let count = 0; count < menuList.count; count++) {
+      if (menuList.model[nextIndex].disabled !== true) return nextIndex
+      nextIndex = (nextIndex + step + menuList.count) % menuList.count
+    }
+    return -1
+  }
+
+  function selectIndex(index, direction): void {
+    const nextIndex = selectableIndex(index, direction)
     menuList.currentIndex = nextIndex
-    menuList.positionViewAtIndex(nextIndex, ListView.Contain)
+    if (nextIndex >= 0) menuList.positionViewAtIndex(nextIndex, ListView.Contain)
   }
 
   function moveSelection(offset): void {
     if (menuList.count === 0) return
     selectIndex(menuList.currentIndex < 0
       ? (offset > 0 ? 0 : menuList.count - 1)
-      : menuList.currentIndex + offset)
+      : menuList.currentIndex + offset, offset)
   }
 
   function resetSelection(): void {
     momentum.reset()
-    menuList.currentIndex = menuList.count > 0 ? 0 : -1
-    if (menuList.count > 0) menuList.positionViewAtBeginning()
+    selectIndex(0, 1)
+    if (menuList.currentIndex >= 0) menuList.positionViewAtBeginning()
+  }
+
+  function saveView(): void {
+    const selectedEntry = menuList.currentIndex >= 0
+      ? menuList.model[menuList.currentIndex].id
+      : ""
+    MenuState.rememberView(query, selectedEntry, menuList.contentY)
+  }
+
+  function scheduleViewRestore(): void {
+    restoringView = true
+    Qt.callLater(restoreView)
+  }
+
+  function restoreView(): void {
+    const view = MenuState.currentView()
+    query = view?.query ?? ""
+    Qt.callLater(() => applyView(view))
+  }
+
+  function applyView(view): void {
+    momentum.reset()
+    let selectedIndex = -1
+    if (view) {
+      for (let index = 0; index < menuList.count; index++) {
+        if (menuList.model[index].id === view.selectedEntry) {
+          selectedIndex = index
+          break
+        }
+      }
+    }
+
+    if (selectedIndex < 0) {
+      resetSelection()
+    } else {
+      menuList.currentIndex = selectedIndex
+      const minimum = menuList.originY
+      const maximum = minimum + Math.max(0,
+        menuList.contentHeight - menuList.height)
+      menuList.contentY = Math.max(minimum,
+        Math.min(maximum, view.contentY))
+    }
+    resetInput()
+    restoringView = false
+  }
+
+  function activate(entry): void {
+    saveView()
+    MenuState.activate(entry)
   }
 
   function selectFromPointer(index, sceneX, sceneY): void {
@@ -69,32 +129,31 @@ OverlayWindow {
 
     pointerPosition = Qt.point(sceneX, sceneY)
     pointerPositionKnown = true
-    if (moved) menuList.currentIndex = index
+    if (moved && menuList.model[index].disabled !== true) {
+      menuList.currentIndex = index
+    }
   }
 
   function handleKey(event, editing): void {
-    if (event.key === Qt.Key_Escape) {
-      if (editing && query.length > 0) query = ""
-      else MenuState.back()
-    } else if (event.key === Qt.Key_Down
-        || (!editing && event.key === Qt.Key_J)) {
+    if (event.key === Qt.Key_Escape
+        || (event.key === Qt.Key_Q && event.modifiers === Qt.NoModifier)) {
+      MenuState.close()
+    } else if (event.key === Qt.Key_Down) {
       moveSelection(1)
-    } else if (event.key === Qt.Key_Up
-        || (!editing && event.key === Qt.Key_K)) {
+    } else if (event.key === Qt.Key_Up) {
       moveSelection(-1)
-    } else if (!editing && event.key === Qt.Key_Home) {
-      selectIndex(0)
-    } else if (!editing && event.key === Qt.Key_End) {
-      selectIndex(menuList.count - 1)
+    } else if (event.key === Qt.Key_Home) {
+      selectIndex(0, 1)
+    } else if (event.key === Qt.Key_End) {
+      selectIndex(menuList.count - 1, -1)
     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
-        || (!editing && (event.key === Qt.Key_Space
-          || event.key === Qt.Key_Right || event.key === Qt.Key_L))) {
+        || (query.length === 0 && event.key === Qt.Key_Right)) {
       if (menuList.currentIndex >= 0) {
-        MenuState.activate(menuList.model[menuList.currentIndex])
+        activate(menuList.model[menuList.currentIndex])
       }
-    } else if (!editing
-        && (event.key === Qt.Key_Left || event.key === Qt.Key_H
-          || event.key === Qt.Key_Backspace)) {
+    } else if (query.length === 0
+        && (event.key === Qt.Key_Left || event.key === Qt.Key_Backspace)) {
+      saveView()
       MenuState.back()
     } else {
       return
@@ -102,18 +161,16 @@ OverlayWindow {
     event.accepted = true
   }
 
-  onOutsideClicked: MenuState.back()
+  onOutsideClicked: MenuState.close()
   onKeyPressed: (event, editing) => handleKey(event, editing)
-  onQueryChanged: Qt.callLater(resetSelection)
-  onActiveChanged: if (active) Qt.callLater(resetSelection)
+  onQueryChanged: if (!restoringView) Qt.callLater(resetSelection)
+  onActiveChanged: if (active) scheduleViewRestore()
 
   Connections {
     target: MenuState
 
     function onCurrentMenuChanged(): void {
-      root.query = ""
-      Qt.callLater(root.resetSelection)
-      if (root.active) Qt.callLater(root.resetInput)
+      if (root.active) root.scheduleViewRestore()
     }
   }
 
@@ -149,7 +206,25 @@ OverlayWindow {
       highlightFollowsCurrentItem: false
       model: MenuState.entriesFor(MenuState.currentMenu, root.query)
       currentIndex: -1
-      onCountChanged: Qt.callLater(root.resetSelection)
+      onCountChanged: if (!root.restoringView) Qt.callLater(root.resetSelection)
+
+      section.property: "searchSection"
+      section.criteria: ViewSection.FullString
+      section.delegate: Item {
+        required property string section
+
+        width: ListView.view.width
+        height: section === "descendant" ? root.theme.menuEntryMargin * 2 + 1 : 0
+        visible: section === "descendant"
+
+        Rectangle {
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          height: 1
+          color: root.theme.menuBorder
+        }
+      }
 
       delegate: MenuEntry {
         required property int index
@@ -163,7 +238,7 @@ OverlayWindow {
         selected: ListView.isCurrentItem
         onPointerMoved: (sceneX, sceneY) =>
           root.selectFromPointer(index, sceneX, sceneY)
-        onChosen: MenuState.activate(modelData)
+        onChosen: if (modelData.disabled !== true) root.activate(modelData)
       }
     }
   }

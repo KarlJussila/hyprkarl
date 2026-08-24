@@ -132,12 +132,24 @@ call_user_test open blocked "$output" ignored >/dev/null
 jq -e '.name == "dashboard" and .values.section == "weather"' \
   <<< "$(call_user_test snapshot)" >/dev/null \
   || fail "openOverlay replaced an existing overlay"
+call_user_test push launcher "$output" applications >/dev/null \
+  || fail "pushOverlay failed"
+jq -e '.name == "launcher" and .values.section == "applications"' \
+  <<< "$(call_user_test snapshot)" >/dev/null \
+  || fail "pushed overlay did not receive its request"
+[[ $(call_user_test back) == true ]] \
+  || fail "backOverlay did not restore the prior request"
+jq -e '.name == "dashboard" and .values.section == "weather"' \
+  <<< "$(call_user_test snapshot)" >/dev/null \
+  || fail "backOverlay restored the wrong request"
 call_user_test replace replacement "$output" controls >/dev/null \
   || fail "replaceOverlay failed"
 replaced=$(call_user_test snapshot)
 jq -e '.name == "replacement" and .values.section == "controls"' \
   <<< "$replaced" >/dev/null \
   || fail "replaceOverlay did not replace the request"
+[[ $(call_user_test back) == false ]] \
+  || fail "replaceOverlay retained a stale return request"
 
 call_user_test toggle replacement "$output" controls >/dev/null \
   || fail "toggleOverlay did not close the matching request"

@@ -32,7 +32,6 @@
       "title": "Keybindings",
       "sourceCommand": "hk-keybindings-menu-entries",
       "emptyLabel": "No keybindings",
-      "searchable": true,
       "widthRole": "reference",
       "entryAlignment": "left"
     },
@@ -40,7 +39,6 @@
       "title": "Icons",
       "sourceCommand": "hk-icon-menu-entries",
       "emptyLabel": "No icons",
-      "searchable": true,
       "widthRole": "search"
     },
     "theme": {

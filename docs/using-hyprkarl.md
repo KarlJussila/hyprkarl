@@ -31,9 +31,13 @@ Its top-level sections are:
 - `Power`
   Lock, suspend, reboot, and shutdown actions
 
-The hierarchy is a Quickshell surface. Escape, Left, or Backspace goes to the
-parent menu and closes the root; clicking outside also closes it. Open any
-surface directly with `hk-shell menu open <menu-id>`.
+The hierarchy is a Quickshell surface. Type to search the current menu and all
+of its declared descendants. Escape, lowercase Q, or clicking outside closes
+the whole menu; Left or Backspace on an empty query goes to the parent and
+closes at the root. Choosing `Launch` opens the application picker, where Left
+or Backspace on an empty query returns to the same selected entry and scroll
+position in the menu. Submenu back-navigation restores the same state. Open
+any menu directly with `hk-shell menu open <menu-id>`.
 
 The shipped hierarchy lives in `defaults/menu.json`. Add, reorder, rename, or
 hide entries without editing that default by creating `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`; see

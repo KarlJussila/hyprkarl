@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import "../../config"
 import "../overlay"
+import "MenuModel.js" as MenuModel
 
 QtObject {
   id: root
@@ -19,6 +20,7 @@ QtObject {
   readonly property string screenName: requested ? OverlayState.screenName : ""
   property string currentMenu: ""
   property var history: []
+  property var views: ({})
   property int openRevision: 0
   property string dynamicMenuId: ""
   property var dynamicEntries: []
@@ -201,9 +203,6 @@ QtObject {
           && (typeof menu.emptyLabel !== "string" || menu.emptyLabel.length === 0)) {
         fail(menuPath + ".emptyLabel", "expected a non-empty string")
       }
-      if (menu.searchable !== undefined && typeof menu.searchable !== "boolean") {
-        fail(menuPath + ".searchable", "expected a boolean")
-      }
       if (menu.widthRole !== undefined
           && !["default", "search", "reference"].includes(menu.widthRole)) {
         fail(menuPath + ".widthRole", "expected 'default', 'search', or 'reference'")
@@ -235,6 +234,9 @@ QtObject {
       }
       if (entry.enabled !== undefined && typeof entry.enabled !== "boolean") {
         fail(entryPath + ".enabled", "expected a boolean")
+      }
+      if (entry.disabled !== undefined && typeof entry.disabled !== "boolean") {
+        fail(entryPath + ".disabled", "expected a boolean")
       }
       if (entry.checkedCommand !== undefined
           && (typeof entry.checkedCommand !== "string" || entry.checkedCommand.length === 0)) {
@@ -313,32 +315,29 @@ QtObject {
     }
   }
 
-  function fuzzyMatch(text: string, pattern: string): bool {
-    let patternIndex = 0
-    for (let textIndex = 0; textIndex < text.length && patternIndex < pattern.length; textIndex++) {
-      if (text[textIndex] === pattern[patternIndex]) patternIndex++
-    }
-    return patternIndex === pattern.length
+  function entriesFor(menuId: string, query: string): var {
+    return MenuModel.entriesFor(entries, menuId, dynamicMenuId,
+      dynamicEntries, query)
   }
 
-  function entriesFor(menuId: string, query: string): var {
-    const result = []
-    for (const entryId of Object.keys(entries)) {
-      const entry = entries[entryId]
-      if (entry.parent === menuId && entry.enabled !== false) {
-        result.push(Object.assign({ "id": entryId }, entry))
-      }
+  function historyKey(): string {
+    return JSON.stringify(history)
+  }
+
+  function rememberView(query: string, selectedEntry: string,
+      contentY: real): void {
+    if (history.length === 0) return
+    const next = Object.assign({}, views)
+    next[historyKey()] = {
+      "query": query,
+      "selectedEntry": selectedEntry,
+      "contentY": contentY
     }
-    result.sort((left, right) => left.order === right.order
-      ? left.id.localeCompare(right.id)
-      : left.order - right.order)
-    if (dynamicMenuId === menuId) result.push(...dynamicEntries)
-    const terms = query.trim().toLowerCase().split(/\s+/).filter(term => term.length > 0)
-    if (terms.length === 0) return result
-    return result.filter(entry => {
-      const searchText = ((entry.searchText ?? "") + " " + entry.label).toLowerCase()
-      return terms.every(term => fuzzyMatch(searchText, term))
-    })
+    views = next
+  }
+
+  function currentView(): var {
+    return views[historyKey()] ?? null
   }
 
   function menuMessage(menuId: string, query: string): string {
@@ -371,6 +370,9 @@ QtObject {
       }
       if (entry.searchText !== undefined && typeof entry.searchText !== "string") {
         fail(path + ".searchText", "expected a string")
+      }
+      if (entry.disabled !== undefined && typeof entry.disabled !== "boolean") {
+        fail(path + ".disabled", "expected a boolean")
       }
       requireObject(entry.action, path + ".action")
       if (entry.action.type === "command") {
@@ -451,6 +453,7 @@ QtObject {
 
   function openForScreen(name: string, menu: string): bool {
     if (!ready || name.length === 0 || !menus[menu]) return false
+    views = ({})
     return enterMenu(name, [menu], menu)
   }
 
@@ -499,7 +502,7 @@ QtObject {
       return
     }
     if (entry.action.type === "surface") {
-      OverlayState.replace(entry.action.surface, screenName,
+      OverlayState.push(entry.action.surface, screenName,
         clone(entry.action.parameters ?? {}))
       return
     }

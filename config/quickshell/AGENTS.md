@@ -327,43 +327,53 @@ configuration, so Quickshell's static scanner cannot discover all relative
 imports on its own.
 
 `features/menu/MenuState.qml` alone reads, watches, recursively merges, and
-validates menu JSON. Entries merge by stable ID; `enabled: false` hides one.
+validates menu JSON. Entries merge by stable ID; `enabled: false` hides one,
+while `disabled: true` keeps one dimmed and unselectable in its owning menu.
 An optional `checkedCommand` is evaluated when its menu opens and replaces the
 entry icon with a check mark on success; keep it for cheap state probes such as
 the active power profile, not general application logic.
 Menus with a `sourceCommand` load a fresh JSON entry array when opened. One
 application-wide `Process` in `MenuState` owns this short-lived load and
 validates its output; providers own discovery only, while the JSON menu object
-owns the title, empty-state label, optional search behavior, and width role.
+owns the title, empty-state label, and width role.
 Menus may also choose left, center, or right entry alignment; keep this a
 general data property rather than branching the renderer for a specific menu.
 Static and dynamic entries may run a command, navigate to a declared submenu,
 switch directly to a Quickshell surface, or dismiss an informational menu.
-Surface actions pass an open-ended parameter object through `OverlayState` so
-shipped and user-composed surfaces use the same in-process transition instead
-of calling back through `hk-shell`. Nested dynamic menus reload the restored
-parent when navigating back. Providers and command actions inherit the session
-environment through non-login `bash -c`. A dynamic destination is committed
-only after its provider returns a complete valid model; do not add per-menu
-loading branches or caches.
+Surface actions pass an open-ended parameter object through `OverlayState` and
+retain the menu as a return request. Shipped and user-composed surfaces use the
+same in-process transition instead of calling back through `hk-shell`; the
+launcher returns on empty-query Left or Backspace. Nested dynamic menus reload
+the restored parent when navigating back. Providers and command actions
+inherit the session environment through non-login `bash -c`. A dynamic
+destination is committed only after its provider returns a complete valid
+model; do not add per-menu loading branches or caches.
 Providers should query only the state their rows need, and static generated
 catalogs should already be in provider-ready JSON. Providers that construct or
 transform entries should normally be Python executables using lists,
 dictionaries, and the standard `json` module. Bash remains appropriate for a
 provider that only validates and prints prebuilt data.
-Keep commands as leaf actions and static hierarchy in data. `MenuWindow.qml`
-owns hierarchy, menu rows, search filtering, selection, navigation, and Back
-behavior. It composes `OverlayWindow` for the full-screen input plane, frame,
-search field, focus, outside-click dismissal, and reveal, and
-`MomentumScroll` for kinetic touchpad behavior. Do not fork those shared
-interactions back into the menu. Keyboard selection positions its row
+Keep commands as leaf actions and static hierarchy in data. `MenuModel.js`
+owns pure ordered traversal and global descendant filtering. It searches
+declared entries plus already-loaded rows from the current dynamic menu; a
+query must not start descendant providers. `MenuWindow.qml` owns menu rows,
+selection, navigation, and dismissal. It composes `OverlayWindow` for the
+full-screen input plane, frame, search field, focus, outside-click dismissal,
+and reveal. `MomentumScroll` supplies kinetic touchpad behavior. Do not fork
+those shared interactions back into the menu. Keyboard selection positions its row
 immediately, including across wrap-around, while pointer selection changes
-only on actual pointer motion. Opening a menu or changing its search resets
-selection, viewport, and momentum to the first result.
+only on actual pointer motion. Opening a fresh menu or changing its search
+starts at the first enabled result. Returning from a submenu or pushed overlay
+restores that navigation path's query, selected entry ID, and scroll position.
+Searching retains the menu's width role and caps its natural result height at
+the theme's configured search-row count; it must not force an empty fixed-size
+viewport.
+Escape, unmodified lowercase Q, and outside click close the whole menu; only
+Left or Backspace navigate upward when the query is empty.
 `hk-shell menu` is the only public transport for opening static navigation.
-`features/overlay/OverlayState.qml` owns exclusivity and monitor routing across
-that menu, the application chooser, calculator, wallpaper picker, display
-arranger, and personal modals. Opening
+`features/overlay/OverlayState.qml` owns exclusivity, return requests, and
+monitor routing across that menu, the application chooser, calculator,
+wallpaper picker, display arranger, and personal modals. Opening
 one replaces the active focused overlay instead of leaving another visible
 behind it. `ModalWindow` owns the full-screen focus plane, scrim, nested frame,
 outside-click handling, and reveal. `OverlayWindow` adds the shared picker
@@ -394,8 +404,8 @@ poller. Their appearance comes from the shared `menu` tokens plus the
 The command menu keeps its compact, centered visual identity while deriving
 all appearance from the shell theme and its nested `menu` object. Visual
 geometry belongs in theme data and the shared overlay components, not agent
-instructions. Outside-click and Escape go to the parent from a submenu and
-close only at the root.
+instructions. Outside-click, Escape, and unmodified lowercase Q close the
+whole menu.
 
 `features/osd/` owns the shell-native volume, audio-output, microphone,
 display-brightness, keyboard-brightness, and media surface. Commands send

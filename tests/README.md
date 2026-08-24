@@ -31,8 +31,9 @@ tests/hk-theme-runtime.sh
 Starts an isolated Quickshell instance with every built-in module disabled and
 an explicitly referenced personal QML root. It checks that disabled IPC targets
 are absent, the bar system monitor does not start, and the root receives the
-resolved configuration, theme, outputs, and overlay open/replace/toggle/close
-context. It also imports `Hyprkarl.Modal` from the public QML module and proves
+resolved configuration, theme, outputs, and overlay
+open/replace/push/back/toggle/close context. It also imports `Hyprkarl.Modal`
+from the public QML module and proves
 that personal modal content is created on demand and recreated after closing.
 
 It needs a running Hyprland session with at least one output, plus `qs`,
@@ -41,6 +42,17 @@ into a temporary directory and removes it afterward.
 
 ```bash
 tests/hk-shell-modules.sh
+```
+
+## `tst_menu_model.qml`
+
+Runs the pure command-menu model under Qt Test. It checks direct ordering,
+global descendant search, parent-path details, disabled-row filtering, loaded
+provider rows, and cycle-safe traversal.
+
+```bash
+QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner \
+  -input tests/tst_menu_model.qml
 ```
 
 ## `hk-update.sh`

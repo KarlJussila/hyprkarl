@@ -19,6 +19,7 @@ ShellButton {
       active: root.active
       onGlyph: root.config.onIcon
       offGlyph: root.config.offIcon
+      appearance: root.config.switch ?? ({})
       theme: root.theme
     }
   }

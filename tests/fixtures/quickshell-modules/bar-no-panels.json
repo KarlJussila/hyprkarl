@@ -10,5 +10,19 @@
     "applications": false,
     "calculator": false,
     "wallpaper": false
+  },
+  "bar": {
+    "layoutEdits": [
+      {
+        "op": "override",
+        "id": "caffeine",
+        "set": {
+          "switch": {
+            "variant": "mark",
+            "thumbRadius": 4
+          }
+        }
+      }
+    ]
   }
 }

@@ -45,6 +45,23 @@ class RepositoryValidationTests(unittest.TestCase):
             self.assertNotEqual(hyprkarl["palette"]["accent"], gruvbox["palette"]["accent"])
             self.assertEqual(hyprkarl["bar"]["widgetPadding"], {"main": 6, "cross": 3})
             self.assertEqual(hyprkarl["metrics"]["borderWidth"], 2)
+            self.assertEqual(
+                hyprkarl["switch"],
+                {
+                    "trackLength": 24,
+                    "trackHeight": 12,
+                    "trackRadius": 6,
+                    "thumbSize": 16,
+                    "thumbRadius": 8,
+                    "thumbPadding": 7,
+                    "borderWidth": 2,
+                    "fontFamily": "JetBrains Mono Nerd Font Propo",
+                    "fontSize": 9,
+                    "onGlyphOffset": [0, 0],
+                    "offGlyphOffset": [0, 0],
+                    "transitionDuration": 140,
+                },
+            )
             self.assertEqual(hyprkarl["panel"]["outerBorderWidth"], 2)
             self.assertEqual(hyprkarl["panel"]["innerBorderWidth"], 2)
             self.assertEqual(hyprkarl["panel"]["selectionBorderWidth"], 1)

@@ -35,6 +35,8 @@ resolved configuration, theme, outputs, and overlay
 open/replace/push/back/toggle/close context. It also imports `Hyprkarl.Modal`
 from the public QML module and proves
 that personal modal content is created on demand and recreated after closing.
+A second pass starts the built-in bar without panels, applies the trackless
+`mark` override to its toggle widget, and checks for runtime errors.
 
 It needs a running Hyprland session with at least one output, plus `qs`,
 `jq`, `hyprctl`, and the installed Quickshell QML modules. It copies the shell
@@ -53,6 +55,17 @@ provider rows, and cycle-safe traversal.
 ```bash
 QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner \
   -input tests/tst_menu_model.qml
+```
+
+## `tst_toggle_indicator.qml`
+
+Checks that the shared toggle indicator reproduces the theme defaults, resolves
+sparse per-instance geometry over them, and renders the trackless `mark`
+variant as one stationary thumb.
+
+```bash
+QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner \
+  -input tests/tst_toggle_indicator.qml
 ```
 
 ## `hk-update.sh`

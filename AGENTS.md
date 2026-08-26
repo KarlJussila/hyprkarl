@@ -216,8 +216,10 @@ shell startup, so `hk-shell restart` is required after changing them;
 `modules.bar` controls the built-in per-output bars, while
 `modules.panels` controls only their feature-panel popup hosts. Version 1
 accepts top and bottom bars only. Keep
-appearance in each theme's `quickshell.json`; shell JSON owns placement and
-behavior. Island corner shapes, selective borders, and
+appearance defaults in each theme's `quickshell.json`; shell JSON owns
+placement and behavior. The shared toggle indicator deliberately also accepts
+sparse per-instance control geometry over the theme's `shell.switch` default.
+Island corner shapes, selective borders, and
 screen/outer/content margins are theme data rendered once by
 `layout/IslandSurface.qml`. Widgets report natural heights, the bar resolves
 the tallest one against the theme minimum, and all islands receive that shared

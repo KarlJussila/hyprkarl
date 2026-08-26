@@ -40,6 +40,8 @@ QtObject {
   readonly property int borderWidth: metrics.borderWidth ?? 0
   readonly property int controlPadding: metrics.controlPadding ?? 0
 
+  readonly property var switchAppearance: values["switch"] ?? ({})
+
   readonly property var bar: values.bar ?? ({})
   readonly property int barMinThickness: bar.minimumThickness ?? 0
   readonly property bool showDividers: bar.showDividers ?? true

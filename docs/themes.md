@@ -161,8 +161,12 @@ The compiler renders the resolved graph into consumer files for:
 The generated `quickshell.json` owns semantic colors, typography, geometry,
 borders, spacing, and component-specific appearance for the bar, panels,
 menus, OSD, notifications, polkit, application picker, calculator, and
-wallpaper picker. See [Customizing the bar](customizing-bar.md#change-the-appearance)
-for its bar geometry.
+wallpaper picker. Its `switch` object supplies the shared toggle indicator's
+default geometry, border, glyph typography and offsets, and transition timing.
+A shell widget may sparsely override those defaults when one application needs
+different control geometry without changing the rest of the theme. See
+[Customizing the bar](customizing-bar.md#change-the-appearance) for the bar
+and switch appearance contract.
 
 The generated `theme.yaml` contains the fully merged and resolved graph for
 inspection. It is output, not the next authoring source.

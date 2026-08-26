@@ -12,6 +12,7 @@ Item {
   property bool busy: false
   property bool switchVisible: false
   property bool switchActive: false
+  property var switchAppearance: ({})
   property string navigationSection: "main"
   property var action: null
   readonly property bool navigationSelected: root.selected
@@ -101,6 +102,7 @@ Item {
       anchors.verticalCenter: parent.verticalCenter
       visible: root.switchVisible && !root.busy
       active: root.switchActive
+      appearance: root.switchAppearance
       surfaceColor: root.theme.panelBackground
       accentColor: root.theme.panelAccent
       outlineColor: root.theme.panelBorder

@@ -197,6 +197,14 @@ sources may override it directly or derive it from their own token vocabulary.
 `hk-theme set` rebuilds the selected source, and the running shell watches the
 new runtime artifact without requiring a restart.
 
+The theme's `shell.switch` object owns the default track and thumb geometry,
+border, glyph typography and offsets, and transition duration for every shared
+toggle indicator. A particular toggle may sparsely override those defaults
+through its widget-level `switch` object. It may also select the trackless,
+stationary `"mark"` variant for checkbox- or radio-like presentation. See
+[Toggle indicators](shell-configuration.md#toggle-indicators) for the complete
+field list and per-instance examples.
+
 The island silhouette is theme-owned too. For example, the shipped themes use:
 
 ```json

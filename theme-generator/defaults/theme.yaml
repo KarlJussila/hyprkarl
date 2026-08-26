@@ -59,6 +59,20 @@ shell:
     borderWidth: "{{metrics.border.standard}}"
     controlPadding: "{{metrics.spacing.medium}}"
 
+  switch:
+    trackLength: 24
+    trackHeight: 12
+    trackRadius: 6
+    thumbSize: 16
+    thumbRadius: 8
+    thumbPadding: 7
+    borderWidth: "{{metrics.border.standard}}"
+    fontFamily: "{{shell.typography.uiFamily}}"
+    fontSize: 9
+    onGlyphOffset: [0, 0]
+    offGlyphOffset: [0, 0]
+    transitionDuration: "{{motion.surface}}"
+
   bar:
     minimumThickness: 22
     showDividers: true

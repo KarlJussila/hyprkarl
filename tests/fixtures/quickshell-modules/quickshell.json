@@ -1,5 +1,19 @@
 {
   "palette": {
     "foreground": "#f0f0f0"
+  },
+  "switch": {
+    "trackLength": 24,
+    "trackHeight": 12,
+    "trackRadius": 6,
+    "thumbSize": 16,
+    "thumbRadius": 8,
+    "thumbPadding": 7,
+    "borderWidth": 2,
+    "fontFamily": "sans",
+    "fontSize": 9,
+    "onGlyphOffset": [0, 0],
+    "offGlyphOffset": [0, 0],
+    "transitionDuration": 0
   }
 }

@@ -172,12 +172,22 @@ padding or add an override without a real design requirement. Add a separate
 vertical-bar padding object only when vertical bars are supported. Panel
 internals use `metrics.controlPadding`; they are not bar-widget padding.
 
-Themes own the entire visual surface, including colors, typography, bar
-minimum thickness, spacing, radii, borders, dividers, and the panel gap. Shell
-JSON owns placement and behavior, not visual metrics. `config/Theme.qml` watches
-the XDG-state `current/theme.json` selector, then reads the immutable artifact
-named there. The selector changes atomically on a theme switch, so the theme
-file watcher always follows a stable file.
+Themes own the default visual surface, including colors, typography, bar
+minimum thickness, spacing, radii, borders, dividers, and the panel gap.
+`config/Theme.qml` watches the XDG-state `current/theme.json` selector, then
+reads the immutable artifact named there. The selector changes atomically on a
+theme switch, so the theme file watcher always follows a stable file.
+
+`shell.switch` is the complete shared default for `ToggleIndicator` geometry,
+border, glyph typography and offsets, and transition duration. The component's
+sparse `appearance` object resolves each field independently over that default.
+The built-in `kind: "toggle"` widget passes its optional `switch` object
+through unchanged, and `PanelRow.switchAppearance` provides the same path for
+panel compositions. This per-instance control override is the deliberate
+exception to keeping visual metrics out of shell JSON. Keep it local to the
+control that needs different geometry; do not turn shell JSON into a second
+whole-shell theme. `appearance.variant: "mark"` draws only one stationary
+thumb with active/inactive color and glyph changes. It must not draw a track.
 
 Keep `bar.margin`, `bar.island.corners`, `bar.island.borders`,
 `bar.island.radius`, `bar.island.curveSize`, and `bar.island.curveRadius` in

@@ -105,9 +105,11 @@ ten-second rollback is also enforced by a detached backend watchdog.
   real consumer.
 
 Keep behavior with its owner. Extract a shared component only after multiple
-features need the same interaction or presentation. Keep appearance in the
-generated theme contract, placement and behavior in shell JSON, and transient
-service state with the service or feature that owns it.
+features need the same interaction or presentation. Keep appearance defaults
+in the generated theme contract, placement and behavior in shell JSON, and
+transient service state with the service or feature that owns it. A shared
+control may accept a documented sparse per-instance appearance override when
+one application needs different geometry within the same theme.
 
 ## Checks
 

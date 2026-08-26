@@ -105,6 +105,67 @@ not removal, and an upstream widget can be added without rewriting the user's
 file. Operation order also permits deliberate sequences such as removing a
 widget and inserting a different implementation under the same ID.
 
+### Toggle indicators
+
+Every toggle indicator starts from the active theme's complete `switch`
+appearance. A `kind: "toggle"` widget may supply a sparse `switch` object when
+that instance needs different geometry or glyph placement:
+
+```json
+{
+  "version": 1,
+  "bar": {
+    "layoutEdits": [
+      {
+        "op": "override",
+        "id": "caffeine",
+        "set": {
+          "switch": {
+            "trackLength": 30,
+            "trackHeight": 10,
+            "trackRadius": 3,
+            "thumbSize": 16,
+            "thumbRadius": 4,
+            "thumbPadding": 6,
+            "borderWidth": 1,
+            "fontFamily": "JetBrains Mono Nerd Font Propo",
+            "fontSize": 9,
+            "onGlyphOffset": [1, 0],
+            "offGlyphOffset": [0, 0],
+            "transitionDuration": 140
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+Every field is optional and falls back independently to the theme. The length,
+height, size, padding, radius, border, font, offset, and duration values are
+logical pixels or milliseconds as their names imply.
+
+Set `"variant": "mark"` in the same object for a stationary checkbox- or
+radio-like indicator. A mark draws no track. It occupies only the thumb and
+its border, changes between the inactive and active colors, and swaps the
+configured off/on glyph without moving. `thumbRadius` controls whether it is
+circular, rounded, or square:
+
+```json
+{
+  "switch": {
+    "variant": "mark",
+    "thumbRadius": 4,
+    "onGlyphOffset": [0, 0]
+  }
+}
+```
+
+`ToggleIndicator` exposes this same sparse object as its `appearance` property
+for built-in QML compositions. `PanelRow.switchAppearance` passes it through
+for panel-row instances. The shared component, bar toggle widget, and panel
+rows therefore use one override contract.
+
 ## Built-in modules
 
 The top-level `modules` object selects the built-in runtime groups. Every

@@ -76,11 +76,11 @@ Scope {
 
   function focusPanel(): void {
     if (!open) return
+    NavigationState.clear()
     panelFocus.forceActiveFocus()
     panel.anchor.updateAnchor()
     Qt.callLater(() => {
       if (!root.open) return
-      navigator.focusInitialItem()
       barWindow.contentItem.forceActiveFocus()
       barWindow.requestActivate()
     })
@@ -289,7 +289,6 @@ Scope {
                 width: viewport.width
                 height: panel.loadedContent?.implicitHeight ?? 0
                 sourceComponent: root.contentComponent
-                onLoaded: if (root.open) Qt.callLater(navigator.focusInitialItem)
               }
             }
           }

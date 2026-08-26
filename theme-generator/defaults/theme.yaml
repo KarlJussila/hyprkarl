@@ -67,6 +67,7 @@ shell:
     thumbRadius: 8
     thumbPadding: 7
     borderWidth: "{{metrics.border.standard}}"
+    markFilled: false
     fontFamily: "{{shell.typography.uiFamily}}"
     fontSize: 9
     onGlyphOffset: [0, 0]
@@ -181,7 +182,7 @@ shell:
     selectionAccentOpacity: "{{metrics.opacity.selection_accent}}"
 
   applicationPicker:
-    width: "{{shell.menu.searchWidth}}"
+    width: 400
     rows: 7
     iconSize: 32
 

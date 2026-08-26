@@ -110,7 +110,7 @@ ModalWindow {
         anchors.fill: parent
         anchors.margins: root.theme.menuEntryMargin
         color: root.theme.menuBackground
-        border.color: searchInput.activeFocus
+        border.color: searchInput.activeFocus && root.showTextCursor
           ? root.theme.menuAccent
           : root.theme.menuBorder
         border.width: root.theme.menuSelectionBorderWidth

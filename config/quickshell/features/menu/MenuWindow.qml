@@ -34,6 +34,7 @@ OverlayWindow {
   property bool pointerPositionKnown: false
   property point pointerPosition: Qt.point(0, 0)
   property bool restoringView: false
+  property bool selectionVisible: false
 
   shown: active
   title: MenuState.menus[MenuState.currentMenu]?.title ?? ""
@@ -63,25 +64,34 @@ OverlayWindow {
 
   function moveSelection(offset): void {
     if (menuList.count === 0) return
+    if (!selectionVisible && menuList.currentIndex >= 0) {
+      selectionVisible = true
+      menuList.positionViewAtIndex(menuList.currentIndex, ListView.Contain)
+      return
+    }
     selectIndex(menuList.currentIndex < 0
       ? (offset > 0 ? 0 : menuList.count - 1)
       : menuList.currentIndex + offset, offset)
+    selectionVisible = menuList.currentIndex >= 0
   }
 
   function resetSelection(): void {
     momentum.reset()
+    pointerPositionKnown = false
     selectIndex(0, 1)
-    if (menuList.currentIndex >= 0) menuList.positionViewAtBeginning()
+    selectionVisible = false
+    if (menuList.count > 0) menuList.positionViewAtBeginning()
   }
 
   function saveView(): void {
-    const selectedEntry = menuList.currentIndex >= 0
+    const selectedEntry = selectionVisible && menuList.currentIndex >= 0
       ? menuList.model[menuList.currentIndex].id
       : ""
     MenuState.rememberView(query, selectedEntry, menuList.contentY)
   }
 
   function scheduleViewRestore(): void {
+    pointerPositionKnown = false
     restoringView = true
     Qt.callLater(restoreView)
   }
@@ -108,6 +118,7 @@ OverlayWindow {
       resetSelection()
     } else {
       menuList.currentIndex = selectedIndex
+      selectionVisible = true
       const minimum = menuList.originY
       const maximum = minimum + Math.max(0,
         menuList.contentHeight - menuList.height)
@@ -131,6 +142,7 @@ OverlayWindow {
     pointerPositionKnown = true
     if (moved && menuList.model[index].disabled !== true) {
       menuList.currentIndex = index
+      selectionVisible = true
     }
   }
 
@@ -144,8 +156,10 @@ OverlayWindow {
       moveSelection(-1)
     } else if (event.key === Qt.Key_Home) {
       selectIndex(0, 1)
+      selectionVisible = menuList.currentIndex >= 0
     } else if (event.key === Qt.Key_End) {
       selectIndex(menuList.count - 1, -1)
+      selectionVisible = menuList.currentIndex >= 0
     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
         || (query.length === 0 && event.key === Qt.Key_Right)) {
       if (menuList.currentIndex >= 0) {
@@ -235,7 +249,7 @@ OverlayWindow {
         entry: modelData
         textAlignment: root.entryTextAlignment
         refreshToken: MenuState.openRevision
-        selected: ListView.isCurrentItem
+        selected: root.selectionVisible && ListView.isCurrentItem
         onPointerMoved: (sceneX, sceneY) =>
           root.selectFromPointer(index, sceneX, sceneY)
         onChosen: if (modelData.disabled !== true) root.activate(modelData)

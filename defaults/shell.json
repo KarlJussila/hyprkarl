@@ -113,7 +113,10 @@
             "offCommand": "hk-caffeine off",
             "syncCommand": "hk-caffeine status",
             "onIcon": "",
-            "offIcon": "󰽖"
+            "offIcon": "󰽖",
+            "switch": {
+              "variant": "mark"
+            }
           }
         ]
       },

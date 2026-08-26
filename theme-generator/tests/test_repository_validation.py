@@ -55,6 +55,7 @@ class RepositoryValidationTests(unittest.TestCase):
                     "thumbRadius": 8,
                     "thumbPadding": 7,
                     "borderWidth": 2,
+                    "markFilled": False,
                     "fontFamily": "JetBrains Mono Nerd Font Propo",
                     "fontSize": 9,
                     "onGlyphOffset": [0, 0],

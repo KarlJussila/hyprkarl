@@ -19,6 +19,8 @@ Item {
   readonly property real thumbPadding: appearance.thumbPadding ?? defaults.thumbPadding
   readonly property real indicatorBorderWidth:
     appearance.borderWidth ?? defaults.borderWidth
+  readonly property bool markFilled:
+    appearance.markFilled ?? defaults.markFilled ?? false
   readonly property string glyphFontFamily:
     appearance.fontFamily ?? defaults.fontFamily
   readonly property real glyphFontSize: appearance.fontSize ?? defaults.fontSize
@@ -54,6 +56,8 @@ Item {
   property color foregroundColor: theme.foreground
   property color trackColor: active ? accentColor : surfaceColor
   property color borderColor: active ? accentColor : outlineColor
+  readonly property color thumbFillColor:
+    variant === "mark" && markFilled ? trackColor : surfaceColor
 
   implicitWidth: Math.ceil(contentWidth)
   implicitHeight: Math.ceil(contentHeight)
@@ -142,9 +146,7 @@ Item {
         root.thumbSize,
         root.thumbSize,
         root.thumbRadius)
-      context.fillStyle = root.variant === "mark"
-        ? root.trackColor
-        : root.surfaceColor
+      context.fillStyle = root.thumbFillColor
       context.fill()
       if (root.indicatorBorderWidth > 0) {
         context.strokeStyle = root.borderColor
@@ -169,6 +171,7 @@ Item {
   onProgressChanged: canvas.requestPaint()
   onTrackColorChanged: canvas.requestPaint()
   onBorderColorChanged: canvas.requestPaint()
+  onThumbFillColorChanged: canvas.requestPaint()
   onSurfaceColorChanged: canvas.requestPaint()
   onContentWidthChanged: canvas.requestPaint()
   onContentHeightChanged: canvas.requestPaint()

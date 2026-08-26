@@ -274,21 +274,22 @@ color and type defaults are `background`, `foreground`, `accent`, `border`,
 palette, typography, radii, borders, and opacity tokens as `menu` by default;
 either surface can still be changed without changing the other.
 
-Feature panels focus the current choice in their first section when available,
-or that section's first control otherwise. Up/Down/Left/Right or H/J/K/L move
-between controls in the current section; Tab and Shift+Tab jump
-between sections even when the current section has several controls. Entering
-a selectable section focuses its current selection instead of its first row.
-Enter or Space activates the focused row or action. On a slider, Left/Right or
-H/L changes its value while Up/Down or J/K continues through the section.
-Escape or Q closes the panel. The current section switches from the normal
-panel background to `sectionBackground`; its heading keeps the same color and
-weight. Only the current control gets the accent wash. A selected value keeps
-accent text and a border, so selection remains distinct from navigation.
-Pointer motion makes the item below the pointer current; the next keyboard
-navigation key takes control back. The panel never shows separate mouse-hover
-and keyboard focus cursors. Audio treats output, input, and their device choices
-as one section because its level headings are controls themselves.
+Feature panels open without a current control or section highlight. Moving the
+pointer makes the item below it current. The first Up/Down/Left/Right, H/J/K/L,
+Tab, or Shift+Tab input enters keyboard navigation and focuses the current
+choice in the first section when available, or that section's first control.
+Further arrow or H/J/K/L input moves within the current section; Tab and
+Shift+Tab jump between sections even when the current section has several
+controls. Entering a selectable section focuses its current selection instead
+of its first row. Enter or Space activates the focused row or action. On a
+slider, Left/Right or H/L changes its value while Up/Down or J/K continues
+through the section. Escape or Q closes the panel. The current section switches
+from the normal panel background to `sectionBackground`; its heading keeps the
+same color and weight. Only the current control gets the accent wash. A selected
+value keeps accent text and a border, so selection remains distinct from
+navigation. The panel never shows separate mouse-hover and keyboard focus
+cursors. Audio treats output, input, and their device choices as one section
+because its level headings are controls themselves.
 
 The shell-native command menu uses the nested `menu` object in the same theme
 file. Its width, nested-frame metrics, row spacing, and selection treatment

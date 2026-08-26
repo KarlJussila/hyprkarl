@@ -187,7 +187,9 @@ panel compositions. This per-instance control override is the deliberate
 exception to keeping visual metrics out of shell JSON. Keep it local to the
 control that needs different geometry; do not turn shell JSON into a second
 whole-shell theme. `appearance.variant: "mark"` draws only one stationary
-thumb with active/inactive color and glyph changes. It must not draw a track.
+thumb with active/inactive border and glyph changes. It must not draw a track
+or fill the thumb by default; `appearance.markFilled: true` explicitly opts an
+instance into the active accent fill.
 
 Keep `bar.margin`, `bar.island.corners`, `bar.island.borders`,
 `bar.island.radius`, `bar.island.curveSize`, and `bar.island.curveRadius` in
@@ -212,16 +214,17 @@ with `activeFocusOnTab`: arrows and H/J/K/L move spatially within its
 items scroll into view. Escape or Q closes the panel. Shared controls already
 activate on Enter or Space and render focus through their normal accent state.
 Give related controls the same non-empty `navigationSection`; Tab always leaves
-that section, and entry prefers its `navigationSelected` item. Do not add a
+that section, and entry prefers its `navigationSelected` item. A panel opens
+with no current control or section while its host retains keyboard focus. Real
+pointer movement establishes the current pointer item; the first spatial or
+section key establishes the preferred initial keyboard item. Do not add a
 second focus overlay or hand-maintained focus chain. `NavigationState` owns one
-current control and section across pointer and keyboard input. Pointer motion
-transfers the current control to the item below it; spatial or section keyboard
-movement transfers it back. Shared controls render one solid, full-inner-width
-`panel.sectionBackground` band behind the current section's normal transparent
-controls. The first and last body sections extend that band through the body's
-top and bottom padding. The current control uses the accent wash, while a
-persistent selection uses accent text and border. Section headings do not
-change type or color. Do
+current control and section across pointer and keyboard input. Shared controls
+render one solid, full-inner-width `panel.sectionBackground` band behind the
+current section's normal transparent controls. The first and last body sections
+extend that band through the body's top and bottom padding. The current control
+uses the accent wash, while a persistent selection uses accent text and border.
+Section headings do not change type or color. Do
 not combine raw `containsMouse` and `activeFocus` styling again. Hyprland may assign the focus grab's keyboard enter
 to either the bar or its popup, so the bar forwards Tab to the section handler
 before the popup's focused control and uses the host navigator as the final
@@ -373,8 +376,10 @@ and reveal. `MomentumScroll` supplies kinetic touchpad behavior. Do not fork
 those shared interactions back into the menu. Keyboard selection positions its
 row immediately, including across wrap-around, while pointer selection changes
 only on actual pointer motion. Opening a fresh menu or changing its search
-starts at the first enabled result. Returning from a submenu or pushed overlay
-restores that navigation path's query, selected entry ID, and scroll position.
+keeps the first enabled row as the Enter default but hides its navigation
+highlight; the first navigation key reveals it. Returning from a submenu or
+pushed overlay restores that navigation path's query, selected entry ID, and
+scroll position.
 Searching retains the menu's width role and caps its natural result height at
 the theme's configured search-row count; it must not force an empty fixed-size
 viewport.
@@ -387,13 +392,15 @@ wallpaper picker, display arranger, and personal modals. Opening
 one replaces the active focused overlay instead of leaving another visible
 behind it. `ModalWindow` owns the full-screen focus plane, scrim, nested frame,
 outside-click handling, and reveal. `OverlayWindow` adds the shared picker
-header and search field. Quick-search consumers hide its text cursor; the
-calculator enables it for expression editing. Public `Hyprkarl.Modal` adds a
-general header, lazy body, optional footer, and the shared spatial/section
-keyboard navigator while leaving content with the caller. User modal controls
-participate when they set `activeFocusOnTab`; an optional string
-`navigationSection` groups controls for Tab movement. Escape and Q use the
-modal's dismissal action.
+header and search field. Quick-search consumers hide its text cursor and active
+focus border; the calculator enables both for expression editing. Public
+`Hyprkarl.Modal` adds a general header, lazy body, optional footer, and the
+shared spatial/section keyboard navigator while leaving content with the
+caller. User modal controls participate when they set `activeFocusOnTab`; an
+optional string `navigationSection` groups controls for Tab movement. Escape
+and Q use the modal's dismissal action. Like feature panels, a modal opens with
+no current control and chooses its initial item only after pointer movement or
+a navigation key.
 `MomentumScroll` owns the kinetic touchpad behavior shared by long picker
 lists and grids.
 

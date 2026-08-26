@@ -147,9 +147,10 @@ logical pixels or milliseconds as their names imply.
 
 Set `"variant": "mark"` in the same object for a stationary checkbox- or
 radio-like indicator. A mark draws no track. It occupies only the thumb and
-its border, changes between the inactive and active colors, and swaps the
-configured off/on glyph without moving. `thumbRadius` controls whether it is
-circular, rounded, or square:
+its border, changes the border between the inactive and active colors, and
+swaps the configured off/on glyph without moving. Its background remains the
+surface color so the glyph keeps normal text contrast. `thumbRadius` controls
+whether it is circular, rounded, or square:
 
 ```json
 {
@@ -161,10 +162,14 @@ circular, rounded, or square:
 }
 ```
 
+Set `"markFilled": true` to opt that instance into filling the active mark with
+the accent color.
+
 `ToggleIndicator` exposes this same sparse object as its `appearance` property
 for built-in QML compositions. `PanelRow.switchAppearance` passes it through
-for panel-row instances. The shared component, bar toggle widget, and panel
-rows therefore use one override contract.
+for panel-row instances. The shipped caffeine widget uses the `mark` variant;
+the shared component, bar toggle widget, and panel rows use the same override
+contract.
 
 ## Built-in modules
 
@@ -777,11 +782,13 @@ Visible, enabled modal descendants with `activeFocusOnTab: true` join the
 modal's keyboard navigation automatically. Arrow keys or H/J/K/L move
 spatially within a section, Tab and Shift+Tab move between sections, and
 Enter/Space remain the control's activation keys. Escape or Q invokes
-`dismissAction`. Controls use the default `main` section unless they declare a
-string property such as `property string navigationSection: "filters"`;
-built-in modal footer buttons share the `footer` section. Tab always leaves the
-current section. Add `property bool navigationSelected: true` to its selected
-control when section entry should restore a current choice.
+`dismissAction`. The modal opens in pointer mode without a visible current
+control; real pointer movement or the first navigation key establishes one.
+Controls use the default `main` section unless they declare a string property
+such as `property string navigationSection: "filters"`; built-in modal footer
+buttons share the `footer` section. Tab always leaves the current section. Add
+`property bool navigationSelected: true` to its selected control when section
+entry should restore a current choice.
 
 An optional root method can override notification positioning per output while
 `notifications.edge` is `bar`:

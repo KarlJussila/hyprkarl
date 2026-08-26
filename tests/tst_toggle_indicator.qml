@@ -17,6 +17,7 @@ TestCase {
       "thumbRadius": 8,
       "thumbPadding": 7,
       "borderWidth": 2,
+      "markFilled": false,
       "fontFamily": "sans",
       "fontSize": 9,
       "onGlyphOffset": [0, 0],
@@ -85,9 +86,27 @@ TestCase {
     compare(indicator.implicitWidth, 18)
     compare(indicator.implicitHeight, 18)
     compare(indicator.thumbX, 1)
+    compare(indicator.markFilled, false)
+    compare(indicator.thumbFillColor, testTheme.barSurface)
     indicator.active = true
     compare(indicator.thumbX, 1)
     compare(indicator.trackColor, testTheme.accent)
+    compare(indicator.borderColor, testTheme.accent)
+    compare(indicator.thumbFillColor, testTheme.barSurface)
+    indicator.destroy()
+  }
+
+  function test_markVariantCanOptIntoAccentFill() {
+    const indicator = createIndicator({
+      "active": true,
+      "appearance": {
+        "variant": "mark",
+        "markFilled": true
+      }
+    })
+    verify(indicator !== null)
+    compare(indicator.markFilled, true)
+    compare(indicator.thumbFillColor, testTheme.accent)
     indicator.destroy()
   }
 }

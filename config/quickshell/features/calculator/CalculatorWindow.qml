@@ -15,6 +15,9 @@ OverlayWindow {
   property string evaluationExpression: ""
   property string evaluationResult: ""
   property string evaluationError: ""
+  property bool pointerPositionKnown: false
+  property point pointerPosition: Qt.point(0, 0)
+  property bool selectionVisible: false
 
   shown: active
   title: "Calculator"
@@ -40,7 +43,9 @@ OverlayWindow {
   }
 
   function resetSelection(): void {
+    pointerPositionKnown = false
     calculationList.currentIndex = calculationList.count > 0 ? 0 : -1
+    selectionVisible = false
     if (calculationList.count > 0) calculationList.positionViewAtBeginning()
   }
 
@@ -50,6 +55,19 @@ OverlayWindow {
       Math.min(calculationList.count - 1, index))
     calculationList.positionViewAtIndex(calculationList.currentIndex,
       ListView.Contain)
+  }
+
+  function moveSelection(offset): void {
+    if (!selectionVisible && calculationList.currentIndex >= 0) {
+      selectionVisible = true
+      calculationList.positionViewAtIndex(calculationList.currentIndex,
+        ListView.Contain)
+      return
+    }
+    selectIndex(calculationList.currentIndex < 0
+      ? (offset > 0 ? 0 : calculationList.count - 1)
+      : calculationList.currentIndex + offset)
+    selectionVisible = calculationList.currentIndex >= 0
   }
 
   function copyEntry(entry): void {
@@ -64,10 +82,10 @@ OverlayWindow {
       else CalculatorState.close()
     } else if (event.key === Qt.Key_Down
         || (!editing && event.key === Qt.Key_J)) {
-      selectIndex(calculationList.currentIndex + 1)
+      moveSelection(1)
     } else if (event.key === Qt.Key_Up
         || (!editing && event.key === Qt.Key_K)) {
-      selectIndex(calculationList.currentIndex - 1)
+      moveSelection(-1)
     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
         || (!editing && event.key === Qt.Key_Space)) {
       if (calculationList.currentIndex >= 0) {
@@ -161,6 +179,8 @@ OverlayWindow {
 
       required property int index
       required property var modelData
+      readonly property bool navigationCurrent:
+        root.selectionVisible && row.ListView.isCurrentItem
 
       width: calculationList.width
       height: root.rowHeight
@@ -169,10 +189,10 @@ OverlayWindow {
         anchors.fill: parent
         anchors.margins: root.theme.menuEntryMargin
         color: root.theme.menuBackground
-        border.color: row.ListView.isCurrentItem
+        border.color: row.navigationCurrent
           ? root.theme.menuAccent
           : "transparent"
-        border.width: row.ListView.isCurrentItem
+        border.width: row.navigationCurrent
           ? root.theme.menuSelectionBorderWidth
           : 0
         radius: root.theme.menuEntryRadius
@@ -180,7 +200,7 @@ OverlayWindow {
         Rectangle {
           anchors.fill: parent
           color: root.theme.menuAccent
-          opacity: row.ListView.isCurrentItem
+          opacity: row.navigationCurrent
             ? root.theme.menuSelectionAccentOpacity
             : 0
           radius: parent.radius
@@ -219,7 +239,18 @@ OverlayWindow {
 
       HoverHandler {
         cursorShape: Qt.PointingHandCursor
-        onHoveredChanged: if (hovered) calculationList.currentIndex = row.index
+        onPointChanged: {
+          const position = point.scenePosition
+          const moved = root.pointerPositionKnown
+            && (position.x !== root.pointerPosition.x
+              || position.y !== root.pointerPosition.y)
+          root.pointerPosition = Qt.point(position.x, position.y)
+          root.pointerPositionKnown = true
+          if (moved) {
+            calculationList.currentIndex = row.index
+            root.selectionVisible = true
+          }
+        }
       }
       TapHandler { onTapped: root.copyEntry(row.modelData) }
     }

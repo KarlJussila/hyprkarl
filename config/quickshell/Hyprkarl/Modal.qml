@@ -90,10 +90,7 @@ Scope {
         onActivated: navigator.moveSection(-1)
       }
 
-      onShownChanged: {
-        if (shown) Qt.callLater(navigator.focusInitialItem)
-        else NavigationState.clear()
-      }
+      onShownChanged: NavigationState.clear()
 
       Item {
         parent: window.modalBody

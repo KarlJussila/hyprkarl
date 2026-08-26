@@ -14,6 +14,7 @@ OverlayWindow {
   readonly property real cellGap: theme.wallpaperPickerGap
   property bool pointerPositionKnown: false
   property point pointerPosition: Qt.point(0, 0)
+  property bool selectionVisible: false
 
   shown: active
   title: WallpaperPickerState.action === "remove"
@@ -25,9 +26,11 @@ OverlayWindow {
 
   function resetSelection(): void {
     momentum.reset()
+    pointerPositionKnown = false
     let index = WallpaperPickerState.entries.findIndex(entry => entry.current)
     if (index < 0 && wallpaperGrid.count > 0) index = 0
     wallpaperGrid.currentIndex = index
+    selectionVisible = false
     if (index >= 0) wallpaperGrid.positionViewAtIndex(index, GridView.Contain)
   }
 
@@ -38,21 +41,36 @@ OverlayWindow {
     wallpaperGrid.positionViewAtIndex(next, GridView.Contain)
   }
 
+  function moveSelection(offset): void {
+    if (!selectionVisible && wallpaperGrid.currentIndex >= 0) {
+      selectionVisible = true
+      wallpaperGrid.positionViewAtIndex(wallpaperGrid.currentIndex,
+        GridView.Contain)
+      return
+    }
+    selectIndex(wallpaperGrid.currentIndex < 0
+      ? (offset > 0 ? 0 : wallpaperGrid.count - 1)
+      : wallpaperGrid.currentIndex + offset)
+    selectionVisible = wallpaperGrid.currentIndex >= 0
+  }
+
   function handleKey(event): void {
     if (event.key === Qt.Key_Escape) {
       WallpaperPickerState.close()
     } else if (event.key === Qt.Key_Right || event.key === Qt.Key_L) {
-      selectIndex(wallpaperGrid.currentIndex + 1)
+      moveSelection(1)
     } else if (event.key === Qt.Key_Left || event.key === Qt.Key_H) {
-      selectIndex(wallpaperGrid.currentIndex - 1)
+      moveSelection(-1)
     } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
-      selectIndex(wallpaperGrid.currentIndex + columns)
+      moveSelection(columns)
     } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
-      selectIndex(wallpaperGrid.currentIndex - columns)
+      moveSelection(-columns)
     } else if (event.key === Qt.Key_Home) {
       selectIndex(0)
+      selectionVisible = wallpaperGrid.currentIndex >= 0
     } else if (event.key === Qt.Key_End) {
       selectIndex(wallpaperGrid.count - 1)
+      selectionVisible = wallpaperGrid.currentIndex >= 0
     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
         || event.key === Qt.Key_Space) {
       if (wallpaperGrid.currentIndex >= 0) {
@@ -108,6 +126,8 @@ OverlayWindow {
 
       required property int index
       required property var modelData
+      readonly property bool navigationCurrent:
+        root.selectionVisible && cell.GridView.isCurrentItem
 
       width: wallpaperGrid.cellWidth
       height: wallpaperGrid.cellHeight
@@ -116,14 +136,18 @@ OverlayWindow {
         anchors.fill: parent
         anchors.margins: root.cellGap / 2
         color: root.theme.menuBorder
-        border.color: cell.GridView.isCurrentItem
+        border.color: cell.navigationCurrent
           ? WallpaperPickerState.action === "remove"
             ? root.theme.urgent
             : root.theme.menuAccent
-          : root.theme.menuBorder
-        border.width: cell.GridView.isCurrentItem
+          : cell.modelData.current
+            ? root.theme.menuAccent
+            : root.theme.menuBorder
+        border.width: cell.navigationCurrent
           ? Math.max(3, root.theme.menuSelectionBorderWidth)
-          : root.theme.menuSelectionBorderWidth
+          : cell.modelData.current
+            ? Math.max(2, root.theme.menuSelectionBorderWidth)
+            : root.theme.menuSelectionBorderWidth
         radius: root.theme.menuEntryRadius
         clip: true
 
@@ -146,7 +170,10 @@ OverlayWindow {
               || position.y !== root.pointerPosition.y)
           root.pointerPosition = Qt.point(position.x, position.y)
           root.pointerPositionKnown = true
-          if (moved) wallpaperGrid.currentIndex = cell.index
+          if (moved) {
+            wallpaperGrid.currentIndex = cell.index
+            root.selectionVisible = true
+          }
         }
       }
       TapHandler { onTapped: WallpaperPickerState.activate(cell.modelData) }

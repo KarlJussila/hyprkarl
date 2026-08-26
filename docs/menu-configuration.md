@@ -136,9 +136,10 @@ same direction build momentum through a soft cap. Starting another gesture
 pauses existing momentum so the gesture has direct control. On release, a
 recency-weighted velocity from that gesture is added through the soft cap.
 Reversing within the gesture clears both the retained momentum and its earlier
-samples. Opening a fresh menu or changing a search starts at the first result
-and the top of the list. Returning from a submenu or the launcher restores the
-previous query, selected entry, and scroll position.
+samples. Opening a fresh menu or changing a search keeps the first result as
+the Enter default and the list at the top, but shows no navigation highlight.
+The first navigation key reveals that result. Returning from a submenu or the
+launcher restores the previous query, selected entry, and scroll position.
 
 Use `checkedCommand` only for a cheap external state probe whose status belongs
 in the menu. Checks run when the menu opens; they are not long-running monitors

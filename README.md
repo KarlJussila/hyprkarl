@@ -179,6 +179,11 @@ overrides, or assets. `hk-theme set` builds, validates, and activates it. See
 [docs/themes.md](docs/themes.md) for the source layout and merge order.
 
 Provided themes:
+
+`hyprkarl`, `everforest`, `gruvbox`, `loam`, and `tokyo-night`. Tokyo Night
+uses the original dark Night variant. Loam pairs warm brown surfaces with
+olive-moss highlights and restrained ochre accents.
+
 <details>
 <summary>hyprkarl</summary>
 
@@ -222,6 +227,42 @@ Provided themes:
   <tr>
     <td><img src="themes/gruvbox/previews/menu.png" alt="Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
     <td><img src="themes/gruvbox/previews/wallpapers.png" alt="Wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+  </tr>
+</table>
+
+</details>
+
+<details>
+<summary>loam</summary>
+
+<img src="themes/loam/previews/palette.png" alt="Loam palette" />
+
+<table>
+  <tr>
+    <td><img src="themes/loam/previews/busy.png" alt="Loam busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/loam/previews/launcher.png" alt="Loam app launcher"/><br/><sub>App launcher</sub></td>
+  </tr>
+  <tr>
+    <td><img src="themes/loam/previews/menu.png" alt="Loam Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/loam/previews/wallpapers.png" alt="Loam wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
+  </tr>
+</table>
+
+</details>
+
+<details>
+<summary>tokyo-night</summary>
+
+<img src="themes/tokyo-night/previews/palette.png" alt="Tokyo Night palette" />
+
+<table>
+  <tr>
+    <td><img src="themes/tokyo-night/previews/busy.png" alt="Tokyo Night busy desktop"/><br/><sub>Busy desktop</sub></td>
+    <td><img src="themes/tokyo-night/previews/launcher.png" alt="Tokyo Night app launcher"/><br/><sub>App launcher</sub></td>
+  </tr>
+  <tr>
+    <td><img src="themes/tokyo-night/previews/menu.png" alt="Tokyo Night Hyprkarl menu"/><br/><sub>Hyprkarl menu</sub></td>
+    <td><img src="themes/tokyo-night/previews/wallpapers.png" alt="Tokyo Night wallpaper picker"/><br/><sub>Wallpaper picker</sub></td>
   </tr>
 </table>
 

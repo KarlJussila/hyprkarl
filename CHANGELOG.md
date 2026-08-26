@@ -7,6 +7,19 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+- Added a built-in `tokyo-night` theme based on Tokyo Night's original dark
+  Night palette.
+- Added a built-in `loam` theme with warm brown surfaces, olive-moss
+  highlights, and restrained ochre accents.
+- Added opt-in generation of the shared Hyprkarl wallpaper from a theme's
+  background, primary accent, and soft primary accent. Generated and authored
+  wallpapers may ship together.
+- Added graphical palette boards and repeatable live screenshot capture for
+  theme authors, including the standard tiled busy desktop, OSD, notification,
+  selected file, focused window, and deliberate pointer hover.
+- Theme sources now select their desktop icon family through
+  `desktop.icon_theme`; Loam uses Yaru Olive Dark and Tokyo Night uses Yaru
+  Blue Dark.
 - Breaking: replaced the baseline-commit updater and guided TUI with a staged
   source workflow. `hk-update sync` fetches, reviews, and pins one exact source
   revision without moving the live checkout; `hk-update apply` fast-forwards

@@ -6,6 +6,9 @@ typography:
   weight: 700
   style: "Bold"
 
+desktop:
+  icon_theme: "Yaru-purple"
+
 metrics:
   spacing:
     compact: 3
@@ -28,6 +31,12 @@ metrics:
 
 motion:
   surface: 140
+
+wallpaper:
+  generate_default: false
+  background: "{{base.background}}"
+  accent: "{{accent.primary.base}}"
+  accent_dim: "{{accent.primary.soft}}"
 
 shell:
   palette:

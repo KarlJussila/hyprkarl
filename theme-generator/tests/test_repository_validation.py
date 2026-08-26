@@ -118,6 +118,22 @@ shell:
 
             self.assertIn("Name=renamed", (output_root / "gtk-theme" / "index.theme").read_text())
 
+    def test_theme_icon_choice_reaches_desktop_consumers(self):
+        with tempfile.TemporaryDirectory(prefix="test-theme-icons-") as temporary_directory:
+            root = Path(temporary_directory)
+            for theme_name, icon_theme in (
+                ("loam", "Yaru-olive-dark"),
+                ("tokyo-night", "Yaru-blue-dark"),
+            ):
+                with self.subTest(theme=theme_name):
+                    output = root / theme_name
+                    build_theme(theme_name, output)
+                    self.assertEqual((output / "icons.theme").read_text().strip(), icon_theme)
+                    self.assertIn(
+                        f"IconTheme={icon_theme}",
+                        (output / "gtk-theme" / "index.theme").read_text(),
+                    )
+
     def test_theme_without_wallpaper_assets_still_builds_complete_bundle(self):
         with tempfile.TemporaryDirectory(prefix="test-no-wallpapers-") as temporary_directory:
             source_root = Path(temporary_directory) / "source"
@@ -128,6 +144,7 @@ shell:
             build_theme(source_root, output_root)
 
             self.assertTrue((output_root / "wallpapers").is_dir())
+            self.assertEqual(list((output_root / "wallpapers").iterdir()), [])
 
     def test_qt_color_schemes_are_palette_derived(self):
         with tempfile.TemporaryDirectory(prefix="test-qt-themes-") as temporary_directory:

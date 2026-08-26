@@ -28,6 +28,12 @@ List available source themes with:
 hk-theme list
 ```
 
+Hyprkarl ships `hyprkarl`, `everforest`, `gruvbox`, `loam`, and
+`tokyo-night`. The Tokyo Night source uses the original dark Night variant.
+Loam uses warm brown surfaces and a narrow olive, ochre, and bark palette. It
+began as an adaptation of Melange and retains the upstream attribution in its
+source directory.
+
 Every selection rebuilds the theme. `hk-theme set`:
 
 1. loads the built-in source, personal source, or both;
@@ -64,6 +70,25 @@ A source may contain:
 - `icons/` adds or replaces generated theme-local icons.
 - `previews/` contains repository screenshots such as `busy.png`,
   `launcher.png`, `menu.png`, and `wallpapers.png`.
+
+Set `desktop.icon_theme` to the installed icon family that best fits the
+palette. For example, Loam uses `Yaru-olive-dark` and Tokyo Night uses
+`Yaru-blue-dark`.
+
+Themes may also opt into the shared Hyprkarl wallpaper:
+
+```yaml
+wallpaper:
+  generate_default: true
+```
+
+The compiler writes `01-hyprkarl-wallpaper.png` using `base.background`,
+`accent.primary.base`, and `accent.primary.soft`. A theme may override the
+corresponding `wallpaper.background`, `wallpaper.accent`, and
+`wallpaper.accent_dim` values. Generation is independent of authored assets,
+so the theme may include other files under `wallpapers/` at the same time. An
+authored file named `01-hyprkarl-wallpaper.png` wins over the generated one.
+The default is `generate_default: false`.
 
 A personal-only theme requires `theme.yaml`. A personal directory with the
 same name as a built-in is a sparse overlay and may omit it. That makes small
@@ -136,6 +161,8 @@ For direct compiler work, run the module from `theme-generator/`:
 ```bash
 cd ~/.local/share/hyprkarl/theme-generator
 python -m theme_generator preview hyprkarl
+python -m theme_generator preview hyprkarl -o /tmp/hyprkarl-palette.png
+python -m theme_generator capture hyprkarl
 python -m theme_generator build hyprkarl -o /tmp/hyprkarl-theme
 python -m theme_generator build hyprkarl \
   --overlay ~/.config/hyprkarl/themes/hyprkarl \
@@ -147,6 +174,16 @@ python -m pytest -q
 These are authoring and test commands. `hk-theme set` remains the public
 build-and-activate action. There is no sibling generator checkout, compiler
 sync command, or `hk-theme build` action.
+
+`preview` prints a terminal palette and renders a graphical palette board.
+`capture` activates the theme and creates the standard palette, busy desktop,
+launcher, menu, and wallpaper-picker images under the source's `previews/`
+directory. It uses empty numbered workspace 4 by default and refuses to touch
+one that already contains windows. Use `--workspace 9`, for example, when 4 is
+occupied. The command recreates the established tiled busy layout, stages the
+volume OSD and one notification, controls hover selection, then restores the
+previous workspace and pointer position. Preview files are published only
+after the complete capture succeeds.
 
 ## Generated bundle
 

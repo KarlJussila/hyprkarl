@@ -13,7 +13,11 @@ contract.
 - `theme_generator/render.py` owns source-layer resolution, template rendering,
   asset precedence, and complete bundle assembly.
 - `theme_generator/gtk.py` owns Colloid compilation and GTK asset recoloring.
-- `theme_generator/preview.py` owns the terminal palette preview.
+- `theme_generator/preview.py` owns terminal and graphical palette previews.
+- `theme_generator/capture.py` owns the repeatable live desktop screenshot
+  setup and complete-set preview publication.
+- `theme_generator/wallpaper.py` owns the optional palette-derived default
+  wallpaper.
 - `theme_generator/validation.py` owns whole-repository build validation.
 - `theme_generator/cli.py` is the single command-line boundary.
 - `defaults/theme.yaml` owns shared typed tokens and final consumer defaults.
@@ -46,6 +50,11 @@ Build into a clean staging directory and publish only a complete validated
 bundle. Generated bundles are runtime artifacts, not authoring sources. Keep
 the prior output intact when a replacement fails.
 
+`wallpaper.generate_default` explicitly opts a theme into the shared Hyprkarl
+wallpaper. Its default colors are `base.background`, `accent.primary.base`, and
+`accent.primary.soft`. Authored wallpaper assets still copy into the same
+bundle and may replace the generated filename through normal asset precedence.
+
 ## Implementation rules
 
 Use Python for structured data, YAML and JSON work, template handling, parsing,
@@ -72,5 +81,12 @@ For a focused authoring preview or disposable build:
 
 ```bash
 python -m theme_generator preview <name>
+python -m theme_generator capture <name>
 python -m theme_generator build <name> -o /tmp/<name>-theme
 ```
+
+Live capture uses an empty numbered workspace, opens its windows in tiling
+order, and intentionally controls focus, OSD and notification state, selected
+items, and pointer hover. Keep that setup aligned with the shipped busy,
+launcher, menu, and wallpaper screenshots. Never move or float capture windows
+to imitate the layout.

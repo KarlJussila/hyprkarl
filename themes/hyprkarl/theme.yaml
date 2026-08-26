@@ -1,6 +1,9 @@
 # Theme-specific colors and optional token overrides.
 mode: dark
 
+desktop:
+  icon_theme: "Yaru-purple"
+
 base:
   # deepest color in the palette (terminal background)
   background: "#1b1519"

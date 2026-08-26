@@ -6,4 +6,5 @@
 
 jinja2>=3.0
 colour>=0.1.5
+pillow>=10.0
 pyyaml>=6.0

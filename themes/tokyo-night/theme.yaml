@@ -1,0 +1,98 @@
+# Tokyo Night's original dark "Night" palette.
+# https://github.com/folke/tokyonight.nvim/blob/main/extras/alacritty/tokyonight_night.toml
+# https://github.com/Fausto-Korpsvart/Tokyonight-GTK-Theme/blob/master/themes/src/sass/_color-palette-default.scss
+mode: dark
+
+desktop:
+  icon_theme: "Yaru-blue-dark"
+
+base:
+  background: "#1a1b26"
+
+  layer0: "{{base.background}}"
+  layer1: "#1f2231"
+  layer2: "#292e42"
+  layer3: "#323449"
+  layer4: "#3b4261"
+
+  surface_soft: "{{base.layer1}}"
+  surface: "{{base.layer2}}"
+  surface_alt: "{{base.layer4}}"
+
+  foreground: "#c0caf5"
+  foreground_muted: "#a9b1d6"
+  foreground_dim: "#565f89"
+
+tokyo:
+  accent: "#27a1b9"
+  teal: "#73daca"
+  text_secondary: "#9aa5ce"
+  purple: "#9d7cd8"
+
+ansi:
+  black: "#15161e"
+  red: "#f7768e"
+  green: "#9ece6a"
+  yellow: "#e0af68"
+  blue: "#7aa2f7"
+  magenta: "#bb9af7"
+  cyan: "#7dcfff"
+  white: "#a9b1d6"
+
+bright:
+  black: "#414868"
+  red: "#ff899d"
+  green: "#9fe044"
+  yellow: "#faba4a"
+  blue: "#8db0ff"
+  magenta: "#c7a9ff"
+  cyan: "#a4daff"
+  white: "#c0caf5"
+
+accent:
+  primary:
+    base: "{{tokyo.accent}}"
+    soft: "{{darken(accent.primary.base,12)}}"
+    bright: "{{tokyo.teal}}"
+
+  secondary:
+    base: "{{ansi.blue}}"
+    soft: "#3d59a1"
+    bright: "{{bright.blue}}"
+
+  tertiary:
+    base: "{{ansi.magenta}}"
+    soft: "{{tokyo.purple}}"
+    bright: "{{bright.magenta}}"
+
+status:
+  success: "{{ansi.green}}"
+  warning: "{{ansi.yellow}}"
+  error: "{{ansi.red}}"
+  urgent: "{{bright.red}}"
+
+ui:
+  cursor: "{{base.foreground}}"
+
+  text: "{{base.foreground_muted}}"
+  text_secondary: "{{tokyo.text_secondary}}"
+
+  selection_bg: "{{base.layer4}}"
+  selection_fg: "{{base.foreground}}"
+
+  panel: "{{base.surface}}"
+
+  border: "{{accent.primary.base}}"
+  border_inner: "{{bright.black}}"
+  border_soft: "{{accent.primary.soft}}"
+
+  highlight: "{{ansi.cyan}}"
+
+shell:
+  palette:
+    foreground: "{{ui.text}}"
+    muted: "{{tokyo.text_secondary}}"
+    accent: "{{accent.primary.base}}"
+
+wallpaper:
+  generate_default: true

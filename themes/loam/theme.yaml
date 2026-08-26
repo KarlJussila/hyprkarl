@@ -1,0 +1,85 @@
+# Loam began as an earth-toned adaptation of Melange's dark palette.
+# See MELANGE-LICENSE for attribution.
+mode: dark
+
+desktop:
+  icon_theme: "Yaru-olive-dark"
+
+base:
+  background: "#2A211C"
+
+  layer0: "{{base.background}}"
+  layer1: "#30261F"
+  layer2: "#372C24"
+  layer3: "#3E3229"
+  layer4: "#47392F"
+
+  surface_soft: "{{base.layer1}}"
+  surface: "{{base.layer2}}"
+  surface_alt: "{{base.layer4}}"
+
+  foreground: "#ECE1D7"
+  foreground_muted: "#C1A78E"
+  foreground_dim: "#867462"
+
+ansi:
+  black: "#34302C"
+  red: "#BD8183"
+  green: "#809040"
+  yellow: "#E49B5D"
+  blue: "#7F91B2"
+  magenta: "#B380B0"
+  cyan: "#7B9695"
+  white: "#C1A78E"
+
+bright:
+  black: "#867462"
+  red: "#D47766"
+  green: "{{lighten(ansi.green,12)}}"
+  yellow: "#EBC06D"
+  blue: "#A3A9CE"
+  magenta: "#CF9BC2"
+  cyan: "#89B3B6"
+  white: "#ECE1D7"
+
+accent:
+  primary:
+    base: "{{ansi.green}}"
+    soft: "{{darken(accent.primary.base,20)}}"
+    bright: "{{bright.green}}"
+
+  secondary:
+    base: "{{mix(ansi.green,ansi.yellow,12)}}"
+    soft: "{{darken(accent.secondary.base,20)}}"
+    bright: "{{mix(bright.green,bright.yellow,12)}}"
+
+  tertiary:
+    base: "{{base.foreground_dim}}"
+    soft: "{{darken(accent.tertiary.base,15)}}"
+    bright: "{{ansi.white}}"
+
+status:
+  success: "{{accent.primary.bright}}"
+  warning: "{{bright.yellow}}"
+  error: "{{ansi.red}}"
+  urgent: "{{bright.red}}"
+
+ui:
+  cursor: "{{bright.yellow}}"
+
+  text: "{{base.foreground}}"
+  text_secondary: "{{base.foreground_muted}}"
+
+  selection_bg: "{{base.layer4}}"
+  selection_fg: "{{base.foreground}}"
+
+  panel: "{{base.surface}}"
+
+  border: "{{accent.primary.base}}"
+  border_inner: "{{base.foreground_dim}}"
+  border_soft: "{{accent.primary.soft}}"
+
+  highlight: "{{accent.primary.bright}}"
+
+wallpaper:
+  generate_default: true

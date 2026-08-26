@@ -11,6 +11,7 @@ import yaml
 
 from .gtk import COLLOID_INTERNAL_TEMPLATE, ColloidBuildError, build_colloid_theme
 from .theme import load_theme_layers, render_template, write_atomic_text
+from .wallpaper import DEFAULT_WALLPAPER_NAME, generate_default_wallpaper
 
 
 logger = logging.getLogger(__name__)
@@ -249,6 +250,11 @@ def _render_theme(sources: ThemeSources, output_root: Path, theme_name: str) -> 
 
     output_root.mkdir(parents=True, exist_ok=True)
     _render_files(files, context, output_root)
+    if theme["wallpaper"]["generate_default"]:
+        generate_default_wallpaper(
+            theme["wallpaper"],
+            output_root / "wallpapers" / DEFAULT_WALLPAPER_NAME,
+        )
     _copy_assets(sources.layers, output_root)
     write_atomic_text(
         output_root / "theme.yaml",

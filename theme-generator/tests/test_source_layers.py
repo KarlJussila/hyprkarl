@@ -3,6 +3,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from PIL import Image
+
 from theme_generator.render import THEMES_DIR, GenerationError, build_theme
 
 
@@ -68,6 +70,47 @@ shell:
             build_theme("hyprkarl", output, overlay_source=overlay)
 
             self.assertTrue((output / "wallpapers" / "personal.txt").is_file())
+
+    def test_generated_default_coexists_with_authored_wallpapers(self):
+        with tempfile.TemporaryDirectory(prefix="theme-wallpaper-generation-") as temporary_directory:
+            root = Path(temporary_directory)
+            source = root / "source"
+            output = root / "output"
+            (source / "wallpapers").mkdir(parents=True)
+            theme = (THEMES_DIR / "hyprkarl" / "theme.yaml").read_text()
+            (source / "theme.yaml").write_text(
+                theme + "\nwallpaper:\n  generate_default: true\n"
+            )
+            (source / "wallpapers" / "forest.txt").write_text("authored")
+
+            build_theme(source, output)
+
+            generated = output / "wallpapers" / "01-hyprkarl-wallpaper.png"
+            self.assertTrue(generated.is_file())
+            self.assertTrue((output / "wallpapers" / "forest.txt").is_file())
+            with Image.open(generated) as wallpaper:
+                self.assertEqual(wallpaper.size, (3840, 2160))
+                self.assertEqual(wallpaper.getpixel((0, 0)), (27, 21, 25))
+                self.assertEqual(wallpaper.getpixel((1920, 715)), (99, 0, 90))
+                self.assertEqual(wallpaper.getpixel((1974, 699)), (58, 0, 53))
+
+    def test_authored_wallpaper_replaces_generated_filename(self):
+        with tempfile.TemporaryDirectory(prefix="theme-wallpaper-replacement-") as temporary_directory:
+            root = Path(temporary_directory)
+            source = root / "source"
+            output = root / "output"
+            (source / "wallpapers").mkdir(parents=True)
+            theme = (THEMES_DIR / "hyprkarl" / "theme.yaml").read_text()
+            (source / "theme.yaml").write_text(
+                theme + "\nwallpaper:\n  generate_default: true\n"
+            )
+            authored = source / "wallpapers" / "01-hyprkarl-wallpaper.png"
+            authored.write_text("authored")
+
+            build_theme(source, output)
+
+            generated_path = output / "wallpapers" / authored.name
+            self.assertEqual(generated_path.read_text(), "authored")
 
     def test_user_only_theme_requires_theme_yaml(self):
         with tempfile.TemporaryDirectory(prefix="theme-user-only-") as temporary_directory:

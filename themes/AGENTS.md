@@ -317,11 +317,34 @@ To ship wallpapers and preview screenshots with the theme, add:
 - `themes/<name>/previews/` — `busy.png`, `launcher.png`, `menu.png`, and
   `wallpapers.png`; these become `screenshots/` in the generated bundle.
 
+Set `desktop.icon_theme` in `theme.yaml` instead of replacing `icons.theme`.
+Choose an installed family that supports the palette, such as
+`Yaru-olive-dark` for Loam or `Yaru-blue-dark` for Tokyo Night.
+
+The shared Hyprkarl wallpaper is opt-in and may be combined with authored
+wallpapers:
+
+```yaml
+wallpaper:
+  generate_default: true
+```
+
+It renders `01-hyprkarl-wallpaper.png` from `wallpaper.background`,
+`wallpaper.accent`, and `wallpaper.accent_dim`. Shared defaults map those to
+`base.background`, `accent.primary.base`, and `accent.primary.soft`. Override
+the three values when a theme needs a different mapping. An authored asset
+with the generated filename replaces it through normal asset precedence. Set
+`generate_default: false` to omit it regardless of other wallpaper assets.
+
 ---
 
 ## 8. Definition of done
 
 - `python -m theme_generator build <name>` succeeds and `output/<name>/` looks right.
+- `python -m theme_generator preview <name>` produces a readable palette board.
+- `python -m theme_generator capture <name>` produces the standard five-image
+  preview set on empty numbered workspace 4. Use `--workspace <number>` when
+  that workspace is occupied.
 - `python -m pytest -q` passes and validates that every theme, including the
   Quickshell semantic manifest and Colloid GTK output, generates cleanly.
 - Text is readable on its backgrounds; accents are distinct and on-theme.

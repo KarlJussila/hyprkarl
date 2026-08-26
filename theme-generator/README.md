@@ -72,8 +72,9 @@ compiled from the same color tokens as the rest of the desktop.
 ## Requirements
 
 - Python 3.10+
-- `jinja2`, `colour`, and `pyyaml` from `requirements.txt`
+- `jinja2`, `colour`, `pillow`, and `pyyaml` from `requirements.txt`
 - `sassc` for Colloid GTK compilation
+- `grim` and `ydotool` for automated desktop screenshots
 
 The normal Hyprkarl package setup installs these dependencies from the system
 repositories. For development on another distribution, install the Python
@@ -93,6 +94,7 @@ python -m theme_generator build ../themes/my-theme -o /tmp/my-theme
 python -m theme_generator build ../themes/my-theme -o /tmp/renamed --name renamed
 python -m theme_generator build hyprkarl --overlay ~/.config/hyprkarl/themes/hyprkarl
 python -m theme_generator preview hyprkarl
+python -m theme_generator capture hyprkarl
 python -m theme_generator validate
 python -m pytest -q
 ```
@@ -105,6 +107,19 @@ so removed templates cannot survive as stale output.
 name. `--overlay` adds one personal source layer. `hk-theme set` owns normal
 build and activation. The compiler CLI remains the direct authoring and test
 tool.
+
+`preview` prints the palette in the terminal and renders a 1600×1000 palette
+board under `output/`. Pass `-o` to choose another image path.
+
+`capture` activates the theme and writes `palette.png`, `busy.png`,
+`launcher.png`, `menu.png`, and `wallpapers.png` to the source's `previews/`
+directory. It uses empty numbered workspace 4 by default; pass `--workspace`
+to select another empty workspace. The busy desktop is created through normal
+tiling order, with fastfetch focused above a selected Nautilus folder on the
+left and btop on the right. The command also stages a notification and volume
+OSD, controls pointer hover deliberately, and restores the prior workspace and
+pointer position. Existing previews are replaced only after the full set is
+captured.
 
 ## Typed Theme Graph
 
@@ -175,6 +190,10 @@ and template errors fail the build at its public boundary. Custom token names
 and structures are not restricted. The previous output remains intact until a
 complete replacement is ready.
 
+Themes may set `wallpaper.generate_default: true` to render the shared
+Hyprkarl wallpaper from the resolved background, primary accent, and soft
+primary accent. The generated file joins any authored wallpaper assets.
+
 The generated bundle includes the fully merged and resolved graph as
 `theme.yaml`, making every consumer value inspectable without evaluating the
 source again.
@@ -186,11 +205,18 @@ Most themes need only `theme.yaml`. Use
 output. The override replaces the shared template; it does not add another
 merge language.
 
+Choose the desktop icon family in theme data:
+
+```yaml
+desktop:
+  icon_theme: Yaru-olive-dark
+```
+
 ```text
 ../themes/my-theme/
 ├── theme.yaml
 ├── overrides/
-│   └── icons.theme
+│   └── hyprlock.conf
 ├── wallpapers/
 └── previews/
 ```
@@ -213,7 +239,9 @@ before relying on the integrated compiler.
 | `theme_generator/theme.py` | Deep merge, native expression resolution, color validation, and template helpers |
 | `theme_generator/render.py` | Source resolution, template rendering, and clean bundle assembly |
 | `theme_generator/gtk.py` | Colloid compilation and GTK asset recoloring |
-| `theme_generator/preview.py` | Terminal color preview |
+| `theme_generator/preview.py` | Terminal and graphical palette previews |
+| `theme_generator/capture.py` | Repeatable live desktop screenshot staging |
+| `theme_generator/wallpaper.py` | Optional palette-derived default wallpaper |
 | `theme_generator/validation.py` | Whole-repository build validation |
 | `theme_generator/cli.py` | The single command-line boundary |
 | `templates/` | Shared consumer templates |

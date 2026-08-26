@@ -1,6 +1,9 @@
 # Theme-specific colors and optional token overrides.
 mode: dark
 
+desktop:
+  icon_theme: "Yaru-sage"
+
 base:
   background: "#2d353b"
 

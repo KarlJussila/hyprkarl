@@ -170,7 +170,7 @@ fixed compatibility links into that state, never the state itself.
 
 Switch themes with:
 ```bash
-hk-theme set <theme-name>    # hyprkarl, everforest, gruvbox
+hk-theme set <theme-name>    # hyprkarl, everforest, gruvbox, loam, tokyo-night
 ```
 
 `themes/<name>/` contains authoring source only: `theme.yaml`, optional complete

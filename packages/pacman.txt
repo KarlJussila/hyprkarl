@@ -13,6 +13,7 @@ fzf
 ghostty
 git-delta
 gpu-screen-recorder
+grim
 gum
 hypridle
 hyprlock
@@ -45,6 +46,7 @@ python
 python-colour
 python-gobject
 python-jinja
+python-pillow
 python-yaml
 qt5ct
 qt6ct
@@ -68,3 +70,4 @@ xdg-desktop-portal-hyprland
 xdg-user-dirs
 yay-bin
 yazi
+ydotool

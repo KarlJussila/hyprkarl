@@ -1,11 +1,18 @@
 import argparse
 import logging
 import sys
+from pathlib import Path
 
-from .preview import show_theme
-from .render import GenerationError, build_theme, load_source_theme, resolve_theme_sources
+from .capture import DEFAULT_CAPTURE_WORKSPACE, capture_theme_previews
+from .preview import render_theme_preview, show_theme
+from .render import (
+    OUTPUT_DIR,
+    GenerationError,
+    build_theme,
+    load_source_theme,
+    resolve_theme_sources,
+)
 from .validation import validate_repository
-
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +23,28 @@ def _build(args: argparse.Namespace) -> None:
 
 
 def _preview(args: argparse.Namespace) -> None:
-    show_theme(load_source_theme(resolve_theme_sources(args.theme, args.overlay)))
+    sources = resolve_theme_sources(args.theme, args.overlay)
+    theme = load_source_theme(sources)
+    show_theme(theme)
+    output = args.output or OUTPUT_DIR / f"{sources.name}-palette.png"
+    print(render_theme_preview(theme, sources.name, output))
+
+
+def _capture(args: argparse.Namespace) -> None:
+    if args.workspace < 1:
+        raise GenerationError("Capture workspace must be a positive number")
+    sources = resolve_theme_sources(args.theme, args.overlay)
+    theme = load_source_theme(sources)
+    output = Path(args.output).expanduser() if args.output else sources.layers[-1] / "previews"
+    print(
+        capture_theme_previews(
+            sources.name,
+            theme,
+            output.resolve(),
+            args.settle,
+            args.workspace,
+        )
+    )
 
 
 def _validate(_args: argparse.Namespace) -> None:
@@ -42,7 +70,26 @@ def build_parser() -> argparse.ArgumentParser:
     preview = subcommands.add_parser("preview", help="preview one theme palette")
     preview.add_argument("theme", help="built-in theme name, source directory, or theme.yaml")
     preview.add_argument("--overlay", help="personal source directory merged over the theme")
+    preview.add_argument("-o", "--output", help="graphical preview path")
     preview.set_defaults(action=_preview)
+
+    capture = subcommands.add_parser("capture", help="capture one theme's standard screenshots")
+    capture.add_argument("theme", help="installed built-in or personal theme name")
+    capture.add_argument("--overlay", help="personal source directory merged over the theme")
+    capture.add_argument("-o", "--output", help="screenshot directory")
+    capture.add_argument(
+        "--settle",
+        type=float,
+        default=1.0,
+        help="seconds to wait after each desktop change",
+    )
+    capture.add_argument(
+        "--workspace",
+        type=int,
+        default=DEFAULT_CAPTURE_WORKSPACE,
+        help="empty numbered workspace used for capture",
+    )
+    capture.set_defaults(action=_capture)
 
     validate = subcommands.add_parser("validate", help="build and validate every built-in theme")
     validate.set_defaults(action=_validate)

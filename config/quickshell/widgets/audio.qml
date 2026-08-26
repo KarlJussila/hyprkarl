@@ -27,6 +27,7 @@ ShellButton {
         volume: root.audio?.volume ?? 0
         muted: root.audio?.muted ?? false
         indicatorColor: root.theme.foreground
+        inactiveWaveColor: root.theme.border
       }
 
       Text {

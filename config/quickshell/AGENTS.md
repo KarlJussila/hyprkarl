@@ -422,9 +422,11 @@ display-brightness, keyboard-brightness, and media surface. Commands send
 semantic state only. `OsdState` chooses fixed labels and indicators;
 `OsdWindow` owns the shared geometry and transition. Reuse the drawn
 `AudioIndicator` for volume and output, and use theme-font Nerd Font glyphs
-for the remaining compact indicators. Do not restore icon-theme lookup or
-Mako OSD application rules. Placement and timeouts live under `osd` in shell
-JSON; appearance lives under `osd` in each theme's `quickshell.json`.
+for the remaining compact indicators. Its fixed-width drawing always renders
+all four waves: active waves use the foreground color and inactive waves use
+the border color. Do not restore icon-theme lookup or Mako OSD application
+rules. Placement and timeouts live under `osd` in shell JSON; appearance lives
+under `osd` in each theme's `quickshell.json`.
 
 `features/notifications/NotificationState.qml` is the one application-wide
 freedesktop notification server. It sets `tracked` only for notifications the

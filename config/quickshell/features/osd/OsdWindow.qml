@@ -86,6 +86,7 @@ PanelWindow {
             volume: root.osdState.value / 100
             muted: root.osdState.muted
             indicatorColor: root.theme.foreground
+            inactiveWaveColor: root.theme.border
           }
 
           Text {

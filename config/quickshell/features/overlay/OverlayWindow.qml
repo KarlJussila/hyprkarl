@@ -8,6 +8,7 @@ ModalWindow {
   property string title: ""
   property string placeholder: "Search…"
   property bool searchable: true
+  property bool showTextCursor: false
   property bool clearQueryOnShow: true
   property real requestedBodyHeight: 0
   property alias query: searchInput.text
@@ -31,6 +32,12 @@ ModalWindow {
   }
 
   onShownChanged: if (shown) Qt.callLater(root.resetInput)
+
+  Component {
+    id: hiddenTextCursor
+
+    Item {}
+  }
 
   Item {
     parent: root.modalBody
@@ -134,6 +141,7 @@ ModalWindow {
           font.pixelSize: root.theme.menuFontSize
           font.weight: root.theme.menuFontWeight
           verticalAlignment: TextInput.AlignVCenter
+          cursorDelegate: root.showTextCursor ? null : hiddenTextCursor
           selectByMouse: true
           clip: true
           Keys.onPressed: event => root.keyPressed(event, true)

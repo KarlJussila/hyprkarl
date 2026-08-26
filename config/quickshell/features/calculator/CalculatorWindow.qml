@@ -19,6 +19,7 @@ OverlayWindow {
   shown: active
   title: "Calculator"
   placeholder: "Calculate…"
+  showTextCursor: true
   requestedWidth: theme.calculatorWidth
   requestedBodyHeight: rowHeight * Math.max(1,
     Math.min(theme.calculatorHistoryRows, rows.length))

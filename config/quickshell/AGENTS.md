@@ -370,8 +370,8 @@ query must not start descendant providers. `MenuWindow.qml` owns menu rows,
 selection, navigation, and dismissal. It composes `OverlayWindow` for the
 full-screen input plane, frame, search field, focus, outside-click dismissal,
 and reveal. `MomentumScroll` supplies kinetic touchpad behavior. Do not fork
-those shared interactions back into the menu. Keyboard selection positions its row
-immediately, including across wrap-around, while pointer selection changes
+those shared interactions back into the menu. Keyboard selection positions its
+row immediately, including across wrap-around, while pointer selection changes
 only on actual pointer motion. Opening a fresh menu or changing its search
 starts at the first enabled result. Returning from a submenu or pushed overlay
 restores that navigation path's query, selected entry ID, and scroll position.
@@ -387,11 +387,13 @@ wallpaper picker, display arranger, and personal modals. Opening
 one replaces the active focused overlay instead of leaving another visible
 behind it. `ModalWindow` owns the full-screen focus plane, scrim, nested frame,
 outside-click handling, and reveal. `OverlayWindow` adds the shared picker
-header and search field. Public `Hyprkarl.Modal` adds a general header, lazy
-body, optional footer, and the shared spatial/section keyboard navigator while
-leaving content with the caller. User modal controls participate when they set
-`activeFocusOnTab`; an optional string `navigationSection` groups controls for
-Tab movement. Escape and Q use the modal's dismissal action.
+header and search field. Quick-search consumers hide its text cursor; the
+calculator enables it for expression editing. Public `Hyprkarl.Modal` adds a
+general header, lazy body, optional footer, and the shared spatial/section
+keyboard navigator while leaving content with the caller. User modal controls
+participate when they set `activeFocusOnTab`; an optional string
+`navigationSection` groups controls for Tab movement. Escape and Q use the
+modal's dismissal action.
 `MomentumScroll` owns the kinetic touchpad behavior shared by long picker
 lists and grids.
 

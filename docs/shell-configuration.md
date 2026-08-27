@@ -250,8 +250,8 @@ map when an instance is referenced only once.
     "defaultTimeout": 5000,
     "statusTimeout": 2000,
     "maxVisible": 5,
-    "fallbackIcon": { "kind": "glyph", "value": "󰂚" },
-    "criticalIcon": { "kind": "glyph", "value": "󰀦" },
+    "fallbackIcon": { "kind": "none" },
+    "criticalIcon": { "kind": "none" },
     "ignoredApplications": ["spotify"],
     "compactApplications": ["battery"],
     "iconOverrides": {
@@ -412,8 +412,10 @@ For data-driven drawings, a standard `int:value` notification hint supplies
 `progress` from 0 through 100; notifications without it receive `-1`.
 A notification's content image takes priority over these application-icon
 rules; otherwise an override, the sender's application icon, and the normal or
-critical fallback are tried in that order. Appearance and sizing belong to the
-theme's `notification` object in `quickshell.json`.
+critical fallback are tried in that order. Both shipped fallbacks are `none`,
+so a notification without an image, override, or application icon gives that
+space to its text. Appearance and sizing belong to the theme's `notification`
+object in `quickshell.json`.
 
 `center.anchor` is fixed to the monitor midpoint. `before` and `after` grow
 away from it. This preserves the deliberate centered-island composition of

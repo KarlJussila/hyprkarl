@@ -465,7 +465,9 @@ names either a shipped file under `features/notifications/icons/` or a user
 file under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/icons/`. Both expose `progress` and `theme` on a
 root `Item`; the shipped audio and battery drawings use exactly this public
 loader path. Absolute sender icon paths become `file:` URLs before reaching
-QML, and a `none` descriptor removes the icon item from layout. Shell JSON owns
+QML, and a `none` descriptor removes the icon item from layout. Both shipped
+urgency fallbacks are `none`, so notifications without an image, override, or
+sender application icon give that width to their text. Shell JSON owns
 selection and application filters; each theme's `notification` object owns
 surface color, geometry, icon size, and drawn-indicator scale.
 

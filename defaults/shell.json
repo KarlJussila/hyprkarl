@@ -26,12 +26,10 @@
     "statusTimeout": 2000,
     "maxVisible": 5,
     "fallbackIcon": {
-      "kind": "glyph",
-      "value": "󰂚"
+      "kind": "none"
     },
     "criticalIcon": {
-      "kind": "glyph",
-      "value": "󰀦"
+      "kind": "none"
     },
     "ignoredApplications": [
       "spotify"

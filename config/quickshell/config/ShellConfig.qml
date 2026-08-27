@@ -40,9 +40,9 @@ QtObject {
   readonly property int notificationMaxVisible: notifications.maxVisible ?? 5
   readonly property var notificationIconOverrides: notifications.iconOverrides ?? ({})
   readonly property var notificationFallbackIcon: notifications.fallbackIcon
-    ?? ({ "kind": "glyph", "value": "󰂚" })
+    ?? ({ "kind": "none" })
   readonly property var notificationCriticalIcon: notifications.criticalIcon
-    ?? ({ "kind": "glyph", "value": "󰀦" })
+    ?? ({ "kind": "none" })
   readonly property var notificationIgnoredApplications:
     notifications.ignoredApplications ?? []
   readonly property var notificationCompactApplications:

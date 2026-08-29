@@ -8,74 +8,65 @@ OverlayWindow {
 
   readonly property bool active: WallpaperPickerState.active
     && output.name === OverlayState.screenName
-  readonly property int columns: theme.wallpaperPickerColumns
-  readonly property real thumbnailSize: Math.floor(
-    height * theme.wallpaperThumbnailScreenFraction)
+  readonly property real carouselWidth: Math.floor(
+    width * theme.wallpaperPickerWidthScreenFraction)
+  readonly property real previewHeight: Math.floor(Math.min(
+    height * theme.wallpaperPreviewHeightScreenFraction,
+    (carouselWidth - theme.wallpaperPickerGap * 4)
+      / theme.wallpaperPreviewAspectRatio))
+  readonly property real previewWidth: Math.floor(
+    previewHeight * theme.wallpaperPreviewAspectRatio)
   readonly property real cellGap: theme.wallpaperPickerGap
-  property bool pointerPositionKnown: false
-  property point pointerPosition: Qt.point(0, 0)
-  property bool selectionVisible: false
+  readonly property real carouselDepth: cellGap
 
   shown: active
   title: WallpaperPickerState.action === "remove"
     ? "Remove Wallpaper"
     : "Wallpapers"
   searchable: false
-  requestedWidth: thumbnailSize * columns + cellGap * (columns + 1)
-  requestedBodyHeight: thumbnailSize + cellGap * 2
+  requestedWidth: carouselWidth
+  requestedBodyHeight: previewHeight + cellGap * 4
 
   function resetSelection(): void {
-    momentum.reset()
-    pointerPositionKnown = false
     let index = WallpaperPickerState.entries.findIndex(entry => entry.current)
-    if (index < 0 && wallpaperGrid.count > 0) index = 0
-    wallpaperGrid.currentIndex = index
-    selectionVisible = false
-    if (index >= 0) wallpaperGrid.positionViewAtIndex(index, GridView.Contain)
+    if (index < 0 && wallpaperCarousel.count > 0) index = 0
+    wallpaperCarousel.currentIndex = index
   }
 
   function selectIndex(index): void {
-    if (wallpaperGrid.count === 0) return
-    const next = (index + wallpaperGrid.count) % wallpaperGrid.count
-    wallpaperGrid.currentIndex = next
-    wallpaperGrid.positionViewAtIndex(next, GridView.Contain)
+    if (wallpaperCarousel.count === 0) return
+    wallpaperCarousel.currentIndex = (index + wallpaperCarousel.count)
+      % wallpaperCarousel.count
   }
 
   function moveSelection(offset): void {
-    if (!selectionVisible && wallpaperGrid.currentIndex >= 0) {
-      selectionVisible = true
-      wallpaperGrid.positionViewAtIndex(wallpaperGrid.currentIndex,
-        GridView.Contain)
+    if (wallpaperCarousel.count === 0) return
+    if (wallpaperCarousel.currentIndex < 0) {
+      resetSelection()
       return
     }
-    selectIndex(wallpaperGrid.currentIndex < 0
-      ? (offset > 0 ? 0 : wallpaperGrid.count - 1)
-      : wallpaperGrid.currentIndex + offset)
-    selectionVisible = wallpaperGrid.currentIndex >= 0
+    if (offset > 0) wallpaperCarousel.incrementCurrentIndex()
+    else wallpaperCarousel.decrementCurrentIndex()
   }
 
   function handleKey(event): void {
     if (event.key === Qt.Key_Escape) {
       WallpaperPickerState.close()
-    } else if (event.key === Qt.Key_Right || event.key === Qt.Key_L) {
+    } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Down
+        || event.key === Qt.Key_L || event.key === Qt.Key_J) {
       moveSelection(1)
-    } else if (event.key === Qt.Key_Left || event.key === Qt.Key_H) {
+    } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Up
+        || event.key === Qt.Key_H || event.key === Qt.Key_K) {
       moveSelection(-1)
-    } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
-      moveSelection(columns)
-    } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
-      moveSelection(-columns)
     } else if (event.key === Qt.Key_Home) {
       selectIndex(0)
-      selectionVisible = wallpaperGrid.currentIndex >= 0
     } else if (event.key === Qt.Key_End) {
-      selectIndex(wallpaperGrid.count - 1)
-      selectionVisible = wallpaperGrid.currentIndex >= 0
+      selectIndex(wallpaperCarousel.count - 1)
     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
         || event.key === Qt.Key_Space) {
-      if (wallpaperGrid.currentIndex >= 0) {
+      if (wallpaperCarousel.currentIndex >= 0) {
         WallpaperPickerState.activate(
-          WallpaperPickerState.entries[wallpaperGrid.currentIndex])
+          WallpaperPickerState.entries[wallpaperCarousel.currentIndex])
       }
     } else {
       return
@@ -90,7 +81,7 @@ OverlayWindow {
   Text {
     anchors.fill: parent
     anchors.margins: root.theme.menuEntryPadding
-    visible: wallpaperGrid.count === 0
+    visible: wallpaperCarousel.count === 0
     text: WallpaperPickerState.loading
       ? "Loading wallpapers…"
       : WallpaperPickerState.error.length > 0
@@ -105,45 +96,93 @@ OverlayWindow {
     verticalAlignment: Text.AlignVCenter
   }
 
-  GridView {
-    id: wallpaperGrid
+  PathView {
+    id: wallpaperCarousel
 
     anchors.fill: parent
-    anchors.margins: root.cellGap
     visible: count > 0
     clip: true
-    boundsBehavior: Flickable.StopAtBounds
-    maximumFlickVelocity: 5000
-    highlightFollowsCurrentItem: false
-    cellWidth: width / root.columns
-    cellHeight: root.thumbnailSize
     model: WallpaperPickerState.entries
     currentIndex: -1
+    pathItemCount: Math.min(3, count)
+    cacheItemCount: 2
+    preferredHighlightBegin: 0.5
+    preferredHighlightEnd: 0.5
+    highlightRangeMode: PathView.StrictlyEnforceRange
+    snapMode: PathView.SnapOneItem
+    maximumFlickVelocity: 5000
+    highlightMoveDuration: root.theme.panelTransitionDuration
     onCountChanged: Qt.callLater(root.resetSelection)
+
+    path: Path {
+      startX: wallpaperCarousel.width / 2
+      startY: wallpaperCarousel.height / 2 - root.carouselDepth
+
+      PathAttribute {
+        name: "cardScale"
+        value: root.theme.wallpaperPreviewSideScale
+      }
+      PathAttribute {
+        name: "cardOpacity"
+        value: root.theme.wallpaperPreviewSideOpacity
+      }
+
+      PathArc {
+        x: wallpaperCarousel.width / 2
+        y: wallpaperCarousel.height / 2 + root.carouselDepth
+        radiusX: wallpaperCarousel.width
+          * root.theme.wallpaperCarouselRadiusWidthFraction
+        radiusY: root.carouselDepth
+        direction: PathArc.Counterclockwise
+      }
+
+      PathAttribute { name: "cardScale"; value: 1 }
+      PathAttribute { name: "cardOpacity"; value: 1 }
+
+      PathArc {
+        x: wallpaperCarousel.width / 2
+        y: wallpaperCarousel.height / 2 - root.carouselDepth
+        radiusX: wallpaperCarousel.width
+          * root.theme.wallpaperCarouselRadiusWidthFraction
+        radiusY: root.carouselDepth
+        direction: PathArc.Counterclockwise
+      }
+
+      PathAttribute {
+        name: "cardScale"
+        value: root.theme.wallpaperPreviewSideScale
+      }
+      PathAttribute {
+        name: "cardOpacity"
+        value: root.theme.wallpaperPreviewSideOpacity
+      }
+    }
 
     delegate: Item {
       id: cell
 
       required property int index
       required property var modelData
-      readonly property bool navigationCurrent:
-        root.selectionVisible && cell.GridView.isCurrentItem
 
-      width: wallpaperGrid.cellWidth
-      height: wallpaperGrid.cellHeight
+      width: root.previewWidth
+      height: root.previewHeight
+      // qmllint disable missing-property
+      z: cell.PathView.cardScale
+      scale: cell.PathView.cardScale
+      opacity: cell.PathView.cardOpacity
+      // qmllint enable missing-property
 
       Rectangle {
         anchors.fill: parent
-        anchors.margins: root.cellGap / 2
         color: root.theme.menuBorder
-        border.color: cell.navigationCurrent
+        border.color: cell.PathView.isCurrentItem
           ? WallpaperPickerState.action === "remove"
             ? root.theme.urgent
             : root.theme.menuAccent
           : cell.modelData.current
             ? root.theme.menuAccent
             : root.theme.menuBorder
-        border.width: cell.navigationCurrent
+        border.width: cell.PathView.isCurrentItem
           ? Math.max(3, root.theme.menuSelectionBorderWidth)
           : cell.modelData.current
             ? Math.max(2, root.theme.menuSelectionBorderWidth)
@@ -155,33 +194,54 @@ OverlayWindow {
           anchors.fill: parent
           anchors.margins: parent.border.width
           source: cell.modelData.thumbnail
+          sourceSize.width: root.previewWidth
+          sourceSize.height: root.previewHeight
           fillMode: Image.PreserveAspectCrop
           asynchronous: true
           cache: true
         }
-      }
 
-      HoverHandler {
-        cursorShape: Qt.PointingHandCursor
-        onPointChanged: {
-          const position = point.scenePosition
-          const moved = root.pointerPositionKnown
-            && (position.x !== root.pointerPosition.x
-              || position.y !== root.pointerPosition.y)
-          root.pointerPosition = Qt.point(position.x, position.y)
-          root.pointerPositionKnown = true
-          if (moved) {
-            wallpaperGrid.currentIndex = cell.index
-            root.selectionVisible = true
+        Rectangle {
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          anchors.margins: parent.border.width
+          height: wallpaperName.implicitHeight
+            + root.theme.menuEntryPadding * 2
+          color: root.theme.menuBackground
+          opacity: 0.82
+
+          Text {
+            id: wallpaperName
+
+            anchors.fill: parent
+            anchors.margins: root.theme.menuEntryPadding
+            text: cell.modelData.current
+              ? "Current  ·  " + cell.modelData.name
+              : cell.modelData.name
+            color: root.theme.menuForeground
+            font.family: root.theme.menuFont
+            font.pixelSize: root.theme.menuFontSize
+            font.weight: root.theme.menuFontWeight
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideMiddle
           }
         }
       }
-      TapHandler { onTapped: WallpaperPickerState.activate(cell.modelData) }
-    }
-  }
 
-  MomentumScroll {
-    id: momentum
-    flickable: wallpaperGrid
+      HoverHandler { cursorShape: Qt.PointingHandCursor }
+      TapHandler {
+        onTapped: {
+          if (cell.PathView.isCurrentItem) {
+            WallpaperPickerState.activate(cell.modelData)
+          } else if (cell.x + cell.width / 2 < wallpaperCarousel.width / 2) {
+            wallpaperCarousel.decrementCurrentIndex()
+          } else {
+            wallpaperCarousel.incrementCurrentIndex()
+          }
+        }
+      }
+    }
   }
 }

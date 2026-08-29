@@ -135,9 +135,9 @@ completes successfully. Individual update commands do not emit that event.
   Copy an image into the active theme's wallpaper directory and set it as the
   current wallpaper.
 - `hk-wallpaper remove <filename>`
-  Remove a wallpaper and its cached thumbnail.
+  Remove a wallpaper and its cached preview.
 - `hk-wallpaper cache [--regenerate|--single <filename>]`
-  Sync or rebuild wallpaper thumbnails for the active theme.
+  Sync or rebuild wallpaper previews for the active theme.
 - `hk-wallpaper init`
   Reapply the current wallpaper through `hyprpaper`.
 

@@ -68,7 +68,7 @@ work in a dedicated `hk-*` command and reference it from the data; the menu
 definition owns navigation, not application logic. Themes, live keybindings,
 Nerd Font icons, Docker services, and every fingerprint choice are dynamic
 Quickshell menus. The app launcher, open-with chooser, calculator, and
-wallpaper thumbnail picker are dedicated Quickshell overlays because their
+wallpaper carousel are dedicated Quickshell overlays because their
 rows and actions do not fit the command-menu data contract. Package pickers
 retain their focused terminal interfaces.
 

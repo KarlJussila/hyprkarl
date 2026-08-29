@@ -200,8 +200,12 @@ shell:
     historyRows: 5
 
   wallpaperPicker:
-    columns: 3
-    thumbnailScreenFraction: 0.25
+    widthScreenFraction: 0.82
+    previewHeightScreenFraction: 0.42
+    previewAspectRatio: 1.7777777778
+    carouselRadiusWidthFraction: 0.48
+    sideScale: 0.78
+    sideOpacity: 0.55
     gap: "{{metrics.spacing.xxlarge}}"
 
   displayArrangement:

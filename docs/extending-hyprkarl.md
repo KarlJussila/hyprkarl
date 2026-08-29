@@ -113,7 +113,7 @@ parameter object. A menu may declare a `sourceCommand` for dynamic entries and
 opt into in-process search. Dynamic providers should normally use Python data
 structures and the standard `json` module; Bash is better reserved for
 providers that only print prebuilt JSON. The launcher, calculator, open-with
-chooser, and wallpaper thumbnail picker use dedicated Quickshell features
+chooser, and wallpaper carousel use dedicated Quickshell features
 rather than the command-menu JSON shape. See
 [Menu Configuration](menu-configuration.md) for the full contract, submenu
 example, live-reload behavior, and keyboard controls.

@@ -416,9 +416,10 @@ same `ToggleIndicator` as bar controls.
 `features/calculator/` evaluates the current expression with one short-lived
 `qalc` process, copies the chosen result with `wl-copy`, and owns five recent
 expression/result pairs under XDG state. `features/wallpaper/` loads the
-existing thumbnail cache once per open through `hk-wallpaper-entries` and
-directly selects set or remove actions. Neither feature starts a background
-poller. Their appearance comes from the shared `menu` tokens plus the
+landscape preview cache once per open through `hk-wallpaper-entries` and
+presents it as a centered, snapping carousel for set or remove actions. Neither
+feature starts a background poller. Their appearance comes from the shared
+`menu` tokens plus the
 `applicationPicker`, `calculator`, and `wallpaperPicker` theme objects.
 The command menu keeps its compact, centered visual identity while deriving
 all appearance from the shell theme and its nested `menu` object. Visual

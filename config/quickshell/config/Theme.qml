@@ -166,9 +166,18 @@ QtObject {
   readonly property int calculatorHistoryRows: calculator.historyRows ?? 5
 
   readonly property var wallpaperPicker: values.wallpaperPicker ?? ({})
-  readonly property int wallpaperPickerColumns: wallpaperPicker.columns ?? 3
-  readonly property real wallpaperThumbnailScreenFraction:
-    wallpaperPicker.thumbnailScreenFraction ?? 0.25
+  readonly property real wallpaperPickerWidthScreenFraction:
+    wallpaperPicker.widthScreenFraction ?? 0.82
+  readonly property real wallpaperPreviewHeightScreenFraction:
+    wallpaperPicker.previewHeightScreenFraction ?? 0.42
+  readonly property real wallpaperPreviewAspectRatio:
+    wallpaperPicker.previewAspectRatio ?? 1.7777777778
+  readonly property real wallpaperCarouselRadiusWidthFraction:
+    wallpaperPicker.carouselRadiusWidthFraction ?? 0.48
+  readonly property real wallpaperPreviewSideScale:
+    wallpaperPicker.sideScale ?? 0.78
+  readonly property real wallpaperPreviewSideOpacity:
+    wallpaperPicker.sideOpacity ?? 0.55
   readonly property int wallpaperPickerGap:
     wallpaperPicker.gap ?? menuOuterPadding * 2
 

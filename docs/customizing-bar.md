@@ -302,7 +302,10 @@ list.
 The dedicated application picker, calculator, and wallpaper picker inherit
 that same frame. Their additional appearance values live in
 `applicationPicker`, `calculator`, and `wallpaperPicker` beside `menu` in
-`quickshell.json`; see [Themes](themes.md) for the ownership split.
+`quickshell.json`. The wallpaper object controls the carousel width and preview
+height as screen fractions, the preview aspect ratio, the carousel ellipse's
+horizontal radius, side-item scale and opacity, and the gap between previews.
+See [Themes](themes.md) for the ownership split.
 
 `bar.minimumThickness` is the bar's minimum content height, not a forced height.
 Each widget's content plus the cross-axis padding establishes its natural

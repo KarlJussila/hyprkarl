@@ -47,7 +47,7 @@ application picker. Its internal `entries` and `launch` actions form the one
 Gio boundary for MIME discovery, changing the default application, and
 file-aware launch semantics. QML must not duplicate those operations.
 `hk-wallpaper-entries` is the equivalent short-lived JSON source for the
-thumbnail picker; wallpaper mutation remains in `hk-wallpaper` commands.
+wallpaper carousel; wallpaper mutation remains in `hk-wallpaper` commands.
 
 `hk-shell osd` is the only public transport for transient shell status.
 Hardware and media commands own their system action and pass only semantic

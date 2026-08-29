@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-wallpaper-remove
-# Remove a wallpaper from the current theme and delete its cached thumbnail.
+# Remove a wallpaper from the current theme and delete its cached preview.
 #
 # Usage:
 #   hk-wallpaper-remove <filename>

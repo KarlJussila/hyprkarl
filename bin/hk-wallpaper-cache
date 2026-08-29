@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-wallpaper-cache
-# Manage the wallpaper thumbnail cache for the current theme.
+# Manage the wallpaper preview cache for the current theme.
 #
 # Usage:
 #   hk-wallpaper-cache                          Sync cache (add missing, remove stale)
@@ -13,21 +13,29 @@ source "$SCRIPT_DIR/lib/theme.sh"
 THEME_NAME=$(theme_current_name)
 WALLPAPER_DIR="$HYPRKARL_CURRENT_THEME/wallpapers"
 CACHE_DIR="$HOME/.cache/hyprkarl/wallpapers/$THEME_NAME"
+PREVIEW_SIZE="960x540"
+FORMAT_FILE="$CACHE_DIR/.format"
 
 mkdir -p "$CACHE_DIR"
 
-generate_thumbnail() {
+if [[ ! -f "$FORMAT_FILE" ]] || [[ $(< "$FORMAT_FILE") != "$PREVIEW_SIZE" ]]; then
+  rm -f "$CACHE_DIR"/*
+  printf '%s\n' "$PREVIEW_SIZE" > "$FORMAT_FILE"
+fi
+
+generate_preview() {
   local img="$1"
   local name
   name=$(basename "$img")
-  magick "$img" -strip -thumbnail 500x500^ -gravity center -extent 500x500 "$CACHE_DIR/$name"
+  magick "$img" -strip -thumbnail "${PREVIEW_SIZE}^" \
+    -gravity center -extent "$PREVIEW_SIZE" "$CACHE_DIR/$name"
 }
 
 if [[ "$1" == "--regenerate" ]]; then
   rm -f "$CACHE_DIR"/*
   for img in "$WALLPAPER_DIR"/*; do
     [[ -f "$img" ]] || continue
-    generate_thumbnail "$img"
+    generate_preview "$img"
   done
   exit 0
 fi
@@ -38,7 +46,7 @@ if [[ "$1" == "--single" ]]; then
     exit 1
   fi
   rm -f "$CACHE_DIR/$2"
-  generate_thumbnail "$WALLPAPER_DIR/$2"
+  generate_preview "$WALLPAPER_DIR/$2"
   exit 0
 fi
 
@@ -55,6 +63,6 @@ for img in "$WALLPAPER_DIR"/*; do
   [[ -f "$img" ]] || continue
   name=$(basename "$img")
   if [[ ! -f "$CACHE_DIR/$name" ]]; then
-    generate_thumbnail "$img"
+    generate_preview "$img"
   fi
 done

@@ -69,7 +69,18 @@ class RepositoryValidationTests(unittest.TestCase):
             self.assertEqual(hyprkarl["menu"]["selectionBorderWidth"], 1)
             self.assertEqual(hyprkarl["applicationPicker"]["iconSize"], 32)
             self.assertEqual(hyprkarl["calculator"]["width"], 480)
-            self.assertEqual(hyprkarl["wallpaperPicker"]["columns"], 3)
+            self.assertEqual(
+                hyprkarl["wallpaperPicker"],
+                {
+                    "widthScreenFraction": 0.82,
+                    "previewHeightScreenFraction": 0.42,
+                    "previewAspectRatio": 1.7777777778,
+                    "carouselRadiusWidthFraction": 0.48,
+                    "sideScale": 0.78,
+                    "sideOpacity": 0.55,
+                    "gap": 14,
+                },
+            )
             self.assertEqual(hyprkarl["notification"]["indicatorScale"], 1.5)
             self.assertEqual(hyprkarl["notification"]["stackSpacing"], 0)
             self.assertEqual(hyprkarl["notification"]["transitionDuration"], 140)

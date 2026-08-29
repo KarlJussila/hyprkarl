@@ -32,5 +32,5 @@ run = [ 'shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text
 # Go to hyprkarl directory
 [[mgr.prepend_keymap]]
 on   = [ "g", "H" ]
-run  = "cd $HYPRKARL_PATH"
-desc = "Cd to $HYPRKARL_PATH"
+run  = "cd ~/.local/share/hyprkarl"
+desc = "Cd to hyprkarl"

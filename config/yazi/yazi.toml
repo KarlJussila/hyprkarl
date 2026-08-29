@@ -12,6 +12,7 @@ desc = "Set as wallpaper"
 [open]
 rules = [
   { url = "*/", use = [ "edit", "open", "reveal" ] },
+  { url = "*.txt", use = [ "edit", "open-with", "reveal" ] },
   { mime = "text/*", use = [ "edit", "open-with", "reveal" ] },
   { mime = "image/*", use = [ "open", "open-with", "reveal", "set-wallpaper" ] },
   { mime = "{audio,video}/*", use = [ "play", "open-with", "reveal" ] },
@@ -20,4 +21,9 @@ rules = [
   { mime = "inode/empty", use = [ "edit", "open-with", "reveal" ] },
   { mime = "vfs/{absent,stale}", use = "download" },
   { url = "*", use = [ "open", "open-with", "reveal" ] },
+]
+
+[plugin]
+prepend_previewers = [
+  { url = "*.txt", run = "code" },
 ]

@@ -417,9 +417,11 @@ same `ToggleIndicator` as bar controls.
 `qalc` process, copies the chosen result with `wl-copy`, and owns five recent
 expression/result pairs under XDG state. `features/wallpaper/` loads the
 landscape preview cache once per open through `hk-wallpaper-entries` and
-presents it as a centered, snapping carousel for set or remove actions. Neither
-feature starts a background poller. Their appearance comes from the shared
-`menu` tokens plus the
+presents it as a centered, snapping carousel for set or remove actions. The
+carousel uses the shared modal focus and dismissal boundary without its visible
+frame, and its cards may extend across the full output. Neither feature starts
+a background poller. Their appearance comes from the shared `menu` tokens plus
+the
 `applicationPicker`, `calculator`, and `wallpaperPicker` theme objects.
 The command menu keeps its compact, centered visual identity while deriving
 all appearance from the shell theme and its nested `menu` object. Visual

@@ -239,7 +239,8 @@ reactive per-output notification positioning; there is no discovery or plugin
 layer.
 The shell keeps application-wide service state separate from per-output
 presentation. Feature panels compose through one host per bar; focused menus,
-pickers, and the display arranger compose the shared modal frame; OSD,
+pickers, and the display arranger compose through the shared modal boundary,
+with the wallpaper carousel using its frameless full-output presentation; OSD,
 notifications, and polkit each retain their own lifecycle boundary. Command
 providers exist once per provider-backed widget ID, and static widgets create
 no polling runtime. Explicit personal QML receives the documented narrow

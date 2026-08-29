@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import "../overlay"
 
-OverlayWindow {
+ModalWindow {
   id: root
 
   readonly property bool active: WallpaperPickerState.active
@@ -18,17 +18,16 @@ OverlayWindow {
     previewHeight * theme.wallpaperPreviewAspectRatio)
   readonly property real cellGap: theme.wallpaperPickerGap
   readonly property real carouselDepth: cellGap
+  readonly property var carouselEntries:
+    WallpaperPickerState.entries.length === 2
+      ? WallpaperPickerState.entries.concat(WallpaperPickerState.entries)
+      : WallpaperPickerState.entries
 
   shown: active
-  title: WallpaperPickerState.action === "remove"
-    ? "Remove Wallpaper"
-    : "Wallpapers"
-  searchable: false
-  requestedWidth: carouselWidth
-  requestedBodyHeight: previewHeight + cellGap * 4
+  framed: false
 
   function resetSelection(): void {
-    let index = WallpaperPickerState.entries.findIndex(entry => entry.current)
+    let index = carouselEntries.findIndex(entry => entry.current)
     if (index < 0 && wallpaperCarousel.count > 0) index = 0
     wallpaperCarousel.currentIndex = index
   }
@@ -66,7 +65,7 @@ OverlayWindow {
         || event.key === Qt.Key_Space) {
       if (wallpaperCarousel.currentIndex >= 0) {
         WallpaperPickerState.activate(
-          WallpaperPickerState.entries[wallpaperCarousel.currentIndex])
+          carouselEntries[wallpaperCarousel.currentIndex])
       }
     } else {
       return
@@ -99,10 +98,12 @@ OverlayWindow {
   PathView {
     id: wallpaperCarousel
 
-    anchors.fill: parent
+    anchors.centerIn: parent
+    width: root.carouselWidth
+    height: root.previewHeight + root.cellGap * 4
     visible: count > 0
-    clip: true
-    model: WallpaperPickerState.entries
+    clip: false
+    model: root.carouselEntries
     currentIndex: -1
     pathItemCount: Math.min(3, count)
     cacheItemCount: 2
@@ -167,26 +168,22 @@ OverlayWindow {
       width: root.previewWidth
       height: root.previewHeight
       // qmllint disable missing-property
+      readonly property real pathCardOpacity: cell.PathView.cardOpacity
       z: cell.PathView.cardScale
       scale: cell.PathView.cardScale
-      opacity: cell.PathView.cardOpacity
       // qmllint enable missing-property
 
       Rectangle {
         anchors.fill: parent
-        color: root.theme.menuBorder
+        color: root.theme.menuBackground
         border.color: cell.PathView.isCurrentItem
           ? WallpaperPickerState.action === "remove"
             ? root.theme.urgent
             : root.theme.menuAccent
-          : cell.modelData.current
-            ? root.theme.menuAccent
-            : root.theme.menuBorder
+          : root.theme.menuBorder
         border.width: cell.PathView.isCurrentItem
           ? Math.max(3, root.theme.menuSelectionBorderWidth)
-          : cell.modelData.current
-            ? Math.max(2, root.theme.menuSelectionBorderWidth)
-            : root.theme.menuSelectionBorderWidth
+          : Math.max(2, root.theme.menuSelectionBorderWidth)
         radius: root.theme.menuEntryRadius
         clip: true
 
@@ -199,6 +196,7 @@ OverlayWindow {
           fillMode: Image.PreserveAspectCrop
           asynchronous: true
           cache: true
+          opacity: cell.pathCardOpacity
         }
 
         Rectangle {
@@ -209,7 +207,7 @@ OverlayWindow {
           height: wallpaperName.implicitHeight
             + root.theme.menuEntryPadding * 2
           color: root.theme.menuBackground
-          opacity: 0.82
+          opacity: 0.82 * cell.pathCardOpacity
 
           Text {
             id: wallpaperName

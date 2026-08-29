@@ -10,6 +10,7 @@ PanelWindow {
   required property var output
   required property var theme
   property bool shown: false
+  property bool framed: true
   property real requestedWidth: theme.menuSearchWidth
   property real requestedHeight: 0
   property real reveal: shown ? 1 : 0
@@ -63,36 +64,44 @@ PanelWindow {
   Rectangle {
     id: frame
 
-    readonly property real frameInset: root.theme.menuOuterBorderWidth
-      + root.theme.menuOuterPadding
+    readonly property real frameInset: root.framed
+      ? root.theme.menuOuterBorderWidth + root.theme.menuOuterPadding
+      : 0
 
     anchors.centerIn: parent
-    width: Math.min(root.requestedWidth, root.width)
-    height: Math.min(root.requestedHeight, root.height)
+    width: root.framed
+      ? Math.min(root.requestedWidth, root.width)
+      : root.width
+    height: root.framed
+      ? Math.min(root.requestedHeight, root.height)
+      : root.height
     opacity: root.reveal
-    color: root.theme.menuBackground
+    color: root.framed ? root.theme.menuBackground : "transparent"
     border.color: root.theme.menuBorder
-    border.width: root.theme.menuOuterBorderWidth
-    radius: root.theme.menuOuterRadius
+    border.width: root.framed ? root.theme.menuOuterBorderWidth : 0
+    radius: root.framed ? root.theme.menuOuterRadius : 0
 
-    MouseArea { anchors.fill: parent }
+    MouseArea {
+      anchors.fill: parent
+      enabled: root.framed
+    }
 
     Rectangle {
       id: innerFrame
 
       anchors.fill: parent
       anchors.margins: frame.frameInset
-      color: root.theme.menuBackground
+      color: root.framed ? root.theme.menuBackground : "transparent"
       border.color: root.theme.menuBorder
-      border.width: root.theme.menuInnerBorderWidth
-      radius: root.theme.menuInnerRadius
+      border.width: root.framed ? root.theme.menuInnerBorderWidth : 0
+      radius: root.framed ? root.theme.menuInnerRadius : 0
 
       Item {
         id: body
 
         anchors.fill: parent
-        anchors.margins: root.theme.menuInnerBorderWidth
-        clip: true
+        anchors.margins: root.framed ? root.theme.menuInnerBorderWidth : 0
+        clip: root.framed
       }
     }
   }

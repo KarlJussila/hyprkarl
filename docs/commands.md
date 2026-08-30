@@ -116,6 +116,13 @@ completes successfully. Individual update commands do not emit that event.
 - `hk-shutdown`
   Shut down through `hyprshutdown` with the standard countdown overlay.
 
+### Screenshots
+
+- `hk-screenshot <window|output|region> [hyprshot options]`
+  Capture with Hyprshot while preserving an open Quickshell feature panel.
+  Additional options pass through to Hyprshot. The default `Print` bindings
+  use this command for window, display, and region capture.
+
 ## Themes and Wallpapers
 
 - `hk-theme set <theme>`

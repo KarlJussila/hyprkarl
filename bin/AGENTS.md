@@ -62,6 +62,12 @@ Bindings and helpers must use that typed surface rather than call a daemon
 control tool or internal QML object. Notification producers continue to use
 the standard freedesktop service through `notify-send` or their toolkit.
 
+`hk-screenshot` is the shipped Hyprshot boundary. Before starting its selection
+overlay, it asks the shell to release any feature-panel focus grab without
+dismissing the panel. It restores panel focus after Hyprshot exits, including
+after a cancelled selection. Screenshot bindings must use this command instead
+of calling Hyprshot directly.
+
 `hk-shell stop` owns the whole daemon boundary, not only the current config
 generation. A reload can briefly remove a run ID while its daemon remains able
 to publish another generation; stop both the listed run IDs and their daemon

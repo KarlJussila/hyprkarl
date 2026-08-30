@@ -12,6 +12,7 @@ PanelWindow {
   required property var shellConfig
   required property var theme
   required property var systemState
+  required property bool screenshotActive
 
   readonly property var panelHost: panelHostLoader.item
   readonly property int totalThickness: theme.barMarginScreen
@@ -49,6 +50,7 @@ PanelWindow {
       barWindow: root
       edge: root.shellConfig.edge
       theme: root.theme
+      screenshotActive: root.screenshotActive
     }
   }
 

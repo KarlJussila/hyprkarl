@@ -1,0 +1,19 @@
+#!/bin/bash
+# hk-screenshot
+# Capture the desktop without dismissing an open Quickshell feature panel.
+
+mode=${1:-}
+case "$mode" in
+  window | output | region) shift ;;
+  *) echo "Usage: hk-screenshot <window|output|region> [hyprshot options]" >&2; exit 1 ;;
+esac
+
+restore_panel_focus() {
+  qs -p "$HYPRKARL_PATH/config/quickshell" ipc call screenshot finish >/dev/null 2>&1
+}
+
+# Hyprshot's selection layer clears Quickshell's focus grab, which normally
+# dismisses an open panel. Release the grab first and restore it after capture.
+qs -p "$HYPRKARL_PATH/config/quickshell" ipc call screenshot begin >/dev/null 2>&1
+trap restore_panel_focus EXIT
+hyprshot -m "$mode" "$@"

@@ -106,6 +106,14 @@ for target in menu launcher openWith calculator wallpaper notifications osd; do
     fail "disabled IPC target '$target' is still present"
   fi
 done
+grep -q '^target screenshot' <<< "$ipc" \
+  || fail "screenshot coordination IPC target is missing"
+[[ $(XDG_CONFIG_HOME="$CONFIG_HOME" XDG_STATE_HOME="$STATE_HOME" \
+  qs ipc -p "$SHELL_ROOT" call screenshot begin) == true ]] \
+  || fail "screenshot focus hold did not start"
+[[ $(XDG_CONFIG_HOME="$CONFIG_HOME" XDG_STATE_HOME="$STATE_HOME" \
+  qs ipc -p "$SHELL_ROOT" call screenshot finish) == true ]] \
+  || fail "screenshot focus hold did not finish"
 
 call_user_test() {
   XDG_CONFIG_HOME="$CONFIG_HOME" XDG_STATE_HOME="$STATE_HOME" \

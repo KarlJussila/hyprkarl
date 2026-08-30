@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 
 import QtQml
 import Quickshell
+import Quickshell.Io
 import "config"
 import "features/display"
 import "features/menu"
@@ -12,6 +13,24 @@ import "features/overlay"
 import "state"
 
 ShellRoot {
+  id: root
+
+  property bool screenshotActive: false
+
+  IpcHandler {
+    target: "screenshot"
+
+    function begin(): bool {
+      root.screenshotActive = true
+      return true
+    }
+
+    function finish(): bool {
+      root.screenshotActive = false
+      return true
+    }
+  }
+
   ShellConfig { id: configObject }
   Theme { id: themeObject }
   UserRoot {
@@ -68,6 +87,7 @@ ShellRoot {
       osdState: osdStateLoader.item
       notificationState: notificationStateLoader.item
       userRoot: userRootObject
+      screenshotActive: root.screenshotActive
     }
   }
 }

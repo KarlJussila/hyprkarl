@@ -23,9 +23,9 @@ hl.bind("SUPER + CTRL + W", hl.dsp.exec_cmd("hk-wifi-launch"), { description = "
 hl.bind("SUPER + CTRL + T", hl.dsp.exec_cmd("hk-tui-launch btop"), { description = "Activity" })
 
 -- Screenshots
-hl.bind("SUPER + PRINT", hl.dsp.exec_cmd("hyprshot -m window"), { description = "Screenshot window" })
-hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m output"), { locked = true, description = "Screenshot display" })
-hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region"), { locked = true, description = "Screenshot region" })
+hl.bind("SUPER + PRINT", hl.dsp.exec_cmd("hk-screenshot window"), { description = "Screenshot window" })
+hl.bind("PRINT", hl.dsp.exec_cmd("hk-screenshot output"), { locked = true, description = "Screenshot display" })
+hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("hk-screenshot region"), { locked = true, description = "Screenshot region" })
 
 -- Suspend on lid close
 hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("hk-suspend"), { description = "Suspend on lid close" })

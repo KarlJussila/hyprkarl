@@ -204,6 +204,9 @@ transitions, scrolling, and contact-aware corner radii. Panels grow to their
 content height or the remaining monitor height, whichever is smaller; do not
 restore an arbitrary theme height cap. It whitelists the bar and popup in one
 `HyprlandFocusGrab` so another panel trigger switches on the first click.
+The application-wide screenshot IPC target temporarily releases that grab
+without dismissing the panel, then restores panel focus after capture. This is
+the only exception to treating a cleared grab as an outside interaction.
 It also owns edge-dependent popup gravity: top-bar panels expand downward and
 bottom-bar panels expand upward while anchoring within the bar surface.
 Panel contents must not create their own popup window or reproduce geometry.

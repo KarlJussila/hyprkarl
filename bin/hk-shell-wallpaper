@@ -2,23 +2,9 @@
 # hk-shell-wallpaper
 # Open the shell-native wallpaper picker.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=lib/shell.sh
-source "$SCRIPT_DIR/lib/shell.sh"
-
 action=${1:-set}
-case "$action" in
-  set|remove) ;;
-  close) exec qs -p "$HK_SHELL_CONFIG" ipc call wallpaper close ;;
-  *) echo "Usage: hk-shell wallpaper <set|remove|close>" >&2; exit 1 ;;
-esac
+if [[ "$action" == "close" ]]; then
+  exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call wallpaper close
+fi
 
-if [[ -n ${HYPRKARL_OUTPUT:-} ]]; then
-  result="$(qs -p "$HK_SHELL_CONFIG" ipc call wallpaper openForScreen "$HYPRKARL_OUTPUT" "$action")" || exit 1
-else
-  result="$(qs -p "$HK_SHELL_CONFIG" ipc call wallpaper open "$action")" || exit 1
-fi
-if [[ "$result" != "true" ]]; then
-  echo "Could not open wallpaper picker." >&2
-  exit 1
-fi
+exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call wallpaper open "$action"

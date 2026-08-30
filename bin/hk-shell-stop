@@ -2,44 +2,12 @@
 # hk-shell-stop
 # Stop every running instance of the Hyprkarl Quickshell configuration.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=lib/shell.sh
-source "$SCRIPT_DIR/lib/shell.sh"
+SHELL_UNIT="hyprkarl-quickshell.service"
 
-instances="$(hk_shell_instances)"
-if [[ -z "$instances" ]]; then
+if ! systemctl --user is-active --quiet "$SHELL_UNIT"; then
   echo "Shell is already stopped."
   exit 0
 fi
 
-pids="$(jq -r '.[].pid' <<<"$instances")"
-
-while read -r instance_id; do
-  qs kill -i "$instance_id" >/dev/null || exit 1
-done < <(jq -r '.[].id' <<<"$instances")
-
-while read -r pid; do
-  if kill -0 "$pid" 2>/dev/null; then
-    kill "$pid" || exit 1
-  fi
-done <<<"$pids"
-
-for _ in {1..100}; do
-  daemon_running=false
-  while read -r pid; do
-    if kill -0 "$pid" 2>/dev/null; then
-      daemon_running=true
-      break
-    fi
-  done <<<"$pids"
-
-  if [[ "$daemon_running" == false ]] && ! hk_shell_is_running; then
-    echo "Shell stopped."
-    exit 0
-  fi
-
-  sleep 0.05
-done
-
-echo "Shell failed to stop." >&2
-exit 1
+systemctl --user stop "$SHELL_UNIT"
+echo "Shell stopped."

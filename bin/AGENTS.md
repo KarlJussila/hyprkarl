@@ -38,9 +38,8 @@ manifest load so one broken service is logged to stderr and skipped without
 hiding the remaining services; do not add a second manifest schema validator
 to the menu path.
 The bar's generic command-widget launcher sets `HYPRKARL_OUTPUT` to its output
-name. `hk-shell-menu` uses that context when present so the static command
-button opens on the bar that was clicked; ordinary callers continue to target
-the focused monitor.
+name. `hk-shell-menu` forwards that context to Quickshell so the menu still
+opens on the clicked bar when Hyprland does not focus monitors on mouse movement.
 
 `hk-open-with <file>` is the file-manager entry point for the shared
 application picker. Its internal `entries` and `launch` actions form the one
@@ -68,10 +67,12 @@ dismissing the panel. It restores panel focus after Hyprshot exits, including
 after a cancelled selection. Screenshot bindings must use this command instead
 of calling Hyprshot directly.
 
-`hk-shell stop` owns the whole daemon boundary, not only the current config
-generation. A reload can briefly remove a run ID while its daemon remains able
-to publish another generation; stop both the listed run IDs and their daemon
-PIDs, then report success only after neither remains.
+`hk-shell start` launches Quickshell as a UWSM service so the process inherits
+the stable user-session environment rather than application-specific variables
+from its caller. `hk-shell stop` owns the whole process boundary, not only the
+current config generation. A reload can briefly remove a run ID while leaving
+its Quickshell process alive; stop that process, then wait until neither form is
+still running.
 
 `hk-display` is the single display-control boundary. Its Python library owns
 Hyprland output discovery, mode, scale, transform, position, and enable/disable changes, internal

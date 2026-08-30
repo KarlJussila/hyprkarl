@@ -2,30 +2,32 @@
 # hk-shell-start
 # Start the Hyprkarl Quickshell bar if it is not running.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=lib/shell.sh
-source "$SCRIPT_DIR/lib/shell.sh"
+source "$HYPRKARL_PATH/bin/lib/shell.sh"
+
+SHELL_UNIT="hyprkarl-quickshell.service"
 
 if hk_shell_is_running; then
   echo "Shell is already running."
   exit 0
 fi
 
-shell_import_path=$HK_SHELL_CONFIG
-if [[ -n ${QML_IMPORT_PATH:-} ]]; then
-  shell_import_path="$shell_import_path:$QML_IMPORT_PATH"
-fi
-launch_output="$(uwsm app -- env QML_IMPORT_PATH="$shell_import_path" \
-  qs -d -p "$HK_SHELL_CONFIG" 2>&1)"
-
-# Daemonized qs exits successfully even when loading the QML configuration fails.
-if ! hk_shell_is_running; then
-  if [[ -n "$launch_output" ]]; then
-    printf '%s\n' "$launch_output" >&2
-  else
-    echo "Shell failed to start." >&2
-  fi
+if ! uwsm app -t service -u "$SHELL_UNIT" -d "Hyprkarl Quickshell" -- \
+    env QML_IMPORT_PATH="$HK_SHELL_CONFIG" qs -p "$HK_SHELL_CONFIG"; then
   exit 1
 fi
 
-echo "Shell started."
+for _ in {1..100}; do
+  if hk_shell_is_running; then
+    echo "Shell started."
+    exit 0
+  fi
+
+  if ! systemctl --user is-active --quiet "$SHELL_UNIT"; then
+    break
+  fi
+
+  sleep 0.05
+done
+
+journalctl --user -u "$SHELL_UNIT" --since "5 seconds ago" --no-pager -o cat >&2
+exit 1

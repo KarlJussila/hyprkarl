@@ -2,12 +2,9 @@
 # hk-shell-status
 # Print JSON describing Hyprkarl Quickshell instances.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=lib/shell.sh
-source "$SCRIPT_DIR/lib/shell.sh"
+source "$HYPRKARL_PATH/bin/lib/shell.sh"
 
-instances="$(hk_shell_instances)"
-if [[ -z "$instances" ]]; then
+if ! instances=$(hk_shell_instances); then
   printf '{"running":false,"instances":[]}\n'
   exit 1
 fi

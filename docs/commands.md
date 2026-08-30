@@ -231,13 +231,14 @@ These commands manage and communicate with the session-started production
 shell.
 
 - `hk-shell start`
-  Start the Hyprkarl Quickshell configuration in a UWSM scope if it is not
-  already running. The command verifies that Quickshell registered a live
-  instance and reports QML load failures.
+  Start the Hyprkarl Quickshell configuration as a UWSM service if it is not
+  already running. The service uses the stable user-session environment. The
+  command verifies that Quickshell registered a live instance and reports QML
+  load failures.
 - `hk-shell stop`
   Stop every running instance of the Hyprkarl Quickshell configuration. It is
   safe to run when the bar is already stopped and does not return until both
-  the registered config generations and their Quickshell daemon processes have
+  the registered config generations and their Quickshell processes have
   exited.
 - `hk-shell restart`
   Stop and start the bar after shutdown completes.

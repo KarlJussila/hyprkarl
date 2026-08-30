@@ -471,9 +471,10 @@ shipped main-menu button is one:
 
 With no provider `command`, `text` or `icon` supplies the static presentation
 and no timer or process is created. Click commands receive the clicked bar's
-output name in `HYPRKARL_OUTPUT`; `hk-shell menu` uses it so a bar action opens
-on that bar's monitor rather than whichever monitor was previously focused.
-`mode`, `interval`, and `output` apply only when a provider `command` exists.
+output name in `HYPRKARL_OUTPUT`. `hk-shell menu` forwards it because the
+command process otherwise loses which bar was clicked. This keeps the menu on
+that output when Hyprland does not focus monitors on mouse movement. `mode`,
+`interval`, and `output` apply only when a provider `command` exists.
 
 A minimal polling widget treats trimmed standard output as its text:
 

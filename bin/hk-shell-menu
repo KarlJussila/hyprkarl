@@ -2,38 +2,16 @@
 # hk-shell-menu
 # Control the Quickshell menu through its public IPC target.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=lib/shell.sh
-source "$SCRIPT_DIR/lib/shell.sh"
-
-usage() {
-  cat <<'EOF'
-Usage:
-  hk-shell menu [toggle|open] [menu-id]
-  hk-shell menu close
-EOF
-}
-
 action=${1:-toggle}
 menu=${2:-main}
 
-case "$action" in
-  toggle|open) ;;
-  close) menu="" ;;
-  -h|--help|help) usage; exit 0 ;;
-  *) usage >&2; exit 1 ;;
-esac
-
 if [[ "$action" == "close" ]]; then
-  exec qs -p "$HK_SHELL_CONFIG" ipc call menu close
+  exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call menu close
 fi
 
+# A bar click crosses a process boundary here, so forward the bar that launched it.
 if [[ -n ${HYPRKARL_OUTPUT:-} ]]; then
-  result="$(qs -p "$HK_SHELL_CONFIG" ipc call menu "${action}ForScreen" "$HYPRKARL_OUTPUT" "$menu")" || exit 1
-else
-  result="$(qs -p "$HK_SHELL_CONFIG" ipc call menu "$action" "$menu")" || exit 1
+  exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call menu "${action}ForScreen" "$HYPRKARL_OUTPUT" "$menu"
 fi
-if [[ "$result" != "true" ]]; then
-  printf 'Could not open menu: %s\n' "$menu" >&2
-  exit 1
-fi
+
+exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call menu "$action" "$menu"

@@ -282,8 +282,10 @@ The shell watches the XDG-state `current/theme.json` selector, then reads the
 named immutable artifact's `quickshell.json`. Theme switches apply without
 restarting the shell.
 
-Hyprland starts it with `hk-shell start`; use `hk-shell status`, `hk-shell
-logs`, and `hk-shell stop` to inspect and manage it. A direct
+Hyprland starts it with `hk-shell start`; the resulting UWSM service inherits
+the stable user-session environment rather than the environment of the command
+that requested the start. Use `hk-shell status`, `hk-shell logs`, and
+`hk-shell stop` to inspect and manage it. A direct
 `QML_IMPORT_PATH=config/quickshell qs -p config/quickshell` launch remains
 useful for foreground development.
 See `config/quickshell/README.md` for its structure, checks, and interactions.

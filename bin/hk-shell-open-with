@@ -2,25 +2,4 @@
 # hk-shell-open-with
 # Open the shell-native application chooser for a file.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=lib/shell.sh
-source "$SCRIPT_DIR/lib/shell.sh"
-
-if [[ "${1:-}" != "open" || -z "${2:-}" ]]; then
-  echo "Usage: hk-shell open-with open <file>" >&2
-  exit 1
-fi
-
-if [[ -n ${HYPRKARL_OUTPUT:-} ]]; then
-  method=openForScreen
-  args=("$HYPRKARL_OUTPUT" "$2")
-else
-  method=open
-  args=("$2")
-fi
-
-result="$(qs -p "$HK_SHELL_CONFIG" ipc call openWith "$method" "${args[@]}")" || exit 1
-if [[ "$result" != "true" ]]; then
-  printf 'Could not open application chooser for: %s\n' "$2" >&2
-  exit 1
-fi
+exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call openWith open "$2"

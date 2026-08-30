@@ -2,31 +2,10 @@
 # hk-shell-notifications
 # Control shell-native notifications through the public IPC target.
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=lib/shell.sh
-source "$SCRIPT_DIR/lib/shell.sh"
-
-usage() {
-  cat <<'EOF'
-Usage:
-  hk-shell notifications dismiss
-  hk-shell notifications dismiss-all
-  hk-shell notifications toggle-silenced
-  hk-shell notifications restore
-EOF
-}
-
-case "${1:-}" in
-  dismiss) method=dismiss ;;
+method=${1:-}
+case "$method" in
   dismiss-all) method=dismissAll ;;
   toggle-silenced) method=toggleSilenced ;;
-  restore) method=restore ;;
-  -h|--help|help) usage; exit 0 ;;
-  *) usage >&2; exit 1 ;;
 esac
 
-result="$(qs -p "$HK_SHELL_CONFIG" ipc call notifications "$method")" || exit 1
-if [[ "$result" != "true" ]]; then
-  printf 'Could not control shell notifications.\n' >&2
-  exit 1
-fi
+exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call notifications "$method"

@@ -10,7 +10,7 @@
 # Default temperature values
 ON_TEMP=4000
 OFF_TEMP=6000
-ON_GAMMA=40
+ON_GAMMA=60
 OFF_GAMMA=100
 
 # Ensure hyprsunset is running
@@ -36,17 +36,17 @@ disable_nightlight() {
 }
 
 case "${1:-toggle}" in
-  on)     enable_nightlight ;;
-  off)    disable_nightlight ;;
-  toggle)
-    if [[ "$CURRENT_TEMP" == "$OFF_TEMP" ]]; then
-      enable_nightlight
-    else
-      disable_nightlight
-    fi
-    ;;
-  *)
-    echo "Usage: $(basename "$0") [on|off|toggle]" >&2
-    exit 1
-    ;;
+on) enable_nightlight ;;
+off) disable_nightlight ;;
+toggle)
+  if [[ "$CURRENT_TEMP" == "$OFF_TEMP" ]]; then
+    enable_nightlight
+  else
+    disable_nightlight
+  fi
+  ;;
+*)
+  echo "Usage: $(basename "$0") [on|off|toggle]" >&2
+  exit 1
+  ;;
 esac

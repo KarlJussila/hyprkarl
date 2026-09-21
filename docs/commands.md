@@ -318,7 +318,7 @@ shell.
 - `hk-webcam`
   Open a webcam preview window.
 - `hk-dictionary`
-  Dictionary TUI powered by `fzf` and dict.org.
+  Dictionary TUI powered by `fzf` and the FreeDict DICT server.
 - `hk-wifi-restart`
   Unblock Wi-Fi.
 - `hk-audio-restart`

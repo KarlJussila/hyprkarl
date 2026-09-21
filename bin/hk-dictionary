@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-dictionary
-# A dictionary TUI powered by fzf and dict.org
+# A dictionary TUI powered by fzf and the FreeDict DICT server.
 
 # Create a temporary file to store the current source
 SOURCE_FILE=$(mktemp)
@@ -14,9 +14,10 @@ readonly YELLOW="\033[33m"
 readonly DIM="\033[2m"
 readonly RESET="\033[0m"
 readonly RED="\033[31m"
+readonly DICT_HOST="dict.dyslexicfish.net"
 
 # Export color variables to make them available in subshells created by pipelines
-export BOLD CYAN GREEN YELLOW DIM RESET RED
+export BOLD CYAN GREEN YELLOW DIM RESET RED DICT_HOST
 
 # Function to toggle between dictionary and thesaurus
 toggle_source() {
@@ -52,7 +53,7 @@ get_matches() {
   echo "$query"
 
   # Get matches from the dictionary server and remove duplicate of query
-  local dict_url="dict://dict.org/m:$query:*"
+  local dict_url="dict://$DICT_HOST/m:$query:*"
   fetch_from_dict "$dict_url" | clean_dict_output \
     | awk '{gsub(/^"|"$/, "", $2); print $2}' | grep -v "^$" | sort -f | uniq -i \
     | grep -v "^$query$"
@@ -125,14 +126,14 @@ dict_preview() {
   [[ -n "$word" ]] || return
   
   # Try to get definition from the current source using curl
-  local dict_url="dict://dict.org/d:$word:$source"
+  local dict_url="dict://$DICT_HOST/d:$word:$source"
   local dict_output
   dict_output=$(fetch_from_dict "$dict_url" | clean_dict_output)
   
   # If the current source fails, print the raw fallback output, then return
   if [[ -z "$dict_output" ]]; then
     echo -e "${BOLD}${RED}Word not found in current source. Showing results from all sources:${RESET}"
-    dict_url="dict://dict.org/d:$word:"
+    dict_url="dict://$DICT_HOST/d:$word:"
     fetch_from_dict "$dict_url" | clean_dict_output
     return
   fi

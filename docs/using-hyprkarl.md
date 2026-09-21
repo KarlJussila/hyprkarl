@@ -112,7 +112,10 @@ hk-wallpaper add /path/to/image.png
 hk-wallpaper remove <filename>
 ```
 
-You can also add wallpapers from yazi with its `Set as wallpaper` action.
+You can also use Yazi's image actions to set a wallpaper, clear metadata in
+place, or create a JPG copy beside an image that is not already `.jpg`. Select
+an image, press `O`, and choose `Set as wallpaper`, `Clear image metadata`, or
+`Convert to JPG`.
 
 ## Defaults: Terminal, Editor, Shell
 

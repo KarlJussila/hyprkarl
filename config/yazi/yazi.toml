@@ -9,12 +9,23 @@ run  = "hk-wallpaper add %s1"
 for  = "linux"
 desc = "Set as wallpaper"
 
+[[opener.clear-image-metadata]]
+run  = "exiftool -all= -overwrite_original %s"
+for  = "linux"
+desc = "Clear image metadata"
+
+[[opener.convert-image-to-jpg]]
+run  = "for path in %s; do magick \"$path\" \"${path%%.*}.jpg\"; done"
+for  = "linux"
+desc = "Convert to JPG"
+
 [open]
 rules = [
   { url = "*/", use = [ "edit", "open", "reveal" ] },
   { url = "*.txt", use = [ "edit", "open-with", "reveal" ] },
   { mime = "text/*", use = [ "edit", "open-with", "reveal" ] },
-  { mime = "image/*", use = [ "open", "open-with", "reveal", "set-wallpaper" ] },
+  { url = "*.jpg", use = [ "open", "open-with", "reveal", "set-wallpaper", "clear-image-metadata" ] },
+  { mime = "image/*", use = [ "open", "open-with", "reveal", "set-wallpaper", "clear-image-metadata", "convert-image-to-jpg" ] },
   { mime = "{audio,video}/*", use = [ "play", "open-with", "reveal" ] },
   { mime = "application/{json,ndjson,javascript,wine-extension-ini}", use = [ "edit", "open-with", "reveal" ] },
   { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", use = [ "extract", "open-with", "reveal" ] },

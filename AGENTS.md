@@ -202,6 +202,14 @@ scheme; GTK discovery and asset loading have been unreliable through those
 paths. Normal updates migrate the old Hyprkarl-owned Stow tree but reject an
 unrelated directory at the same destination.
 
+### Yazi Configuration
+
+The shipped `config/yazi/` tree owns Yazi's starting configuration. Image files
+expose the `Set as wallpaper` and `Clear image metadata` actions through Yazi's
+interactive opener menu; images that are not already `.jpg` also expose
+`Convert to JPG`. These use ExifTool and ImageMagick, which are already listed
+in the package manifest.
+
 ### Quickshell Bar Configuration
 
 The active bar under `config/quickshell/` reads

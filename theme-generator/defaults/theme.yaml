@@ -76,7 +76,7 @@ shell:
     thumbRadius: 8
     thumbPadding: 7
     borderWidth: "{{metrics.border.standard}}"
-    markFilled: false
+    filled: false
     fontFamily: "{{shell.typography.uiFamily}}"
     fontSize: 9
     onGlyphOffset: [0, 0]

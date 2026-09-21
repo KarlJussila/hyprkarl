@@ -17,7 +17,7 @@ TestCase {
       "thumbRadius": 8,
       "thumbPadding": 7,
       "borderWidth": 2,
-      "markFilled": false,
+      "filled": false,
       "fontFamily": "sans",
       "fontSize": 9,
       "onGlyphOffset": [0, 0],
@@ -51,6 +51,8 @@ TestCase {
     compare(indicator.trackHeight, 12)
     compare(indicator.thumbSize, 16)
     compare(indicator.indicatorBorderWidth, 2)
+    compare(indicator.filled, false)
+    compare(indicator.thumbFillColor, testTheme.barSurface)
     indicator.destroy()
   }
 
@@ -86,7 +88,7 @@ TestCase {
     compare(indicator.implicitWidth, 18)
     compare(indicator.implicitHeight, 18)
     compare(indicator.thumbX, 1)
-    compare(indicator.markFilled, false)
+    compare(indicator.filled, false)
     compare(indicator.thumbFillColor, testTheme.barSurface)
     indicator.active = true
     compare(indicator.thumbX, 1)
@@ -96,17 +98,19 @@ TestCase {
     indicator.destroy()
   }
 
-  function test_markVariantCanOptIntoAccentFill() {
-    const indicator = createIndicator({
-      "active": true,
-      "appearance": {
-        "variant": "mark",
-        "markFilled": true
-      }
-    })
-    verify(indicator !== null)
-    compare(indicator.markFilled, true)
-    compare(indicator.thumbFillColor, testTheme.accent)
-    indicator.destroy()
+  function test_eitherVariantCanOptIntoAccentFill() {
+    for (const variant of ["switch", "mark"]) {
+      const indicator = createIndicator({
+        "active": true,
+        "appearance": {
+          "variant": variant,
+          "filled": true
+        }
+      })
+      verify(indicator !== null)
+      compare(indicator.filled, true)
+      compare(indicator.thumbFillColor, testTheme.accent)
+      indicator.destroy()
+    }
   }
 }

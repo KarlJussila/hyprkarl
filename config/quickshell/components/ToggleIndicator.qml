@@ -19,8 +19,8 @@ Item {
   readonly property real thumbPadding: appearance.thumbPadding ?? defaults.thumbPadding
   readonly property real indicatorBorderWidth:
     appearance.borderWidth ?? defaults.borderWidth
-  readonly property bool markFilled:
-    appearance.markFilled ?? defaults.markFilled ?? false
+  readonly property bool filled:
+    appearance.filled ?? defaults.filled ?? false
   readonly property string glyphFontFamily:
     appearance.fontFamily ?? defaults.fontFamily
   readonly property real glyphFontSize: appearance.fontSize ?? defaults.fontSize
@@ -57,7 +57,7 @@ Item {
   property color trackColor: active ? accentColor : surfaceColor
   property color borderColor: active ? accentColor : outlineColor
   readonly property color thumbFillColor:
-    variant === "mark" && markFilled ? trackColor : surfaceColor
+    filled ? trackColor : surfaceColor
 
   implicitWidth: Math.ceil(contentWidth)
   implicitHeight: Math.ceil(contentHeight)

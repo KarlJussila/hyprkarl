@@ -149,7 +149,7 @@ Set `"variant": "mark"` in the same object for a stationary checkbox- or
 radio-like indicator. A mark draws no track. It occupies only the thumb and
 its border, changes the border between the inactive and active colors, and
 swaps the configured off/on glyph without moving. Its background remains the
-surface color so the glyph keeps normal text contrast. `thumbRadius` controls
+surface color by default, like the moving switch thumb. `thumbRadius` controls
 whether it is circular, rounded, or square:
 
 ```json
@@ -162,8 +162,8 @@ whether it is circular, rounded, or square:
 }
 ```
 
-Set `"markFilled": true` to opt that instance into filling the active mark with
-the accent color.
+Set `"filled": true` to opt either variant's thumb into filling with the accent
+color while active. Inactive thumbs continue to use the surface color.
 
 `ToggleIndicator` exposes this same sparse object as its `appearance` property
 for built-in QML compositions. `PanelRow.switchAppearance` passes it through

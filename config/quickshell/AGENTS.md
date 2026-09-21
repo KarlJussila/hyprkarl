@@ -187,9 +187,10 @@ panel compositions. This per-instance control override is the deliberate
 exception to keeping visual metrics out of shell JSON. Keep it local to the
 control that needs different geometry; do not turn shell JSON into a second
 whole-shell theme. `appearance.variant: "mark"` draws only one stationary
-thumb with active/inactive border and glyph changes. It must not draw a track
-or fill the thumb by default; `appearance.markFilled: true` explicitly opts an
-instance into the active accent fill.
+thumb with active/inactive border and glyph changes, and it must not draw a
+track. Thumbs retain the surface fill by default for both variants;
+`appearance.filled: true` explicitly opts an instance into the active accent
+fill.
 
 Keep `bar.margin`, `bar.island.corners`, `bar.island.borders`,
 `bar.island.radius`, `bar.island.curveSize`, and `bar.island.curveRadius` in
@@ -424,8 +425,7 @@ presents it as a centered, snapping carousel for set or remove actions. The
 carousel uses the shared modal focus and dismissal boundary without its visible
 frame, and its cards may extend across the full output. Neither feature starts
 a background poller. Their appearance comes from the shared `menu` tokens plus
-the
-`applicationPicker`, `calculator`, and `wallpaperPicker` theme objects.
+the `applicationPicker`, `calculator`, and `wallpaperPicker` theme objects.
 The command menu keeps its compact, centered visual identity while deriving
 all appearance from the shell theme and its nested `menu` object. Visual
 geometry belongs in theme data and the shared overlay components, not agent

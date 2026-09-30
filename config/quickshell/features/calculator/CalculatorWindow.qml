@@ -17,7 +17,7 @@ OverlayWindow {
   property string evaluationError: ""
   property bool pointerPositionKnown: false
   property point pointerPosition: Qt.point(0, 0)
-  property bool selectionVisible: false
+  property bool selectionVisible: true
 
   shown: active
   title: "Calculator"
@@ -45,7 +45,7 @@ OverlayWindow {
   function resetSelection(): void {
     pointerPositionKnown = false
     calculationList.currentIndex = calculationList.count > 0 ? 0 : -1
-    selectionVisible = false
+    selectionVisible = calculationList.currentIndex >= 0
     if (calculationList.count > 0) calculationList.positionViewAtBeginning()
   }
 
@@ -58,12 +58,7 @@ OverlayWindow {
   }
 
   function moveSelection(offset): void {
-    if (!selectionVisible && calculationList.currentIndex >= 0) {
-      selectionVisible = true
-      calculationList.positionViewAtIndex(calculationList.currentIndex,
-        ListView.Contain)
-      return
-    }
+    if (calculationList.count === 0) return
     selectIndex(calculationList.currentIndex < 0
       ? (offset > 0 ? 0 : calculationList.count - 1)
       : calculationList.currentIndex + offset)

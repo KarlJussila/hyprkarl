@@ -34,12 +34,14 @@ OverlayWindow {
   property bool pointerPositionKnown: false
   property point pointerPosition: Qt.point(0, 0)
   property bool restoringView: false
-  property bool selectionVisible: false
+  property bool selectionVisible: true
 
   shown: active
   title: MenuState.menus[MenuState.currentMenu]?.title ?? ""
   placeholder: "Search…"
   searchable: true
+  searchPinned: widthRole !== "default"
+  showTextCursor: true
   clearQueryOnShow: false
   requestedWidth: baseWidth
   requestedBodyHeight: bodyHeight
@@ -64,11 +66,6 @@ OverlayWindow {
 
   function moveSelection(offset): void {
     if (menuList.count === 0) return
-    if (!selectionVisible && menuList.currentIndex >= 0) {
-      selectionVisible = true
-      menuList.positionViewAtIndex(menuList.currentIndex, ListView.Contain)
-      return
-    }
     selectIndex(menuList.currentIndex < 0
       ? (offset > 0 ? 0 : menuList.count - 1)
       : menuList.currentIndex + offset, offset)
@@ -79,7 +76,7 @@ OverlayWindow {
     momentum.reset()
     pointerPositionKnown = false
     selectIndex(0, 1)
-    selectionVisible = false
+    selectionVisible = menuList.currentIndex >= 0
     if (menuList.count > 0) menuList.positionViewAtBeginning()
   }
 
@@ -165,10 +162,14 @@ OverlayWindow {
       if (menuList.currentIndex >= 0) {
         activate(menuList.model[menuList.currentIndex])
       }
-    } else if (query.length === 0
-        && (event.key === Qt.Key_Left || event.key === Qt.Key_Backspace)) {
+    } else if (query.length === 0 && event.key === Qt.Key_Left) {
       saveView()
       MenuState.back()
+    } else if (!editing && !searchShown && event.text.length > 0
+        && (event.modifiers & (Qt.ControlModifier | Qt.AltModifier
+          | Qt.MetaModifier)) === 0) {
+      query = event.text
+      Qt.callLater(() => focusSearch())
     } else {
       return
     }

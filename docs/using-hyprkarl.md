@@ -33,9 +33,9 @@ Its top-level sections are:
 
 The hierarchy is a Quickshell surface. Type to search the current menu and all
 of its declared descendants. Escape, lowercase Q, or clicking outside closes
-the whole menu; Left or Backspace on an empty query goes to the parent and
+the whole menu; Left on an empty query goes to the parent and
 closes at the root. Choosing `Launch` opens the application picker, where Left
-or Backspace on an empty query returns to the same selected entry and scroll
+on an empty query returns to the same selected entry and scroll
 position in the menu. Submenu back-navigation restores the same state. Open
 any menu directly with `hk-shell menu open <menu-id>`.
 

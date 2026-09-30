@@ -16,11 +16,12 @@ OverlayWindow {
     + theme.menuSelectionBorderWidth * 2
   property bool pointerPositionKnown: false
   property point pointerPosition: Qt.point(0, 0)
-  property bool selectionVisible: false
+  property bool selectionVisible: true
 
   shown: active
   title: ApplicationPickerState.openWithActive ? "Open With" : "Applications"
   placeholder: "Search applications…"
+  showTextCursor: true
   requestedWidth: theme.applicationPickerWidth
   requestedBodyHeight: rowHeight * Math.max(1,
     Math.min(theme.applicationPickerRows, entries.length))
@@ -30,7 +31,7 @@ OverlayWindow {
     momentum.reset()
     pointerPositionKnown = false
     applicationList.currentIndex = applicationList.count > 0 ? 0 : -1
-    selectionVisible = false
+    selectionVisible = applicationList.currentIndex >= 0
     if (applicationList.count > 0) applicationList.positionViewAtBeginning()
   }
 
@@ -42,12 +43,7 @@ OverlayWindow {
   }
 
   function moveSelection(offset): void {
-    if (!selectionVisible && applicationList.currentIndex >= 0) {
-      selectionVisible = true
-      applicationList.positionViewAtIndex(applicationList.currentIndex,
-        ListView.Contain)
-      return
-    }
+    if (applicationList.count === 0) return
     selectIndex(applicationList.currentIndex < 0
       ? (offset > 0 ? 0 : applicationList.count - 1)
       : applicationList.currentIndex + offset)
@@ -58,7 +54,7 @@ OverlayWindow {
     if (event.key === Qt.Key_Escape) {
       ApplicationPickerState.close()
     } else if (query.length === 0
-        && (event.key === Qt.Key_Left || event.key === Qt.Key_Backspace
+        && (event.key === Qt.Key_Left
           || (!editing && event.key === Qt.Key_H))) {
       if (!ApplicationPickerState.back()) ApplicationPickerState.close()
     } else if (event.key === Qt.Key_Down

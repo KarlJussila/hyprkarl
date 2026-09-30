@@ -46,7 +46,9 @@ Each object in `menus` supplies a title and may also define `sourceCommand`
 plus `emptyLabel` for entries discovered when that menu opens. Every menu has
 an in-process fuzzy-search field. It searches the current menu and every
 declared descendant, keeps direct matches before deeper matches, and shows the
-parent path on deeper rows. `widthRole` may be `default`, `search`, or
+parent path on deeper rows. Default-width menus hide that field and its divider
+until printable input reveals them; `search` and `reference` widths keep theirs
+visible, as do the launcher and calculator overlays. `widthRole` may be `default`, `search`, or
 `reference` and selects the corresponding themed width. Searching keeps that
 width. `entryAlignment` may be `left`, `center`, or `right`; it defaults to
 `center`. Each object in `entries` has a stable dotted ID and:
@@ -89,7 +91,7 @@ The shipped surface IDs are `launcher`, `calculator`, and `wallpaper`.
 need no parameters. The surface ID and optional parameter object are passed
 through as authored, so a user composition may respond to its own surface IDs
 and parameter vocabulary without changing the menu engine. In the launcher,
-Left or Backspace on an empty query returns to the menu that opened it. A
+Left on an empty query returns to the menu that opened it. A
 directly opened launcher closes because it has no return destination.
 
 For example, this personal entry asks a user root to show a dashboard on the
@@ -136,9 +138,10 @@ same direction build momentum through a soft cap. Starting another gesture
 pauses existing momentum so the gesture has direct control. On release, a
 recency-weighted velocity from that gesture is added through the soft cap.
 Reversing within the gesture clears both the retained momentum and its earlier
-samples. Opening a fresh menu or changing a search keeps the first result as
-the Enter default and the list at the top, but shows no navigation highlight.
-The first navigation key reveals that result. Returning from a submenu or the
+samples. Opening a fresh menu or changing a search highlights the first result
+as the Enter default and visible selection while keeping the list at the top.
+Typing in a default-width menu reveals its search field; clearing it hides the
+field again. Returning from a submenu or the
 launcher restores the previous query, selected entry, and scroll position.
 
 Use `checkedCommand` only for a cheap external state probe whose status belongs
@@ -348,7 +351,7 @@ launcher`, `hk-shell calculator`, and `hk-shell wallpaper` for the dedicated
 overlays.
 
 Keyboard navigation supports Up/Down, Home/End, and Enter to choose. Escape or
-an unmodified lowercase Q closes the whole menu. Left or Backspace on an empty
+an unmodified lowercase Q closes the whole menu. Left on an empty
 query goes to the parent, closing at the root, while Right enters the selected
 submenu. Clicking outside closes the whole menu. Typing filters the current
 menu and all declared descendants.

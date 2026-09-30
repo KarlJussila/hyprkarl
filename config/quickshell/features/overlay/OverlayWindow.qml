@@ -8,12 +8,15 @@ ModalWindow {
   property string title: ""
   property string placeholder: "Search…"
   property bool searchable: true
+  property bool searchPinned: true
   property bool showTextCursor: false
   property bool clearQueryOnShow: true
   property real requestedBodyHeight: 0
   property alias query: searchInput.text
   property alias body: pickerBody
   default property alias bodyData: pickerBody.data
+  readonly property bool searchShown: searchable
+    && (searchPinned || searchInput.text.length > 0)
 
   requestedWidth: theme.menuSearchWidth
   requestedHeight: root.theme.menuOuterBorderWidth * 2
@@ -27,9 +30,18 @@ ModalWindow {
 
   function resetInput(): void {
     if (clearQueryOnShow) searchInput.clear()
-    if (searchable) searchInput.forceActiveFocus()
+    if (searchable && searchShown) searchInput.forceActiveFocus()
     else contentItem.forceActiveFocus()
   }
+
+  function focusSearch(): void {
+    if (!searchShown) return
+    searchInput.forceActiveFocus()
+    searchInput.cursorPosition = searchInput.text.length
+  }
+
+  onSearchShownChanged: if (shown && !searchShown) Qt.callLater(
+    () => contentItem.forceActiveFocus())
 
   onShownChanged: if (shown) Qt.callLater(root.resetInput)
 
@@ -98,7 +110,7 @@ ModalWindow {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: headerDivider.bottom
-      visible: root.searchable
+      visible: root.searchShown
       height: visible
         ? searchInput.implicitHeight
           + root.theme.menuEntryPadding * 2
@@ -155,7 +167,7 @@ ModalWindow {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: searchArea.bottom
-      visible: root.searchable
+      visible: root.searchShown
       height: visible ? root.theme.menuInnerBorderWidth : 0
       color: root.theme.menuBorder
     }

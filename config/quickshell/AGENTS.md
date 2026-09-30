@@ -360,7 +360,7 @@ switch directly to a Quickshell surface, or dismiss an informational menu.
 Surface actions pass an open-ended parameter object through `OverlayState` and
 retain the menu as a return request. Shipped and user-composed surfaces use the
 same in-process transition instead of calling back through `hk-shell`; the
-launcher returns on empty-query Left or Backspace. Nested dynamic menus reload
+launcher returns on empty-query Left. Nested dynamic menus reload
 the restored parent when navigating back. Providers and command actions
 inherit the session environment through non-login `bash -c`. A dynamic
 destination is committed only after its provider returns a complete valid
@@ -380,15 +380,17 @@ and reveal. `MomentumScroll` supplies kinetic touchpad behavior. Do not fork
 those shared interactions back into the menu. Keyboard selection positions its
 row immediately, including across wrap-around, while pointer selection changes
 only on actual pointer motion. Opening a fresh menu or changing its search
-keeps the first enabled row as the Enter default but hides its navigation
-highlight; the first navigation key reveals it. Returning from a submenu or
+highlights the first enabled row as the Enter default and visible selection.
+Default-width menus hide their search field and divider until printable input
+reveals them; search and reference widths keep theirs pinned. Returning from
+a submenu or
 pushed overlay restores that navigation path's query, selected entry ID, and
 scroll position.
 Searching retains the menu's width role and caps its natural result height at
 the theme's configured search-row count; it must not force an empty fixed-size
 viewport.
 Escape, unmodified lowercase Q, and outside click close the whole menu; only
-Left or Backspace navigate upward when the query is empty.
+Left navigates upward when the query is empty.
 `hk-shell menu` is the only public transport for opening static navigation.
 `features/overlay/OverlayState.qml` owns exclusivity, return requests, and
 monitor routing across that menu, the application chooser, calculator,
@@ -396,8 +398,10 @@ wallpaper picker, display arranger, and personal modals. Opening
 one replaces the active focused overlay instead of leaving another visible
 behind it. `ModalWindow` owns the full-screen focus plane, scrim, nested frame,
 outside-click handling, and reveal. `OverlayWindow` adds the shared picker
-header and search field. Quick-search consumers hide its text cursor and active
-focus border; the calculator enables both for expression editing. Public
+header and search field. `searchPinned` keeps launcher, calculator, and
+search/reference menu fields visible; default menus reveal on printable input
+with no divider gap while hidden. Search inputs show the text cursor and active
+focus border. Public
 `Hyprkarl.Modal` adds a general header, lazy body, optional footer, and the
 shared spatial/section keyboard navigator while leaving content with the
 caller. User modal controls participate when they set `activeFocusOnTab`; an

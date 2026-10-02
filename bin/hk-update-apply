@@ -59,8 +59,6 @@ if [[ -n "$pending" ]] && [[ "$pending" != "$head" ]]; then
   fi
 fi
 
-update_import_legacy_state || fail_apply "Could not import legacy update state."
-
 if hk_shell_is_running; then
   mkdir -p "$UPDATE_STATE_DIR" || exit 1
   : > "$UPDATE_SHELL_RESTART_MARKER" || exit 1

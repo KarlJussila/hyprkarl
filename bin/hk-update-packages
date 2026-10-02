@@ -8,7 +8,6 @@ source "$SCRIPT_DIR/lib/update.sh"
 PACKAGES_DIR="$HYPRKARL_PATH/packages"
 PACKAGE_STATE_TOOL="$SCRIPT_DIR/lib/update_packages.py"
 
-update_import_legacy_package_state || exit 1
 plan=$(python3 "$PACKAGE_STATE_TOOL" plan "$PACKAGES_DIR" "$UPDATE_PACKAGE_STATE") || exit 1
 installed=$(pacman -Qq) || exit 1
 

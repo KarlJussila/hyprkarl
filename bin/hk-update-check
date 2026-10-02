@@ -18,9 +18,6 @@ fi
 
 printf '\n=== Configuration ===\n'
 configuration=$(update_read_configuration_revision)
-if [[ -z "$configuration" ]] && [[ -f "$LEGACY_UPDATE_STATE_DIR/dotfiles.commit" ]]; then
-  configuration=$(<"$LEGACY_UPDATE_STATE_DIR/dotfiles.commit")
-fi
 head=$(update_head_commit)
 if [[ "$configuration" == "$head" ]] && [[ -z "$pending" ]]; then
   printf '  Applied at current HEAD.\n'
@@ -37,19 +34,7 @@ if [[ -n "$conflicts" ]]; then
 fi
 
 printf '\n=== Packages ===\n'
-package_state="$UPDATE_PACKAGE_STATE"
-temporary_state=""
-if [[ ! -f "$package_state" ]] && [[ -f "$LEGACY_UPDATE_STATE_DIR/packages.commit" ]]; then
-  legacy_revision=$(<"$LEGACY_UPDATE_STATE_DIR/packages.commit")
-  if update_commit_valid "$legacy_revision"; then
-    temporary_dir=$(mktemp -d) || exit 1
-    temporary_state="$temporary_dir/packages.json"
-    python3 "$PACKAGE_STATE_TOOL" import-legacy \
-      "$HYPRKARL_PATH" "$legacy_revision" "$temporary_state" || exit 1
-    package_state="$temporary_state"
-  fi
-fi
-plan=$(python3 "$PACKAGE_STATE_TOOL" plan "$PACKAGES_DIR" "$package_state") || exit 1
+plan=$(python3 "$PACKAGE_STATE_TOOL" plan "$PACKAGES_DIR" "$UPDATE_PACKAGE_STATE") || exit 1
 declared_pacman=$(jq -r '.additions.pacman[]' <<<"$plan")
 declared_aur=$(jq -r '.additions.aur[]' <<<"$plan")
 removals=$(jq -r '.removals[] | "\(.package) — \(.reason)"' <<<"$plan")
@@ -81,22 +66,13 @@ if [[ -z "$pacman_additions$aur_additions$removals" ]] \
 elif [[ -z "$pacman_additions$aur_additions$removals" ]]; then
   printf '  Package declarations are up to date.\n'
 fi
-if [[ -n "$temporary_state" ]]; then
-  rm -rf "$(dirname "$temporary_state")"
-fi
 
 printf '\n=== System ===\n'
-legacy_system=0
-[[ -f "$LEGACY_UPDATE_STATE_DIR/system.commit" ]] && legacy_system=1
 system_pending=0
 for migration in "$HYPRKARL_PATH/system/migrations"/*; do
   [[ -f "$migration" && -x "$migration" ]] || continue
   id=$(basename "$migration")
   if [[ -e "$UPDATE_SYSTEM_MIGRATION_DIR/$id" ]]; then
-    continue
-  fi
-  if [[ "$legacy_system" -eq 1 ]] \
-      && [[ " ${UPDATE_LEGACY_SYSTEM_MIGRATIONS[*]} " == *" $id "* ]]; then
     continue
   fi
   printf '  %s\n' "$id"

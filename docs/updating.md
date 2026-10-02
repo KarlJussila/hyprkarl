@@ -196,10 +196,6 @@ ${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/update/
   system-migrations/<migration-id>
 ```
 
-Writers replace the revision and package files atomically. Old installations
-may still have commit markers under `config/hyprkarl/update/`; the new commands
-import those records into XDG state and remove the legacy files.
-
 `restart-shell-after-apply` is a temporary recovery marker. It exists only
 when an interrupted or failed source transition left Quickshell intentionally
 stopped; a successful retry removes it after restarting the shell.

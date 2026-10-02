@@ -5,11 +5,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 from pathlib import Path
-import subprocess
 import sys
-import tempfile
 from typing import Any
 
 
@@ -54,15 +51,7 @@ def load_state(path: Path) -> dict[str, Any]:
 
 def write_state(path: Path, state: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary_name = tempfile.mkstemp(prefix=".packages.", dir=path.parent)
-    temporary = Path(temporary_name)
-    try:
-        with os.fdopen(fd, "w") as stream:
-            json.dump(state, stream, indent=2, sort_keys=True)
-            stream.write("\n")
-        temporary.replace(path)
-    finally:
-        temporary.unlink(missing_ok=True)
+    path.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n")
 
 
 def plan(packages_dir: Path, state_path: Path) -> dict[str, Any]:
@@ -108,23 +97,6 @@ def record(packages_dir: Path, state_path: Path, section: str) -> None:
     write_state(state_path, state)
 
 
-def import_legacy(repo: Path, revision: str, state_path: Path) -> None:
-    state = empty_state()
-    lists: dict[str, list[str]] = {}
-    for name in ("pacman", "aur", "remove"):
-        result = subprocess.run(
-            ["git", "-C", str(repo), "show", f"{revision}:packages/{name}.txt"],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        entries, _ = parse_list(result.stdout)
-        lists[name] = entries
-    state["applied"] = {name: lists[name] for name in ("pacman", "aur")}
-    state["removalsReviewed"] = lists
-    write_state(state_path, state)
-
-
 def main() -> int:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -138,25 +110,14 @@ def main() -> int:
     record_parser.add_argument("packages_dir", type=Path)
     record_parser.add_argument("state", type=Path)
 
-    import_parser = subparsers.add_parser("import-legacy")
-    import_parser.add_argument("repo", type=Path)
-    import_parser.add_argument("revision")
-    import_parser.add_argument("state", type=Path)
-
     args = parser.parse_args()
     if args.command == "plan":
         json.dump(plan(args.packages_dir, args.state), sys.stdout, separators=(",", ":"))
         print()
-    elif args.command == "record":
-        record(args.packages_dir, args.state, args.section)
     else:
-        import_legacy(args.repo, args.revision, args.state)
+        record(args.packages_dir, args.state, args.section)
     return 0
 
 
 if __name__ == "__main__":
-    try:
-        raise SystemExit(main())
-    except Exception as error:
-        print(f"Could not update package state: {error}", file=sys.stderr)
-        raise SystemExit(1)
+    raise SystemExit(main())

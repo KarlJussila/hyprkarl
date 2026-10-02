@@ -7,8 +7,6 @@ source "$SCRIPT_DIR/lib/update.sh"
 
 MIGRATIONS_DIR="$HYPRKARL_PATH/system/migrations"
 
-update_import_legacy_system_state || exit 1
-
 pending=()
 for migration in "$MIGRATIONS_DIR"/*; do
   [[ -f "$migration" && -x "$migration" ]] || continue

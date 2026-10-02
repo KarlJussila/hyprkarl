@@ -58,12 +58,10 @@ or promise compatibility for third-party extensions.
 
 ## Stateful Paths
 
-Authoritative current theme and wallpaper state lives outside Git under
-`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/`. These tracked repository
-paths are fixed compatibility links into that state tree:
-
-- `config/hyprkarl/current/theme`
-- `config/hyprkarl/current/wallpaper`
+The current theme and wallpaper live outside Git under
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/`. Everything that
+reads the active theme, including shipped and starting configs, points at
+`current/theme` there.
 
 Theme sources under `themes/` are upstream-owned; personal themes, same-name
 overlays, wallpaper additions, and removal markers belong under

@@ -60,7 +60,7 @@ What to do:
 - run `hk-theme set <theme-name>` and read the compiler error
 - compare personal values and overrides with a working source such as
   `themes/hyprkarl/`
-- inspect the active artifact through `config/hyprkarl/current/theme/`
+- inspect the active build through `~/.local/state/hyprkarl/current/theme/`
 - if needed, restart the affected app
 
 ## Wallpaper State Looks Wrong
@@ -86,9 +86,8 @@ hk-wallpaper cache --regenerate
 
 Then inspect:
 
-- `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/`
-- `config/hyprkarl/current/wallpaper`
-- `config/hyprkarl/current/theme/wallpapers/`
+- `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/wallpaper`
+- `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/wallpapers/`
 
 ## Bar Does Not Start or Looks Wrong
 

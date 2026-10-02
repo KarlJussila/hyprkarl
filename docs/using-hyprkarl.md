@@ -99,9 +99,8 @@ See [Themes](themes.md) for the full architecture.
 
 ## Wallpapers
 
-Each theme has its own `wallpapers/` directory. The current wallpaper is tracked
-in XDG state; `config/hyprkarl/current/wallpaper` is a stable compatibility link
-to it.
+Each theme has its own `wallpapers/` directory. The current wallpaper is the link
+`~/.local/state/hyprkarl/current/wallpaper`.
 
 The usual way to manage wallpapers is `Hyprkarl Menu -> Config -> Wallpaper`, but you can also run:
 

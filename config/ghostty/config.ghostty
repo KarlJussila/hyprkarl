@@ -1,5 +1,5 @@
 # Generated theme colors
-config-file = ?"~/.config/hyprkarl/current/theme/ghostty.conf"
+config-file = ?"~/.local/state/hyprkarl/current/theme/ghostty.conf"
 
 # Font
 font-family = "JetBrainsMono Nerd Font"

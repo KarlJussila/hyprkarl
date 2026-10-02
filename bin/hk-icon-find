@@ -11,7 +11,7 @@ shift
 
 categories=("${@:-actions}")
 
-hyprkarl_icons="$HOME/.config/hyprkarl/current/theme/icons"
+hyprkarl_icons="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/icons"
 icon_theme=$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")
 
 # Check hyprkarl theme icons first — flat directory, no categories

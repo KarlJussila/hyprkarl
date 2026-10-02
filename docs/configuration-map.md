@@ -39,18 +39,11 @@ would edit.
 
 ## Stateful Runtime Files
 
-Authoritative theme and wallpaper state lives under
+Theme and wallpaper state lives under
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/`. `current/theme` links to
 the active build under the state directory's `themes/`, and `current/wallpaper`
-links to the selected wallpaper inside it.
-
-`config/hyprkarl/current/` contains fixed compatibility links to that state:
-
-- `config/hyprkarl/current/theme`
-  Link to the XDG-state active-theme link
-- `config/hyprkarl/current/wallpaper`
-  Link to the XDG-state wallpaper
-
+links to the selected wallpaper inside it. Every consumer of the active theme,
+including shipped and starting application configs, points at `current/theme`.
 If theme or wallpaper behavior looks wrong, check this directory first.
 
 Update records live under
@@ -278,8 +271,7 @@ installs it under XDG state. Neither source directory contains generated
 consumer output.
 
 See [Themes](themes.md) for the full theme layout and how
-XDG state selects the active bundle; `config/hyprkarl/current/` provides stable
-compatibility links for existing consumers.
+XDG state selects the active bundle.
 
 ## Scripts and Commands
 

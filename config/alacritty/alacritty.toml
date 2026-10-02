@@ -1,6 +1,6 @@
 [general]
 import = [
-  "~/.config/hyprkarl/current/theme/alacritty.toml",
+  "~/.local/state/hyprkarl/current/theme/alacritty.toml",
   "hyprkarl.toml",
   "local.toml",
 ]

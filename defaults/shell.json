@@ -65,21 +65,21 @@
         {
           "id": "cpu",
           "kind": "cpu",
-          "primary": "{temp}°",
-          "alternate": "{temp}° | {usage}%"
+          "format": "{temp}°",
+          "alternateFormat": "{temp}° | {usage}%"
         },
         {
           "id": "gpu",
           "kind": "gpu",
-          "primary": "{usage}%",
-          "alternate": "{usage}% | {vramUsed}/{vramTotal}"
+          "format": "{usage}%",
+          "alternateFormat": "{usage}% | {vramUsed}/{vramTotal}"
         },
         {
           "id": "ram",
           "kind": "ram",
           "icon": "",
-          "primary": "{usedPercent}%",
-          "alternate": "{used}/{total} | {swapUsed}/{swapTotal}"
+          "format": "{usedPercent}%",
+          "alternateFormat": "{used}/{total} | {swapUsed}/{swapTotal}"
         },
         {
           "id": "tray",
@@ -93,14 +93,14 @@
             "id": "recording",
             "kind": "recording",
             "icon": "󰻂",
-            "command": "hk-screen-record --stop-recording"
+            "primaryCommand": "hk-screen-record --stop-recording"
           }
         ],
         "anchor": {
           "id": "clock",
           "kind": "clock",
-          "primary": "ddd h:mm AP",
-          "alternate": "ddd h:mm:ss AP"
+          "format": "ddd h:mm AP",
+          "alternateFormat": "ddd h:mm:ss AP"
         },
         "after": [
           {
@@ -153,7 +153,7 @@
           "kind": "battery",
           "showPercentage": true,
           "lowThreshold": 0.15,
-          "powerCommand": "hk-shell menu toggle power"
+          "secondaryCommand": "hk-shell menu toggle power"
         }
       ]
     }

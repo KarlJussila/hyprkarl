@@ -53,7 +53,7 @@ ShellButton {
   onPrimary: panelHost
     ? () => panelHost.toggle(widgetId, root, panelComponent)
     : null
-  secondaryCommand: config.powerCommand
+  secondaryCommand: config.secondaryCommand
 
   Component {
     id: panelComponent

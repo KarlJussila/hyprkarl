@@ -28,7 +28,7 @@ ShellButton {
   contentComponent: Component {
     ExpandableReadout {
       icon: root.config.icon
-      text: root.render(root.alternate ? root.config.alternate : root.config.primary)
+      text: root.render(root.alternate ? root.config.alternateFormat : root.config.format)
       expanded: root.expanded
       theme: root.theme
     }

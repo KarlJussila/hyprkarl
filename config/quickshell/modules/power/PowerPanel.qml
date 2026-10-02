@@ -140,13 +140,13 @@ Item {
     }
 
     PanelAction {
-      visible: root.config.powerCommand?.length > 0
+      visible: root.config.secondaryCommand?.length > 0
       width: parent.width
       theme: root.theme
       navigationSection: "actions"
       icon: "󰐥"
       text: "Power actions"
-      action: () => root.externalCommandRequested(root.config.powerCommand)
+      action: () => root.externalCommandRequested(root.config.secondaryCommand)
     }
   }
 }

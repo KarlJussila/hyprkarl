@@ -56,10 +56,10 @@ owning `start` and `end`:
           "primaryCommand": "hk-shell menu toggle main" },
         { "id": "workspaces", "kind": "workspaces", "alwaysShow": [1],
           "includeFocused": true, "includeOccupied": true },
-        { "id": "cpu", "kind": "cpu", "primary": "{temp}°",
-          "alternate": "{temp}° | {usage}%" },
-        { "id": "ram", "kind": "ram", "icon": "", "primary": "{usedPercent}%",
-          "alternate": "{used}/{total} | {swapUsed}/{swapTotal}" },
+        { "id": "cpu", "kind": "cpu", "format": "{temp}°",
+          "alternateFormat": "{temp}° | {usage}%" },
+        { "id": "ram", "kind": "ram", "icon": "", "format": "{usedPercent}%",
+          "alternateFormat": "{used}/{total} | {swapUsed}/{swapTotal}" },
         { "id": "tray", "kind": "tray", "direction": "end" }
       ],
       "end": [
@@ -70,7 +70,7 @@ owning `start` and `end`:
           "secondaryCommand": "hk-bluetooth-launch" },
         { "id": "network", "kind": "network", "secondaryCommand": "hk-wifi-launch" },
         { "id": "battery", "kind": "battery", "showPercentage": true,
-          "lowThreshold": 0.15, "powerCommand": "hk-shell menu toggle power" }
+          "lowThreshold": 0.15, "secondaryCommand": "hk-shell menu toggle power" }
       ]
     }
   }
@@ -244,8 +244,8 @@ copy of the shipped file:
         {
           "id": "cpu",
           "kind": "cpu",
-          "primary": "{temp}°",
-          "alternate": "{temp}° | {usage}%"
+          "format": "{temp}°",
+          "alternateFormat": "{temp}° | {usage}%"
         }
       ],
       "center": {
@@ -255,8 +255,8 @@ copy of the shipped file:
         "anchor": {
           "id": "clock",
           "kind": "clock",
-          "primary": "ddd h:mm AP",
-          "alternate": "ddd h:mm:ss AP"
+          "format": "ddd h:mm AP",
+          "alternateFormat": "ddd h:mm:ss AP"
         },
         "after": [
           { "id": "caffeine", "kind": "toggle" }
@@ -271,7 +271,7 @@ copy of the shipped file:
           "kind": "battery",
           "showPercentage": true,
           "lowThreshold": 0.15,
-          "powerCommand": "hk-shell menu toggle power"
+          "secondaryCommand": "hk-shell menu toggle power"
         }
       ]
     }
@@ -402,6 +402,34 @@ boundary.
 The same layout appears on every monitor initially. Do not add output-specific
 overrides until a concrete different-per-monitor use case defines their
 selection and fallback rules.
+
+## Built-in widgets
+
+Every widget takes `id` and `kind`. Clickable widgets follow one rule:
+`primaryCommand`, `secondaryCommand`, and `tertiaryCommand` run on left,
+right, and middle click. Readouts show `format` and switch to
+`alternateFormat` on right click.
+
+| `kind` | Settings |
+|---|---|
+| `command` | See [Command widgets](#command-widgets) |
+| `qml` | `source`, `settings`; see [User QML widgets](#user-qml-widgets) |
+| `workspaces` | `alwaysShow` (workspace IDs), `includeFocused`, `includeOccupied` |
+| `cpu` | `format`, `alternateFormat`; placeholders `{usage}`, `{temp}` |
+| `gpu` | `format`, `alternateFormat`; placeholders `{usage}`, `{vramUsed}`, `{vramTotal}` |
+| `ram` | `icon`, `format`, `alternateFormat`; placeholders `{usedPercent}`, `{used}`, `{total}`, `{swapUsed}`, `{swapTotal}` |
+| `clock` | `format`, `alternateFormat` as [Qt date formats](https://doc.qt.io/qt-6/qml-qtqml-qt.html#formatDateTime-method) |
+| `tray` | `direction` (`start` or `end`) |
+| `recording` | `icon`, `primaryCommand` |
+| `toggle` | `onCommand`, `offCommand`, `syncCommand`, `onIcon`, `offIcon`, `switch`; see [Toggle indicators](#toggle-indicators) |
+| `display` | None |
+| `audio` | `showPercentage`, `secondaryCommand` |
+| `bluetooth`, `network` | `secondaryCommand` |
+| `battery` | `showPercentage`, `lowThreshold` (0 to 1), `secondaryCommand` |
+
+On audio, Bluetooth, network, and battery, left click opens the widget's panel
+and `secondaryCommand` launches the full settings application, which the
+panel also offers.
 
 ## Extension Lanes
 
@@ -620,7 +648,7 @@ entry point. Panel contents do not live inline in JSON. Display, audio,
 network, Bluetooth, power, and calendar all exercise the per-monitor host; no
 feature owns a second popup-window implementation. `secondaryCommand` supplies
 the advanced launcher used by audio, network, and Bluetooth. The battery widget's
-`powerCommand` supplies the power-actions launcher. These strings are
+`secondaryCommand` supplies the power-actions launcher. These strings are
 behavior, while all panel colors and geometry remain theme data. Activating an
 audio, network, or Bluetooth header cog closes that panel before starting its
 configured command.

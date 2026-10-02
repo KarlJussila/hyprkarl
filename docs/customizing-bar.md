@@ -93,7 +93,7 @@ it, own the `end` section without it:
           "secondaryCommand": "hk-bluetooth-launch" },
         { "id": "network", "kind": "network", "secondaryCommand": "hk-wifi-launch" },
         { "id": "battery", "kind": "battery", "showPercentage": true,
-          "lowThreshold": 0.15, "powerCommand": "hk-shell menu toggle power" }
+          "lowThreshold": 0.15, "secondaryCommand": "hk-shell menu toggle power" }
       ]
     }
   }

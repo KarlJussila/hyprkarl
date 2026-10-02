@@ -165,9 +165,10 @@ completes successfully. Individual update commands do not emit that event.
 ## Defaults and Session Behavior
 
 - `hk-default-terminal <terminal>`
-  Install a terminal and make it the default terminal.
+  Install a terminal and make it the default by writing
+  `~/.config/xdg-terminals.list`.
 - `hk-default-editor <editor>`
-  Install an editor and make it the default editor.
+  Install an editor and record it as `$EDITOR` in `~/.config/uwsm/default`.
 - `hk-default-shell <shell>`
   Install a shell and make it the login shell.
 - `hk-timezone-setup`

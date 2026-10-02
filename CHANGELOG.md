@@ -35,6 +35,12 @@ before `3df882e`) have no automatic upgrade. Follow
   fingerprints.
 - Caffeine pauses idle locking and sleep with an idle inhibitor; manual
   suspend and lid close still lock.
+- The shell runs from `~/.config/quickshell/`, so personal QML can import any
+  part of it. Each built-in (launcher, menu, notifications, OSD, calculator,
+  wallpaper picker, polkit prompt, bar) can be switched off and replaced by
+  your own QML answering the same IPC target, without editing Hyprkarl's
+  files. Any `hk-*` command, including `hk-lock`, can be replaced by a script
+  of the same name in `~/.local/bin/`.
 
 ### Configuration
 
@@ -44,19 +50,23 @@ before `3df882e`) have no automatic upgrade. Follow
   go in `~/.config/quickshell/`.
 - Breaking: shipped Hyprland modules moved to `defaults/hypr/`. A personal
   module with the same name in `~/.config/hyprkarl/hypr/` loads after it.
-- Breaking: application configs (btop, fastfetch, fish, GTK, nvim, Qt,
-  portals, yazi, Hypridle, Hyprpaper, Hyprsunset) are starting copies in your
-  own `~/.config`. `hk-config-seed` copies one only when you have none of that
-  application's files and never overwrites. Terminals keep a small shipped
-  config that loads your `local.*` file last; Ghostty's is now `config.ghostty`.
+- Breaking: application configs keep receiving Hyprkarl's defaults. Terminals
+  and Hypridle, Hyprpaper, and Hyprsunset load Hyprkarl's settings, then your
+  `local.*` file; Hypridle's timeouts and actions are variables you redefine
+  there. Portal and terminal choices are defaults your own file replaces. GTK
+  and Qt follow the theme. Only btop, fastfetch, Neovim, and Yazi are copied
+  once, when you have none of their files. Ghostty's config is now
+  `config.ghostty`.
+- Hyprkarl no longer installs desktop-file overrides to hide applications; the
+  launcher hides them through `applications.hidden` in `shell.json`.
 - Shell behavior comes from `defaults/shell.json` with your
   `~/.config/quickshell/settings/shell.json` merged over it: objects merge,
   arrays replace. The `modules` object turns built-in parts of the shell on or
   off. Bar widgets include configurable command widgets and your own QML
   widgets, and one personal QML root can add independent surfaces or replace
   the bar.
-- Lifecycle hooks run your executables after boot, updates, theme changes, and
-  wallpaper changes.
+- Lifecycle hooks run your executables after login, updates, theme changes,
+  and wallpaper changes.
 
 ### Themes
 

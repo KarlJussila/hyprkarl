@@ -12,8 +12,8 @@ does not try to document every internal script.
   Run `sync`, then `apply`, then personal `post-update` hooks. The update menu
   launches this command in a terminal.
 - `hk-update sync`
-  Fetch the configured canonical remote and branch, show incoming commits and
-  changed files, and pin one confirmed commit in XDG state. It does not move
+  Fetch the configured remote and branch, show the new changelog entries and
+  incoming commits, and pin one confirmed commit in XDG state. It does not move
   the live checkout.
 - `hk-update apply`
   Fast-forward to the staged revision, then install and review packages, run

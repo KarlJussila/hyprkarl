@@ -13,10 +13,11 @@ in a terminal. System packages are separate: `hk-pkg-upgrade` runs `paru -Syu`.
 
 ## Review: `hk-update sync`
 
-`sync` fetches the configured branch, shows the incoming commits and changed
-files, and asks whether to stage that exact revision. Staging records it in
-XDG state; nothing in the checkout changes yet. It needs a clean checkout on
-the configured branch. Running `sync` again reviews a newer revision.
+`sync` fetches the configured branch, shows what the update adds to
+`CHANGELOG.md` and the incoming commits, and asks whether to stage that exact
+revision. Staging records it in XDG state; nothing in the checkout changes
+yet. It needs a clean checkout on the configured branch. Running `sync` again
+reviews a newer revision.
 
 Fresh installs follow `origin/main`. To follow another remote or branch:
 

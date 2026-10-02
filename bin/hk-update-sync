@@ -44,10 +44,15 @@ if ! git -C "$HYPRKARL_PATH" diff --quiet \
   exit 1
 fi
 
+# Release notes first: the changelog lines this update adds.
+notes=$(git -C "$HYPRKARL_PATH" diff --unified=0 "$head" "$target" -- CHANGELOG.md \
+  | grep '^+' | grep -v '^+++' | cut -c2-)
+if [[ -n "$notes" ]]; then
+  printf "\nWhat's new:\n%s\n" "$(sed 's/^/  /' <<<"$notes")"
+fi
 printf '\nIncoming commits:\n'
 git -C "$HYPRKARL_PATH" log --oneline --no-decorate "$head..$target" | sed 's/^/  /'
-printf '\nChanged files:\n'
-git -C "$HYPRKARL_PATH" diff --stat "$head" "$target" | sed 's/^/  /'
+git -C "$HYPRKARL_PATH" diff --shortstat "$head" "$target"
 
 if ! gum confirm "Stage this exact revision for hk-update apply?"; then
   printf 'Source update not staged.\n'

@@ -322,7 +322,7 @@ Choose an installed family that supports the palette, such as
 `Yaru-olive-dark` for Loam or `Yaru-blue-dark` for Tokyo Night.
 `desktop.cursor_theme` names the mouse cursor. Activation writes it into the
 `default` cursor alias, because Qt, X11, and other apps that draw their own
-cursor load the theme named `default` (Qt under qt6ct ignores `XCURSOR_THEME`). The compiled `hyprland.lua` also
+cursor load the theme named `default` (Qt under qt6ct ignores `XCURSOR_THEME`). Hyprland's `autostart.lua` also
 sets it in Hyprland at startup, which otherwise picks any installed Hyprcursor
 theme when this one has no Hyprcursor version; `hk-theme set` repeats that
 after switching, since a reload does not rerun startup hooks.

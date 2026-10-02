@@ -1,0 +1,17 @@
+#!/bin/bash
+# hk-update-available
+# Print bar-widget JSON that shows when the update source has new commits.
+# Offline, the fetch fails quietly and the last fetched state is used.
+
+source "$HYPRKARL_PATH/bin/lib/update.sh"
+
+remote=$(update_source_remote)
+branch=$(update_source_branch)
+git -C "$HYPRKARL_PATH" fetch -q "$remote" "$branch" 2>/dev/null
+behind=$(git -C "$HYPRKARL_PATH" rev-list --count "HEAD..$remote/$branch")
+
+if [[ "$behind" -gt 0 ]]; then
+  printf '{"visible":true,"tooltip":"Hyprkarl update available (%s new commits)"}\n' "$behind"
+else
+  printf '{"visible":false}\n'
+fi

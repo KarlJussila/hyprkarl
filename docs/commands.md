@@ -5,6 +5,12 @@ does not try to document every internal script.
 
 ## Update
 
+- `hk-version`
+  Print the installed release tag, or the commit between releases.
+- `hk-update-available`
+  Fetch the update source and print bar-widget JSON that is visible when new
+  commits are waiting. The shipped bar polls it hourly; offline it reuses the
+  last fetched state.
 - `hk-update check`
   Report the staged revision, the last applied revision, package changes, and
   pending migrations without changing anything.

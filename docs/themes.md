@@ -207,16 +207,16 @@ inspection. It is output, not the next authoring source.
 
 ## GTK output
 
-The active artifact contains a `gtk-theme/` payload. `hk-theme set` copies that
-payload to:
+The active build contains a `gtk-theme/` directory. `hk-theme set` copies it
+to:
 
 ```text
 ~/.local/share/themes/hyprkarl/
 ```
 
-This is a marked real-file copy. GTK discovery and asset loading have been
-unreliable through moving theme-directory symlinks, so do not replace it with a
-symlink tree. Edit theme source and select the theme again instead of editing
+This is a real copy because GTK discovery and asset loading have been
+unreliable through symlinked theme directories, so do not replace it with a
+symlink. Edit theme source and select the theme again instead of editing
 the installed copy. Dark sources compile Colloid's dark variant; `mode: light`
 compiles its light variant. The user-owned `~/.config/gtk-3.0/settings.ini` and
 `gtk-4.0/settings.ini` select the stable `hyprkarl` theme name; `hk-theme set`

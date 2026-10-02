@@ -1,19 +1,18 @@
 # AGENTS.md
 
-Guidance for working in `bin/` — the hk-* command library. Every file here is a
-user-facing command, on `$PATH` directly via `config/uwsm/env`; there is no
+Guidance for working in `bin/`, the `hk-*` command library. Every file here is
+a user-facing command, on `$PATH` directly via `config/uwsm/env`; there is no
 deploy step. Full command reference: `docs/commands.md`.
 
 ## Command Structure
 
-- **Simple command** — one script, one action. The default.
-- **Dispatcher** — a command with three or more distinct actions (`hk-theme`,
-  `hk-wallpaper`, `hk-update`, `hk-pkg`, `hk-fingerprint`, `hk-docker`). Each
-  subcommand lives as its own top-level command in the form
+- **Simple command**: one script, one action. The default.
+- **Dispatcher**: a command with three or more distinct actions (`hk-theme`,
+  `hk-wallpaper`, `hk-update`, `hk-pkg`, `hk-fingerprint`, `hk-docker`,
+  `hk-shell`, `hk-display`). Each subcommand is its own top-level command,
   `hk-<noun>-<action>`; the dispatcher is a thin router that `exec`s it.
-- **`bin/lib/`** — sourced helpers shared by two or more commands (`docker.sh`,
-  `shell.sh`, `theme.sh`, `update.sh`). Not for single-use logic; keep that in the command
-  itself.
+- **`bin/lib/`**: helpers shared by two or more commands. Not for single-use
+  logic; keep that in the command itself.
 
 ## Naming
 
@@ -23,154 +22,55 @@ noun-first form reads naturally: `hk-show-done`, `hk-open-with`,
 `hk-suggest-reboot`, `hk-notify-window-class`. Don't add new exceptions
 without good reason.
 
-Static menu navigation is defined in `defaults/menu.json` and rendered by
-Quickshell. Open or toggle it directly through `hk-shell menu`; do not add
-forwarding `hk-menu-*` aliases. Launcher, calculator, open-with, and wallpaper
-selection are also Quickshell interfaces opened through their typed `hk-shell`
-commands. Dynamic shell entries come from noun-owned provider commands such as
-`hk-theme-menu-entries`, `hk-docker-menu-entries`, and
-`hk-fingerprint-menu-entries`. Providers own discovery and actions but never
-open the shell menu themselves. Keep the open path proportional to the state
-actually needed for its rows. Generate large static catalogs directly in menu
-JSON shape rather than rebuilding them in a provider on every open.
-The Docker provider trusts Hyprkarl's authored manifest shape. It isolates each
-manifest load so one broken service is logged to stderr and skipped without
-hiding the remaining services; do not add a second manifest schema validator
-to the menu path.
-The locker's automatic fingerprint detection uses `hk-fingerprint list`.
-Keep enrollment discovery in that command rather than duplicating it in QML.
-The bar's generic command-widget launcher sets `HYPRKARL_OUTPUT` to its output
-name. `hk-shell-menu` forwards that context to Quickshell so the menu still
-opens on the clicked bar when Hyprland does not focus monitors on mouse movement.
+## Boundaries
 
-`hk-open-with <file>` is the file-manager entry point for the shared
-application picker. Its internal `entries` and `launch` actions form the one
-Gio boundary for MIME discovery, changing the default application, and
-file-aware launch semantics. QML must not duplicate those operations.
-`hk-wallpaper-entries` is the equivalent short-lived JSON source for the
-wallpaper carousel; wallpaper mutation remains in `hk-wallpaper` commands.
-
-`hk-shell osd` is the only public transport for transient shell status.
-Hardware and media commands own their system action and pass only semantic
-state—levels, mute state, output description, track text, and media action—to
-the typed OSD calls. They do not resolve icons or send replacement Mako
-notifications. The shell owns indicator selection, timing, monitor routing,
-and presentation.
-
-`hk-shell notifications` is the only public transport for notification
-dismissal, silence mode, and one-item restore.
-Bindings and helpers must use that typed surface rather than call a daemon
-control tool or internal QML object. Notification producers continue to use
-the standard freedesktop service through `notify-send` or their toolkit.
-
-`hk-screenshot` is the shipped Hyprshot boundary. Before starting its selection
-overlay, it asks the shell to release any feature-panel focus grab without
-dismissing the panel. It restores panel focus after Hyprshot exits, including
-after a cancelled selection. Screenshot bindings must use this command instead
-of calling Hyprshot directly.
-
-`hk-shell start` launches Quickshell as a UWSM service with the stable session
-environment. The shell's user actions launch through `uwsm-app --` in their own
-units, so stopping the shell affects only its own runtime and monitors. Keep
-application processes outside the shell service.
-
-`hk-display` is the single display-control boundary. Its Python library owns
-Hyprland output discovery, mode, scale, transform, position, and enable/disable changes, internal
-backlight control, and the generated layout under
-`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`. The Quickshell panel
-must call this command rather than write Hyprland rules or persistence itself.
-Generated `monitors.lua` loads before `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`, so personal Lua
-remains the final authority. Do not add a second shell-JSON display-state store
-or make the backend rewrite user-authored monitor configuration.
-Arrangement accepts one integer position and transform for every active output,
-rejects overlapping transformed rectangles, and applies the complete layout
-while preserving each output's current mode, refresh rate, and scale.
-Per-output panel changes submit a complete connected-output layout to
-`preview`; the backend records the prior live and persistent layouts, applies
-the trial, and starts its own ten-second watchdog. `confirm` persists the
-proposed layout and `revert` restores the prior one. Keep timeout ownership
-outside Quickshell so a lost panel, output, or shell process cannot strand an
-unconfirmed topology. Position-and-rotation arrangement remains a direct apply
-and does not use this trial.
-
-`hk-hook-run` is the only lifecycle-hook runner. It accepts exactly
-`post-boot`, `post-update`, `theme-set`, or `wallpaper-set`, then runs
-non-hidden executable regular files from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/` in lexical
-order. Missing directories and non-executable files are normal. It attempts
-every hook, reports each failure, and returns nonzero if any failed. Wire new
-events only to a real successful public action; do not add hook metadata,
-arguments, retries, or background execution without a concrete requirement.
-
-`hk-lock` launches Quickshell's `lock.qml` entry point directly. `hk-suspend`
-only runs `systemctl suspend`; Hypridle locks before sleep and holds suspend
-until the lock is secure. Authentication belongs in QML and native PAM.
+- **Talking to the shell.** Commands reach Quickshell only through `hk-shell`
+  (`menu`, `launcher`, `calculator`, `wallpaper`, `open-with`, `osd`,
+  `notifications`). Hardware and media commands send semantic state to
+  `hk-shell osd`; the shell picks icons and timing. Menus are data in
+  `defaults/menu.json`. Dynamic menu rows come from `*-menu-entries`
+  providers that print a JSON array and never open the menu themselves.
+- **Clicked monitor.** Bar clicks set `HYPRKARL_OUTPUT`, and `hk-shell menu`
+  forwards it so the menu opens on the clicked bar even when Hyprland does not
+  focus monitors on mouse movement.
+- **Screenshots** go through `hk-screenshot`, which releases a feature panel's
+  focus grab for the selection and restores it afterwards.
+- **Displays.** `hk-display` is the only display-control path; its library
+  writes the layout under `~/.local/state/hyprkarl/display/`, which loads
+  before the user's `monitors.lua`. Its `stderr` messages are shown in the
+  display panel, so its commands print one clean line on failure. The
+  keep-or-revert trial's watchdog is a separate process so a lost shell cannot
+  strand an unconfirmed layout.
+- **`hk-open-with`** is the one Gio boundary for MIME lookup, default apps, and
+  file-aware launching; QML must not duplicate it.
+- **Updates.** `hk-update` treats `config/`, `applications/`, `defaults/`, and
+  `themes/` as upstream-owned and never generates or replaces personal files.
+  See `docs/updating.md`. `hk-config-seed` copies an application's starting
+  config only when the user has none of its files.
+- **Themes.** `lib/theme.sh` builds a theme, swaps `current/theme` to it,
+  copies the GTK theme, and sets GTK settings. Wallpaper additions and
+  removals persist under the personal theme source; never modify checked-in
+  theme sources from a command.
+- **Hooks.** `hk-hook-run` runs the user's executables for `post-boot`,
+  `post-update`, `theme-set`, and `wallpaper-set`. Add an event only for a
+  real public action.
+- **Lock.** `hk-lock` starts `lock.qml`; `hk-suspend` only suspends, and
+  Hypridle locks first.
 
 ## Style
 
-Follow `docs/shell-style.md`. Choose Python for structured data, JSON,
-substantial parsing, and heavy string transformation; choose Bash for clear
-command orchestration and simple pipelines. Dynamic menu providers should
-normally construct dictionaries and lists in Python and serialize them with
-the standard `json` module. A provider that only prints prebuilt JSON may stay
-in Bash. Do not bury a sizeable Python program in `python3 -c` inside a Bash
-wrapper.
+Follow `docs/shell-style.md`. Use Bash for orchestration and simple pipelines,
+Python for structured data, JSON, and real parsing; do not bury a Python
+program in `python3 -c`. Bash: `#!/bin/bash`, no `set -euo pipefail`
+(intentional), guard clauses as `if` blocks, 2-space indent, `gum log` for
+user-facing output in interactive commands. Python: `#!/usr/bin/env python3`
+and a `main() -> int` entry point. Let errors surface; catch only where the
+command can still do something useful, such as skipping one broken Docker
+manifest.
 
-For Bash: use the `#!/bin/bash` shebang, no `set -euo pipefail` (intentional),
-guard clauses as `if` blocks, 2-space indentation, and `gum log` for
-user-facing output in interactive commands. For Python: use
-`#!/usr/bin/env python3`, a `main() -> int` entry point, and concise boundary
-errors on stderr. `bin/lib/*.sh` and `bin/lib/*.py` are both reserved for logic
-shared by multiple commands.
-Do not translate exceptions merely to catch them again one call later. When an
-external workflow needs a friendly failure, prefer one catch-all at the public
-command boundary. Catch per item only when the command can still return useful
-results from the remaining items, as the Docker menu provider does.
-`$HYPRKARL_PATH` is guaranteed by the session environment — no fallbacks
+`$HYPRKARL_PATH` is guaranteed by the session environment, so no fallbacks
 outside `lib/update.sh` and the setup scripts, which must run from a TTY.
-Update entry points source `lib/update.sh` before invoking hooks so that
-guarantee also holds for a pre-session `hk-update all`.
 
 Several scripts and `defaults/menu.json` embed Nerd Font glyphs in labels.
 These private-use-area characters are easy to drop silently when rewriting a
 whole file; prefer targeted edits.
-
-`hk-update` treats `config/`, `applications/`, `defaults/`, and `themes/` as
-upstream-owned configuration. Personal files live outside the checkout under
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; update commands must not
-generate, replace, reset, or adopt them.
-
-`hk-update-sync` owns source review. It fetches the explicitly configured
-remote and branch, presents the incoming commits and file summary, and writes
-one confirmed revision without moving the checkout. `hk-update-apply` owns the
-live transition to that revision. Stop Quickshell before changing the checkout,
-fast-forward only to the reviewed commit, run migration and Stow work before
-rebuilding the selected theme, then reload consumers and restart the shell.
-Write configuration success only after configuration and reload work succeeds,
-then clear the pending source. Automatic sync is not a custom-branch merge
-tool.
-
-Package update state is an atomic XDG-state snapshot, not a Git baseline.
-Removal changes get one multi-select review and are recorded as handled even
-when the owner keeps a package or a selected removal needs manual retry. System
-changes are ordered executable files under `system/migrations/`; record an ID
-only after its file succeeds. `hk-update all` owns the sync, apply, packages,
-system, then `post-update` order. Do not reintroduce the retired update TUI,
-dotfiles subcommand, per-package confirmation loop, routine system-setup rerun,
-or force/adopt paths.
-
-`hk-config-seed` owns starting configs. Paths ignored by
-`config/.stow-local-ignore` are starting material, not live files. An
-application is seeded only when none of its seed files exist, and an existing
-file is never overwritten. Updates run it every time, so a new application's
-starting config reaches existing users.
-
-`lib/theme.sh` owns building and activating themes. `theme_activate` runs the
-integrated compiler on a built-in source (with an optional same-name
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` overlay) or a personal
-source, swaps `current/theme` to the new build, deletes older builds, copies
-the GTK theme to `~/.local/share/themes/hyprkarl/`, and sets the GTK desktop
-settings. The repository's `config/hyprkarl/current/` entries are fixed
-compatibility links.
-Wallpaper additions and removals persist under the personal theme source;
-never mutate checked-in theme sources from a public command. Do not restore
-`hk-theme build`, a sibling generator path, or a generated-bundle input mode.

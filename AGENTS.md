@@ -4,311 +4,162 @@ Guidance for coding agents working in this repository.
 
 ## What This Repo Is
 
-Hyprkarl is a desktop configuration repository for CachyOS + Hyprland. Stable
-shipped entry points under `~/.config/` are symlinks into this checkout, while
-ordinary personal configuration lives outside it under
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/` and the applications' own
-configuration directories.
+Hyprkarl is a desktop configuration repository for CachyOS + Hyprland. Shipped
+entry points under `~/.config/` are symlinks into this checkout. Personal
+configuration lives outside it, in `~/.config/hyprkarl/`, `~/.config/quickshell/`,
+and the applications' own config directories, so updates never touch it.
 
-## Core Engineering Rules
+## Engineering Rules
 
-- Prefer the simplest coherent architecture. Remove unnecessary guards,
-  layers, indirection, duplication, and special cases instead of elaborating
-  them.
-- Optimize extension surfaces for directness and readability. A documented
-  file, data shape, or small context is preferable to a framework the project
-  does not need.
-- Trust the user. The person running Hyprkarl owns the system, and documented
-  paths and contracts describe the supported, update-friendly route rather
-  than a permission boundary. Do not sandbox, allowlist, or reject user-authored
-  QML, scripts, or configuration merely because it steps outside that route.
-- Do not over-guard. Validate data Hyprkarl must interpret to preserve its own
-  invariants and inputs that cross a genuinely untrusted boundary. If an
-  off-contract user change works, allow it. If it fails, add concise
-  Hyprkarl-specific context when that is easy and leave debugging of the user's
-  code to the user.
-- Hyprkarl will not have a plugin marketplace. It ships a default configuration
-  and suggests convenient paths for personalization; it does not govern,
-  install, approve, or sandbox third-party extensions.
+- Prefer the simplest coherent design, judged over the project's life. A shape
+  that is simple today but forces migrations or rewrites on every future change
+  is not the simple one.
+- Keep upstream defaults flowing to users. Personal files hold only what the
+  user changed and merge over shipped defaults; avoid designs that freeze users
+  at install-time copies.
+- Trust the user. Documented paths describe the supported, update-friendly
+  route, not a permission boundary. Do not sandbox, allowlist, or validate
+  user-authored QML, scripts, or configuration to police it.
+- Do not over-guard. Validate only untrusted input and data Hyprkarl must
+  interpret to keep its own invariants. Trust internal callers, the runtime,
+  and the session setup. Let readable errors surface instead of wrapping them.
+- No plugin system: no discovery, registries, manifests, or approval. User code
+  is referenced explicitly by path.
 
 ## Keeping Docs Current
 
-When you change behavior, structure, or conventions, **update the documentation
-in the same change** — both audiences:
+When you change behavior, structure, or conventions, update the docs in the
+same change, for both audiences:
 
-- **Human-facing docs** — `README.md` and `docs/`. Keep personal customization
-  in `docs/extending-hyprkarl.md`; contributor guidance belongs in
-  `docs/repo-conventions.md` and the relevant subsystem guide.
-- **Agent-facing docs** — this file owns repository-wide rules;
-  `bin/AGENTS.md` owns command authoring, `config/quickshell/AGENTS.md` owns the
-  active shell, `theme-generator/AGENTS.md` owns compiler work, and
-  `themes/AGENTS.md` owns theme authoring.
-  Each adjacent `CLAUDE.md` only imports its `AGENTS.md` counterpart for Claude
-  Code compatibility; keep shared guidance in `AGENTS.md`.
+- **Human docs:** `README.md` and `docs/`. Personal customization belongs in
+  `docs/extending-hyprkarl.md`.
+- **Agent docs:** this file for repository-wide guidance; `bin/AGENTS.md` for
+  commands; `config/quickshell/AGENTS.md` for the shell;
+  `theme-generator/AGENTS.md` for the theme compiler; `themes/AGENTS.md` for
+  theme authoring. Each adjacent `CLAUDE.md` only imports its `AGENTS.md`.
 
-Out-of-date docs are worse than no docs. If a change adds an `hk-*` command,
-renames a config surface, alters the theme layout, or shifts a convention, find
-and update every doc that describes it. Keep the two audiences consistent with
-each other.
+Agent docs orient a reader and record decisions that are not obvious from the
+code. Do not restate the implementation as rules; out-of-date docs are worse
+than none.
 
 ## Setup Commands
 
 ```bash
 ./setup-all.sh          # Full setup: packages, dotfiles, system config
 ./setup-packages.sh     # Bootstrap and run the package update workflow
-./setup-dotfiles.sh     # Configure source and apply shipped configuration
+./setup-dotfiles.sh     # Configure the update source and apply shipped configuration
 ./setup-system.sh       # Run pending one-time system migrations
-./uninstall.sh          # Remove all config symlinks (reverses setup-dotfiles.sh)
+./uninstall.sh          # Remove all config symlinks
 ```
 
-There are no build steps or package.json at the repo root — this is a direct
-configuration and command-script repo. `tests/` holds focused scripts and
-isolated acceptance harnesses, including `tests/hk-update.sh`, which exercises
-the updater against a disposable clone and home. See `tests/README.md`.
+There is no build step. `tests/` holds focused scripts and isolated harnesses;
+see `tests/README.md`.
 
 ## Releases
 
-Releases are annotated git tags `vX.Y.Z` on `main` with a hand-written entry in
-`CHANGELOG.md`; `develop` is the integration branch. See "Branches and
-Releases" in `docs/repo-conventions.md` for the cut procedure. Until v1.0.0,
-minor versions may include breaking changes — call them out in the changelog.
+Releases are annotated tags `vX.Y.Z` on `main` with a hand-written
+`CHANGELOG.md` entry; `develop` is the integration branch. See
+`docs/repo-conventions.md`. Until v1.0.0, minor versions may break things; call
+it out in the changelog.
 
 ## Architecture
 
-### Symlink Model
+### Symlinks and starting configs
 
-`setup-dotfiles.sh` uses GNU Stow to symlink the non-ignored shipped entry
-points from:
+`setup-dotfiles.sh` uses GNU Stow to link `config/` into `~/.config/` and
+`applications/` into `~/.local/share/applications/`. `bin/` is put on `$PATH`
+by `config/uwsm/env`. Editing a stowed file edits the live config. Renaming or
+deleting one leaves a stale symlink, which `hk-update apply` (or
+`hk-update remove-stale`) prunes.
 
-- `config/` → `~/.config/`
-- `applications/` → `~/.local/share/applications/`
+Paths listed in `config/.stow-local-ignore` are starting configs instead.
+`hk-config-seed` copies an application's starting config when the user has
+none of its files, and never overwrites an existing file. See
+`docs/configuration-map.md` for who owns what.
 
-`bin/` is not stowed; it is added to `$PATH` directly via `config/uwsm/env`.
+### Updates
 
-`config/.stow-local-ignore` also marks application starting configs that
-`hk-config-seed` copies as real user-owned files. Editing those seed files
-does not change an existing installation. An application is seeded only when
-none of its seed files exist, so an existing setup is never mixed with
-Hyprkarl's files. Updates run it every time: a new application's starting
-config reaches existing users, while files they already have are never
-overwritten. Keep native include bootstraps tracked only when they remain a
-useful stable entry point; see `docs/configuration-map.md`
-for the application-by-application ownership table.
+`hk-update sync` fetches and shows incoming commits and records the reviewed
+revision. `hk-update apply` fast-forwards to it, seeds starting configs,
+restows, rebuilds the theme, reloads consumers, and restarts the shell.
+`hk-update packages` and `hk-update system` handle package changes and the
+one-time scripts in `system/migrations/`. Machine update state lives under
+`~/.local/state/hyprkarl/update/`. See `docs/updating.md`.
 
-Editing a non-ignored tracked entry point edits the live running config
-directly. Renaming or deleting one leaves a **stale symlink** (a live link
-pointing at a now-missing repo file); `hk-update apply` prunes them as part
-of its run, and `hk-update remove-stale` does just that step.
+### Hyprland
 
-### Update workflow
-
-The normal checkout stays clean on the configured released branch.
-`hk-update sync` fetches the explicit `hyprkarl.updateRemote` and
-`hyprkarl.updateBranch`, shows the incoming commits and file summary, and
-records one confirmed commit under XDG state without changing the checkout.
-`hk-update apply` stops Quickshell, fast-forwards to that exact revision,
-migrates personal config, restows shipped entry points, rebuilds and activates
-the selected theme and GTK payload, reloads affected consumers, restarts the
-shell, then records configuration success. A failed operation must not clear
-the reviewed revision or claim configuration success before configuration and
-reload work completes.
-
-Direct `hk-update apply` always reapplies the current committed checkout, even
-when that revision was recorded already, so setup and repair can restore
-missing shipped links and generated output.
-
-`hk-update packages` owns one atomic `packages.json` state file. It presents
-new removal changes in one multi-select review and records the whole change as
-reviewed whether the owner removes or keeps each package. `hk-update system`
-runs pending executable files from `system/migrations/` in lexical order and
-records each only after success. All machine update records belong under
-`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/update/`, never in tracked or
-personal configuration.
-
-`hk-update all` runs sync, apply, packages, and system in that order, then emits
-`post-update`. A custom branch is outside automatic source sync; its owner
-merges or rebases manually and uses the remaining update commands. Do not
-restore the retired TUI, baseline-commit diffing, dotfiles subcommand, or
-force/adopt paths.
-
-### Hyprland Configuration
-
-Hyprland is configured in **Lua** (`hyprland.lua`), as required since Hyprland
-0.55 — hyprlang `.conf` is deprecated. The API is `hl.config{}`, `hl.bind()`,
-`hl.dsp.*` (dispatchers), `hl.window_rule{}` / `hl.layer_rule{}`, `hl.monitor{}`,
-`hl.env()`, `hl.gesture{}`, `hl.animation{}` / `hl.curve()`. See
+Hyprland is configured in Lua (required since 0.55): `hl.config{}`,
+`hl.bind()`, `hl.dsp.*`, `hl.window_rule{}`, `hl.monitor{}`, and so on. See
 https://wiki.hypr.land/Configuring/Start/.
 
-`config/hypr/hyprland.lua` is the stable entry point. It adds
-`defaults/hypr/` and `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` to the Lua module path, then loads the
-upstream modules from `defaults/hypr/` in this order:
+`config/hypr/hyprland.lua` loads the shipped modules from `defaults/hypr/`
+(envs, autostart, monitors, permissions, looknfeel, animations, gum, windows,
+input, bindings), then the active theme, then the display layout written by
+`hk-display`, then the user's matching modules from `~/.config/hyprkarl/hypr/`.
+Bindings are split under `defaults/hypr/bindings/` and window rules under
+`defaults/hypr/windows/`.
 
-```
-envs.lua, autostart.lua, monitors.lua, permissions.lua, looknfeel.lua,
-animations.lua, gum.lua, windows.lua, input.lua, bindings.lua
-```
+Check changes with `Hyprland --verify-config` before reloading; a broken
+`hyprland.lua` has no fallback.
 
-It then loads the active theme, the machine-generated display layout from
-`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/monitors.lua`, and
-matching optional user modules in the same order. Generated display state
-therefore overrides the shipped catch-all monitor rule without dirtying the
-repository, while explicit personal `hypr/monitors.lua` calls retain the final say.
-Missing generated and user files are normal; other load failures must remain
-visible.
+### Themes
 
-Keybindings are split under `defaults/hypr/bindings/`: `apps.lua`, `media.lua`, `windows.lua` (window management), `workspaces.lua` (workspaces/monitors/scratchpad), `system.lua` (menus, notifications, panels, power). App-specific window rules are split under `defaults/hypr/windows/`: `browsers.lua`, `floating.lua`, `media.lua`, `terminals.lua`, `screenshots.lua` — each required by `windows.lua`, which owns the base rules and the final `default-opacity` application. Personal modules belong in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/`; upstream must not add or modify them.
+Themes control look, not behavior. Sources live in `themes/<name>/`
+(`theme.yaml`, optional `overrides/`, assets); personal themes and same-name
+overlays live in `~/.config/hyprkarl/themes/<name>/`. The compiler in
+`theme-generator/` merges its defaults, the theme, and any personal overlay,
+and renders every consumer's files.
 
-Validate any change non-destructively with `Hyprland --verify-config` before
-relaunching — a broken `hyprland.lua` has no automatic fallback.
+`hk-theme set <name>` builds into `~/.local/state/hyprkarl/themes/<name>.<timestamp>`,
+points the `current/theme` symlink at it, deletes older builds, copies the GTK
+theme to `~/.local/share/themes/hyprkarl/` (GTK does not follow symlinked theme
+directories reliably), and sets the GTK desktop settings. Consumers read
+through `current/theme`. Read `themes/AGENTS.md` before editing a theme and
+`theme-generator/AGENTS.md` before changing the compiler.
 
-### Theme System
+### Quickshell
 
-Shipped theme sources live in `themes/{name}/`; personal themes and overlays
-live in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/{name}/`. Themes control **look** — colors, fonts, spacing
-— not behavior. `hk-theme set` builds the theme into a fresh directory under
-`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/`, then swaps the one
-`current/theme` symlink to it. The tracked paths under `config/hyprkarl/current/`
-are fixed compatibility links into that state, never the state itself.
+The shell in `config/quickshell/` draws the bar, panels, menus, launcher,
+notifications, OSD, polkit prompt, and lock screen. `shell.qml` starts the
+desktop; `lock.qml` runs the lock screen as a separate process. Behavior comes
+from `defaults/shell.json` and `defaults/menu.json` with the user's files in
+`~/.config/quickshell/settings/` merged over them; appearance comes from the
+theme. Read `config/quickshell/AGENTS.md` before changing it, and use
+`hk-shell` to start, restart, or read its logs.
 
-Switch themes with:
-```bash
-hk-theme set <theme-name>    # hyprkarl, everforest, gruvbox, loam, tokyo-night
-```
+### Commands
 
-`themes/<name>/` contains authoring source only: `theme.yaml`, optional complete
-template replacements under `overrides/`, and assets. The integrated compiler
-under `theme-generator/` owns shared defaults, templates, Colloid source,
-rendering, validation, and tests. A build merges shared defaults, the built-in
-graph, and an optional same-name personal graph before native Jinja resolution.
-Compiler templates, built-in overrides, and personal overrides apply in that
-order; assets use the same precedence. A personal-only theme requires
-`theme.yaml`, while a same-name overlay may omit it. Strings, numbers, booleans,
-and arbitrary user-defined structures may feed final consumer values.
-Read `themes/AGENTS.md` before changing a built-in theme source and
-`theme-generator/AGENTS.md` before changing the compiler or its templates.
+User-facing commands live in `bin/` as `hk-*`. Read `bin/AGENTS.md` before
+adding or editing one.
 
-`hk-theme set <name>` is the public build-and-activate action. It builds the
-theme into `themes/<name>.<timestamp>` under XDG state, swaps `current/theme`
-to it, deletes older builds, copies the GTK theme, and sets the GTK desktop
-settings. A failed build leaves the active theme untouched. The theme name is
-the build directory's name; there is no separate name or selector file.
-Generated bundles never live
-under `themes/` or the personal configuration root. Developers may run
-`python -m theme_generator` from `theme-generator/` for direct previews,
-builds, validation, and tests; there is no sibling checkout or sync command.
+### Lifecycle hooks
 
-GTK theme payloads are the deliberate exception to runtime symlink consumption.
-`theme_install_gtk_payload` materializes the active bundle's `gtk-theme/` as a
-marked real-file copy at `~/.local/share/themes/hyprkarl/` on setup, update,
-and theme switch. Do not replace it with a theme-directory or leaf-file symlink
-scheme; GTK discovery and asset loading have been unreliable through those
-paths. Normal updates migrate the old Hyprkarl-owned Stow tree but reject an
-unrelated directory at the same destination.
+`hk-hook-run` runs the user's executables in
+`~/.config/hyprkarl/hooks/<event>.d/` in lexical order. Events: `post-boot`,
+`post-update`, `theme-set`, `wallpaper-set`. Add an event only for a concrete
+workflow.
 
-### Yazi Configuration
+### Session environment
 
-The shipped `config/yazi/` tree owns Yazi's starting configuration. Image files
-expose the `Set as wallpaper` and `Clear image metadata` actions through Yazi's
-interactive opener menu; images that are not already `.jpg` also expose
-`Convert to JPG`. These use ExifTool and ImageMagick, which are already listed
-in the package manifest.
-
-### Quickshell configuration
-
-The Quickshell project under `config/quickshell/` groups desktop coordination in
-`desktop/`, bar-specific code in `bar/`, functional modules in `modules/`, shared
-UI by purpose in `ui/`, and configuration loading in `config/`. `shell.qml`
-launches the desktop; `lock.qml` launches the lock module separately. It reads
-the upstream-owned `defaults/shell.json` and applies the optional sparse
-`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json` override. Objects merge recursively and arrays replace, so a user who
-changes a layout section owns that section. Widget instances are defined inline
-in the default layout. The top-level `modules` object selects the nine optional
-built-in runtimes: bar, panels, notifications, OSD, polkit, menu,
-applications/open-with, calculator, and wallpaper. Module choices latch at
-shell startup, so `hk-shell restart` is required after changing them;
-`modules.bar` controls the built-in per-output bars, while
-`modules.panels` controls only their feature-panel popup hosts. Bars sit on
-the top or bottom edge. Keep
-appearance defaults in each theme's `quickshell.json`; shell JSON owns
-placement and behavior. The shared toggle indicator deliberately also accepts
-sparse per-instance control geometry over the theme's `shell.switch` default.
-Island corner shapes, selective borders, and
-screen/outer/content margins are theme data rendered once by
-`bar/layout/IslandSurface.qml`. Widgets report natural heights, the bar resolves
-the tallest one against the theme minimum, and all islands receive that shared
-height. `WidgetHost.qml` applies universal `bar.widgetPadding.main` and `.cross`
-values along and across top/bottom bar widgets; widget natural sizes
-must not duplicate those insets. A concrete widget may request a main-axis
-offset, resolved with a zero floor; the tray binds this to
-`bar.trayPaddingOffset`. Panel internals use the separate
-`metrics.controlPadding` token. `Theme.qml` reads `current/theme/quickshell.json`
-and reloads when a theme switch deletes the previous build.
-One optional `userRoot.source` loads a trusted application-wide QML composition
-root for independent surfaces or a replacement bar. Its documented context
-exposes the resolved configuration, theme, outputs, current overlay request,
-and direct overlay methods. Personal roots may use `import ui.modal` and its `Modal` for the
-same shell-styled exclusive modal boundary as built-in surfaces. It may publish
-reactive per-output notification positioning; there is no discovery or plugin
-layer.
-The shell keeps application-wide service state separate from per-output
-presentation. Feature panels compose through one host per bar; focused menus,
-pickers, and the display arranger compose through the shared modal boundary,
-with the wallpaper carousel using its frameless full-output presentation; OSD,
-notifications, and polkit each retain their own lifecycle boundary. Command
-providers exist once per provider-backed widget ID, and static widgets create
-no polling runtime. Explicit personal QML receives the documented narrow
-context without discovery, registration, or sandboxing.
-
-Read `config/quickshell/AGENTS.md` before changing shell implementation and
-`config/quickshell/README.md` for the contributor map and checks. Use
-`hk-shell` to start, stop, restart, inspect, or read logs from the production
-shell.
-
-The lock feature lives in `config/quickshell/modules/lock/`, with `lock.qml`
-as its entry point. It shares the shell's theme and components and runs in a
-separate process so bar restarts preserve locking. `hk-lock` and `hk-suspend`
-are its public commands; guidance belongs in `config/quickshell/AGENTS.md`.
-
-### `hk-*` Commands
-
-Shipped user-facing utilities are in `bin/` and follow the `hk-*` naming
-convention. See `bin/AGENTS.md` for command structure, naming rules, and
-authoring conventions before adding or editing one.
-
-### Lifecycle Hooks
-
-`hk-hook-run` executes user-owned, non-hidden executable files from
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/` in lexical order. The supported events are
-`post-boot`, `post-update`, `theme-set`, and `wallpaper-set`, each emitted only
-by its existing public action. Missing directories are a no-op. The runner
-attempts every hook and returns nonzero after reporting failures; the owning
-action must state when its primary change already completed. Do not add event
-metadata, retries, background execution, or new event names without a concrete
-public workflow.
-
-### Session Environment
-
-`config/uwsm/env` sets session-wide environment variables (including
-`HYPRKARL_PATH` and `$PATH`). Changes require a new Hyprland session.
-`~/.config/uwsm/default` controls `$TERMINAL`, `$EDITOR`, and `$SHELL`.
-`~/.config/uwsm/env.local` holds machine-local variables. Both are real user-owned files, created by `hk-config-seed` and never tracked.
+`config/uwsm/env` sets session-wide variables, including `HYPRKARL_PATH` and
+`$PATH`; changes need a new session. `~/.config/uwsm/default` sets
+`$TERMINAL`, `$EDITOR`, and `$SHELL`, and `~/.config/uwsm/env.local` holds
+machine-local variables. Both are user-owned.
 
 ## Command Script Style
 
-`bin/` scripts follow `docs/shell-style.md` — read it before writing or editing
-a command. Use Python for structured data, JSON generation, substantial
-parsing, and heavy string manipulation; use Bash when command orchestration or
-a simple pipeline remains clearer. Bash commands use `#!/bin/bash` and
-intentionally omit strict mode (`set -euo pipefail`); Python commands use
-`#!/usr/bin/env python3` and ordinary standard-library data structures.
+Read `docs/shell-style.md` before writing a command. Use Bash for
+orchestration and simple pipelines, Python for structured data and JSON. Bash
+scripts use `#!/bin/bash` and intentionally omit `set -euo pipefail`.
 
 ## Key Docs
 
-- `docs/configuration-map.md` — repo layout and main editing surfaces
-- `docs/themes.md` — theme structure and wallpaper layout
-- `docs/extending-hyprkarl.md` — personal scripts, hooks, menus, keybindings, and QML
-- `docs/authentication-surfaces.md` — polkit and separate session-lock ownership
-- `docs/shell-style.md` — Bash/Python command scripting conventions
-- `docs/commands.md` — full `hk-*` command reference
-- `docs/repo-conventions.md` — editing conventions, stowed-config model, branches and releases
-- `docs/updating.md` — the `hk-update` model and workflows
+- `docs/configuration-map.md`: repo layout and who owns each file
+- `docs/themes.md`: theme structure and wallpapers
+- `docs/extending-hyprkarl.md`: personal scripts, hooks, menus, keybindings, QML
+- `docs/shell-configuration.md`: shell settings and QML extension points
+- `docs/authentication-surfaces.md`: lock screen and polkit
+- `docs/shell-style.md`: Bash and Python conventions
+- `docs/commands.md`: `hk-*` command reference
+- `docs/repo-conventions.md`: editing conventions, branches, releases
+- `docs/updating.md`: the update workflow

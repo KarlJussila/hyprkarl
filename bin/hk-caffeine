@@ -1,39 +1,48 @@
 #!/bin/bash
 # hk-caffeine
-# Toggles hypridle on/off to prevent sleep and lock
+# Pause idle dimming, locking, and suspend by holding an idle inhibitor.
+# Hypridle keeps running, so manual suspend and lid close still lock first.
 #
 # Usage:
 #   hk-caffeine [on|off|toggle|status]
 #
-#   on      Enable caffeine (stop hypridle). No-op if already on.
-#   off     Disable caffeine (start hypridle). No-op if already off.
+#   on      Enable caffeine. No-op if already on.
+#   off     Disable caffeine. No-op if already off.
 #   toggle  (default) Switch to whichever state is not current.
 #   status  Exit 0 if caffeine is active, 1 if inactive. No side effects.
 
+UNIT="hyprkarl-caffeine"
 ICON_ON="☕"
 ICON_OFF="💤"
 
 is_active() {
-  systemctl --user is-active --quiet hypridle.service
+  systemctl --user is-active --quiet "$UNIT"
 }
 
 enable_caffeine() {
-  is_active || return 0
-  systemctl --user stop hypridle.service
-  notify-send "$ICON_ON Sleep & lock disabled"
+  is_active && return 0
+  systemd-run --user --quiet --unit="$UNIT" --description="Hyprkarl caffeine" \
+    systemd-inhibit --what=idle --who=Hyprkarl --why=Caffeine sleep infinity
+  notify-send "$ICON_ON Idle lock and sleep paused"
 }
 
 disable_caffeine() {
-  is_active && return 0
-  systemctl --user start hypridle.service
-  notify-send "$ICON_OFF Sleep & lock restored"
+  is_active || return 0
+  systemctl --user stop "$UNIT"
+  notify-send "$ICON_OFF Idle lock and sleep restored"
 }
 
 case "${1:-toggle}" in
   on)     enable_caffeine ;;
   off)    disable_caffeine ;;
-  toggle) is_active && enable_caffeine || disable_caffeine ;;
-  status) is_active && exit 1 || exit 0 ;;
+  toggle)
+    if is_active; then
+      disable_caffeine
+    else
+      enable_caffeine
+    fi
+    ;;
+  status) is_active ;;
   *)
     echo "Usage: $(basename "$0") [on|off|toggle|status]" >&2
     exit 1

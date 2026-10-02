@@ -295,8 +295,9 @@ shell.
 - `hk-nightlight [on|off|toggle]`
   Enable, disable, or toggle hyprsunset nightlight (warm color temperature +
   gamma dimming).
-- `hk-caffeine`
-  Toggle idle behaviors (hypridle).
+- `hk-caffeine [on|off|toggle|status]`
+  Pause idle locking and sleep with a systemd idle inhibitor. Hypridle keeps
+  running, so manual suspend and lid close still lock first.
 - `hk-display <state|arrange|preview|confirm|revert|scale|toggle|brightness> [arguments]`
   Query or change display state through the backend used by the Quickshell
   display panel. `state [output]` prints JSON; `arrange <arrangement-json>`

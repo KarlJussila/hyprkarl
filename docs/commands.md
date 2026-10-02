@@ -132,6 +132,9 @@ completes successfully. Individual update commands do not emit that event.
   List installed themes.
 - `hk-theme current`
   Print the current theme name.
+- `hk-theme cursor`
+  Set Hyprland's cursor to the active theme's. Hyprland runs it at startup,
+  and `hk-theme set` runs it after switching.
 - `hk-wallpaper set <filename>`
   Set the current wallpaper for the active theme.
 - `hk-wallpaper cycle`

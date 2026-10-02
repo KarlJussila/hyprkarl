@@ -70,8 +70,8 @@ before `3df882e`) have no automatic upgrade. Follow
 - Added the `loam` and `tokyo-night` themes, per-theme icon families, light
   theme support for GTK, and an optional generated wallpaper.
 - Themes set the mouse cursor theme (`desktop.cursor_theme`, Adwaita by
-  default) for Hyprland, GTK, and X11 apps. Cursor size stays in Hyprland's
-  `envs.lua`.
+  default) for Hyprland and for apps that draw their own cursor. Cursor size
+  stays in Hyprland's `envs.lua`.
 
 ### Updates
 

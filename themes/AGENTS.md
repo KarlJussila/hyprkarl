@@ -320,10 +320,11 @@ To ship wallpapers and preview screenshots with the theme, add:
 Set `desktop.icon_theme` in `theme.yaml` instead of replacing `icons.theme`.
 Choose an installed family that supports the palette, such as
 `Yaru-olive-dark` for Loam or `Yaru-blue-dark` for Tokyo Night.
-`desktop.cursor_theme` works the same way for the mouse cursor. The compiled
-`hyprland.lua` sets both `HYPRCURSOR_THEME` and `XCURSOR_THEME` from it:
-Hyprland falls back to XCursor for themes without a Hyprcursor version, and
-X11 apps only read `XCURSOR_THEME`, so one alone leaves gaps.
+`desktop.cursor_theme` names the mouse cursor. Activation writes it into the
+`default` cursor alias, because Qt, X11, and other apps that draw their own
+cursor load the theme named `default` (Qt under qt6ct ignores `XCURSOR_THEME`), and
+`hk-theme cursor` sets it in Hyprland, whose startup otherwise picks any
+installed Hyprcursor theme when this one has no Hyprcursor version.
 
 The shared Hyprkarl wallpaper is opt-in and may be combined with authored
 wallpapers:

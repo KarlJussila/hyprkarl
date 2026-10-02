@@ -9,6 +9,7 @@ HYPRKARL_THEME_BUILDS="$HYPRKARL_STATE_HOME/themes"
 HYPRKARL_CURRENT_THEME="$HYPRKARL_STATE_HOME/current/theme"
 HYPRKARL_CURRENT_WALLPAPER="$HYPRKARL_STATE_HOME/current/wallpaper"
 HYPRKARL_GTK_THEME_HOME="$HOME/.local/share/themes/hyprkarl"
+HYPRKARL_DEFAULT_CURSOR="${XDG_DATA_HOME:-$HOME/.local/share}/icons/default/index.theme"
 
 theme_normalize_name() {
   printf '%s' "$*" | tr '[:upper:]' '[:lower:]' | tr ' ' '-'
@@ -81,12 +82,11 @@ theme_activate() {
   gsettings set org.gnome.desktop.interface gtk-theme "hyprkarl"
   gsettings set org.gnome.desktop.interface color-scheme "$scheme"
   gsettings set org.gnome.desktop.interface icon-theme "$icons"
-}
 
-# Hyprland reads the cursor variables only when it starts, so set the theme's
-# cursor on a running compositor after a reload.
-theme_apply_cursor() {
-  hyprctl setcursor "$(<"$HYPRKARL_CURRENT_THEME/cursor.theme")" "$XCURSOR_SIZE" >/dev/null
+  # Apps that draw their own cursor (Qt, X11, most toolkits) load the theme
+  # named "default", which this alias points at the theme's cursor.
+  mkdir -p "${HYPRKARL_DEFAULT_CURSOR%/*}"
+  printf '[Icon Theme]\nInherits=%s\n' "$(<"$build/cursor.theme")" > "$HYPRKARL_DEFAULT_CURSOR"
 }
 
 # Keep the current wallpaper if the new build still has it; otherwise pick the

@@ -1,0 +1,10 @@
+#!/bin/bash
+# hk-theme-cursor
+# Set Hyprland's own cursor to the active theme's. Without this, Hyprland
+# starts with any installed Hyprcursor theme when the theme's cursor has no
+# Hyprcursor version.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
+
+hyprctl setcursor "$(<"$HYPRKARL_CURRENT_THEME/cursor.theme")" "$XCURSOR_SIZE" >/dev/null

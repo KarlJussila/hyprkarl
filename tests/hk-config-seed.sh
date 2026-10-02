@@ -27,7 +27,6 @@ printf 'file:///tmp\n' > "$CONFIG_HOME/gtk-3.0/bookmarks"
 seed || fail "seeding returned nonzero"
 
 [[ -f "$CONFIG_HOME/yazi/yazi.toml" ]] || fail "missing application was not seeded"
-[[ -f "$CONFIG_HOME/hypr/hypridle.conf" ]] || fail "single-file seed was not copied"
 [[ "$(cat "$CONFIG_HOME/nvim/init.lua")" == "my own init" ]] \
   || fail "existing nvim config was overwritten"
 [[ ! -e "$CONFIG_HOME/nvim/lua/config/lazy.lua" ]] \
@@ -39,6 +38,7 @@ seed || fail "seeding returned nonzero"
 grep -q "$CONFIG_HOME" "$CONFIG_HOME/qt6ct/qt6ct.conf" \
   || fail "@CONFIG_HOME@ was not substituted"
 [[ -f "$CONFIG_HOME/uwsm/env.local" ]] && [[ -f "$CONFIG_HOME/kitty/local.conf" ]] \
+  && [[ -f "$CONFIG_HOME/hypr/hypridle.local.conf" ]] \
   || fail "included personal files were not created"
 
 printf 'edited\n' > "$CONFIG_HOME/yazi/yazi.toml"

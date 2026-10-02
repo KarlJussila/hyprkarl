@@ -209,7 +209,7 @@ deleting every file brings Hyprkarl's starting config back on the next update.
 | Fastfetch | `~/.config/fastfetch/` | Complete starting config and logo | Next run | Never |
 | Fish | `~/.config/fish/` | Complete starting config; Fish also loads its ordinary `conf.d/` files | New shell or source the changed file | Never |
 | GTK 3/4 | `~/.config/gtk-3.0/` and `~/.config/gtk-4.0/` | Personal `gtk.css` imports `hyprkarl.css`, which reads the materialized active GTK theme; `settings.ini` remains personal | Restart affected applications | Personal files never; `~/.local/share/themes/hyprkarl/` is regenerated |
-| Hypridle, Hyprpaper, Hyprsunset | `~/.config/hypr/hypr*.conf` | Complete starting files | Restart the affected service | Never |
+| Hypridle, Hyprpaper, Hyprsunset | `~/.config/hypr/hypridle.local.conf`, `hyprpaper.local.conf`, `hyprsunset.local.conf` | Tracked `hypr*.conf` sets Hyprkarl's behavior, then sources the local file. Hypridle's timeouts and actions are variables the local file can redefine | Restart the affected service | Bootstrap only |
 | Hyprtoolkit | Theme source under `~/.config/hyprkarl/themes/` | Stable tracked link to the generated active theme | `hk-theme set <name>` | Link is managed; generated target is replaced |
 | Neovim | `~/.config/nvim/` | Complete starting tree with stable theme links | Restart or reload Neovim | Never |
 | Qt5ct / Qt6ct | `~/.config/qt5ct/` and `~/.config/qt6ct/` | Personal Qt settings with stable generated palette links | Restart affected applications | Never |

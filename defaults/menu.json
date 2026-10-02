@@ -1,6 +1,4 @@
 {
-  "version": 1,
-  "root": "main",
   "menus": {
     "main": { "title": "Main Menu" },
     "install": { "title": "Install" },

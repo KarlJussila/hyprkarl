@@ -70,7 +70,6 @@ add or change. For example, this adds a personal command to Utilities:
 
 ```json
 {
-  "version": 1,
   "entries": {
     "utilities.my-command": {
       "parent": "utilities",

@@ -4,18 +4,17 @@ Hyprkarl's static command hierarchy is rendered by Quickshell and defined as
 data. The shipped definition lives at `defaults/menu.json`; personal changes
 belong in the optional `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json` override.
 
-Both files use JSON version 1. The shell watches them, recursively merges the
-user object over the shipped object, and validates the effective result. A
-valid edit applies live. An invalid edit is reported in `hk-shell logs` while
-the last valid menu remains active; deleting `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json` returns to the
-shipped definition.
+The shell watches both files and merges your object over the shipped one, key
+by key, so you only write the menus and entries you add or change. Edits apply
+live. If your file does not parse, `hk-shell logs` shows the error and the
+shipped menu runs until you fix it. Deleting
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json` returns to
+the shipped definition.
 
 ## Document Shape
 
 ```json
 {
-  "version": 1,
-  "root": "main",
   "menus": {
     "main": { "title": "Main Menu" },
     "tools": { "title": "Tools" }
@@ -39,9 +38,8 @@ shipped definition.
 }
 ```
 
-`root` names the menu opened by `hk-shell menu toggle main` and the bar's static
-command widget. That widget passes its output context so a click opens the menu
-on the same monitor.
+`hk-shell menu toggle <id>` opens a menu by ID; the bar's menu button opens
+`main` and passes its output so the menu appears on the same monitor.
 Each object in `menus` supplies a title and may also define `sourceCommand`
 plus `emptyLabel` for entries discovered when that menu opens. Every menu has
 an in-process fuzzy-search field. It searches the current menu and every
@@ -100,7 +98,6 @@ selected output:
 
 ```json
 {
-  "version": 1,
   "entries": {
     "main.dashboard": {
       "parent": "main",
@@ -152,9 +149,8 @@ and do not replace shell-native service state in feature panels.
 A `sourceCommand` must print one JSON array and exit. Each array item has a
 stable `id`, a `label`, optional `icon`, `searchText`, and `disabled` fields,
 and a `command`, `menu`, `surface`, or `dismiss` action; array order is display
-order. The shell validates the result before rendering it, shows `emptyLabel`
-for an empty array, and reports provider or schema failure in the menu and
-`hk-shell logs`.
+order. The shell shows `emptyLabel` for an empty array, and reports output that
+does not parse in the menu and in `hk-shell logs`.
 Sources refresh on every open and when returning to a dynamic parent, so
 filesystem, hardware, and service state do not go stale. Domain commands own
 discovery: for example, `hk-fingerprint menu-entries remove` supplies only
@@ -170,7 +166,7 @@ loads its current rows through the normal provider boundary.
 
 The shell runs both providers and command actions with `bash -c`, inheriting
 the session environment without starting a login shell. A dynamic destination
-is revealed only after its complete result has been parsed and validated, so
+is revealed only after its complete result has been parsed, so
 users never interact with a partially populated model. Keep providers fast by
 doing only the discovery their rows require. If a large catalog changes only
 when an update command runs, generate provider-ready JSON during that update
@@ -180,15 +176,13 @@ this pattern. Runtime caching is not part of the menu contract.
 Write providers that construct or transform entries in Python. Lists and
 dictionaries map directly to the menu contract, and the standard `json` module
 handles quoting and Unicode without shell string manipulation. Bash remains a
-good fit when a provider only validates and prints an already-generated JSON
-file.
+good fit when a provider only prints an already-generated JSON file.
 
 For example, a personal dynamic menu needs only a menu declaration, an entry
 that navigates to it, and a provider on `$PATH`:
 
 ```json
 {
-  "version": 1,
   "menus": {
     "projects": {
       "title": "Projects",
@@ -271,7 +265,6 @@ field without copying the entry:
 
 ```json
 {
-  "version": 1,
   "entries": {
     "main.launch": {
       "label": "Applications"
@@ -292,7 +285,6 @@ unique stable ID:
 
 ```json
 {
-  "version": 1,
   "entries": {
     "utilities.files": {
       "parent": "utilities",

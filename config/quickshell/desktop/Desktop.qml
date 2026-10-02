@@ -7,7 +7,6 @@ import "../bar"
 import "../config"
 import "../ui/modal"
 import "../modules/display"
-import "../modules/menu"
 import "../modules/notifications"
 import "../modules/osd"
 
@@ -71,7 +70,6 @@ Scope {
 
   Variants {
     model: themeObject.ready
-      && (!configObject.modules.menu || MenuState.ready)
       ? Quickshell.screens
       : []
 

@@ -1,5 +1,6 @@
 module config
 singleton Paths 1.0 Paths.qml
+JsonSettings 1.0 JsonSettings.qml
 ShellConfig 1.0 ShellConfig.qml
 Theme 1.0 Theme.qml
 UserRoot 1.0 UserRoot.qml

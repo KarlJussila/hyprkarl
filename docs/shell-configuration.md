@@ -42,17 +42,6 @@ Launcher entries and command actions run through `uwsm-app --`. Applications
 therefore survive `hk-shell stop` and `restart`; polling providers stay with the
 shell. Commands triggered by a widget retain its `HYPRKARL_OUTPUT` context.
 
-## Lock settings
-
-The same file configures the lock module under `lock`. `fingerprintEnabled`
-defaults to `null` for automatic enrollment detection; set it to `false` to
-disable scanning or `true` to force it. `fingerprintRetryDelay` defaults to
-200 milliseconds. Settings reload live.
-
-Edit native PAM policies in `~/.config/quickshell/pam/` and appearance in
-personal themes under `shell.lock`. See
-[authentication](authentication-surfaces.md#personal-lock-configuration).
-
 ## Merge and Layout Rules
 
 Ordinary JSON objects merge recursively. A user scalar replaces the inherited

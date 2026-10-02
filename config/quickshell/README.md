@@ -52,9 +52,9 @@ QML can use `import ui.modal` to create a shared `Modal`.
 ## Personal configuration
 
 Edit `~/.config/quickshell/settings/shell.json` for module switches, bar layout,
-behavior, lock settings, and the personal root. Edit `settings/menu.json` for
+behavior, and the personal root. Edit `settings/menu.json` for
 menus. Ordinary JSON settings reload live; module switches require
-`hk-shell restart`. Lock settings reload live.
+`hk-shell restart`.
 
 Personal QML lives under `~/.config/quickshell/custom/`. Reference widgets
 explicitly in the layout or name an application-wide `userRoot.source` to add
@@ -66,8 +66,7 @@ Launcher entries and user command actions run through `uwsm-app --`, so
 applications survive stopping or restarting the desktop shell. Polling and
 service-monitor processes remain owned by the shell.
 
-Native authentication policies live in `~/.config/quickshell/pam/`. Appearance
-comes from personal theme sources, applied with `hk-theme set <name>`.
+Appearance comes from personal theme sources, applied with `hk-theme set <name>`.
 
 The manual owns the detailed contracts:
 
@@ -103,14 +102,12 @@ From the repository root:
 ```bash
 /usr/lib/qt6/bin/qmllint $(rg --files config/quickshell -g '*.qml' | sort)
 tests/hk-shell-modules.sh
-python3 tests/hk-lock.py
 python3 tests/hk-shell-launch.py
 ```
 
-The module check briefly creates an isolated desktop instance. The lock check
-uses native PAM with private policies and a controlled compositor; it opens no
-windows and never suspends the host. Real authentication and hardware resume
-also need a live check. See [tests](../../tests/README.md).
+The module check briefly creates an isolated desktop instance. Check the lock
+live: password, fingerprint, and suspend/resume. See
+[tests](../../tests/README.md).
 
 Quickshell's type metadata has known warnings for some native types. Verify a
 clean runtime and exercise the affected public action as well as linting:

@@ -1,5 +1,6 @@
 #!/bin/bash
 # hk-suspend
-# Ask the Quickshell locker to suspend after secure locking.
+# Suspend. Hypridle's before_sleep_cmd locks first, and inhibit_sleep holds
+# suspend until the lock is secure.
 
-exec hk-lock --suspend
+exec systemctl suspend

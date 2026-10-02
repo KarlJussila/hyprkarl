@@ -101,9 +101,9 @@ every hook, reports each failure, and returns nonzero if any failed. Wire new
 events only to a real successful public action; do not add hook metadata,
 arguments, retries, or background execution without a concrete requirement.
 
-`hk-lock` launches Quickshell's `lock.qml` entry point directly.
-`hk-suspend` delegates to `hk-lock --suspend`; the lock feature owns waiting for
-secure locking before suspending. Authentication belongs in QML and native PAM.
+`hk-lock` launches Quickshell's `lock.qml` entry point directly. `hk-suspend`
+only runs `systemctl suspend`; Hypridle locks before sleep and holds suspend
+until the lock is secure. Authentication belongs in QML and native PAM.
 
 ## Style
 

@@ -2,12 +2,10 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pam
-import "../../config"
 
 Scope {
   id: root
 
-  required property var settings
   property string currentText: ""
   property int submittedLength: 0
   property bool passwordFailed: false
@@ -16,32 +14,28 @@ Scope {
   property bool fingerprintAccepted: false
   property bool authenticated: false
   property bool fingerprintAllowed: false
-  property int fingerprintErrorRetryDelay: 1000
+  property bool fingerprintEnabled: false
   property var queuedResponse: null
   property bool awaitingPasswordResponse: false
   readonly property bool passwordBusy: password.active && !awaitingPasswordResponse
   readonly property bool responseVisible:
     password.active && awaitingPasswordResponse && password.responseVisible
   readonly property bool fingerprintBusy: fingerprint.active
+  readonly property bool fingerprintActive:
+    fingerprintAllowed && fingerprintEnabled && !authenticated
   signal unlocked()
 
-  onFingerprintAllowedChanged: {
-    if (fingerprintAllowed) startFingerprint()
-    else stopFingerprint()
-  }
-  property bool fingerprintAvailable: false
-  readonly property bool fingerprintEnabled:
-    settings.fingerprintEnabled ?? fingerprintAvailable
-  onFingerprintEnabledChanged: {
-    if (fingerprintEnabled) startFingerprint()
+  onFingerprintActiveChanged: {
+    if (fingerprintActive) startFingerprint()
     else stopFingerprint()
   }
 
+  // Scan only when fingers are enrolled; hk-fingerprint setup is the opt-in.
   Process {
     command: ["hk-fingerprint", "list"]
-    running: root.settings.fingerprintEnabled === null
+    running: true
     stdout: StdioCollector {
-      onStreamFinished: root.fingerprintAvailable = text.trim().length > 0
+      onStreamFinished: root.fingerprintEnabled = text.trim().length > 0
     }
   }
 
@@ -64,8 +58,7 @@ Scope {
   }
 
   function startFingerprint(): void {
-    if (!fingerprintAllowed || !fingerprintEnabled
-        || fingerprint.active || authenticated) return
+    if (!fingerprintActive || fingerprint.active) return
     fingerprintFailed = false
     if (!fingerprint.start()) {
       fingerprintFailed = true
@@ -78,14 +71,11 @@ Scope {
     fingerprint.abort()
     fingerprintReading = false
     fingerprintFailed = false
-    fingerprintErrorRetryDelay = 1000
   }
 
+  // Retry a mismatch at once; give a failing reader a moment.
   function retryFingerprint(readerError: bool): void {
-    fingerprintRetry.interval = readerError
-      ? fingerprintErrorRetryDelay : settings.fingerprintRetryDelay
-    if (readerError)
-      fingerprintErrorRetryDelay = Math.min(fingerprintErrorRetryDelay * 2, 10000)
+    fingerprintRetry.interval = readerError ? 2000 : 200
     fingerprintRetry.restart()
   }
 
@@ -113,7 +103,7 @@ Scope {
 
   PamContext {
     id: password
-    configDirectory: Paths.userPath("pam")
+    configDirectory: Quickshell.shellPath("modules/lock/pam")
     config: "password"
 
     onPamMessage: {
@@ -143,13 +133,10 @@ Scope {
 
   PamContext {
     id: fingerprint
-    configDirectory: Paths.userPath("pam")
+    configDirectory: Quickshell.shellPath("modules/lock/pam")
     config: "fingerprint"
 
-    onPamMessage: {
-      root.fingerprintFailed = messageIsError
-      if (!messageIsError) root.fingerprintErrorRetryDelay = 1000
-    }
+    onPamMessage: root.fingerprintFailed = messageIsError
     onCompleted: result => {
       if (result === PamResult.Success) {
         root.fingerprintAccepted = true

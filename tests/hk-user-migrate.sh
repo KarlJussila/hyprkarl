@@ -51,7 +51,6 @@ cp -a "$ORIG/templates/setup/terminals/." \
   "$FAKE_REPO/templates/setup/terminals/"
 printf 'keep me\n' > "$CONFIG_HOME/hyprkarl/current/marker"
 printf '{"entries":{}}\n' > "$CONFIG_HOME/hyprkarl/menu.json"
-cp -a "$ORIG/templates/setup/quickshell" "$FAKE_REPO/templates/setup/"
 cp "$ORIG/bin/lib/theme.sh" "$FAKE_REPO/bin/lib/theme.sh"
 
 ln -s "$FAKE_REPO/config/uwsm/default" "$CONFIG_HOME/uwsm/default"
@@ -87,10 +86,6 @@ HOME="$FAKE_HOME" XDG_CONFIG_HOME="$CONFIG_HOME" XDG_STATE_HOME="$STATE_HOME" \
   || fail "legacy shell configuration did not reach the native settings directory"
 [[ "$(cat "$CONFIG_HOME/quickshell/settings/menu.json")" == '{"entries":{}}' ]] \
   || fail "personal menu configuration was not moved"
-cmp -s "$ORIG/templates/setup/quickshell/pam/password" "$CONFIG_HOME/quickshell/pam/password" \
-  || fail "password PAM starting policy was not seeded"
-cmp -s "$ORIG/templates/setup/quickshell/pam/fingerprint" "$CONFIG_HOME/quickshell/pam/fingerprint" \
-  || fail "fingerprint PAM starting policy was not seeded"
 [[ -f "$CONFIG_HOME/hyprkarl/themes/test/theme.yaml" ]] \
   || fail "theme was not moved"
 [[ ! -e "$CONFIG_HOME/hyprkarl/themes/legacy" ]] \
@@ -209,15 +204,9 @@ fi
 [[ "$(cat "$CONFIG_HOME/quickshell/settings/shell.json")" == '{"version":1}' ]] \
   || fail "native conflicting shell config changed"
 
-rm "$CONFIG_HOME/quickshell/pam/fingerprint"
-printf 'personal password policy\n' > "$CONFIG_HOME/quickshell/pam/password"
 rm "$CONFIG_HOME/hyprkarl/shell.json"
 HOME="$FAKE_HOME" XDG_CONFIG_HOME="$CONFIG_HOME" XDG_STATE_HOME="$STATE_HOME" \
   HYPRKARL_PATH="$FAKE_REPO" "$ORIG/bin/hk-user-migrate" >/dev/null \
   || fail "repeat migration failed"
-[[ ! -e "$CONFIG_HOME/quickshell/pam/fingerprint" ]] \
-  || fail "deleted personal PAM policy was recreated"
-[[ "$(cat "$CONFIG_HOME/quickshell/pam/password")" == 'personal password policy' ]] \
-  || fail "personal PAM policy was overwritten"
 
 printf 'Personal configuration migration passed.\n'

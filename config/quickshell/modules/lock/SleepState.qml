@@ -5,7 +5,6 @@ QtObject {
   id: root
   property bool ready: false
   property bool preparing: false
-  signal resumed()
 
   property Process monitor: Process {
     command: ["gdbus", "monitor", "--system", "--dest", "org.freedesktop.login1",
@@ -17,7 +16,6 @@ QtObject {
         if (sleep) {
           root.preparing = sleep[1] === "true"
           root.ready = true
-          if (!root.preparing) root.resumed()
         } else if (line.startsWith("The name org.freedesktop.login1 is owned by ")) {
           root.initialState.running = true
         }
@@ -25,7 +23,8 @@ QtObject {
     }
   }
 
-  // Subscribe first so a locker launched during sleep preparation cannot miss resume.
+  // Query only after subscribing, so a locker started by hypridle's
+  // before_sleep_cmd cannot miss the resume signal.
   property Process initialState: Process {
     command: ["gdbus", "call", "--system", "--dest", "org.freedesktop.login1",
       "--object-path", "/org/freedesktop/login1",
@@ -33,7 +32,7 @@ QtObject {
       "org.freedesktop.login1.Manager", "PreparingForSleep"]
     stdout: StdioCollector {
       onStreamFinished: {
-        // A newer signal owns the state if it arrived while this query was running.
+        // A signal that arrived while this query ran is newer.
         if (!root.ready) {
           root.preparing = text.includes("<true>")
           root.ready = true

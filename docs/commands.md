@@ -103,13 +103,13 @@ completes successfully. Individual update commands do not emit that event.
   Show the shared Quickshell application picker for opening a file. Its custom
   switch optionally makes the selected application the default for the file's
   MIME type before launching it.
-- `hk-lock [--suspend]`
-  Lock the session. `--suspend` also suspends after locking.
+- `hk-lock`
+  Lock the session.
 
 ### Power
 
 - `hk-suspend`
-  Lock the session and suspend.
+  Suspend. Hypridle locks the session first.
 - `hk-reboot`
   Reboot through `hyprshutdown` with the standard countdown overlay.
 - `hk-shutdown`

@@ -2,75 +2,47 @@
 
 Quickshell provides session locking and polkit prompts. The lock feature lives
 under `config/quickshell/modules/lock/` and shares the shell's theme and
-components. `hk-lock` starts its `lock.qml` entry point in an independent
-process, so restarting the bar preserves an active lock.
+components. `hk-lock` starts its `lock.qml` entry point as a separate process, so
+restarting the bar does not affect an active lock.
 
 ## Locking and authentication
 
-`hk-lock` locks the session; `hk-suspend` locks and suspends. Repeated lock calls
-reuse the existing process. Suspension waits for the compositor to confirm
-secure locking. Password and fingerprint authentication run independently,
-so password entry remains available while the reader scans or recovers.
+`hk-lock` locks the session. Repeated calls reuse the running locker.
+`hk-suspend` only suspends: Hypridle's `before_sleep_cmd` runs `hk-lock`, and
+`inhibit_sleep = 3` holds suspend until the lock is secure. The lock engages
+before it reads the theme, so a broken theme cannot leave the session unlocked.
 
-Fingerprint enrollment is detected automatically using `hk-fingerprint list`.
-Without enrollment, fingerprint authentication and its icon are disabled.
-A default install does not include fprintd. Use `hk-fingerprint setup`, then
-`hk-fingerprint enroll <finger-name>` to enable it.
-
-Scanning stops before sleep and starts fresh on resume. Ordinary locking
-starts scanning once enrollment and secure locking are confirmed. Mismatches
-retry after the configured delay; reader errors retry with increasing delays
-from one to ten seconds.
+Password and fingerprint authentication run side by side, so you can type a
+password while the reader scans. Fingerprint scanning is on when fingers are
+enrolled (`hk-fingerprint list`). A default install has no fprintd; run
+`hk-fingerprint setup` to install it and enroll a finger. Scanning stops before
+sleep and restarts on resume.
 
 Submitted password dots dim during verification. A rejected password clears
-them and briefly shakes the field with a red border. Fingerprint failures
-briefly shake and tint its icon. Successful authentication finishes the unlock
-animation before releasing the lock. Escape clears the password attempt.
+them and shakes the field with a red border. A fingerprint failure shakes and
+tints its icon. Escape clears the password attempt.
 
-The implementation uses Quickshell 0.3.1's `WlSessionLock` and `PamContext`.
-Quickshell and Hyprland own secure output coverage. If the lock process crashes,
-Hyprland retains the lock; recovery then requires access outside the locked
-session. Read diagnostics with:
+If the lock process crashes, Hyprland keeps the session locked; recovery then
+needs access from outside the session. Read diagnostics with:
 
 ```bash
 qs -p "$HYPRKARL_PATH/config/quickshell/lock.qml" log
 ```
 
-## Personal lock configuration
+## Customizing the lock
 
-Lock behavior uses the `lock` object in
-`~/.config/quickshell/settings/shell.json`:
-
-| Key | Default | Purpose |
-| --- | --- | --- |
-| `fingerprintEnabled` | `null` | Detect enrollment automatically; `false` disables scanning and its icon; `true` forces scanning |
-| `fingerprintRetryDelay` | `200` | Milliseconds between retries after mismatches or exhausted attempts |
-
-For example, disable fingerprint authentication with:
-
-```json
-{"version": 1, "lock": {"fingerprintEnabled": false}}
-```
-
-Edit native PAM policies directly in `~/.config/quickshell/pam/`:
-
-- `password` starts with `auth include system-auth`.
-- `fingerprint` starts with `auth required pam_fprintd.so`.
-
-Setup seeds these files once. Updates preserve edits and deliberate deletion.
-PAM edits affect new authentication attempts. PAM requires service files, so these policies
-remain files rather than QML strings or additional JSON settings.
-
-Appearance belongs in personal theme sources under `shell.lock`. Available
-values are `width`, `padding`, `spacing`, `radius`, `inputHeight`, `inputFontSize`,
+Appearance lives in personal theme sources under `shell.lock`: `width`,
+`padding`, `spacing`, `radius`, `inputHeight`, `inputFontSize`,
 `clockFontSize`, `dateFontSize`, `dimOpacity`, `clockFormat`, `dateFormat`,
-`transitionDuration`, `fadeDuration`, `failureDuration`, `fingerprintSize`, and
-`fingerprintCompleteDuration`. Run `hk-theme set <name>` to apply theme changes.
+`transitionDuration`, `fadeDuration`, `failureDuration`, `fingerprintSize`,
+and `fingerprintCompleteDuration`. Run `hk-theme set <name>` to apply them.
 
-A complete personal lock configuration can set `HYPRKARL_LOCK_SOURCE` in
-`~/.config/uwsm/env.local` to its QML entry file or directory. To support
-`hk-suspend`, it must implement `lock suspend` IPC and wait for secure locking
-before suspending. Session environment changes require a new session.
+The PAM policies ship in `config/quickshell/modules/lock/pam/`. `password`
+includes `system-auth`; `fingerprint` runs `pam_fprintd` first.
+
+To replace the lock entirely, set `HYPRKARL_LOCK_SOURCE` in
+`~/.config/uwsm/env.local` to your own QML entry file. Session environment
+changes need a new session.
 
 ## Polkit Design
 

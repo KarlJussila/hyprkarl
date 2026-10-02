@@ -148,9 +148,5 @@
         }
       ]
     }
-  },
-  "lock": {
-    "fingerprintEnabled": null,
-    "fingerprintRetryDelay": 200
   }
 }

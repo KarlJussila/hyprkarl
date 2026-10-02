@@ -249,10 +249,9 @@ launches its lock module in a separate process so bar restarts preserve locking.
 
 | Personal file | Controls | Apply |
 | --- | --- | --- |
-| `~/.config/quickshell/settings/shell.json` | Module switches, bar layout, notification/OSD behavior, lock behavior, and the personal QML root | Ordinary settings reload live; module switches require `hk-shell restart`; lock settings reload live |
+| `~/.config/quickshell/settings/shell.json` | Module switches, bar layout, notification/OSD behavior, and the personal QML root | Ordinary settings reload live; module switches require `hk-shell restart` |
 | `~/.config/quickshell/settings/menu.json` | Menu entries, providers, and actions | Reloads live |
 | `~/.config/quickshell/custom/` | Explicitly referenced QML roots, widgets under `modules/`, and notification drawings under `icons/` | `hk-shell restart` |
-| `~/.config/quickshell/pam/password` and `pam/fingerprint` | Native authentication policies, seeded once | New authentication attempts |
 | `~/.config/hyprkarl/themes/<name>/` | Appearance, including `shell.lock` | `hk-theme set <name>` |
 
 `defaults/shell.json` and `defaults/menu.json` supply shipped behavior. Personal

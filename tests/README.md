@@ -61,25 +61,6 @@ no windows and leaves the production shell running.
 python3 tests/hk-shell-launch.py
 ```
 
-## `hk-lock.py`
-
-Exercises `hk-lock`, `hk-suspend`, and the production locker QML in an isolated
-Quickshell process. A controlled compositor supplies secure-lock confirmation. Native `PamContext`
-uses private PAM policies for a pending conversation and module-error results;
-the tests do not substitute a QML authentication implementation. A private D-Bus service supplies logind's sleep
-state and resume signals; harmless commands record layout reset and suspension.
-It checks pending requests, reuse of an existing locker, immediate requests
-while securely locked, the startup timeout, and broken-QML failure. Fingerprint
-checks cover stopping before sleep, fresh authentication on resume, startup
-during sleep preparation, live disabling of fingerprint scanning, and increasing
-recovery delays after reader errors.
-It opens no windows and never suspends the host. Installed `qs` and its QML
-modules, `gdbus`, `dbus-daemon`, and Python's installed PyGObject are required.
-
-```bash
-python3 tests/hk-lock.py
-```
-
 ## `tst_menu_model.qml`
 
 Runs the pure command-menu model under Qt Test. It checks direct ordering,

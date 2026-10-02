@@ -140,9 +140,8 @@ theme-aware Quickshell prompt; the separate `hyprpolkitagent` process is no
 longer part of the session. Session locking uses the Quickshell lock feature,
 launched by `hk-lock`, with password authentication and automatically detected
 fingerprint authentication.
-The locker shares the active theme and survives desktop-shell restarts. Personal
-PAM policies live in `~/.config/quickshell/pam/`; lock behavior uses
-`settings/shell.json`. The display panel opens a staged submenu for each
+The locker shares the active theme and survives desktop-shell restarts. The
+display panel opens a staged submenu for each
 output with enablement, resolution, refresh rate, and scale controls. Resolution
 and refresh rate use separate pickers, and the latter lists only rates supported
 at the selected resolution. Those changes

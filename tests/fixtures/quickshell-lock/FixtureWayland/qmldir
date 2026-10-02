@@ -1,3 +1,0 @@
-module FixtureWayland
-WlSessionLock 0.0 WlSessionLock.qml
-WlSessionLockSurface 0.0 WlSessionLockSurface.qml

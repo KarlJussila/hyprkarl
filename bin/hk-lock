@@ -1,15 +1,5 @@
 #!/bin/bash
 # hk-lock
-# Lock the session with Quickshell.
-# Usage: hk-lock [--suspend]
+# Lock the session with the Quickshell locker.
 
-LOCK_CONFIG="${HYPRKARL_LOCK_SOURCE:-$HYPRKARL_PATH/config/quickshell/lock.qml}"
-
-case "${1:-}" in
-  --suspend)
-    qs --no-duplicate --daemonize -p "$LOCK_CONFIG" || exit 1
-    exec qs -p "$LOCK_CONFIG" ipc call lock suspend ;;
-  "") exec qs --no-duplicate --daemonize -p "$LOCK_CONFIG" ;;
-  -h|--help) echo 'Usage: hk-lock [--suspend]'; exit 0 ;;
-  *) echo 'Usage: hk-lock [--suspend]' >&2; exit 1 ;;
-esac
+exec qs --no-duplicate --daemonize -p "${HYPRKARL_LOCK_SOURCE:-$HYPRKARL_PATH/config/quickshell/lock.qml}"

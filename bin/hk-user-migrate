@@ -347,17 +347,6 @@ seed_session_file \
 
 migrate_seeded_application_configs || exit 1
 
-pam_marker="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/migrations/quickshell-pam-v1"
-if [[ ! -e "$pam_marker" ]]; then
-  for service in password fingerprint; do
-    seed_session_file \
-      "$HYPRKARL_PATH/templates/setup/quickshell/pam/$service" \
-      "$CONFIG_HOME/quickshell/pam/$service" || exit 1
-  done
-  mkdir -p "$(dirname "$pam_marker")" || exit 1
-  : > "$pam_marker"
-fi
-
 theme_migrate_legacy_bundles || exit 1
 
 rmdir "$HYPRKARL_PATH/user" 2>/dev/null || true

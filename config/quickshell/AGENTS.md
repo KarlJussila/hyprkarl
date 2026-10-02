@@ -516,24 +516,14 @@ same `qmllint` warning. Do not add an abstraction to hide that tooling defect;
 validate registration and a real prompt in the live runtime.
 
 `lock.qml` is the lock entry point; `modules/lock/` owns authentication and
-presentation. It runs in its own process so bar restarts preserve an active
-lock, but imports the same `config/Theme.qml` and shared `ui/` components directly.
-`hk-lock` launches it; QML waits for `WlSessionLock.secure` before suspending.
-One authentication state serves all outputs. Only PAM success releases the
-lock, after the unlock animation; keep password and fingerprint conversations
-independent. Abort fingerprint PAM before sleep and start fresh on resume.
-`LockState.qml` reads the shared `ShellConfig.lock` behavior settings and uses
-`hk-fingerprint list` for automatic enrollment detection. Do not add a separate
-lock JSON parser. Native user-owned policies live in `quickshell/pam/password`
-and `quickshell/pam/fingerprint`; `hk-user-migrate` seeds them once. Appearance
-defaults belong only in the compiler's `shell.lock` object.
-The fingerprint centerlines are derived from Material Design Icons; retain
-`modules/lock/licenses/material-design-icons.txt` with the modified SVG.
-`ui/animation/ShakeAnimation.qml` supplies shared failure motion.
-`python3 tests/hk-lock.py` checks startup, suspend ordering, and fingerprint
-sleep/retry behavior. Real authentication and hardware sleep need live checks.
-See `../../docs/authentication-surfaces.md` for configuration and
-`../../docs/quickshell-overhaul-plan.tmp.md` for remaining acceptance work.
+presentation. It runs in its own process so bar restarts do not touch an active
+lock. The lock engages unconditionally; the theme only decorates it. Suspend
+ordering belongs to Hypridle (`before_sleep_cmd` plus `inhibit_sleep = 3`), not
+the locker. Password and fingerprint PAM conversations stay independent; abort
+fingerprint before sleep and restart it on resume. Fingerprint scanning follows
+enrollment (`hk-fingerprint list`). PAM policies ship in `modules/lock/pam/`.
+Keep `modules/lock/licenses/material-design-icons.txt` with the fingerprint
+SVG. Check the lock live; see `../../docs/authentication-surfaces.md`.
 
 ## Checks
 

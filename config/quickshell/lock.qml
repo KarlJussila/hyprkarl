@@ -10,39 +10,25 @@ import "modules/lock"
 ShellRoot {
   id: root
   property real presentationOpacity: 1
-  property bool suspendRequested: false
-
-  function suspendWhenSecure(): void {
-    if (suspendRequested && session.secure) {
-      suspendProcess.running = true
-    }
-  }
 
   Theme { id: lockTheme }
-  ShellConfig { id: lockConfig }
-  SleepState {
-    id: sleepState
-    onResumed: root.suspendRequested = false
-  }
+  SleepState { id: sleepState }
   LockState {
     id: authentication
-    settings: lockConfig.lock
     fingerprintAllowed: session.secure && sleepState.ready && !sleepState.preparing
-      && !root.suspendRequested
     onUnlocked: fadeOut.start()
   }
 
+  // Lock first; the theme only decorates. Unlock, or the compositor
+  // rejecting the lock, ends the process.
   WlSessionLock {
     id: session
-    locked: lockTheme.ready && lockConfig.ready
-    onSecureChanged: if (secure) {
-      console.info("Hyprkarl lock is secure")
-      keyboardLayout.running = true
-      root.suspendWhenSecure()
-    }
+    locked: true
+    onLockedChanged: if (!locked) Qt.quit()
+    onSecureChanged: if (secure) keyboardLayout.running = true
 
     WlSessionLockSurface {
-      color: lockTheme.popupSurface
+      color: "black"
       LockScreen {
         anchors.fill: parent
         lockState: authentication
@@ -55,35 +41,6 @@ ShellRoot {
   Process {
     id: keyboardLayout
     command: ["hyprctl", "switchxkblayout", "all", "0"]
-  }
-
-  Process {
-    id: suspendProcess
-    command: ["systemctl", "suspend"]
-    // Qt's QProcess::ExitStatus is missing from the installed QML type metadata.
-    // qmllint disable signal-handler-parameters
-    onExited: exitCode => {
-      if (exitCode !== 0) root.suspendRequested = false
-    }
-    // qmllint enable signal-handler-parameters
-  }
-
-  IpcHandler {
-    target: "lock"
-    function suspend(): void {
-      root.suspendRequested = true
-      root.suspendWhenSecure()
-    }
-  }
-
-  Timer {
-    interval: 6000
-    running: !session.secure
-    onTriggered: {
-      console.error("Hyprkarl lock did not reach the compositor's secure state")
-      session.locked = false
-      Qt.exit(1)
-    }
   }
 
   SequentialAnimation {
@@ -100,9 +57,6 @@ ShellRoot {
       duration: lockTheme.lock.fadeDuration
       easing.type: Easing.InOutQuad
     }
-    onFinished: {
-      session.locked = false
-      Qt.quit()
-    }
+    onFinished: session.locked = false
   }
 }

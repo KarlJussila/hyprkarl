@@ -125,10 +125,9 @@ completes successfully. Individual update commands do not emit that event.
 ## Themes and Wallpapers
 
 - `hk-theme set <theme>`
-  Build and validate a built-in source, personal source, or built-in plus
-  same-name personal overlay; atomically activate its immutable XDG-state
-  artifact; refresh the installed real-file GTK payload; then update wallpaper
-  and application settings and reload affected programs.
+  Build a built-in source, personal source, or built-in plus same-name
+  personal overlay; make it the active theme; copy its GTK theme; then update
+  the wallpaper and application settings and reload affected programs.
 - `hk-theme list`
   List installed themes.
 - `hk-theme current`

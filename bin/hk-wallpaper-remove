@@ -36,9 +36,6 @@ if [[ -f "$HYPRKARL_PATH/themes/$THEME_NAME/wallpapers/$wallpaper_name" ]] \
   printf '%s\n' "$wallpaper_name" >> "$USER_THEME_DIR/.wallpapers-disabled"
 fi
 
-exec 9> "$HYPRKARL_THEME_LOCK"
-flock 9
-theme_activate_bundle "$THEME_NAME" || exit 1
-flock -u 9
+theme_activate "$THEME_NAME" || exit 1
 
 rm -f "$CACHE_DIR/$wallpaper_name"

@@ -119,10 +119,9 @@ The full manual lives under `docs/`.
 ## Themes
 
 Shipped themes live under `themes/`; personal themes and overlays live under
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. Selection atomically assembles an immutable runtime bundle
-under `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl`, so switching never
-edits tracked files. Quickshell watches the runtime selector and applies theme
-switches without restarting. Built-ins are authored as typed `theme.yaml`
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. Selecting a theme builds
+it under `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl`, so switching never
+edits tracked files, and Quickshell picks up the switch without restarting. Built-ins are authored as typed `theme.yaml`
 graphs whose strings, numbers, booleans, shared defaults, and arbitrary custom
 structures can feed stable consumer values. The semantic `quickshell.json`
 controls island corner shapes,

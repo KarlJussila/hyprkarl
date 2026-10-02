@@ -40,17 +40,14 @@ would edit.
 ## Stateful Runtime Files
 
 Authoritative theme and wallpaper state lives under
-`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/`. `current/theme` selects an
-immutable generated bundle under the state directory's `themes/`;
-`current/theme.name`,
-`current/theme.json`, and `current/wallpaper` carry the small selectors.
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/`. `current/theme` links to
+the active build under the state directory's `themes/`, and `current/wallpaper`
+links to the selected wallpaper inside it.
 
 `config/hyprkarl/current/` contains fixed compatibility links to that state:
 
 - `config/hyprkarl/current/theme`
   Link to the XDG-state active-theme link
-- `config/hyprkarl/current/theme.name`
-  Link to the XDG-state theme name
 - `config/hyprkarl/current/wallpaper`
   Link to the XDG-state wallpaper
 
@@ -272,8 +269,7 @@ preserved and reported. It also seeds native PAM files once without overwriting
 existing policies.
 
 Use `hk-shell start`, `stop`, `restart`, `status`, and `logs` to manage the
-desktop. The active immutable theme bundle reloads through the XDG-state
-`current/theme.json` selector.
+desktop. The shell reloads the theme when `hk-theme set` switches builds.
 
 See [shell configuration](shell-configuration.md),
 [bar customization](customizing-bar.md), [menu configuration](menu-configuration.md),

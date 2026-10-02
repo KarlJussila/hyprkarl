@@ -7,10 +7,8 @@ import Quickshell.Io
 QtObject {
   id: root
 
-  // Bindings, not load handlers: the first read loads the files synchronously,
+  // A binding, not a load handler: the first read loads the file synchronously,
   // so consumers built at startup (the lock surface) never see an empty theme.
-  readonly property var selection: JSON.parse(selector.text())
-  readonly property string activeName: selection.name
   readonly property var values: JSON.parse(source.text())
   readonly property bool ready: Object.keys(values).length > 0
 
@@ -36,15 +34,10 @@ QtObject {
   readonly property string stateHome: (Quickshell.env("XDG_STATE_HOME")
     ?? Quickshell.env("HOME") + "/.local/state") + "/hyprkarl"
 
-  property FileView selector: FileView {
-    path: root.stateHome + "/current/theme.json"
-    blockLoading: true
-    watchChanges: true
-    onFileChanged: reload()
-  }
-
+  // hk-theme set swaps current/theme to a new build and deletes the old one;
+  // that deletion is the change this watcher sees.
   property FileView source: FileView {
-    path: root.stateHome + "/themes/" + root.selection.artifact + "/quickshell.json"
+    path: root.stateHome + "/current/theme/quickshell.json"
     blockLoading: true
     watchChanges: true
     onFileChanged: reload()

@@ -42,7 +42,7 @@ the complete final `shell` object serialized as `quickshell.json`. Add new
 required appearance values there, not as literals in the consumer template.
 Theme authors may derive that stable consumer object from arbitrary custom
 structures; do not make the shell depend on the source vocabulary. The shell
-reads only the selected immutable XDG-state artifact, never authoring source
+reads only the active build through `current/theme`, never authoring source
 under `themes/` or the personal configuration root.
 
 Shell JSON is data-only. Widget definitions live inline in the layout; `id`
@@ -195,9 +195,9 @@ internals use `metrics.controlPadding`; they are not bar-widget padding.
 
 Themes own the default visual surface, including colors, typography, bar
 minimum thickness, spacing, radii, borders, dividers, and the panel gap.
-`config/Theme.qml` watches the XDG-state `current/theme.json` selector, then
-reads the immutable artifact named there. The selector changes atomically on a
-theme switch, so the theme file watcher always follows a stable file.
+`config/Theme.qml` reads `current/theme/quickshell.json`. A theme switch swaps
+that symlink to a new build and deletes the old one; the deletion is what the
+file watcher sees, so it reloads through the new link.
 Consumers read theme groups directly (`theme.panel.padding`,
 `theme.palette.accent`). The compiler's `defaults/theme.yaml` supplies every
 value, so add new values there rather than as QML fallbacks.

@@ -77,20 +77,18 @@ mkdir -p \
   "$TEST_ROOT/repo/defaults" \
   "$CONFIG_HOME/quickshell/custom" \
   "$CONFIG_HOME/quickshell/settings" \
-  "$STATE_HOME/hyprkarl/current" \
-  "$STATE_HOME/hyprkarl/themes/test"
+  "$STATE_HOME/hyprkarl/current"
 cp -a "$REPO/config/quickshell" "$TEST_ROOT/repo/config/"
 cp "$REPO/defaults/shell.json" "$REPO/defaults/menu.json" \
   "$TEST_ROOT/repo/defaults/"
 cp "$FIXTURES/shell.json" "$CONFIG_HOME/quickshell/settings/shell.json"
 cp "$FIXTURES/Extensions.qml" \
   "$CONFIG_HOME/quickshell/custom/Extensions.qml"
-cp "$FIXTURES/theme.json" "$STATE_HOME/hyprkarl/current/theme.json"
 # Use a real compiled theme so the shell sees the complete theme contract.
 (cd "$REPO/theme-generator" \
-  && python -m theme_generator build hyprkarl -o "$TEST_ROOT/theme" >/dev/null) \
+  && python -m theme_generator build hyprkarl -o "$STATE_HOME/hyprkarl/themes/hyprkarl.1" >/dev/null) \
   || fail "could not build the test theme"
-cp "$TEST_ROOT/theme/quickshell.json" "$STATE_HOME/hyprkarl/themes/test/"
+ln -s ../themes/hyprkarl.1 "$STATE_HOME/hyprkarl/current/theme"
 
 start_shell
 

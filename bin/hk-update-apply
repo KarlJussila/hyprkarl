@@ -83,12 +83,10 @@ if [[ -n "$conflicts" ]]; then
   printf 'Cannot apply configuration because these paths are not managed by Hyprkarl:\n%s\n' "$conflicts" >&2
   fail_apply "Move or rename the listed files, then run hk-update apply again."
 fi
-if ! theme_gtk_install_is_replaceable; then
-  fail_apply "GTK theme destination is not managed by Hyprkarl: $HYPRKARL_GTK_THEME_HOME"
-fi
 
 printf 'Rebuilding the selected theme...\n'
-theme_apply_current || fail_apply "Could not rebuild and apply the selected theme."
+theme_name=$(theme_current_name)
+theme_activate "${theme_name:-hyprkarl}" || fail_apply "Could not rebuild and apply the selected theme."
 
 printf 'Restowing shipped configuration...\n'
 stow_restow_config || fail_apply "Could not restow shipped configuration."

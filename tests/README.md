@@ -19,8 +19,8 @@ tests/hk-user-migrate.sh
 
 Builds a shipped theme into disposable XDG state, applies a sparse same-name
 source overlay, checks wallpaper precedence and wallpaper-free themes, proves
-that failed builds and GTK installation leave the active selector unchanged,
-and verifies that GTK installs as marked real files.
+that a failed build leaves the active theme unchanged, and checks that the GTK
+theme is a real copy and older builds are deleted.
 
 ```bash
 tests/hk-theme-runtime.sh

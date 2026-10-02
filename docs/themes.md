@@ -7,12 +7,13 @@ themes/<name>/                                  shipped authoring source
 ${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/
 └── themes/<name>/                              personal source or overlay
 ${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/
-├── current/                                    active selectors
-└── themes/<name>.<generation>/                 generated immutable bundles
+├── current/theme -> ../themes/<name>.<timestamp>   the active build
+└── themes/<name>.<timestamp>/                     the generated build
 ```
 
-Generated bundles do not live in Git or the personal configuration directory.
-The installed GTK payload is the one deliberate copy outside XDG state.
+Generated builds do not live in Git or the personal configuration directory.
+The GTK theme is also copied to `~/.local/share/themes/hyprkarl/`, because
+GTK does not reliably follow symlinked theme directories.
 
 ## Switch themes
 
@@ -38,17 +39,13 @@ Every selection rebuilds the theme. `hk-theme set`:
 
 1. loads the built-in source, personal source, or both;
 2. merges and resolves the typed value graph;
-3. renders every consumer into a temporary directory;
-4. validates the complete bundle;
-5. installs an immutable artifact under XDG state;
-6. applies desktop settings and transactionally replaces the GTK payload;
-7. publishes the active selector and reloads affected consumers.
+3. renders and validates every consumer into a new build directory;
+4. points `current/theme` at that build and deletes older builds;
+5. copies the GTK theme and sets the GTK desktop settings;
+6. reloads affected consumers.
 
-A failed build or GTK installation leaves the active theme and installed GTK
-copy unchanged.
-Quickshell watches `current/theme.json`, so a successful switch applies without
-restarting the shell. Hyprkarl retains the current and immediately previous
-artifacts.
+A failed build leaves the active theme unchanged. Quickshell notices the switch
+and reloads without restarting.
 
 ## Source layout
 
@@ -225,28 +222,11 @@ compiles its light variant. The user-owned `~/.config/gtk-3.0/settings.ini` and
 `gtk-4.0/settings.ini` select the stable `hyprkarl` theme name; `hk-theme set`
 applies the light/dark preference through desktop settings.
 
-## Legacy complete bundles
-
-The integrated compiler no longer accepts a hand-written complete generated
-bundle as theme source. During migration, `hk-user-migrate` moves one to a
-dated backup under:
-
-```text
-${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/theme-backups/
-```
-
-It does not delete or reinterpret that bundle. To convert it, create a source
-directory under `~/.config/hyprkarl/themes/<name>/`, move the original palette
-or intentional token values into `theme.yaml`, put structural consumer changes
-under `overrides/`, and copy wallpapers, icons, and previews as assets. Build
-it with `hk-theme set <name>`, compare the result with the backup, then keep or
-remove the backup on your own schedule.
-
 ## Wallpapers
 
 Built-in wallpapers live in `themes/<name>/wallpapers/`. Personal additions
 and inherited removals live under the matching personal theme source. The
-wallpaper commands update both personal source state and the active artifact:
+wallpaper commands update both personal source state and the active build:
 
 ```bash
 hk-wallpaper set <filename>

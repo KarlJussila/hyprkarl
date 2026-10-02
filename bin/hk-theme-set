@@ -18,7 +18,7 @@ source "$SCRIPT_DIR/lib/theme.sh"
 
 THEME_NAME=$(theme_normalize_name "$@")
 
-theme_apply_bundle "$THEME_NAME" || exit 1
+theme_activate "$THEME_NAME" || exit 1
 
 post_action_status=0
 theme_ensure_wallpaper_selection || post_action_status=1

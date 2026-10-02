@@ -60,21 +60,20 @@ or promise compatibility for third-party extensions.
 
 Authoritative current theme and wallpaper state lives outside Git under
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/`. These tracked repository
-paths are immutable compatibility links into that state tree:
+paths are fixed compatibility links into that state tree:
 
 - `config/hyprkarl/current/theme`
-- `config/hyprkarl/current/theme.name`
 - `config/hyprkarl/current/wallpaper`
 
 Theme sources under `themes/` are upstream-owned; personal themes, same-name
 overlays, wallpaper additions, and removal markers belong under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`.
-Switching themes must stage and validate a complete bundle before atomically
-moving the XDG-state selector.
+Switching themes builds into a new directory before moving the `current/theme`
+symlink, so a failed build never changes the active theme.
 
 `~/.local/share/themes/hyprkarl/` is derived runtime output, not an editing
-surface. It is a marked real-file copy of the active bundle's `gtk-theme/`
-payload because GTK does not reliably follow moving theme-directory symlinks.
+surface. It is a copy of the active build's `gtk-theme/` because GTK does not
+reliably follow symlinked theme directories.
 
 ## Branches and Releases
 

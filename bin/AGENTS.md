@@ -166,18 +166,13 @@ completed seed migration in XDG state so routine updates never recreate a file
 the user deletes. Add a new migration ID for a genuinely new seed operation;
 do not make copy-if-missing an every-update policy.
 
-`lib/theme.sh` owns the theme source-to-runtime boundary. `hk-theme set` invokes
-the integrated Python compiler with a built-in source and optional same-name
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` overlay. The compiler
-renders and validates a complete temporary bundle before the command installs
-an immutable XDG-state artifact, transactionally replaces the GTK payload, and
-then publishes the selector. A failed GTK install leaves the prior selector
-and GTK payload in place. The
-repository's `config/hyprkarl/current/` entries are fixed compatibility links.
+`lib/theme.sh` owns building and activating themes. `theme_activate` runs the
+integrated compiler on a built-in source (with an optional same-name
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/` overlay) or a personal
+source, swaps `current/theme` to the new build, deletes older builds, copies
+the GTK theme to `~/.local/share/themes/hyprkarl/`, and sets the GTK desktop
+settings. The repository's `config/hyprkarl/current/` entries are fixed
+compatibility links.
 Wallpaper additions and removals persist under the personal theme source;
 never mutate checked-in theme sources from a public command. Do not restore
 `hk-theme build`, a sibling generator path, or a generated-bundle input mode.
-The same library owns installation of the GTK payload as a marked real-file
-copy. `hk-theme-set` refreshes it while holding the theme lock; setup and
-configuration apply use the same helper. They stop if the destination is not a
-Hyprkarl-managed GTK payload.

@@ -17,7 +17,8 @@ def main() -> int:
 
     try:
         subprocess.run(["hk-wallpaper-cache"], check=True)
-        theme_name = (theme_state / "theme.name").read_text().strip()
+        # Builds are named <theme>.<timestamp>.
+        theme_name = (theme_state / "theme").readlink().name.rsplit(".", 1)[0]
         wallpaper_dir = theme_state / "theme/wallpapers"
         cache_dir = Path.home() / ".cache/hyprkarl/wallpapers" / theme_name
         current_link = theme_state / "wallpaper"

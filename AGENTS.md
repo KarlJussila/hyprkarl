@@ -163,10 +163,10 @@ relaunching — a broken `hyprland.lua` has no automatic fallback.
 
 Shipped theme sources live in `themes/{name}/`; personal themes and overlays
 live in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/{name}/`. Themes control **look** — colors, fonts, spacing
-— not behavior. `hk-theme set` stages and validates an immutable bundle under
-`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/`, then atomically swaps
-the XDG-state selector. The tracked paths under `config/hyprkarl/current/` are
-fixed compatibility links into that state, never the state itself.
+— not behavior. `hk-theme set` builds the theme into a fresh directory under
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/`, then swaps the one
+`current/theme` symlink to it. The tracked paths under `config/hyprkarl/current/`
+are fixed compatibility links into that state, never the state itself.
 
 Switch themes with:
 ```bash
@@ -185,11 +185,12 @@ and arbitrary user-defined structures may feed final consumer values.
 Read `themes/AGENTS.md` before changing a built-in theme source and
 `theme-generator/AGENTS.md` before changing the compiler or its templates.
 
-`hk-theme set <name>` is the public build-and-activate action. It renders and
-validates a temporary complete bundle, installs an immutable artifact below
-XDG state, transactionally replaces the GTK payload, then publishes the
-selector. A failed GTK install must leave the prior selector and payload in
-place. Generated bundles never live
+`hk-theme set <name>` is the public build-and-activate action. It builds the
+theme into `themes/<name>.<timestamp>` under XDG state, swaps `current/theme`
+to it, deletes older builds, copies the GTK theme, and sets the GTK desktop
+settings. A failed build leaves the active theme untouched. The theme name is
+the build directory's name; there is no separate name or selector file.
+Generated bundles never live
 under `themes/` or the personal configuration root. Developers may run
 `python -m theme_generator` from `theme-generator/` for direct previews,
 builds, validation, and tests; there is no sibling checkout or sync command.
@@ -238,8 +239,8 @@ values along and across top/bottom bar widgets; widget natural sizes
 must not duplicate those insets. A concrete widget may request a main-axis
 offset, resolved with a zero floor; the tray binds this to
 `bar.trayPaddingOffset`. Panel internals use the separate
-`metrics.controlPadding` token. `Theme.qml` watches the canonical XDG-state
-`current/theme.json` selector, then reads the immutable artifact named there.
+`metrics.controlPadding` token. `Theme.qml` reads `current/theme/quickshell.json`
+and reloads when a theme switch deletes the previous build.
 One optional `userRoot.source` loads a trusted application-wide QML composition
 root for independent surfaces or a replacement bar. Its documented context
 exposes the resolved configuration, theme, outputs, current overlay request,

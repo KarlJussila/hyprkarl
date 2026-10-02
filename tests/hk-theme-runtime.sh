@@ -1,5 +1,5 @@
 #!/bin/bash
-# Exercise source compilation and atomic runtime activation in disposable XDG paths.
+# Exercise theme compilation and activation in disposable XDG paths.
 
 ORIG=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 TEST_ROOT=$(mktemp -d /tmp/hk-theme-runtime.XXXXXX)
@@ -23,10 +23,10 @@ fail() {
 mkdir -p "$HOME" "$XDG_CONFIG_HOME" "$XDG_STATE_HOME" "$XDG_RUNTIME_DIR"
 source "$ORIG/bin/lib/theme.sh"
 
-theme_activate_bundle hyprkarl >/dev/null \
+theme_activate hyprkarl >/dev/null \
   || fail "built-in theme did not activate"
 [[ "$(theme_current_name)" == "hyprkarl" ]] \
-  || fail "active theme name was not written"
+  || fail "active theme name is not derived from the current build"
 [[ -f "$HYPRKARL_CURRENT_THEME/quickshell.json" ]] \
   || fail "generated Quickshell theme is missing"
 [[ -f "$HYPRKARL_CURRENT_THEME/gtk-theme/gtk-3.0/gtk.css" ]] \
@@ -40,7 +40,7 @@ printf 'personal wallpaper\n' \
 printf '01-hyprkarl-wallpaper.png\n' \
   > "$HYPRKARL_USER_THEMES/hyprkarl/.wallpapers-disabled"
 
-theme_activate_bundle hyprkarl >/dev/null \
+theme_activate hyprkarl >/dev/null \
   || fail "same-name personal overlay did not activate"
 jq -e '.metrics.borderWidth == 5' "$HYPRKARL_CURRENT_THEME/quickshell.json" \
   >/dev/null || fail "personal graph did not merge before rendering"
@@ -53,30 +53,17 @@ selector_before=$(readlink "$HYPRKARL_CURRENT_THEME")
 mkdir -p "$HYPRKARL_USER_THEMES/hyprkarl/overrides"
 printf '{invalid\n' \
   > "$HYPRKARL_USER_THEMES/hyprkarl/overrides/quickshell.json"
-if theme_activate_bundle hyprkarl >/dev/null 2>&1; then
+if theme_activate hyprkarl >/dev/null 2>&1; then
   fail "invalid generated bundle was activated"
 fi
 [[ "$(readlink "$HYPRKARL_CURRENT_THEME")" == "$selector_before" ]] \
-  || fail "failed build changed the active selector"
-
+  || fail "failed build changed the active theme"
 rm -f "$HYPRKARL_USER_THEMES/hyprkarl/overrides/quickshell.json"
-theme_install_gtk_payload || fail "GTK payload was not materialized"
-[[ -f "$HYPRKARL_GTK_THEME_HOME/.hyprkarl-managed" ]] \
-  || fail "GTK install is not marked as managed"
-[[ ! -L "$HYPRKARL_GTK_THEME_HOME" ]] \
-  || fail "GTK payload was installed as a symlink"
 
-selector_before=$(readlink "$HYPRKARL_CURRENT_THEME")
-gtk_before=$(sha256sum "$HYPRKARL_GTK_THEME_HOME/gtk-3.0/gtk.css")
-cp() { return 1; }
-if theme_apply_bundle hyprkarl >/dev/null 2>&1; then
-  fail "GTK installation failure unexpectedly applied a theme"
-fi
-unset -f cp
-[[ "$(readlink "$HYPRKARL_CURRENT_THEME")" == "$selector_before" ]] \
-  || fail "GTK installation failure changed the active selector"
-[[ "$(sha256sum "$HYPRKARL_GTK_THEME_HOME/gtk-3.0/gtk.css")" == "$gtk_before" ]] \
-  || fail "GTK installation failure changed the installed GTK payload"
+[[ -f "$HYPRKARL_GTK_THEME_HOME/gtk-3.0/gtk.css" ]] && [[ ! -L "$HYPRKARL_GTK_THEME_HOME" ]] \
+  || fail "GTK theme was not copied as a real directory"
+[[ $(find "$HYPRKARL_THEME_BUILDS" -mindepth 1 -maxdepth 1 | wc -l) -eq 1 ]] \
+  || fail "older builds were not deleted"
 
 rm "$HYPRKARL_USER_THEMES/hyprkarl/wallpapers/personal.txt"
 printf '%s\n' \
@@ -84,7 +71,7 @@ printf '%s\n' \
   '02-firewatch-illustration.jpg' \
   '03-pixel-space.png' \
   > "$HYPRKARL_USER_THEMES/hyprkarl/.wallpapers-disabled"
-theme_activate_bundle hyprkarl >/dev/null \
+theme_activate hyprkarl >/dev/null \
   || fail "wallpaper-free theme did not activate"
 theme_ensure_wallpaper_selection \
   || fail "wallpaper-free theme did not accept an empty selection"

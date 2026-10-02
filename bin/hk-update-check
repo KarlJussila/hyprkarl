@@ -35,9 +35,6 @@ if [[ -n "$conflicts" ]]; then
   printf '  Unmanaged paths blocking configuration application:\n'
   printf '%s\n' "$conflicts" | sed 's/^/    /'
 fi
-if ! theme_gtk_install_is_replaceable; then
-  printf '  Unmanaged GTK theme target: %s\n' "$HYPRKARL_GTK_THEME_HOME"
-fi
 
 printf '\n=== Packages ===\n'
 package_state="$UPDATE_PACKAGE_STATE"

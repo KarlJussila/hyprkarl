@@ -30,7 +30,7 @@ themes/<name>/                   built-in overrides and assets
 ~/.config/hyprkarl/themes/<name>/ personal overrides and assets
               │
               ▼
-temporary bundle, then immutable XDG-state artifact
+new build under XDG state, made active by hk-theme set
 ```
 
 `defaults/theme.yaml` owns the shipped vocabulary and shared values for fonts,

@@ -83,6 +83,12 @@ theme_activate() {
   gsettings set org.gnome.desktop.interface icon-theme "$icons"
 }
 
+# Hyprland reads the cursor variables only when it starts, so set the theme's
+# cursor on a running compositor after a reload.
+theme_apply_cursor() {
+  hyprctl setcursor "$(<"$HYPRKARL_CURRENT_THEME/cursor.theme")" "$XCURSOR_SIZE" >/dev/null
+}
+
 # Keep the current wallpaper if the new build still has it; otherwise pick the
 # theme's first wallpaper.
 theme_ensure_wallpaper_selection() {

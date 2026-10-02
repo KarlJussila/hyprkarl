@@ -207,11 +207,12 @@ Most themes need only `theme.yaml`. Use
 output. The override replaces the shared template; it does not add another
 merge language.
 
-Choose the desktop icon family in theme data:
+Choose the desktop icon family and mouse cursor in theme data:
 
 ```yaml
 desktop:
   icon_theme: Yaru-olive-dark
+  cursor_theme: Adwaita
 ```
 
 ```text

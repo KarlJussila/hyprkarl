@@ -1,7 +1,7 @@
 -- Extra env variables
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
--- Cursor size
+-- Cursor size. The theme picks the cursor theme.
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 

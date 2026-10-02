@@ -320,6 +320,10 @@ To ship wallpapers and preview screenshots with the theme, add:
 Set `desktop.icon_theme` in `theme.yaml` instead of replacing `icons.theme`.
 Choose an installed family that supports the palette, such as
 `Yaru-olive-dark` for Loam or `Yaru-blue-dark` for Tokyo Night.
+`desktop.cursor_theme` works the same way for the mouse cursor. The compiled
+`hyprland.lua` sets both `HYPRCURSOR_THEME` and `XCURSOR_THEME` from it:
+Hyprland falls back to XCursor for themes without a Hyprcursor version, and
+X11 apps only read `XCURSOR_THEME`, so one alone leaves gaps.
 
 The shared Hyprkarl wallpaper is opt-in and may be combined with authored
 wallpapers:

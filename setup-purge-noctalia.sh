@@ -36,6 +36,7 @@ NOCTALIA_CONFIGS=(
   "$HOME/.config/hypr/config"
   "$HOME/.config/hypr/xdph.conf"
   "$HOME/.config/autostart/cachyos-hello.desktop"
+  "$HOME/.icons/default"  # Noctalia points the fallback cursor at Bibata
 )
 
 # CachyOS desktop defaults Hyprkarl replaces or does not use. Comment out any

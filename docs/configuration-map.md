@@ -135,7 +135,8 @@ modules in this order:
   Keybinding includes (`hl.bind()`)
 
 The bootstrap next loads the active theme from
-`config/hyprkarl/current/theme/hyprland.lua`, the generated
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/hyprland.lua`
+(colors and the cursor theme), the generated
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/monitors.lua`, then
 matching optional files from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` in the same order. The generated
 layout wins over shipped monitor defaults, while user calls win over shipped,

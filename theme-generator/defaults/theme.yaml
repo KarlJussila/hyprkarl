@@ -8,6 +8,7 @@ typography:
 
 desktop:
   icon_theme: "Yaru-purple"
+  cursor_theme: "Adwaita"
 
 metrics:
   spacing:

@@ -72,6 +72,13 @@ Set `desktop.icon_theme` to the installed icon family that best fits the
 palette. For example, Loam uses `Yaru-olive-dark` and Tokyo Night uses
 `Yaru-blue-dark`.
 
+Set `desktop.cursor_theme` to an installed cursor theme in
+`/usr/share/icons/` or `~/.local/share/icons/`; it defaults to `Adwaita`.
+Hyprland, GTK, and X11 apps all use it. Apps that draw their own cursor pick
+up a change when they restart. Cursor size is not part of the theme: set
+`XCURSOR_SIZE` and `HYPRCURSOR_SIZE` in `~/.config/hyprkarl/hypr/envs.lua` and
+start a new session.
+
 Themes may also opt into the shared Hyprkarl wallpaper:
 
 ```yaml

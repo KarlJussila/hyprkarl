@@ -25,6 +25,7 @@ theme_ensure_wallpaper_selection || post_action_status=1
 hk-wallpaper-init --if-ready || post_action_status=1
 
 hyprctl reload >/dev/null
+theme_apply_cursor
 hk-terminal-reload
 hk-btop-reload || exit 1
 

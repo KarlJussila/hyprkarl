@@ -57,8 +57,8 @@ generator is not required in every desktop session.
 ## What It Generates
 
 - Quickshell semantic colors, surfaces, typography, geometry, borders, and
-  motion for the bar, panels, menu, OSD, notifications, and polkit
-- Hyprland and Hyprlock
+  motion for the bar, panels, menu, OSD, notifications, polkit, and lock screen
+- Hyprland
 - Alacritty, Kitty, Ghostty, and foot
 - btop, wifitui, and yazi
 - Neovim
@@ -216,7 +216,7 @@ desktop:
 ../themes/my-theme/
 ├── theme.yaml
 ├── overrides/
-│   └── hyprlock.conf
+│   └── hyprland.lua
 ├── wallpapers/
 └── previews/
 ```

@@ -1,0 +1,5 @@
+module modules.lock
+FingerprintIndicator 1.0 FingerprintIndicator.qml
+LockState 1.0 LockState.qml
+LockScreen 1.0 LockScreen.qml
+SleepState 1.0 SleepState.qml

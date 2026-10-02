@@ -2,12 +2,12 @@
 
 Hyprkarl's static command hierarchy is rendered by Quickshell and defined as
 data. The shipped definition lives at `defaults/menu.json`; personal changes
-belong in the optional `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json` override.
+belong in the optional `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json` override.
 
 Both files use JSON version 1. The shell watches them, recursively merges the
 user object over the shipped object, and validates the effective result. A
 valid edit applies live. An invalid edit is reported in `hk-shell logs` while
-the last valid menu remains active; deleting `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json` returns to the
+the last valid menu remains active; deleting `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json` returns to the
 shipped definition.
 
 ## Document Shape
@@ -65,9 +65,10 @@ width. `entryAlignment` may be `left`, `center`, or `right`; it defaults to
 - `action`: a `menu` destination, shell `command`, Quickshell `surface`, or
   `dismiss` action for an informational row
 
-Commands run through `bash -c` after the menu closes. Keep interaction-heavy
-work in a dedicated `hk-*` command and reference it from the data; the menu
-definition owns navigation, not application logic. Themes, live keybindings,
+Commands launch through `uwsm-app -- bash -c` after the menu closes. Keep
+interaction-heavy work in a separate script and reference it from the data;
+personal commands belong in `~/.local/bin/`. The menu definition owns
+navigation. Themes, live keybindings,
 Nerd Font icons, Docker services, and every fingerprint choice are dynamic
 Quickshell menus. The app launcher, open-with chooser, calculator, and
 wallpaper carousel are dedicated Quickshell overlays because their

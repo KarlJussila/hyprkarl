@@ -1,0 +1,3 @@
+module modules.applications
+singleton ApplicationPickerState 1.0 ApplicationPickerState.qml
+ApplicationPickerWindow 1.0 ApplicationPickerWindow.qml

@@ -9,6 +9,11 @@ PERSONAL_ROOT="$CONFIG_HOME/hyprkarl"
 source "$HYPRKARL_PATH/bin/lib/theme.sh"
 
 personal_paths=(shell.json menu.json hypr hooks quickshell themes)
+declare -A quickshell_paths=(
+  [shell.json]=settings/shell.json
+  [menu.json]=settings/menu.json
+  [quickshell]=custom
+)
 conflicts=()
 declare -A personal_seed_roots=()
 
@@ -26,7 +31,6 @@ seeded_config_files=(
   gtk-4.0/hyprkarl.css
   gtk-4.0/settings.ini
   hypr/hypridle.conf
-  hypr/hyprlock.conf
   hypr/hyprpaper.conf
   hypr/hyprsunset.conf
   nvim/.neoconf.json
@@ -236,6 +240,17 @@ for relative in "${personal_paths[@]}"; do
   fi
 done
 
+for relative in shell.json menu.json quickshell; do
+  new_path="$CONFIG_HOME/quickshell/${quickshell_paths[$relative]}"
+  if [[ -e "$new_path" ]] || [[ -L "$new_path" ]]; then
+    for old_path in "$PERSONAL_ROOT/$relative" "$HYPRKARL_PATH/user/$relative"; do
+      if [[ -e "$old_path" ]] || [[ -L "$old_path" ]]; then
+        conflicts+=("$old_path -> $new_path")
+      fi
+    done
+  fi
+done
+
 check_session_file() {
   local old_path="$1" new_path="$2" preserve_source="$3" resolved
 
@@ -266,6 +281,8 @@ if [[ ${#conflicts[@]} -gt 0 ]]; then
   exit 1
 fi
 
+mkdir -p "$CONFIG_HOME/quickshell/settings" || exit 1
+
 for relative in "${personal_paths[@]}"; do
   old_path="$HYPRKARL_PATH/user/$relative"
   new_path="$PERSONAL_ROOT/$relative"
@@ -274,6 +291,17 @@ for relative in "${personal_paths[@]}"; do
   fi
 
   mkdir -p "$(dirname "$new_path")"
+  mv "$old_path" "$new_path" || exit 1
+  printf 'Moved %s to %s\n' "$old_path" "$new_path"
+done
+
+for relative in shell.json menu.json quickshell; do
+  old_path="$PERSONAL_ROOT/$relative"
+  new_path="$CONFIG_HOME/quickshell/${quickshell_paths[$relative]}"
+  if [[ ! -e "$old_path" ]] && [[ ! -L "$old_path" ]]; then
+    continue
+  fi
+  mkdir -p "$(dirname "$new_path")" || exit 1
   mv "$old_path" "$new_path" || exit 1
   printf 'Moved %s to %s\n' "$old_path" "$new_path"
 done
@@ -318,6 +346,17 @@ seed_session_file \
   "$CONFIG_HOME/uwsm/env.local" || exit 1
 
 migrate_seeded_application_configs || exit 1
+
+pam_marker="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/migrations/quickshell-pam-v1"
+if [[ ! -e "$pam_marker" ]]; then
+  for service in password fingerprint; do
+    seed_session_file \
+      "$HYPRKARL_PATH/templates/setup/quickshell/pam/$service" \
+      "$CONFIG_HOME/quickshell/pam/$service" || exit 1
+  done
+  mkdir -p "$(dirname "$pam_marker")" || exit 1
+  : > "$pam_marker"
+fi
 
 theme_migrate_legacy_bundles || exit 1
 

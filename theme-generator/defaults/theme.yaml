@@ -170,6 +170,24 @@ shell:
     headerAccentOpacity: "{{metrics.opacity.header_accent}}"
     transitionDuration: "{{motion.surface}}"
 
+  lock:
+    width: 400
+    padding: "{{metrics.spacing.xxlarge}}"
+    spacing: "{{metrics.spacing.large}}"
+    radius: "{{metrics.radius.popup}}"
+    inputHeight: 64
+    inputFontSize: 28
+    clockFontSize: 64
+    dateFontSize: 24
+    dimOpacity: 0.6
+    clockFormat: "hh:mm AP"
+    dateFormat: "dddd, MMMM d"
+    transitionDuration: "{{motion.surface}}"
+    fadeDuration: 300
+    failureDuration: 1000
+    fingerprintSize: 40
+    fingerprintCompleteDuration: 450
+
   menu:
     scrim: "#22000000"
     fontSize: 14

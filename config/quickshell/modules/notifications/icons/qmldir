@@ -1,0 +1,3 @@
+module modules.notifications.icons
+AudioIcon 1.0 AudioIcon.qml
+BatteryIcon 1.0 BatteryIcon.qml

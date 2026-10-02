@@ -189,7 +189,7 @@ after the complete capture succeeds.
 
 The compiler renders the resolved graph into consumer files for:
 
-- Quickshell, Hyprland, Hyprlock, and Hyprtoolkit;
+- Quickshell (including the lock screen), Hyprland, and Hyprtoolkit;
 - Alacritty, foot, Ghostty, Kitty, `btop`, `wifitui`, Yazi, and Neovim;
 - Qt 5 and Qt 6 palettes;
 - GTK 3 and GTK 4, including a palette-derived Colloid theme;

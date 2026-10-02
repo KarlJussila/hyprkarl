@@ -101,7 +101,7 @@ Symptoms:
 
 Cause:
 
-- invalid JSON in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`
+- invalid JSON in `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`
 - invalid theme data in the active theme's `quickshell.json`
 - a QML load error or stopped Quickshell instance
 
@@ -119,7 +119,7 @@ hk-shell restart
 registering the instance. For foreground development, stop the managed
 instance and run `qs -p "$HYPRKARL_PATH/config/quickshell"` in a terminal.
 If a user override caused the problem, correct it or remove
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`; the shell otherwise retains its last valid
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`; the shell otherwise retains its last valid
 configuration during a live edit.
 
 ## Privilege Prompt Does Not Appear

@@ -12,7 +12,7 @@
 ^/fish($|/)
 ^/gtk-3\.0($|/)
 ^/gtk-4\.0($|/)
-^/hypr/hypr(idle|lock|paper|sunset)\.conf$
+^/hypr/hypr(idle|paper|sunset)\.conf$
 ^/nvim($|/)
 ^/qt5ct($|/)
 ^/qt6ct($|/)

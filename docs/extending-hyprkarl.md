@@ -1,137 +1,108 @@
 # Extending Hyprkarl
 
-Hyprkarl is extended through user-owned configuration and commands. This page
-covers the main extension paths: new commands, new menu actions, new
-keybindings, and new theme-aware configuration. Change the checkout only when
-you are deliberately changing shipped behavior.
+This guide covers personal customization: scripts, hooks, menu entries,
+keybindings, and Quickshell interfaces. These live outside the checkout and
+survive Hyprkarl updates. No Git branch is needed.
 
-## Choose the Right Place
+For changes to Hyprkarl's shipped implementation, start with
+[Repo conventions](repo-conventions.md).
 
-Use this rule of thumb:
+## Choose the right place
 
-- `bin/`
-  Commands meant to be run directly. Dispatcher subcommands also live here as
-  top-level `hk-<noun>-<action>` commands.
-- `bin/lib/`
-  Shared sourced helpers used by more than one `bin/` command. Currently
-  `docker.sh` and `update.sh`. Single-use logic stays in the command itself.
-- `scripts/`
-  Support scripts and backend logic
-- `config/`
-  Application config and session behavior
-- `defaults/`
-  Hyprkarl-owned defaults; inspect these to understand behavior, but keep
-  personal overrides under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
-- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
-  Personal shell and Hyprland configuration that upstream does not replace
-- `themes/`
-  Shipped theme sources, overrides, and assets
-- `theme-generator/`
-  Integrated compiler defaults, templates, rendering code, and tests
-- `templates/`
-  Files copied or rendered by setup and install commands
-- `applications/`
-  Desktop files exposed under `~/.local/share/applications/`
+| What you want to change | Personal location |
+|---|---|
+| Application preferences | The application's own configuration directory; see the [ownership table](configuration-map.md#application-configuration) |
+| Hyprland settings and keybindings | `~/.config/hyprkarl/hypr/*.lua` |
+| Quickshell behavior, modules, and bar layout | `~/.config/quickshell/settings/shell.json` |
+| Menu entries | `~/.config/quickshell/settings/menu.json` |
+| Quickshell widgets and independent interfaces | `~/.config/quickshell/custom/` |
+| Theme values, templates, and assets | `~/.config/hyprkarl/themes/<name>/` |
+| Lifecycle hooks | `~/.config/hyprkarl/hooks/<event>.d/` |
+| Personal commands | `~/.local/bin/` |
 
-If a command is something a user would reasonably type, put it in `bin/`. If a
-helper would only ever be called from one command, keep it in that command
-inline. If it would genuinely be shared by two or more commands, extract it
-into the appropriate `bin/lib/*.sh` or `bin/lib/*.py` file. If the thing exists
-to support something other than a `hk-*` command, put it under `scripts/`.
+The examples use the usual `~/.config/` location. If you set `XDG_CONFIG_HOME`,
+use that directory instead.
 
-## Add a New Command
+## Add a personal command
 
-Typical workflow:
-
-1. Add a new executable in `bin/`.
-2. Choose Bash or Python using [Command Script Style](shell-style.md).
-3. If the command shares enough logic with other `bin/` commands, extract or
-   reuse a helper in `bin/lib/`.
-
-### Adding a Subcommand to an Existing Dispatcher
-
-Dispatchers like `hk-theme`, `hk-pkg`, `hk-fingerprint`, `hk-wallpaper`, and
-`hk-update` route to top-level commands named `hk-<noun>-<action>`. To add a
-new subcommand:
-
-1. Create the action as a new executable: `bin/hk-<noun>-<new-action>`.
-2. Add the action name to the `case` in the dispatcher so it routes to your
-   new command.
-
-The action script is callable directly (`hk-theme-set foo`) as well as through
-the dispatcher (`hk-theme set foo`).
-
-## Add a Lifecycle Hook
-
-Put personal hook executables under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/`. The supported
-events are `post-boot`, `post-update`, `theme-set`, and `wallpaper-set`.
-For example:
+Put an executable script in `~/.local/bin/`. Hyprkarl's session already adds
+that directory to `PATH`, so menus and keybindings can call it by name.
 
 ```bash
-mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/theme-set.d"
-$EDITOR "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/theme-set.d/10-reload-my-app"
-chmod +x "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/theme-set.d/10-reload-my-app"
+mkdir -p ~/.local/bin
+$EDITOR ~/.local/bin/my-command
+chmod +x ~/.local/bin/my-command
 ```
 
-Hooks are non-hidden executable regular files and run in lexical filename
-order, so numeric prefixes make dependencies visible. They inherit the public
-action's environment but receive no positional arguments. Read current state
-through the normal public commands instead of depending on runner internals.
+Give it the appropriate shebang, such as `#!/bin/bash` or
+`#!/usr/bin/env python3`. Use Bash for command orchestration and Python for
+structured data or substantial parsing.
 
-All hooks for an event are attempted. If any fails, `hk-hook-run` returns
-nonzero after reporting the file and status. Theme, wallpaper, and update
-commands make clear that their main action already completed before returning
-that hook failure; session startup reports a `post-boot` failure by desktop
-notification. Missing event directories and non-executable files are ignored.
+You can also add personal desktop entries under
+`~/.local/share/applications/` to expose applications or scripts in the
+launcher.
 
-## Add a Menu Action
+## Add a lifecycle hook
 
-The static menu hierarchy is data, not a tree of shell branches. Built-in
-entries live in `defaults/menu.json`; personal additions and overrides belong
-in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`. Add a stable entry ID, its parent menu, order, label, and
-a submenu, command, or direct Quickshell surface action:
+Hooks run after session startup, a complete update, a theme switch, or a
+wallpaper change. Put executable files in the corresponding
+`~/.config/hyprkarl/hooks/<event>.d/` directory. The event names are
+`post-boot`, `post-update`, `theme-set`, and `wallpaper-set`.
+
+For example, to reload an application after switching themes:
+
+```bash
+mkdir -p ~/.config/hyprkarl/hooks/theme-set.d
+$EDITOR ~/.config/hyprkarl/hooks/theme-set.d/10-reload-my-app
+chmod +x ~/.config/hyprkarl/hooks/theme-set.d/10-reload-my-app
+```
+
+Hooks run in lexical filename order, inherit the action's environment, and
+receive no arguments. Use `hk-theme current` or the
+[active theme files](#use-the-active-theme-in-personal-code) when a hook needs
+the current selection. A failed hook is reported after the remaining hooks
+run; the theme or wallpaper change has already completed.
+
+## Add a menu action
+
+Create `~/.config/quickshell/settings/menu.json` with the entries you want to
+add or change. For example, this adds a personal command to Utilities:
 
 ```json
 {
   "version": 1,
   "entries": {
-    "utilities.files": {
+    "utilities.my-command": {
       "parent": "utilities",
       "order": 25,
-      "icon": "",
-      "label": "Files",
-      "action": { "type": "command", "command": "thunar" }
+      "label": "My command",
+      "action": { "type": "command", "command": "my-command" }
     }
   }
 }
 ```
 
-Keep nontrivial interaction in a dedicated `hk-*` command and name that
-command in the entry. Use a `surface` action when the destination is another
-Quickshell overlay; it changes surfaces in-process and may pass an open-ended
-parameter object. A menu may declare a `sourceCommand` for dynamic entries and
-opt into in-process search. Dynamic providers should normally use Python data
-structures and the standard `json` module; Bash is better reserved for
-providers that only print prebuilt JSON. The launcher, calculator, open-with
-chooser, and wallpaper carousel use dedicated Quickshell features
-rather than the command-menu JSON shape. See
-[Menu Configuration](menu-configuration.md) for the full contract, submenu
-example, live-reload behavior, and keyboard controls.
+Valid edits apply live. Keep longer commands in personal scripts and reference
+them here. Menu command actions already launch through `uwsm-app --`.
+
+Entries can also open submenus or Quickshell interfaces. Existing entries can
+be renamed, reordered, or hidden by ID. See
+[Menu configuration](menu-configuration.md) for these options and dynamic
+entry providers.
 
 ## Customize Hyprland
 
-`config/hypr/hyprland.lua` is a stable bootstrap. Hyprkarl's implementation
-lives in `defaults/hypr/`, while personal modules live in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` and load
-after the shipped configuration, active theme, and generated display layout.
-Supported module names, in load order, are:
+Create only the files you need under `~/.config/hyprkarl/hypr/`. Hyprkarl loads
+those after the shipped settings, active theme, and generated display layout.
+The supported filenames, in load order, are:
 
 ```text
-envs, autostart, monitors, permissions, looknfeel,
-animations, gum, windows, input, bindings
+envs.lua, autostart.lua, monitors.lua, permissions.lua, looknfeel.lua,
+animations.lua, gum.lua, windows.lua, input.lua, bindings.lua
 ```
 
-Create only the modules you need. For example, `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/input.lua` can
-override selected input values without copying the shipped input configuration:
+For example, `input.lua` can change selected values without copying the
+shipped configuration:
 
 ```lua
 hl.config({
@@ -142,162 +113,61 @@ hl.config({
 })
 ```
 
-Calls that define collections remain additive. Personal bindings and window
-rules can therefore be added directly, while replacing an existing binding
-requires an `hl.unbind()` call first. Always run `Hyprland --verify-config`
-before reloading.
-
-Display-panel changes persist through `hk-display` under XDG state. They do
-not modify `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`; any monitor rules you place there load
-later and remain authoritative on reload. The arranger submits positions and
-transforms for the complete active layout while preserving the current mode,
-refresh rate, and scale of every output. It rejects overlapping transformed
-rectangles before applying directly. Per-output enablement, resolution, refresh
-rate, and scale changes are staged together and use a ten-second backend trial
-before they are persisted. The refresh-rate picker derives its options from
-the selected resolution's reported modes.
-
-## Add a New Keybinding
-
-Hyprland is configured in Lua (see
-[configuration-map.md](configuration-map.md#hyprland)). The shipped bindings,
-useful as examples, live in:
-
-- `defaults/hypr/bindings/apps.lua` — app launchers
-- `defaults/hypr/bindings/media.lua` — hardware media/brightness/volume keys
-- `defaults/hypr/bindings/windows.lua` — focus, move, resize, float, fullscreen, close
-- `defaults/hypr/bindings/workspaces.lua` — workspace switching, monitor moves, scratchpad
-- `defaults/hypr/bindings/system.lua` — menus, notifications, panels, screenshots, power
-
-Put personal bindings in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/bindings.lua`. The form is
-`hl.bind(keys, dispatcher, flags?)`:
+For keybindings, use `bindings.lua`:
 
 ```lua
--- Launch a command. Keep a description so it appears in the keybindings menu.
-hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("my-command"), { description = "Do the thing" })
-
--- A built-in dispatcher instead of a command.
-hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "Full screen" })
+hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("uwsm-app -- my-command"), {
+    description = "My command",
+})
 ```
 
-Common flags: `{ description = "…" }` (shown in the keybind menu, which reads live
-`hyprctl binds`), `locked = true` (works on the lockscreen), `repeating = true`,
-`mouse = true`. Dispatchers live under `hl.dsp.*` —
-see https://wiki.hypr.land/Configuring/Basics/Dispatchers/.
+Descriptions appear in the keybindings menu. Binding and window-rule calls
+add to the existing configuration; use `hl.unbind()` before replacing a
+shipped binding. The files under `defaults/hypr/` are useful examples.
 
-If the binding needs more than a short command, add a script in `bin/` and bind
-to that. After editing, validate with `Hyprland --verify-config`.
+Validate with `Hyprland --verify-config` before reloading. See the
+[Hyprland configuration map](configuration-map.md#hyprland) for each module's
+purpose and display configuration.
 
-## Add a Quickshell Bar Feature
+## Extend Quickshell
 
-For personal placement or behavior changes, add a sparse `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`
-override. Objects merge recursively, arrays
-replace, and `bar.layoutEdits` can target a widget by stable ID without copying
-the shipped layout. See [Shell Configuration](shell-configuration.md).
+Use `~/.config/quickshell/settings/shell.json` for module switches, widget
+settings, and bar layout. Objects merge with the shipped defaults, while
+arrays replace them. `bar.layoutEdits` lets you change individual widgets by
+ID. See [Bar customization](customizing-bar.md) for examples.
 
-For a personal readout, prefer a `kind: "command"` instance before adding a
-built-in QML implementation. Give it a stable ID, an explicit command, and
-either a polling interval or persistent stream mode, plus optional static icon,
-tooltip, semantic state, and click commands. It may return trimmed text or a
-small validated JSON object. Polling launches a process on every tick, so use a
-conservative interval to avoid needless CPU wakeups and battery drain; prefer a
-stream for frequent updates. The application-wide command registry runs one
-provider per ID even when several monitors render the widget. See
-[Command widgets](shell-configuration.md#command-widgets) for examples and the
-output schema.
+There are three ways to add your own interfaces:
 
-The same kind owns static command buttons: omit the provider command and
-interval, provide text or an icon plus a click command, and the widget creates
-no background timer or process. The shipped main-menu button uses this form.
+- A [command widget](shell-configuration.md#command-widgets) displays output
+  from a script or provides a static button. It can poll or read a persistent
+  stream, and supports click commands.
+- A [QML widget](shell-configuration.md#user-qml-widgets) provides custom
+  rendering or interaction within a bar. Put its source under
+  `~/.config/quickshell/custom/modules/` and reference it explicitly with
+  `kind: "qml"`.
+- An [application-wide QML root](shell-configuration.md#application-wide-user-qml)
+  creates independent windows or a replacement bar. Put its source under
+  `~/.config/quickshell/custom/` and reference it with `userRoot.source`.
+  Set `modules.bar` to `false` if it replaces the built-in bar.
 
-For a personal widget whose rendering or interaction cannot fit that data
-contract, add an explicitly referenced `kind: "qml"` module under
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`. It receives only the documented per-bar context and
-can use the existing tooltip and feature-panel surfaces without editing
-Hyprkarl-owned QML. See
-[User QML widgets](shell-configuration.md#user-qml-widgets).
+Personal QML can reuse the project's UI types. For example, `import ui.modal`
+provides `Modal` for a shell-styled focused interface. The linked QML guides
+document the available context, theme values, and methods.
 
-For an interface that is not owned by one bar widget, explicitly reference one
-application-wide QML root through `userRoot.source` in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. It
-can create independent or per-output surfaces, consume arbitrary custom values
-from `context.theme.document`, and optionally supply reactive notification
-positioning for a personal bar. Its direct context also exposes the current
-overlay request and methods to open, replace, toggle, or close it. Personal
-shell-styled overlays can use the public `Hyprkarl.Modal` component instead of
-reimplementing the focused window, scrim, frame, dismissal, and output
-routing. Set
-`modules.bar` to `false` when that root replaces the built-in bar, then run
-`hk-shell restart`. See
-[Application-wide user QML](shell-configuration.md#application-wide-user-qml).
+Ordinary JSON settings reload live. Run `hk-shell restart` after changing
+module switches or personal QML source.
 
-To add a built-in widget kind:
+## Use the active theme in personal code
 
-1. Create `config/quickshell/widgets/<kind>.qml` and keep the compact bar
-   interaction in that widget.
-2. Register the kind in `config/quickshell/config/ShellConfig.qml` so invalid
-   configuration is rejected at the public boundary.
-3. If it opens a panel, put service-specific state and panel composition under
-   `config/quickshell/features/<kind>/` and use the existing per-monitor
-   `FeaturePanelHost` rather than creating another popup window.
-4. Add required appearance values to
-   `theme-generator/defaults/theme.yaml` under the final `shell` object and
-   expose only the semantic QML property the component needs. Theme-specific
-   sources may derive that final value from any custom token structure.
+Author personal themes or sparse overlays under
+`~/.config/hyprkarl/themes/<name>/`, then apply them with `hk-theme set <name>`.
+See [Themes](themes.md) for values, template replacements, and assets.
 
-Add a shared component only when multiple widgets genuinely use the same
-interaction or visual structure.
-
-See `config/quickshell/README.md` for current interactions, structure, and
-validation commands.
-
-## Add a Theme-Aware Feature
-
-`hk-theme set` compiles a built-in source plus an optional
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/<name>/` overlay into an immutable XDG-state artifact. It
-atomically points `current/theme` at that artifact and `current/wallpaper` at
-the selection.
-The paths under `config/hyprkarl/current/` are fixed compatibility links into
-that state tree.
-
-If a feature should vary by theme, read through those paths instead of
-hardcoding a specific theme.
-
-When an app has a useful native include mechanism, keep a small tracked
-bootstrap in `config/`, load the generated theme and shipped defaults, then
-load a real personal sidecar last. When an app cannot merge cleanly, provide a
-starting config that `hk-user-migrate` copies once and never replaces. A
-stable relative link inside that personal tree may still point at generated
-theme data.
-
-Examples:
-
-- Quickshell watches the XDG-state `theme.json` selector and reads the selected
-  artifact's `quickshell.json`
-- terminal bootstraps import from `current/theme/...` and load their personal
-  `local.*` sidecars last
-- Hyprland `loadfile`s `current/theme/hyprland.lua` at the end of its config
-- `hyprlock` points at `current/wallpaper`
-
-Themes use a typed `theme.yaml` source. The integrated compiler merges its
-shared defaults, built-in values, and personal values before resolving Jinja
-expressions without coercing numbers or booleans to strings. The shipped
-`metrics`, `motion`, and `typography` groups are conventions, not a schema.
-Authors can define their own vocabulary as long as consumer-facing values such
-as the final `shell` object reference it. See [Themes](themes.md).
-
-## Exposing New Config Files
-
-If you edit an existing non-ignored tracked entry point, its live symlink is
-already present. If you edit one of the ignored application seed files, that
-changes future installs only; edit the corresponding real file under
-`~/.config/` to change this machine.
-
-If you add a new file or directory under `config/` or `applications/`, run:
-
-```bash
-hk-update apply
-```
-
-This re-stows the tracked entry points, picks up new non-ignored files, and
-removes stale Hyprkarl links. Add a new seed migration deliberately when a new
-application should receive a real starting file; do not rely on Stow for it.
+Personal QML receives the active theme through its context, including custom
+values in `context.theme.document`. Scripts and other applications can read
+generated files through
+`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/`; the generated
+`theme.yaml` contains the resolved values. The sibling `current/wallpaper`
+selects the active wallpaper. Edit theme sources and rebuild rather than
+editing generated files. Use a `theme-set` hook when your application needs
+an explicit reload.

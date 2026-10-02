@@ -2,7 +2,7 @@
 
 Hyprkarl's bar is built with Quickshell. Its shipped placement and behavior
 live in `defaults/shell.json`; personal changes belong in the optional
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`. Appearance is entirely
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`. Appearance is entirely
 theme-derived from the active bundle's `quickshell.json`.
 
 ## Design Direction
@@ -27,7 +27,7 @@ boundaries without carrying untested vertical branches through every widget.
 
 ## Override the Shipped Configuration
 
-Create `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` with only the values you want to
+Create `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json` with only the values you want to
 change. Objects merge recursively over the shipped defaults. Arrays replace as
 complete ordered values, so use `bar.layoutEdits` when you only need to move,
 insert, override, or remove one widget by its stable ID.
@@ -160,7 +160,7 @@ name as `HYPRKARL_OUTPUT`.
 ## Add a QML Widget
 
 Use `kind: "qml"` only when the command-widget surface is not expressive
-enough. Put the implementation below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`, reference it
+enough. Put the implementation below `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/modules/`, reference it
 explicitly with a relative `source`, and keep per-instance data in `settings`:
 
 ```json

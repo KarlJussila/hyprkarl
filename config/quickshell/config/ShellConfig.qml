@@ -6,7 +6,7 @@ QtObject {
   id: root
 
   readonly property url defaultPath: Quickshell.shellPath("../../defaults/shell.json")
-  readonly property url userPath: Paths.userUrl("shell.json")
+  readonly property url userPath: Paths.userUrl("settings/shell.json")
   property var values: ({})
   property bool ready: false
   property url sourcePath: defaultPath
@@ -28,6 +28,7 @@ QtObject {
   readonly property bool applicationsEnabled: ready && (runtimeModules.applications ?? true)
   readonly property bool calculatorEnabled: ready && (runtimeModules.calculator ?? true)
   readonly property bool wallpaperEnabled: ready && (runtimeModules.wallpaper ?? true)
+  readonly property var lock: values.lock ?? ({})
   readonly property var bar: values.bar ?? ({})
   readonly property var osd: values.osd ?? ({})
   readonly property var notifications: values.notifications ?? ({})
@@ -277,6 +278,16 @@ QtObject {
       if (typeof document.modules[name] !== "boolean") {
         fail(path + ".modules." + name, "expected a boolean")
       }
+    }
+
+    requireObject(document.lock, path + ".lock")
+    if (document.lock.fingerprintEnabled !== null
+        && typeof document.lock.fingerprintEnabled !== "boolean") {
+      fail(path + ".lock.fingerprintEnabled", "expected null or a boolean")
+    }
+    if (!Number.isInteger(document.lock.fingerprintRetryDelay)
+        || document.lock.fingerprintRetryDelay < 0) {
+      fail(path + ".lock.fingerprintRetryDelay", "expected a non-negative integer")
     }
 
     requireObject(document.osd, path + ".osd")

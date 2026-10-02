@@ -1,0 +1,2 @@
+# Separate from password authentication so the two can run concurrently.
+auth required pam_fprintd.so

@@ -17,3 +17,4 @@ wifitui-bin # Replaced with wifitui
 wofi # Replaced with Quickshell overlays
 rofi # Replaced with Quickshell overlays
 rofi-calc # Replaced with the Quickshell calculator
+hyprlock # Replaced with the separate Quickshell lock screen

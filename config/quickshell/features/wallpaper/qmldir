@@ -1,3 +1,0 @@
-module qs.features.wallpaper
-singleton WallpaperPickerState 1.0 WallpaperPickerState.qml
-WallpaperPickerWindow 1.0 WallpaperPickerWindow.qml

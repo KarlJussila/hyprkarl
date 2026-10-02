@@ -1,3 +1,0 @@
-module qs.features.command
-singleton CommandState 1.0 CommandState.qml
-CommandProvider 1.0 CommandProvider.qml

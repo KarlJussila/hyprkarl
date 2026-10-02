@@ -1,0 +1,17 @@
+module bar.widgets
+AudioWidget 1.0 AudioWidget.qml
+BatteryWidget 1.0 BatteryWidget.qml
+BluetoothWidget 1.0 BluetoothWidget.qml
+ClockWidget 1.0 ClockWidget.qml
+CommandWidget 1.0 CommandWidget.qml
+CpuWidget 1.0 CpuWidget.qml
+DisplayWidget 1.0 DisplayWidget.qml
+GpuWidget 1.0 GpuWidget.qml
+NetworkWidget 1.0 NetworkWidget.qml
+QmlWidget 1.0 QmlWidget.qml
+RamWidget 1.0 RamWidget.qml
+RecordingWidget 1.0 RecordingWidget.qml
+ToggleWidget 1.0 ToggleWidget.qml
+TrayWidget 1.0 TrayWidget.qml
+WidgetHost 1.0 WidgetHost.qml
+WorkspacesWidget 1.0 WorkspacesWidget.qml

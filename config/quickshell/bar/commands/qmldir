@@ -1,0 +1,3 @@
+module bar.commands
+CommandProvider 1.0 CommandProvider.qml
+singleton CommandState 1.0 CommandState.qml

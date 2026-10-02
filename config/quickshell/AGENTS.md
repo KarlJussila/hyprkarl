@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for coding agents working on the Quickshell bar.
+Guidance for coding agents working on the Quickshell setup.
 
 ## Goals
 
@@ -17,18 +17,25 @@ data needed for shell invariants, but pass user-authored QML and its private
 settings through to the QML runtime. Helpful load errors are appropriate;
 preventing an advanced user from leaving the documented contract is not.
 
+Launch user actions with `uwsm-app --`. Desktop entries use their `.desktop` ID;
+command actions use `bash -c` inside that UWSM launch. Pass `HYPRKARL_OUTPUT`
+through an explicit `env` argument because `uwsm-app` sends arguments to the
+UWSM app daemon, not the caller's environment. Keep native `Process` monitoring
+and polling under the shell. GUI applications and their helpers must never
+remain in `hyprkarl-quickshell.service`, where a shell stop would kill them.
+
 ## Editing surfaces
 
 - `../../defaults/shell.json`: shipped bar behavior, widget order, and widget
   instances.
-- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`: optional sparse user override.
+- `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`: optional sparse user override.
 - `../../defaults/menu.json`: shipped static command-menu hierarchy.
-- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`: optional sparse menu additions and overrides.
-- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/<source>.qml`: one optional application-wide user root
+- `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json`: optional sparse menu additions and overrides.
+- `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/<source>.qml`: one optional application-wide user root
   explicitly named by `userRoot.source`.
 - the active XDG-state bundle's `quickshell.json`: semantic colors, typography,
   metrics, and island geometry.
-- `widgets/*.qml`: one implementation per widget kind.
+- `bar/widgets/*Widget.qml`: one implementation per widget kind.
 
 The integrated compiler's typed `theme-generator/defaults/theme.yaml` supplies
 the complete final `shell` object serialized as `quickshell.json`. Add new
@@ -47,10 +54,10 @@ do not infer deletion or array ordering from an ordinary deep merge, and do
 not restore a separate widget-definition map.
 
 `kind: "qml"` is the documented user-code widget lane. Its `source` normally
-names a file relative to `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`, but this is a resolution
+names a file relative to `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/modules/`, but this is a resolution
 base rather than a sandbox: do not validate the path or the module's private
 settings in an attempt to constrain user-authored QML. The module root declares
-`required property var context`. `widgets/qml.qml` owns that context and
+`required property var context`. `bar/widgets/QmlWidget.qml` owns that context and
 exposes the documented per-bar values and operations: stable ID, settings,
 semantic theme, edge/orientation, output, owning bar window, command execution,
 and shared panel open/close helpers. It also adapts optional root `tooltip`,
@@ -71,7 +78,7 @@ change.
 
 `modules.bar` controls instantiation, not merely visibility. When false, do
 not retain per-output bar windows or run the system monitor and command-widget
-providers used only by them. `modules.panels` controls the `FeaturePanelHost`.
+providers used only by them. `modules.panels` controls the `PanelHost`.
 It intentionally leaves status widgets in the bar; an owner removes those with
 `bar.layoutEdits` when desired. The remaining switches gate both a module's
 windows and the state, watchers, timers, service registrations, processes, and
@@ -83,13 +90,13 @@ replace those entry points in their own configuration.
 independent surfaces or a replacement bar. Its direct context fields expose
 the resolved configuration, theme, outputs, and requested overlay; its direct
 methods open, replace, toggle, or close that overlay. Keep the optional
-`notificationPosition(outputName)` hook. `Hyprkarl.Modal` is the public
+`notificationPosition(outputName)` hook. `Modal` from `ui.modal` is the public
 declarative frame for personal modals; `hk-shell start` supplies its module
 import path. Modal names are a cooperative convention, not a registry or
 allowlist. Do not turn any of this into directory discovery or a plugin
 registry.
 
-When `notifications.edge` is `bar`, `ScreenSurfaces.qml` resolves one reactive
+When `notifications.edge` is `bar`, `desktop/Output.qml` resolves one reactive
 position object per output. The built-in bar supplies the fallback; a user
 root's optional `notificationPosition(outputName)` method may override its
 `edge`, `extent`, `connected`, and `reachesSide` fields. Explicit `top` and
@@ -99,10 +106,25 @@ the built-in bar window.
 
 ## Architecture
 
-`shell.qml` creates shared configuration, theme, user-root, and overlay state,
+Directories name their owner. `desktop/` coordinates the desktop and outputs;
+`bar/` contains bar windows, layout, widgets, and bar-only providers; `modules/`
+groups independent functions with their state and presentation; `ui/` groups
+shared QML by purpose. `config/` owns settings, theme loading, and the personal
+root loader. Put domain-independent UI building blocks in `ui/` from the start,
+even with one caller. Keep module-specific behavior with its module. Design
+small interfaces for foreseeable reuse without adding speculative options or
+layers.
+
+QML types use uppercase filenames, such as `BarWindow.qml`. Lowercase
+`shell.qml` and `lock.qml` are process entry points. Directory names and QML
+module namespaces are lowercase; the public modal import is `ui.modal`.
+
+
+`shell.qml` launches `desktop/Desktop.qml`, which creates shared configuration,
+theme, user-root, and overlay state,
 then gates each optional built-in runtime before using one `Variants` model to
-create a `ScreenSurfaces` group per screen. The display arranger is one
-application-wide modal composition enabled with panels. `BarRuntime.qml` owns the system
+create an `Output` group per screen. The display arranger is one
+application-wide modal composition enabled with panels. `BarState.qml` owns the system
 monitor and command registry only while the bar is enabled. The surface group
 owns the screen's optional bar, menu, OSD, notification, and polkit windows.
 It resolves notification placement from a small reactive position object rather
@@ -116,12 +138,12 @@ state exposes fixed typed IPC methods, routes each update to the focused
 Hyprland monitor, and restarts one dismissal timer so repeated changes
 coalesce. OSD windows are click-through and never request keyboard focus.
 `config/ShellConfig.qml` alone selects, validates, and watches shell JSON while
-retaining the last valid live configuration after a rejected edit. `Bar.qml`
-alone owns each bar window and its per-monitor `FeaturePanelHost`. Layout files
-own island geometry. Feature directories own feature-specific panel state and
+retaining the last valid live configuration after a rejected edit. `bar/BarWindow.qml`
+alone owns each bar window and its per-monitor `PanelHost`. Layout files
+own island geometry. Module directories own service-specific panel state and
 content; bar widgets remain concise status and entry points.
 
-`features/command/CommandState.qml` owns the application-wide command-widget
+`bar/commands/CommandState.qml` owns the application-wide command-widget
 registry. It creates exactly one provider per configured widget ID rather than
 one per screen. Poll mode runs commands through non-login `bash -c`, starts one
 process per tick, and skips a tick while the prior process is still running.
@@ -133,9 +155,9 @@ it creates no timers or processes. Static command widgets render configured
 text/icons and click actions directly; the shipped menu button is the canonical
 example. Click actions inherit `HYPRKARL_OUTPUT` from `ShellButton` so commands
 can preserve the clicked monitor. Prefer native Quickshell services or the
-shared `SystemState` process for shipped high-frequency widgets.
+shared `SystemMonitor` process for shipped high-frequency widgets.
 
-`layout/IslandSurface.qml` is the single renderer for start, center, and end
+`bar/layout/IslandSurface.qml` is the single renderer for start, center, and end
 islands. Its corner and border names are logical rather than top/bottom
 coordinates: `screen` faces the output edge, `content` faces the workspace,
 `outer` faces a monitor side, and `inner` faces another island. Preserve that
@@ -197,7 +219,7 @@ Keep `bar.margin`, `bar.island.corners`, `bar.island.borders`,
 every theme. Do not move these
 appearance decisions into shell JSON or individual island components.
 
-`panels/FeaturePanelHost.qml` is the lasting window boundary for feature
+`bar/PanelHost.qml` is the lasting window boundary for feature
 panels. There is one host per bar/monitor. It owns the `PopupWindow`, trigger
 anchoring, cross-axis clamping, preferred width, available-height clamping,
 focus grab, Escape and outside-click dismissal, one-active-panel state,
@@ -241,7 +263,7 @@ shared left-aligned accent header and padded body, while the host owns the
 theme-configured nested outer and inner frame. Their repeated section, row,
 action, slider, and switch controls are the stable baseline vocabulary;
 feature-specific summaries, sliders, calendar cells, and navigation remain
-with their features. `components/PanelSlider.qml` owns the shared normalized
+with their features. `ui/panels/PanelSlider.qml` owns the shared normalized
 slider used by display brightness and audio levels; do not fork its interaction
 for another percentage control. Boolean panel rows use the shared
 `ToggleIndicator` switch instead of spelling state as `on`, `off`, or `muted`.
@@ -264,7 +286,7 @@ theme and owning components. Canvas indicators must allocate at their rendered
 size and resolve thin strokes against `Screen.devicePixelRatio`; do not magnify
 a smaller texture with an item transform.
 
-`features/display/DisplayPanel.qml` is a per-output view over `hk-display`.
+`modules/display/DisplayPanel.qml` is a per-output view over `hk-display`.
 Its overview lists connected outputs; choosing one opens an in-panel detail
 view that stages enablement, resolution, refresh rate, and scale. Resolution
 and refresh rate open separate nested pickers. The refresh picker contains only
@@ -302,13 +324,13 @@ input mask. Do not replace it with Qt Controls' attached `ToolTip`; that window
 does not participate correctly in the shell's layer or input behavior.
 
 CPU, GPU, RAM, and recording state share the single long-running process in
-`state/SystemState.qml`; event-driven widgets use Quickshell services directly.
-`features/network/NetworkState.qml` is a feature-owned singleton because scan
+`bar/SystemMonitor.qml`; event-driven widgets use Quickshell services directly.
+`modules/network/NetworkState.qml` is a feature-owned singleton because scan
 requests are application-global while panels are per monitor; it reference
 counts panel requesters so closing one monitor's panel cannot stop another's
 scan. `NetworkPanel.qml` feeds its changing sorted network list through
 `ScriptModel` so scan updates add, remove, or move rows without recreating the
-whole panel body. `features/bluetooth/BluetoothState.qml` owns the equivalent
+whole panel body. `modules/bluetooth/BluetoothState.qml` owns the equivalent
 adapter-global discovery lifetime and stops discovery only when this shell
 started it. Opening a Bluetooth panel does not request discovery; only its
 explicit scan action registers that panel as an owner, and closing the panel
@@ -321,7 +343,7 @@ action failure reasons, so keep `hk-bluetooth-launch` as the advanced route
 instead of inventing success or failure state. PowerProfiles likewise exposes
 the selected profile but no per-write result; render service-confirmed state
 and do not synthesize a profile-change failure.
-`features/clock/ClockState.qml` is the one application-wide current-time owner.
+`modules/clock/ClockState.qml` is the one application-wide current-time owner.
 Bar labels and every calendar panel bind to it so monitor count cannot create
 divergent dates. Viewed-month offset is panel-local transient state and resets
 when that panel opens; do not persist it or use Qt's implicit `model.today` as
@@ -343,7 +365,7 @@ loading or singleton registration requires them. Widget files are loaded from
 configuration, so Quickshell's static scanner cannot discover all relative
 imports on its own.
 
-`features/menu/MenuState.qml` alone reads, watches, recursively merges, and
+`modules/menu/MenuState.qml` alone reads, watches, recursively merges, and
 validates menu JSON. Entries merge by stable ID; `enabled: false` hides one,
 while `disabled: true` keeps one dimmed and unselectable in its owning menu.
 An optional `checkedCommand` is evaluated when its menu opens and replaces the
@@ -374,7 +396,7 @@ Keep commands as leaf actions and static hierarchy in data. `MenuModel.js`
 owns pure ordered traversal and global descendant filtering. It searches
 declared entries plus already-loaded rows from the current dynamic menu; a
 query must not start descendant providers. `MenuWindow.qml` owns menu rows,
-selection, navigation, and dismissal. It composes `OverlayWindow` for the
+selection, navigation, and dismissal. It composes `PickerWindow` for the
 full-screen input plane, frame, search field, focus, outside-click dismissal,
 and reveal. `MomentumScroll` supplies kinetic touchpad behavior. Do not fork
 those shared interactions back into the menu. Keyboard selection positions its
@@ -392,17 +414,17 @@ viewport.
 Escape, unmodified lowercase Q, and outside click close the whole menu; only
 Left navigates upward when the query is empty.
 `hk-shell menu` is the only public transport for opening static navigation.
-`features/overlay/OverlayState.qml` owns exclusivity, return requests, and
+`ui/modal/OverlayState.qml` owns exclusivity, return requests, and
 monitor routing across that menu, the application chooser, calculator,
 wallpaper picker, display arranger, and personal modals. Opening
 one replaces the active focused overlay instead of leaving another visible
 behind it. `ModalWindow` owns the full-screen focus plane, scrim, nested frame,
-outside-click handling, and reveal. `OverlayWindow` adds the shared picker
+outside-click handling, and reveal. `PickerWindow` adds the shared picker
 header and search field. `searchPinned` keeps launcher, calculator, and
 search/reference menu fields visible; default menus reveal on printable input
 with no divider gap while hidden. Search inputs show the text cursor and active
 focus border. Public
-`Hyprkarl.Modal` adds a general header, lazy body, optional footer, and the
+`Modal` from `ui.modal` adds a general header, lazy body, optional footer, and the
 shared spatial/section keyboard navigator while leaving content with the
 caller. User modal controls participate when they set `activeFocusOnTab`; an
 optional string `navigationSection` groups controls for Tab movement. Escape
@@ -412,7 +434,7 @@ a navigation key.
 `MomentumScroll` owns the kinetic touchpad behavior shared by long picker
 lists and grids.
 
-`features/applications/` renders launcher and open-with modes through one
+`modules/applications/` renders launcher and open-with modes through one
 picker. Launcher entries come directly from Quickshell's watched
 `DesktopEntries` model and launch through `gtk-launch` so desktop-file field
 codes and terminal handling remain intact. Open-with runs `hk-open-with
@@ -421,9 +443,9 @@ associations; selection returns through the same command for Gio-owned
 file-aware launching and optional default-app assignment. Its toggle uses the
 same `ToggleIndicator` as bar controls.
 
-`features/calculator/` evaluates the current expression with one short-lived
+`modules/calculator/` evaluates the current expression with one short-lived
 `qalc` process, copies the chosen result with `wl-copy`, and owns five recent
-expression/result pairs under XDG state. `features/wallpaper/` loads the
+expression/result pairs under XDG state. `modules/wallpaper/` loads the
 landscape preview cache once per open through `hk-wallpaper-entries` and
 presents it as a centered, snapping carousel for set or remove actions. The
 carousel uses the shared modal focus and dismissal boundary without its visible
@@ -436,7 +458,7 @@ geometry belongs in theme data and the shared overlay components, not agent
 instructions. Outside-click, Escape, and unmodified lowercase Q close the
 whole menu.
 
-`features/osd/` owns the shell-native volume, audio-output, microphone,
+`modules/osd/` owns the shell-native volume, audio-output, microphone,
 display-brightness, keyboard-brightness, and media surface. Commands send
 semantic state only. `OsdState` chooses fixed labels and indicators;
 `OsdWindow` owns the shared geometry and transition. Reuse the drawn
@@ -447,7 +469,7 @@ the border color. Do not restore icon-theme lookup or Mako OSD application
 rules. Placement and timeouts live under `osd` in shell JSON; appearance lives
 under `osd` in each theme's `quickshell.json`.
 
-`features/notifications/NotificationState.qml` is the one application-wide
+`modules/notifications/NotificationState.qml` is the one application-wide
 freedesktop notification server. It sets `tracked` only for notifications the
 shell will present, routes new entries to the focused Hyprland monitor,
 resolves expiry, synchronous replacement, filters, silence mode, and
@@ -471,8 +493,8 @@ theme-owned icon size as every other icon source. Otherwise
 `notifications.iconOverrides` may match a lowercase application or icon name
 and select `icon`, `glyph`, `component`, or `none`; then the sender's
 application icon and the configured urgency fallback apply. A `component`
-names either a shipped file under `features/notifications/icons/` or a user
-file under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/icons/`. Both expose `progress` and `theme` on a
+names either a shipped file under `modules/notifications/icons/` or a user
+file under `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/icons/`. Both expose `progress` and `theme` on a
 root `Item`; the shipped audio and battery drawings use exactly this public
 loader path. Absolute sender icon paths become `file:` URLs before reaching
 QML, and a `none` descriptor removes the icon item from layout. Both shipped
@@ -482,7 +504,7 @@ selection and application filters; each theme's `notification` object owns
 surface color, geometry, icon size, and drawn-indicator scale.
 
 Authentication surfaces have separate owners; do not create a generic auth
-controller. `features/polkit/PolkitState.qml` owns the one session
+controller. `modules/polkit/PolkitState.qml` owns the one session
 `PolkitAgent`; `PolkitWindow.qml` binds directly to its current `AuthFlow` and
 creates the focused modal presentation per output. It honors identities,
 response-required and response-visible state, supplementary messages,
@@ -493,14 +515,25 @@ layer. The installed qmltypes leave `AuthFlow` unresolved through
 same `qmllint` warning. Do not add an abstraction to hide that tooling defect;
 validate registration and a real prompt in the live runtime.
 
-Do not replace `hyprlock` on this runtime. Quickshell's post-0.3.0 changelog
-contains session-lock crash fixes for sleep, wake, DPMS, unlocking, and early
-surface visibility access that are absent from the installed release. Keep
-`hyprlock`, `hk-lock`, and the current idle/suspend path until a release with
-those fixes is admitted and re-tested. The eventual lock is a small,
-short-lived Quickshell process isolated from the long-running desktop shell;
-it may share semantic theme inputs but must not instantiate bar services or
-depend on desktop-shell IPC. See `../../docs/authentication-surfaces.md`.
+`lock.qml` is the lock entry point; `modules/lock/` owns authentication and
+presentation. It runs in its own process so bar restarts preserve an active
+lock, but imports the same `config/Theme.qml` and shared `ui/` components directly.
+`hk-lock` launches it; QML waits for `WlSessionLock.secure` before suspending.
+One authentication state serves all outputs. Only PAM success releases the
+lock, after the unlock animation; keep password and fingerprint conversations
+independent. Abort fingerprint PAM before sleep and start fresh on resume.
+`LockState.qml` reads the shared `ShellConfig.lock` behavior settings and uses
+`hk-fingerprint list` for automatic enrollment detection. Do not add a separate
+lock JSON parser. Native user-owned policies live in `quickshell/pam/password`
+and `quickshell/pam/fingerprint`; `hk-user-migrate` seeds them once. Appearance
+defaults belong only in the compiler's `shell.lock` object.
+The fingerprint centerlines are derived from Material Design Icons; retain
+`modules/lock/licenses/material-design-icons.txt` with the modified SVG.
+`ui/animation/ShakeAnimation.qml` supplies shared failure motion.
+`python3 tests/hk-lock.py` checks startup, suspend ordering, and fingerprint
+sleep/retry behavior. Real authentication and hardware sleep need live checks.
+See `../../docs/authentication-surfaces.md` for configuration and
+`../../docs/quickshell-overhaul-plan.tmp.md` for remaining acceptance work.
 
 ## Checks
 

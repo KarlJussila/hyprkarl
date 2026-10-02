@@ -1,0 +1,2 @@
+module ui.animation
+ShakeAnimation 1.0 ShakeAnimation.qml

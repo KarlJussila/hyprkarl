@@ -1,0 +1,3 @@
+module ui.indicators
+AudioIndicator 1.0 AudioIndicator.qml
+BatteryIndicator 1.0 BatteryIndicator.qml

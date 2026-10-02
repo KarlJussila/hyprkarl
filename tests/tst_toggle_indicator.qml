@@ -1,6 +1,6 @@
 import QtQuick
 import QtTest
-import "../config/quickshell/components"
+import "../config/quickshell/ui/controls"
 
 TestCase {
   id: testCase

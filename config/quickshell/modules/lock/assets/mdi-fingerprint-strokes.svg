@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <title>Fingerprint centerline strokes</title>
+  <desc>Modified from Material Design Icons fingerprint, matching nf-md-fingerprint F0237.
+    Centerlines are the averaged cubic boundaries of the original filled ridges.
+    Source revision f08b713c8eef826e6bfe826c65240326546648ea.
+    https://pictogrammers.com/library/mdi/icon/fingerprint/
+    License: ../licenses/material-design-icons.txt.</desc>
+  <path fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+    d="M6.2,3.97 C7.985,2.985 9.945,2.5 12,2.5 C14.07,2.5 15.83,2.945 17.81,3.955 M3.49,9.215 C4.435,7.89 5.635,6.84 7.065,6.105 C10.075,4.555 13.91,4.55 16.92,6.095 C18.345,6.825 19.545,7.86 20.49,9.2 M9.76,21.285 C8.94,20.46 8.485,19.935 7.83,18.75 C7.18,17.6 6.84,16.185 6.84,14.66 C6.84,11.965 9.155,9.77 12,9.77 C14.845,9.77 17.16,11.965 17.16,14.66 M11.94,14.66 C11.94,16.235 12.745,17.72 14.1,18.635 C14.885,19.17 15.825,19.435 16.92,19.435 C17.11,19.435 17.56,19.415 18.045,19.325 M4.965,18.445 C4.415,16.99 4.265,15.72 4.265,14.66 C4.265,13.54 4.48,12.52 4.9,11.64 C6.14,9.02 8.925,7.325 11.96,7.325 C16.23,7.325 19.71,10.61 19.71,14.655 C19.71,16 18.555,17.095 17.13,17.095 C15.715,17.095 14.55,16 14.55,14.655 C14.55,13.31 13.395,12.215 11.97,12.215 C10.545,12.215 9.39,13.31 9.39,14.655 C9.39,16.5 10.105,18.23 11.41,19.52 C12.43,20.525 13.405,21.08 14.905,21.5"/>
+</svg>

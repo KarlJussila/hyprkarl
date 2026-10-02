@@ -1,0 +1,4 @@
+module modules.clock
+CalendarNavButton 1.0 CalendarNavButton.qml
+ClockPanel 1.0 ClockPanel.qml
+singleton ClockState 1.0 ClockState.qml

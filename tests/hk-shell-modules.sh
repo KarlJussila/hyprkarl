@@ -75,15 +75,16 @@ stop_shell() {
 mkdir -p \
   "$TEST_ROOT/repo/config" \
   "$TEST_ROOT/repo/defaults" \
-  "$CONFIG_HOME/hyprkarl/quickshell" \
+  "$CONFIG_HOME/quickshell/custom" \
+  "$CONFIG_HOME/quickshell/settings" \
   "$STATE_HOME/hyprkarl/current" \
   "$STATE_HOME/hyprkarl/themes/test"
 cp -a "$REPO/config/quickshell" "$TEST_ROOT/repo/config/"
 cp "$REPO/defaults/shell.json" "$REPO/defaults/menu.json" \
   "$TEST_ROOT/repo/defaults/"
-cp "$FIXTURES/shell.json" "$CONFIG_HOME/hyprkarl/shell.json"
+cp "$FIXTURES/shell.json" "$CONFIG_HOME/quickshell/settings/shell.json"
 cp "$FIXTURES/Extensions.qml" \
-  "$CONFIG_HOME/hyprkarl/quickshell/Extensions.qml"
+  "$CONFIG_HOME/quickshell/custom/Extensions.qml"
 cp "$FIXTURES/theme.json" "$STATE_HOME/hyprkarl/current/theme.json"
 cp "$FIXTURES/quickshell.json" \
   "$STATE_HOME/hyprkarl/themes/test/quickshell.json"
@@ -190,13 +191,13 @@ jq -e '.modalLoads == 2' <<< "$(call_user_test snapshot)" >/dev/null \
   || fail "public personal modal content was not recreated"
 call_user_test close >/dev/null || fail "public personal modal did not close"
 
-if pgrep -af "$SHELL_ROOT/scripts/read-system-state.sh" >/dev/null; then
+if pgrep -af "$SHELL_ROOT/bar/read-system-state.sh" >/dev/null; then
   fail "bar system monitor started while the bar was disabled"
 fi
 
 stop_shell
-cp "$FIXTURES/bar-no-panels.json" "$CONFIG_HOME/hyprkarl/shell.json"
-rm -f "$CONFIG_HOME/hyprkarl/quickshell/Extensions.qml"
+cp "$FIXTURES/bar-no-panels.json" "$CONFIG_HOME/quickshell/settings/shell.json"
+rm -f "$CONFIG_HOME/quickshell/custom/Extensions.qml"
 start_shell
 sleep 0.5
 
@@ -207,7 +208,7 @@ if grep -Eq 'TypeError|ReferenceError|failed to load' <<< "$panel_log"; then
   printf '%s\n' "$panel_log" >&2
   fail "bar without panels produced a runtime error"
 fi
-pgrep -af "$SHELL_ROOT/scripts/read-system-state.sh" >/dev/null \
+pgrep -af "$SHELL_ROOT/bar/read-system-state.sh" >/dev/null \
   || fail "bar system monitor did not start with the bar enabled"
 
 printf 'Shell module and personal modal checks passed.\n'

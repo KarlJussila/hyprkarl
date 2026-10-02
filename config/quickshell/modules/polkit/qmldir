@@ -1,0 +1,3 @@
+module modules.polkit
+singleton PolkitState 1.0 PolkitState.qml
+PolkitWindow 1.0 PolkitWindow.qml

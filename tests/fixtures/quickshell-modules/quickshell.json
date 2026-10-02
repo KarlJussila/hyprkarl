@@ -12,8 +12,32 @@
     "borderWidth": 2,
     "fontFamily": "sans",
     "fontSize": 9,
-    "onGlyphOffset": [0, 0],
-    "offGlyphOffset": [0, 0],
+    "onGlyphOffset": [
+      0,
+      0
+    ],
+    "offGlyphOffset": [
+      0,
+      0
+    ],
     "transitionDuration": 0
+  },
+  "lock": {
+    "width": 400,
+    "padding": 20,
+    "spacing": 12,
+    "radius": 12,
+    "inputHeight": 64,
+    "inputFontSize": 28,
+    "clockFontSize": 64,
+    "dateFontSize": 24,
+    "dimOpacity": 0.6,
+    "clockFormat": "hh:mm AP",
+    "dateFormat": "dddd, MMMM d",
+    "transitionDuration": 150,
+    "fadeDuration": 300,
+    "failureDuration": 1000,
+    "fingerprintSize": 40,
+    "fingerprintCompleteDuration": 450
   }
 }

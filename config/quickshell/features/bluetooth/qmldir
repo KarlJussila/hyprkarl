@@ -1,4 +1,0 @@
-module qs.features.bluetooth
-singleton BluetoothState 1.0 BluetoothState.qml
-BluetoothDeviceRow 1.0 BluetoothDeviceRow.qml
-BluetoothPanel 1.0 BluetoothPanel.qml

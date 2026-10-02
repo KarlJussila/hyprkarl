@@ -36,9 +36,9 @@ configuration directories.
 When you change behavior, structure, or conventions, **update the documentation
 in the same change** — both audiences:
 
-- **Human-facing docs** — `README.md` and `docs/` (getting-started, themes,
-  commands, configuration-map, extending, repo-conventions, shell-style,
-  updating, …).
+- **Human-facing docs** — `README.md` and `docs/`. Keep personal customization
+  in `docs/extending-hyprkarl.md`; contributor guidance belongs in
+  `docs/repo-conventions.md` and the relevant subsystem guide.
 - **Agent-facing docs** — this file owns repository-wide rules;
   `bin/AGENTS.md` owns command authoring, `config/quickshell/AGENTS.md` owns the
   active shell, `theme-generator/AGENTS.md` owns compiler work, and
@@ -210,11 +210,14 @@ interactive opener menu; images that are not already `.jpg` also expose
 `Convert to JPG`. These use ExifTool and ImageMagick, which are already listed
 in the package manifest.
 
-### Quickshell Bar Configuration
+### Quickshell configuration
 
-The active bar under `config/quickshell/` reads
+The Quickshell project under `config/quickshell/` groups desktop coordination in
+`desktop/`, bar-specific code in `bar/`, functional modules in `modules/`, shared
+UI by purpose in `ui/`, and configuration loading in `config/`. `shell.qml`
+launches the desktop; `lock.qml` launches the lock module separately. It reads
 the upstream-owned `defaults/shell.json` and applies the optional sparse
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json` override. Objects merge recursively, arrays replace as
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json` override. Objects merge recursively, arrays replace as
 complete ordered values, and `bar.layoutEdits` provides explicit widget-ID
 operations for surgical layout changes. Widget instances are defined inline
 in the default layout. The top-level `modules` object selects the nine optional
@@ -229,7 +232,7 @@ placement and behavior. The shared toggle indicator deliberately also accepts
 sparse per-instance control geometry over the theme's `shell.switch` default.
 Island corner shapes, selective borders, and
 screen/outer/content margins are theme data rendered once by
-`layout/IslandSurface.qml`. Widgets report natural heights, the bar resolves
+`bar/layout/IslandSurface.qml`. Widgets report natural heights, the bar resolves
 the tallest one against the theme minimum, and all islands receive that shared
 height. `WidgetHost.qml` applies universal `bar.widgetPadding.main` and `.cross`
 values along and across top/bottom bar widgets; widget natural sizes
@@ -241,7 +244,7 @@ offset, resolved with a zero floor; the tray binds this to
 One optional `userRoot.source` loads a trusted application-wide QML composition
 root for independent surfaces or a replacement bar. Its documented context
 exposes the resolved configuration, theme, outputs, current overlay request,
-and direct overlay methods. Personal roots may import `Hyprkarl.Modal` for the
+and direct overlay methods. Personal roots may use `import ui.modal` and its `Modal` for the
 same shell-styled exclusive modal boundary as built-in surfaces. It may publish
 reactive per-output notification positioning; there is no discovery or plugin
 layer.
@@ -259,9 +262,14 @@ Read `config/quickshell/AGENTS.md` before changing shell implementation and
 `hk-shell` to start, stop, restart, inspect, or read logs from the production
 shell.
 
+The lock feature lives in `config/quickshell/modules/lock/`, with `lock.qml`
+as its entry point. It shares the shell's theme and components and runs in a
+separate process so bar restarts preserve locking. `hk-lock` and `hk-suspend`
+are its public commands; guidance belongs in `config/quickshell/AGENTS.md`.
+
 ### `hk-*` Commands
 
-All user-facing utilities are in `bin/` and follow the `hk-*` naming
+Shipped user-facing utilities are in `bin/` and follow the `hk-*` naming
 convention. See `bin/AGENTS.md` for command structure, naming rules, and
 authoring conventions before adding or editing one.
 
@@ -296,8 +304,8 @@ intentionally omit strict mode (`set -euo pipefail`); Python commands use
 
 - `docs/configuration-map.md` — repo layout and main editing surfaces
 - `docs/themes.md` — theme structure and wallpaper layout
-- `docs/extending-hyprkarl.md` — adding commands, menus, keybindings, theme-aware config
-- `docs/authentication-surfaces.md` — polkit ownership and the lock-screen release boundary
+- `docs/extending-hyprkarl.md` — personal scripts, hooks, menus, keybindings, and QML
+- `docs/authentication-surfaces.md` — polkit and separate session-lock ownership
 - `docs/shell-style.md` — Bash/Python command scripting conventions
 - `docs/commands.md` — full `hk-*` command reference
 - `docs/repo-conventions.md` — editing conventions, stowed-config model, branches and releases

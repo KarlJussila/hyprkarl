@@ -1,0 +1,3 @@
+module modules.osd
+OsdState 1.0 OsdState.qml
+OsdWindow 1.0 OsdWindow.qml

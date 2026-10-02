@@ -33,7 +33,7 @@ an explicitly referenced personal QML root. It checks that disabled IPC targets
 are absent, screenshot focus coordination remains available, the bar system
 monitor does not start, and the root receives the resolved configuration,
 theme, outputs, and overlay
-open/replace/push/back/toggle/close context. It also imports `Hyprkarl.Modal`
+open/replace/push/back/toggle/close context. It also imports `ui.modal.Modal`
 from the public QML module and proves
 that personal modal content is created on demand and recreated after closing.
 A second pass starts the built-in bar without panels, applies the trackless
@@ -45,6 +45,39 @@ into a temporary directory and removes it afterward.
 
 ```bash
 tests/hk-shell-modules.sh
+```
+
+## `hk-shell-launch.py`
+
+Exercises the production launcher and widget command with real `uwsm-app`
+launches. It checks their process groups, preserves the widget's output context,
+and stops an isolated test shell to prove both launched processes survive.
+
+It needs the running UWSM session and user systemd manager. It briefly creates a
+temporary desktop entry and transient test units, then removes them. It opens
+no windows and leaves the production shell running.
+
+```bash
+python3 tests/hk-shell-launch.py
+```
+
+## `hk-lock.py`
+
+Exercises `hk-lock`, `hk-suspend`, and the production locker QML in an isolated
+Quickshell process. A controlled compositor supplies secure-lock confirmation. Native `PamContext`
+uses private PAM policies for a pending conversation and module-error results;
+the tests do not substitute a QML authentication implementation. A private D-Bus service supplies logind's sleep
+state and resume signals; harmless commands record layout reset and suspension.
+It checks pending requests, reuse of an existing locker, immediate requests
+while securely locked, the startup timeout, and broken-QML failure. Fingerprint
+checks cover stopping before sleep, fresh authentication on resume, startup
+during sleep preparation, live disabling of fingerprint scanning, and increasing
+recovery delays after reader errors.
+It opens no windows and never suspends the host. Installed `qs` and its QML
+modules, `gdbus`, `dbus-daemon`, and Python's installed PyGObject are required.
+
+```bash
+python3 tests/hk-lock.py
 ```
 
 ## `tst_menu_model.qml`

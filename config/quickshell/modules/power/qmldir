@@ -1,0 +1,3 @@
+module modules.power
+BatterySummary 1.0 BatterySummary.qml
+PowerPanel 1.0 PowerPanel.qml

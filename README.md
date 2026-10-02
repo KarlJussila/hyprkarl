@@ -99,13 +99,13 @@ The full manual lives under `docs/`.
 - [docs/customizing-bar.md](docs/customizing-bar.md)
   Bar widget layout, styling, and runtime control
 - [docs/extending-hyprkarl.md](docs/extending-hyprkarl.md)
-  Adding commands, menus, keybindings, and theme-aware config
+  Personal scripts, hooks, menus, keybindings, and Quickshell interfaces
 - [docs/troubleshooting.md](docs/troubleshooting.md)
   Common setup and runtime failures
 - [docs/commands.md](docs/commands.md)
   Command reference
 - [docs/repo-conventions.md](docs/repo-conventions.md)
-  Editing conventions, stowed-config model, stateful paths
+  Contributor conventions, stowed-config model, branches, and releases
 - [docs/shell-style.md](docs/shell-style.md)
   Hyprkarl's Bash/Python command scripting style
 - [docs/shell-configuration.md](docs/shell-configuration.md)
@@ -114,7 +114,7 @@ The full manual lives under `docs/`.
   Shell-native menu entries, user overrides, Python dynamic providers, and
   direct menu commands
 - [docs/authentication-surfaces.md](docs/authentication-surfaces.md)
-  Shell-native polkit ownership and the current-runtime lock-screen decision
+  Polkit ownership and the separate Quickshell lock screen
 
 ## Themes
 
@@ -137,7 +137,12 @@ routing, progress, silence mode, one-item restore, bar-connected geometry, and
 data-defined application icon overrides with user QML drawings; Mako is no
 longer part of the session. Polkit privilege requests also use a focused,
 theme-aware Quickshell prompt; the separate `hyprpolkitagent` process is no
-longer part of the session. The display panel opens a staged submenu for each
+longer part of the session. Session locking uses the Quickshell lock feature,
+launched by `hk-lock`, with password authentication and automatically detected
+fingerprint authentication.
+The locker shares the active theme and survives desktop-shell restarts. Personal
+PAM policies live in `~/.config/quickshell/pam/`; lock behavior uses
+`settings/shell.json`. The display panel opens a staged submenu for each
 output with enablement, resolution, refresh rate, and scale controls. Resolution
 and refresh rate use separate pickers, and the latter lists only rates supported
 at the selected resolution. Those changes
@@ -151,14 +156,14 @@ without editing QML using one application-wide polling or persistent-stream
 provider per widget ID. Static command buttons such as the main-menu trigger
 use the same kind without starting a timer or process. More specialized
 personal bar widgets can be explicitly loaded from
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/` through a small per-bar context, without turning the
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/modules/` through a small per-bar context, without turning the
 shell into a plugin platform. The built-in bar can also be disabled while the
 other built-in modules remain independently selectable through the nine
 top-level `modules` switches in shell JSON. Restart the shell after changing a
 switch. One explicitly referenced application-wide user QML root under
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/` can compose replacement surfaces, consume open-ended theme data,
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/` can compose replacement surfaces, consume open-ended theme data,
 observe and control overlay requests, and publish reactive notification
-positioning for a custom bar. The public `Hyprkarl.Modal` QML component lets
+positioning for a custom bar. The public `ui.modal.Modal` QML component lets
 that root add shell-styled, lazy-content modals without registering a plugin.
 The app launcher, open-with chooser, calculator, and wallpaper picker are also
 Quickshell-native. They share the shell's focused-overlay frame and interaction

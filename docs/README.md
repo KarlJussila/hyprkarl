@@ -2,7 +2,8 @@
 
 Hyprkarl keeps shipped configuration live from its checkout while personal
 settings live in the standard XDG configuration directories. This manual
-covers setup, daily use, repo layout, and customization.
+covers setup, daily use, and personal customization. Contributor guides are
+listed separately below.
 
 The expected setup is a single-user CachyOS + Hyprland + UWSM system, with the
 repo checked out at `~/.local/share/hyprkarl/`.
@@ -22,7 +23,7 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - Read [Menu Configuration](menu-configuration.md) to add, reorder, rename, or
   hide entries in the shell-native command menu.
 - Read [Authentication Surfaces](authentication-surfaces.md) for polkit
-  ownership and the current-runtime lock-screen deferral.
+  ownership, the separate Quickshell locker, and personal PAM configuration.
 
 ## Common Tasks
 
@@ -34,7 +35,7 @@ repo checked out at `~/.local/share/hyprkarl/`.
   [Customizing the Bar](customizing-bar.md)
 - Change default terminal, editor, or shell:
   [Using Hyprkarl](using-hyprkarl.md#defaults-terminal-editor-shell)
-- Add a command, menu action, keybinding, or theme-aware config:
+- Add personal scripts, hooks, menu actions, keybindings, or QML:
   [Extending Hyprkarl](extending-hyprkarl.md)
 - Customize the command menu:
   [Menu Configuration](menu-configuration.md)
@@ -43,7 +44,7 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - Troubleshooting issues:
   [Troubleshooting](troubleshooting.md)
 
-## Reference
+## User reference
 
 - [Getting Started](getting-started.md)
 - [Updating](updating.md)
@@ -54,8 +55,18 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - [Extending Hyprkarl](extending-hyprkarl.md)
 - [Troubleshooting](troubleshooting.md)
 - [Command Reference](commands.md)
-- [Repo Conventions](repo-conventions.md)
-- [Command Script Style](shell-style.md)
 - [Shell Configuration](shell-configuration.md)
 - [Menu Configuration](menu-configuration.md)
 - [Authentication Surfaces](authentication-surfaces.md)
+
+## Contributor guides
+
+For changes to the shipped code and defaults in the checkout:
+
+- [Repo conventions](repo-conventions.md): ownership, Stow, branches, and releases
+- [Command script style](shell-style.md): authoring shipped `hk-*` commands
+- [Quickshell project guide](../config/quickshell/README.md): code structure,
+  built-in widgets, and checks
+- [Theme compiler guide](../theme-generator/README.md): templates, rendering,
+  and compiler development
+- [Tests](../tests/README.md): focused checks and acceptance harnesses

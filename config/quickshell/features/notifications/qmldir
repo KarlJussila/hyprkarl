@@ -1,5 +1,0 @@
-module qs.features.notifications
-NotificationIcon 1.0 NotificationIcon.qml
-NotificationState 1.0 NotificationState.qml
-NotificationToast 1.0 NotificationToast.qml
-NotificationWindow 1.0 NotificationWindow.qml

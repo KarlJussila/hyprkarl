@@ -129,6 +129,8 @@ QtObject {
   readonly property int polkitTransitionDuration:
     polkit.transitionDuration ?? panelTransitionDuration
 
+  readonly property var lock: values.lock
+
   readonly property var menu: values.menu ?? ({})
   readonly property color menuBackground: menu.background ?? popupSurface
   readonly property color menuForeground: menu.foreground ?? foreground

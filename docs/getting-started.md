@@ -64,19 +64,17 @@ load `local.*` sidecars last. The application ownership table in
 [Configuration Map](configuration-map.md#application-configuration) names the
 editable path for every managed application.
 
-## Editing Hyprkarl
+## Personalizing Hyprkarl
 
-Personalize Hyprkarl through `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`.
-Create a fork branch only when changing shipped code or defaults in
-`~/.local/share/hyprkarl/`. Automatic source sync is for the clean released
-branch; maintain a custom branch with Git and use `hk-update apply` afterward.
+Use the personal paths in [Configuration Map](configuration-map.md) for
+application preferences, Quickshell settings, and Hyprland configuration.
+[Extending Hyprkarl](extending-hyprkarl.md) covers adding personal scripts,
+hooks, menus, keybindings, and QML. These changes need no Git branch.
 
-For editing guidance, see:
-
-- [Configuration Map](configuration-map.md)
-- [Extending Hyprkarl](extending-hyprkarl.md)
-- [Repo Conventions](repo-conventions.md)
-- [Command Script Style](shell-style.md)
+To change shipped code or defaults in `~/.local/share/hyprkarl/`, see
+[Repo conventions](repo-conventions.md). Automatic source sync is for the
+clean released branch; maintain a custom branch with Git and use
+`hk-update apply` afterward.
 
 ## Updating
 

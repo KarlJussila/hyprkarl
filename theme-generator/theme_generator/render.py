@@ -47,7 +47,6 @@ REQUIRED_BUNDLE_FILES = (
     "theme.yaml",
     "quickshell.json",
     "hyprland.lua",
-    "hyprlock.conf",
     "hyprtoolkit.conf",
     "btop.theme",
     "alacritty.toml",

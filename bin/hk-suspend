@@ -1,6 +1,5 @@
 #!/bin/bash
 # hk-suspend
-# Make sure hyprlock starts before suspending
+# Ask the Quickshell locker to suspend after secure locking.
 
-hk-lock
-systemctl suspend
+exec hk-lock --suspend

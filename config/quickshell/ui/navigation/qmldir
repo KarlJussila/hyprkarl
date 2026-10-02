@@ -1,0 +1,3 @@
+module ui.navigation
+KeyboardNavigator 1.0 KeyboardNavigator.qml
+singleton NavigationState 1.0 NavigationState.qml

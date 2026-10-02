@@ -37,6 +37,8 @@ The Docker provider trusts Hyprkarl's authored manifest shape. It isolates each
 manifest load so one broken service is logged to stderr and skipped without
 hiding the remaining services; do not add a second manifest schema validator
 to the menu path.
+The locker's automatic fingerprint detection uses `hk-fingerprint list`.
+Keep enrollment discovery in that command rather than duplicating it in QML.
 The bar's generic command-widget launcher sets `HYPRKARL_OUTPUT` to its output
 name. `hk-shell-menu` forwards that context to Quickshell so the menu still
 opens on the clicked bar when Hyprland does not focus monitors on mouse movement.
@@ -67,12 +69,10 @@ dismissing the panel. It restores panel focus after Hyprshot exits, including
 after a cancelled selection. Screenshot bindings must use this command instead
 of calling Hyprshot directly.
 
-`hk-shell start` launches Quickshell as a UWSM service so the process inherits
-the stable user-session environment rather than application-specific variables
-from its caller. `hk-shell stop` owns the whole process boundary, not only the
-current config generation. A reload can briefly remove a run ID while leaving
-its Quickshell process alive; stop that process, then wait until neither form is
-still running.
+`hk-shell start` launches Quickshell as a UWSM service with the stable session
+environment. The shell's user actions launch through `uwsm-app --` in their own
+units, so stopping the shell affects only its own runtime and monitors. Keep
+application processes outside the shell service.
 
 `hk-display` is the single display-control boundary. Its Python library owns
 Hyprland output discovery, mode, scale, transform, position, and enable/disable changes, internal
@@ -100,6 +100,10 @@ order. Missing directories and non-executable files are normal. It attempts
 every hook, reports each failure, and returns nonzero if any failed. Wire new
 events only to a real successful public action; do not add hook metadata,
 arguments, retries, or background execution without a concrete requirement.
+
+`hk-lock` launches Quickshell's `lock.qml` entry point directly.
+`hk-suspend` delegates to `hk-lock --suspend`; the lock feature owns waiting for
+secure locking before suspending. Authentication belongs in QML and native PAM.
 
 ## Style
 

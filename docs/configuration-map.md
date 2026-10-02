@@ -14,7 +14,11 @@ would edit.
 - `defaults/`
   Upstream-owned shell data and Hyprland behavior
 - `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
-  User-owned Hyprkarl configuration, QML, themes, and hooks
+  User-owned Hyprland configuration, themes, and hooks
+- `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/`
+  Personal `shell.json` and `menu.json`
+- `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/`
+  Personal QML composition roots, widgets, and icon drawings
 - `packages/`
   Package lists read by `setup-packages.sh` and `hk-update packages`
 - `system/migrations/`
@@ -222,7 +226,7 @@ being filled with Hyprkarl defaults.
 | Fastfetch | `~/.config/fastfetch/` | Complete starting config and logo | Next run | Never |
 | Fish | `~/.config/fish/` | Complete starting config; Fish also loads its ordinary `conf.d/` files | New shell or source the changed file | Never |
 | GTK 3/4 | `~/.config/gtk-3.0/` and `~/.config/gtk-4.0/` | Personal `gtk.css` imports `hyprkarl.css`, which reads the materialized active GTK theme; `settings.ini` remains personal | Restart affected applications | Personal files never; `~/.local/share/themes/hyprkarl/` is regenerated |
-| Hypridle, Hyprlock, Hyprpaper, Hyprsunset | `~/.config/hypr/hypr*.conf` | Complete starting files; Hyprlock continues to source active theme values until the user changes it | Restart the affected service | Never |
+| Hypridle, Hyprpaper, Hyprsunset | `~/.config/hypr/hypr*.conf` | Complete starting files | Restart the affected service | Never |
 | Hyprtoolkit | Theme source under `~/.config/hyprkarl/themes/` | Stable tracked link to the generated active theme | `hk-theme set <name>` | Link is managed; generated target is replaced |
 | Neovim | `~/.config/nvim/` | Complete starting tree with stable theme links | Restart or reload Neovim | Never |
 | Qt5ct / Qt6ct | `~/.config/qt5ct/` and `~/.config/qt6ct/` | Personal Qt settings with stable generated palette links | Restart affected applications | Never |
@@ -236,126 +240,45 @@ the current user's configuration. A full replacement is always possible by
 changing or removing the personal files; the documented paths are a convenient
 layout, not a restriction.
 
-## Quickshell Bar
+## Quickshell
 
-The production bar lives under `config/quickshell/`. Its main editing surfaces
-are:
+The project lives under `config/quickshell/`. Its
+[contributor map](../config/quickshell/README.md) explains `desktop/`, `bar/`,
+`modules/`, `ui/`, and `config/`. `shell.qml` launches the desktop; `lock.qml`
+launches its lock module in a separate process so bar restarts preserve locking.
 
-- `defaults/shell.json`
-  Shipped bar edge, widget order, and inline widget instances
-- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/shell.json`
-  Optional sparse user-owned override for the shipped shell configuration
-- `defaults/menu.json`
-  Shipped command-menu hierarchy, dynamic providers, search roles, and actions
-- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`
-  Optional sparse user-owned menu additions and overrides
-- `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/themes/<generation>/quickshell.json`
-  Generated semantic colors, typography, minimum bar thickness, natural
-  widget padding, logical island corners and borders, radii,
-  screen/outer/content spacing, and menu, OSD, notification, and polkit
-  appearance. The shell reaches it through the active selector.
+| Personal file | Controls | Apply |
+| --- | --- | --- |
+| `~/.config/quickshell/settings/shell.json` | Module switches, bar layout, notification/OSD behavior, lock behavior, and the personal QML root | Ordinary settings reload live; module switches require `hk-shell restart`; lock settings reload live |
+| `~/.config/quickshell/settings/menu.json` | Menu entries, providers, and actions | Reloads live |
+| `~/.config/quickshell/custom/` | Explicitly referenced QML roots, widgets under `modules/`, and notification drawings under `icons/` | `hk-shell restart` |
+| `~/.config/quickshell/pam/password` and `pam/fingerprint` | Native authentication policies, seeded once | New authentication attempts |
+| `~/.config/hyprkarl/themes/<name>/` | Appearance, including `shell.lock` | `hk-theme set <name>` |
 
-The shell watches both shell JSON paths. Ordinary user objects merge over
-the default, arrays replace completely, and explicit widget-ID layout edits are
-applied afterward. Deleting the user file returns to the default, while an
-invalid live edit keeps the last valid configuration running. Version 1
-supports top and bottom bars plus built-in, command, and explicitly referenced
-user-QML widget kinds. The top-level `modules` object independently selects
-the bar, panels, notifications, OSD, polkit, menu, applications, calculator,
-and wallpaper runtimes. Module changes latch until `hk-shell restart`; ordinary
-shell JSON values still reload live. Personal per-bar modules live below
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/modules/`, receive one narrow context per bar/output, and are
-not discovered as plugins. An optional `userRoot.source` names one
-application-wide QML composition root below `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/`; it may create
-independent surfaces, receive direct overlay controls, and provide reactive
-notification positioning for a custom bar. It may import the public
-`Hyprkarl.Modal` component for a shell-styled exclusive modal without any
-discovery or registration step. Static
-command widgets, including the main-menu button, have no provider runtime.
-Configured providers are application-wide rather than duplicated per monitor.
-Poll mode starts one process per tick, while stream mode holds one
-newline-producing process for frequent updates. See
-[Shell Configuration](shell-configuration.md) for the schema and extension
-roadmap.
+`defaults/shell.json` and `defaults/menu.json` supply shipped behavior. Personal
+JSON objects merge recursively over them; arrays replace completely. Explicit
+widget-ID layout edits can add, remove, replace, or move individual widgets. An
+invalid live edit leaves the last valid configuration running.
 
-The shell watches the XDG-state `current/theme.json` selector, then reads the
-named immutable artifact's `quickshell.json`. Theme switches apply without
-restarting the shell.
+The nine `modules` switches select the bar, panels, notifications, OSD, polkit,
+menu, applications, calculator, and wallpaper. Disabled modules do not keep
+services or polling processes running. A personal `userRoot.source` can replace
+the bar or add independent interfaces, using `import ui.modal` for shared modal
+windows. Locking runs on demand through `hk-lock`; `hk-suspend` waits for secure
+locking before suspending.
 
-Hyprland starts it with `hk-shell start`; the resulting UWSM service inherits
-the stable user-session environment rather than the environment of the command
-that requested the start. Use `hk-shell status`, `hk-shell logs`, and
-`hk-shell stop` to inspect and manage it. A direct
-`QML_IMPORT_PATH=config/quickshell qs -p config/quickshell` launch remains
-useful for foreground development.
-See `config/quickshell/README.md` for its structure, checks, and interactions.
-The display, audio, network, Bluetooth, battery/power, and clock/calendar
-panels share a per-monitor host under `config/quickshell/panels/`; their
-feature-specific views and state live under `config/quickshell/features/`.
-The host owns their nested frame, while `components/PanelLayout.qml` owns the
-shared header band and padded body. Rows, actions, sliders, and the custom
-switch primitive live beside it under `config/quickshell/components/`.
-`KeyboardNavigator.qml` gives feature panels and public modals the same
-spatial arrow/HJKL movement and Tab-by-section behavior; controls join it by
-being focusable and may declare a `navigationSection` string.
-The display view delegates discovery, live trials, rollback, and persistence
-to `hk-display` rather than owning a second QML state store. Per-output drafts
-use a ten-second confirmation whose rollback survives the Quickshell process.
-Its global arranger uses the same public modal frame as personal QML and owns
-a temporary position-and-rotation draft; non-overlapping arrangements apply
-directly.
-Network scanning and Bluetooth discovery use feature-owned singletons because
-those operations are global to an adapter while panels are per monitor.
-Network scanning follows panel activity, and its sorted results update the
-visible row model incrementally instead of rebuilding the list. Bluetooth
-discovery begins only from the panel's explicit scan action. That action is
-replaced by the available-device section after it runs during the current
-panel opening. Clock uses one application-wide current-time
-singleton while viewed-month navigation remains local to each panel. There is
-no separate feature-flyout boundary.
+`hk-user-migrate` moves old Quickshell personal files from `~/.config/hyprkarl/`
+into `quickshell/settings/` and `quickshell/custom/`. Conflicting copies are
+preserved and reported. It also seeds native PAM files once without overwriting
+existing policies.
 
-`config/quickshell/features/polkit/PolkitState.qml` owns the one session
-polkit agent. `PolkitWindow.qml` supplies the per-output modal presentation,
-with only the output chosen at request start becoming visible and focused.
-This surface is independent of the feature-panel host and has no public IPC
-command; polkit's D-Bus request is its entry point.
+Use `hk-shell start`, `stop`, `restart`, `status`, and `logs` to manage the
+desktop. The active immutable theme bundle reloads through the XDG-state
+`current/theme.json` selector.
 
-`config/quickshell/features/command/` owns the corresponding application-wide
-command-widget registry and provider lifetime. The public poll/stream contract
-is documented in `docs/shell-configuration.md`.
-
-The shell creates the command menu and its dedicated launcher/open-with,
-calculator, and wallpaper surfaces once per output. One application-wide
-`features/overlay/OverlayState.qml` makes them mutually exclusive and routes
-the active surface to the focused output. The shared frame and scroll
-interaction also live under `features/overlay/`; each feature directory owns
-its domain-specific state and presentation. `features/menu/MenuState.qml`
-owns the watched, validated deep merge, navigation history, checked-state
-probes, and short-lived dynamic menu sources. See [Menu
-Configuration](menu-configuration.md).
-
-The shell-native OSD uses one application-wide state owner and one
-click-through window per output under `features/osd/`. `hk-shell osd` sends
-typed volume, audio-output, microphone, display/keyboard brightness, or media
-state; the state owner selects the focused monitor and resets one dismissal
-timer. `defaults/shell.json` owns its edge, margin, and timeouts, while each
-theme's `quickshell.json` owns its size, spacing, radius, indicator size,
-progress height, and transition duration.
-
-The shell-native notification service uses one application-wide server and
-one non-focusable toast stack per output under `features/notifications/`.
-New notifications route to the focused output. `NotificationState.qml` owns
-tracking, timeout resolution, synchronous replacement, filtering, silence
-mode, the one-item visual restore snapshot, and the public IPC target;
-`NotificationWindow.qml` and `NotificationToast.qml` own presentation and
-interaction. `defaults/shell.json` owns placement, timing, limits, application
-filters, compact applications, and icon descriptors. `component` descriptors
-load shipped drawings or files under `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/quickshell/icons/` through one
-shared interface. `ScreenSurfaces.qml` supplies the built-in bar's reactive
-position by default; a user root may replace that
-per-output position without replacing notification presentation. Theme JSON
-owns surface color and geometry. Mako
-has no runtime or theme path.
+See [shell configuration](shell-configuration.md),
+[bar customization](customizing-bar.md), [menu configuration](menu-configuration.md),
+and [authentication](authentication-surfaces.md) for the editing contracts.
 
 ## Themes
 

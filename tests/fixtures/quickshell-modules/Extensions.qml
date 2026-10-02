@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Hyprkarl
+import ui.modal
 
 Scope {
   id: root

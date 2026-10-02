@@ -1,0 +1,5 @@
+module ui.controls
+ExpandableReadout 1.0 ExpandableReadout.qml
+ShellButton 1.0 ShellButton.qml
+ShellTooltip 1.0 ShellTooltip.qml
+ToggleIndicator 1.0 ToggleIndicator.qml

@@ -1,0 +1,5 @@
+module bar
+BarState 1.0 BarState.qml
+BarWindow 1.0 BarWindow.qml
+PanelHost 1.0 PanelHost.qml
+SystemMonitor 1.0 SystemMonitor.qml

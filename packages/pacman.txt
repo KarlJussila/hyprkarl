@@ -16,7 +16,6 @@ gpu-screen-recorder
 grim
 gum
 hypridle
-hyprlock
 hyprpaper
 hyprpicker
 hyprshot

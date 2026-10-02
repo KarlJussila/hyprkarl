@@ -103,14 +103,13 @@ completes successfully. Individual update commands do not emit that event.
   Show the shared Quickshell application picker for opening a file. Its custom
   switch optionally makes the selected application the default for the file's
   MIME type before launching it.
-- `hk-lock`
-  Launch `hyprlock` if it is not already running and wait until its Wayland
-  surface is present before returning.
+- `hk-lock [--suspend]`
+  Lock the session. `--suspend` also suspends after locking.
 
 ### Power
 
 - `hk-suspend`
-  Lock the session with `hk-lock`, then `systemctl suspend`.
+  Lock the session and suspend.
 - `hk-reboot`
   Reboot through `hyprshutdown` with the standard countdown overlay.
 - `hk-shutdown`

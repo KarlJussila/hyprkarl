@@ -40,7 +40,7 @@ position in the menu. Submenu back-navigation restores the same state. Open
 any menu directly with `hk-shell menu open <menu-id>`.
 
 The shipped hierarchy lives in `defaults/menu.json`. Add, reorder, rename, or
-hide entries without editing that default by creating `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/menu.json`; see
+hide entries without editing that default by creating `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json`; see
 [Menu Configuration](menu-configuration.md).
 
 ## Common Keybindings

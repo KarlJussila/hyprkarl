@@ -1,0 +1,8 @@
+module ui.panels
+PanelAction 1.0 PanelAction.qml
+PanelHeader 1.0 PanelHeader.qml
+PanelHeaderButton 1.0 PanelHeaderButton.qml
+PanelLayout 1.0 PanelLayout.qml
+PanelRow 1.0 PanelRow.qml
+PanelSectionLabel 1.0 PanelSectionLabel.qml
+PanelSlider 1.0 PanelSlider.qml

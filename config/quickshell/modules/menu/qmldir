@@ -1,0 +1,4 @@
+module modules.menu
+MenuEntry 1.0 MenuEntry.qml
+singleton MenuState 1.0 MenuState.qml
+MenuWindow 1.0 MenuWindow.qml

@@ -1,46 +1,80 @@
-# Authentication Surfaces
+# Authentication surfaces
 
-Hyprkarl uses `hyprlock` for session locking and a shell-native Quickshell
-agent for polkit privilege prompts. The two surfaces have different security
-and lifecycle requirements and are not hidden behind one generic
-authentication controller.
+Quickshell provides session locking and polkit prompts. The lock feature lives
+under `config/quickshell/modules/lock/` and shares the shell's theme and
+components. `hk-lock` starts its `lock.qml` entry point in an independent
+process, so restarting the bar preserves an active lock.
 
-This document records the capability decision for the currently installed
-Quickshell 0.3.0-2.1 and Qt 6.11.1 baseline. It was checked against the exact
-[v0.3.0 source](https://git.outfoxxed.me/quickshell/quickshell/src/tag/v0.3.0)
-and the upstream
-[post-release changelog](https://git.outfoxxed.me/quickshell/quickshell/src/branch/master/changelog/next.md).
+## Locking and authentication
 
-## Decision Summary
+`hk-lock` locks the session; `hk-suspend` locks and suspends. Repeated lock calls
+reuse the existing process. Suspension waits for the compositor to confirm
+secure locking. Password and fingerprint authentication run independently,
+so password entry remains available while the reader scans or recovers.
 
-- Keep the completed polkit prompt in the existing long-running shell process.
-  Quickshell 0.3.0 includes the required `PolkitAgent` and `AuthFlow` APIs;
-  `hyprpolkitagent` is no longer started or installed.
-- Keep `hyprlock` as the production lock screen. Although this build
-  exposes `WlSessionLock`, its release does not include later upstream fixes
-  for session-lock crashes around sleep, wake, DPMS, and unlocking.
-- Re-audit the lock screen after Hyprkarl admits a Quickshell release carrying
-  those fixes. Do not reproduce the missing protocol or authentication
-  behavior locally.
-- Keep lock and polkit state independent. They happen to request credentials,
-  but they have different protocol owners, windows, cancellation behavior,
-  and failure consequences.
+Fingerprint enrollment is detected automatically using `hk-fingerprint list`.
+Without enrollment, fingerprint authentication and its icon are disabled.
+A default install does not include fprintd. Use `hk-fingerprint setup`, then
+`hk-fingerprint enroll <finger-name>` to enable it.
 
-## Current Ownership
+Scanning stops before sleep and starts fresh on resume. Ordinary locking
+starts scanning once enrollment and secure locking are confirmed. Mismatches
+retry after the configured delay; reader errors retry with increasing delays
+from one to ten seconds.
 
-| Concern | Current owner | Replacement decision |
+Submitted password dots dim during verification. A rejected password clears
+them and briefly shakes the field with a red border. Fingerprint failures
+briefly shake and tint its icon. Successful authentication finishes the unlock
+animation before releasing the lock. Escape clears the password attempt.
+
+The implementation uses Quickshell 0.3.1's `WlSessionLock` and `PamContext`.
+Quickshell and Hyprland own secure output coverage. If the lock process crashes,
+Hyprland retains the lock; recovery then requires access outside the locked
+session. Read diagnostics with:
+
+```bash
+qs -p "$HYPRKARL_PATH/config/quickshell/lock.qml" log
+```
+
+## Personal lock configuration
+
+Lock behavior uses the `lock` object in
+`~/.config/quickshell/settings/shell.json`:
+
+| Key | Default | Purpose |
 | --- | --- | --- |
-| Secure Wayland session lock | `hyprlock`, launched by `hk-lock` | Retain |
-| Idle and suspend lock requests | `hypridle` through `hk-lock` | Retain |
-| Password and fingerprint unlock | `hyprlock` plus PAM/fprintd | Retain |
-| Polkit agent registration and prompts | Quickshell `features/polkit/` | Complete |
+| `fingerprintEnabled` | `null` | Detect enrollment automatically; `false` disables scanning and its icon; `true` forces scanning |
+| `fingerprintRetryDelay` | `200` | Milliseconds between retries after mismatches or exhausted attempts |
 
-The inactive `hypridle` service is normal while the caffeine toggle is on; it
-does not change these ownership boundaries.
+For example, disable fingerprint authentication with:
+
+```json
+{"version": 1, "lock": {"fingerprintEnabled": false}}
+```
+
+Edit native PAM policies directly in `~/.config/quickshell/pam/`:
+
+- `password` starts with `auth include system-auth`.
+- `fingerprint` starts with `auth required pam_fprintd.so`.
+
+Setup seeds these files once. Updates preserve edits and deliberate deletion.
+PAM edits affect new authentication attempts. PAM requires service files, so these policies
+remain files rather than QML strings or additional JSON settings.
+
+Appearance belongs in personal theme sources under `shell.lock`. Available
+values are `width`, `padding`, `spacing`, `radius`, `inputHeight`, `inputFontSize`,
+`clockFontSize`, `dateFontSize`, `dimOpacity`, `clockFormat`, `dateFormat`,
+`transitionDuration`, `fadeDuration`, `failureDuration`, `fingerprintSize`, and
+`fingerprintCompleteDuration`. Run `hk-theme set <name>` to apply theme changes.
+
+A complete personal lock configuration can set `HYPRKARL_LOCK_SOURCE` in
+`~/.config/uwsm/env.local` to its QML entry file or directory. To support
+`hk-suspend`, it must implement `lock suspend` IPC and wait for secure locking
+before suspending. Session environment changes require a new session.
 
 ## Polkit Design
 
-The root `shell.qml` retains exactly one `PolkitState` singleton. That object
+`desktop/Desktop.qml` retains exactly one `PolkitState` singleton. That object
 owns Quickshell's single `PolkitAgent`, while `PolkitWindow.qml` owns one
 presentation surface per output and activates only the focused output chosen
 when the request begins. Do not put polkit into the feature-panel host:
@@ -93,54 +127,3 @@ them when those PAM and account states are available on the test machine.
 Running both agents is not supported because only one session agent can own
 the polkit registration. An already-installed `hyprpolkitagent` package is
 harmless after its user service is disabled; the normal update flow removes it.
-
-## Lock-Screen Capability and Deferral
-
-The installed build does expose the right basic primitives:
-
-- `WlSessionLock` requests the secure `ext-session-lock-v1` protocol, reports
-  when the compositor confirms the secure state, and creates one
-  `WlSessionLockSurface` per output.
-- `PamContext` supports an asynchronous PAM conversation, custom PAM files,
-  hidden or visible responses, status messages, abort, and completion.
-- `WlSessionLock` is reload-aware and its source accounts for output changes.
-
-Those APIs are sufficient in shape, but not yet in release stability. The
-upstream post-0.3.0 changelog records fixes for session-lock crashes during
-sleep, wake, DPMS, and unlocking, as well as a crash when reading a lock
-surface's visibility before its backing surface exists. Those fixes are not
-part of Hyprkarl's installed 0.3.0-2.1 contract.
-
-That is a release boundary, not an invitation to add Hyprkarl workarounds.
-`hyprlock`, `hk-lock`, the `hypridle` lock path, the package, and the existing
-theme output stay in place until the fixed Quickshell version is admitted.
-
-When the version boundary is revisited, the preferred ownership is a small,
-short-lived Quickshell lock process launched by `hk-lock`, separate from the
-long-running desktop shell. A secure lock has a deliberately harsher process
-lifecycle: if its client exits without unlocking, the compositor stays locked
-with no interactive surface. Isolating it prevents an unrelated bar restart
-or shell failure from becoming a lock-screen recovery problem. It may import
-the shared semantic theme, but it should not instantiate bar services or
-depend on the main shell's IPC.
-
-One lock-process context owns authentication and shares it across the
-per-output surfaces. Password and fingerprint authentication must remain
-available in either order; do not force the user to wait for a fingerprint
-timeout before entering a password. The exact PAM composition should be
-verified against the admitted release before implementation rather than
-encoded against the current unstable lock lifecycle.
-
-The later acceptance pass must cover:
-
-- wrong and correct passwords;
-- fingerprint success, failure, retry, and password use while fingerprint
-  authentication is available;
-- monitor add/remove while locked;
-- DPMS off/on;
-- suspend and resume;
-- unlock and immediate relock;
-- a safe failed launch that leaves `hk-lock` reporting failure; and
-- the compositor's secure fallback if the lock process crashes.
-
-Only after that pass should Hyprkarl remove `hyprlock` or its theme artifacts.

@@ -1,0 +1,3 @@
+module modules.audio
+AudioLevel 1.0 AudioLevel.qml
+AudioPanel 1.0 AudioPanel.qml

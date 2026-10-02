@@ -6,7 +6,7 @@ import Quickshell
 QtObject {
   readonly property string configHome: Quickshell.env("XDG_CONFIG_HOME")
     ?? Quickshell.env("HOME") + "/.config"
-  readonly property string userRoot: configHome + "/hyprkarl"
+  readonly property string userRoot: configHome + "/quickshell"
 
   function userPath(path: string): string {
     return userRoot + "/" + path

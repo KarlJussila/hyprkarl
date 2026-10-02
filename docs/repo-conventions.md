@@ -1,7 +1,8 @@
 # Repo Conventions
 
-This page covers Hyprkarl’s general editing conventions beyond the command
-script guidelines in [Command Script Style](shell-style.md).
+This guide is for contributors changing Hyprkarl's shipped code, defaults, or
+installation behavior in the checkout. For personal configuration and
+extensions, use [Extending Hyprkarl](extending-hyprkarl.md).
 
 ## Readability First
 
@@ -109,9 +110,10 @@ migration in XDG state. Updates never replace them or recreate files the user
 later removes.
 
 Files under `defaults/` are read directly from the checkout by stable entry
-points. Personal configuration is read from
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`; it is never stowed or owned by
-a Git branch.
+points. Personal configuration is read from the application's own directory
+or `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, as documented in
+[Configuration Map](configuration-map.md). It is never stowed or owned by a
+Git branch.
 
 - editing an existing non-ignored tracked entry point needs no extra step
 - editing an ignored seed changes only future migrations and installs
@@ -123,8 +125,16 @@ a Git branch.
 `setup-dotfiles.sh` is the initial-setup wrapper around the same configuration
 apply command. Use `hk-update apply` directly during normal maintenance.
 
-## Related Docs
+For a new application integration, use its native configuration mechanism.
+When includes work, a small tracked bootstrap can load generated theme data,
+shipped defaults, and personal settings last. Otherwise, provide a starting
+config copied once by `hk-user-migrate` and ignored by Stow. Add the seed
+migration explicitly; adding a file under `config/` alone does not create a
+user-owned copy.
 
-- [Command Script Style](shell-style.md)
-- [Configuration Map](configuration-map.md)
-- [Extending Hyprkarl](extending-hyprkarl.md)
+## Contributor guides
+
+- [Command script style](shell-style.md) for shipped commands and dispatchers
+- [Quickshell project guide](../config/quickshell/README.md) for shell code
+- [Theme compiler guide](../theme-generator/README.md) for generated consumers
+- [Tests](../tests/README.md) for validation

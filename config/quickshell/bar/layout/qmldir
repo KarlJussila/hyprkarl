@@ -1,0 +1,6 @@
+module bar.layout
+BarLayout 1.0 BarLayout.qml
+CenterIsland 1.0 CenterIsland.qml
+Island 1.0 Island.qml
+IslandSurface 1.0 IslandSurface.qml
+WidgetGroup 1.0 WidgetGroup.qml

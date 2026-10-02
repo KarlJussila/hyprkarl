@@ -2,7 +2,7 @@
 # hk-shell-osd
 # Show transient shell status through the public OSD IPC target.
 
-SHELL_CONFIG="$HYPRKARL_PATH/config/quickshell"
+SHELL_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell"
 
 case "${1:-}" in
   volume) exec qs -p "$SHELL_CONFIG" ipc call osd volume "$2" "${3:-false}" ;;

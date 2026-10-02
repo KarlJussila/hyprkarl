@@ -27,12 +27,8 @@ QtObject {
   property IpcHandler ipc: IpcHandler {
     target: "wallpaper"
 
-    function open(action: string): bool {
-      return root.openForScreen(OverlayState.focusedScreenName(), action)
-    }
-
-    function openForScreen(screen: string, action: string): bool {
-      return root.openForScreen(screen, action)
+    function open(output: string, action: string): bool {
+      return root.openForScreen(output || OverlayState.focusedScreenName(), action)
     }
 
     function close(): void {

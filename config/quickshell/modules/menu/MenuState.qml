@@ -28,7 +28,7 @@ QtObject {
   property var sourceHistory: []
 
   property JsonSettings config: JsonSettings {
-    defaultPath: Quickshell.shellPath("../../defaults/menu.json")
+    defaultPath: Paths.defaultsRoot + "/menu.json"
     personalPath: Paths.userPath("settings/menu.json")
   }
   readonly property var menus: config.values.menus
@@ -37,20 +37,12 @@ QtObject {
   property IpcHandler ipc: IpcHandler {
     target: "menu"
 
-    function toggle(menu: string): bool {
-      return root.toggleOnFocusedScreen(menu)
+    function open(output: string, menu: string): bool {
+      return root.openForScreen(output || OverlayState.focusedScreenName(), menu)
     }
 
-    function open(menu: string): bool {
-      return root.openOnFocusedScreen(menu)
-    }
-
-    function openForScreen(screen: string, menu: string): bool {
-      return root.openForScreen(screen, menu)
-    }
-
-    function toggleForScreen(screen: string, menu: string): bool {
-      return root.toggleForScreen(screen, menu)
+    function toggle(output: string, menu: string): bool {
+      return root.toggleForScreen(output || OverlayState.focusedScreenName(), menu)
     }
 
     function close(): void {
@@ -163,10 +155,6 @@ QtObject {
     return enterMenu(name, [menu], menu)
   }
 
-  function openOnFocusedScreen(menu: string): bool {
-    return openForScreen(OverlayState.focusedScreenName(), menu)
-  }
-
   function toggleForScreen(name: string, menu: string): bool {
     if (sourceLoading && sourceScreenName === name && sourceMenuId === menu) {
       close()
@@ -177,10 +165,6 @@ QtObject {
       return true
     }
     return openForScreen(name, menu)
-  }
-
-  function toggleOnFocusedScreen(menu: string): bool {
-    return toggleForScreen(OverlayState.focusedScreenName(), menu)
   }
 
   function close(): void {

@@ -2,4 +2,4 @@
 # hk-lock
 # Lock the session with the Quickshell locker.
 
-exec qs --no-duplicate --daemonize -p "${HYPRKARL_LOCK_SOURCE:-$HYPRKARL_PATH/config/quickshell/lock.qml}"
+exec qs --no-duplicate --daemonize -p "${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/lock.qml"

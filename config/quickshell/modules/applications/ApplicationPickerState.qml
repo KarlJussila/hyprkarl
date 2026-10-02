@@ -56,20 +56,13 @@ QtObject {
   property IpcHandler launcherIpc: IpcHandler {
     target: "launcher"
 
-    function open(): bool {
-      return root.openLauncher(OverlayState.focusedScreenName())
+    // An empty output means the focused one.
+    function open(output: string): bool {
+      return root.openLauncher(output || OverlayState.focusedScreenName())
     }
 
-    function openForScreen(screen: string): bool {
-      return root.openLauncher(screen)
-    }
-
-    function toggle(): bool {
-      return root.toggleLauncher(OverlayState.focusedScreenName())
-    }
-
-    function toggleForScreen(screen: string): bool {
-      return root.toggleLauncher(screen)
+    function toggle(output: string): bool {
+      return root.toggleLauncher(output || OverlayState.focusedScreenName())
     }
 
     function close(): void {
@@ -80,12 +73,8 @@ QtObject {
   property IpcHandler openWithIpc: IpcHandler {
     target: "openWith"
 
-    function open(path: string): bool {
-      return root.openFile(OverlayState.focusedScreenName(), path)
-    }
-
-    function openForScreen(screen: string, path: string): bool {
-      return root.openFile(screen, path)
+    function open(output: string, path: string): bool {
+      return root.openFile(output || OverlayState.focusedScreenName(), path)
     }
 
     function close(): void {

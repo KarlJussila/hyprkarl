@@ -9,11 +9,11 @@ case "$mode" in
 esac
 
 restore_panel_focus() {
-  qs -p "$HYPRKARL_PATH/config/quickshell" ipc call screenshot finish >/dev/null 2>&1
+  qs -p "${XDG_CONFIG_HOME:-$HOME/.config}/quickshell" ipc call screenshot finish >/dev/null 2>&1
 }
 
 # Hyprshot's selection layer clears Quickshell's focus grab, which normally
 # dismisses an open panel. Release the grab first and restore it after capture.
-qs -p "$HYPRKARL_PATH/config/quickshell" ipc call screenshot begin >/dev/null 2>&1
+qs -p "${XDG_CONFIG_HOME:-$HOME/.config}/quickshell" ipc call screenshot begin >/dev/null 2>&1
 trap restore_panel_focus EXIT
 hyprshot -m "$mode" "$@"

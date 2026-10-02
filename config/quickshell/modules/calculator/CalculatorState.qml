@@ -17,20 +17,12 @@ QtObject {
   property IpcHandler ipc: IpcHandler {
     target: "calculator"
 
-    function open(): bool {
-      return OverlayState.replaceFocused(root.surface, {})
+    function open(output: string): bool {
+      return OverlayState.replace(root.surface, output || OverlayState.focusedScreenName(), {})
     }
 
-    function openForScreen(screen: string): bool {
-      return OverlayState.replace(root.surface, screen, {})
-    }
-
-    function toggle(): bool {
-      return OverlayState.toggleFocused(root.surface)
-    }
-
-    function toggleForScreen(screen: string): bool {
-      return OverlayState.toggle(root.surface, screen, {})
+    function toggle(output: string): bool {
+      return OverlayState.toggle(root.surface, output || OverlayState.focusedScreenName(), {})
     }
 
     function close(): void {

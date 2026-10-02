@@ -2,7 +2,7 @@ import QtQml
 import Quickshell
 
 JsonSettings {
-  defaultPath: Quickshell.shellPath("../../defaults/shell.json")
+  defaultPath: Paths.defaultsRoot + "/shell.json"
   personalPath: Paths.userPath("settings/shell.json")
 
   readonly property var bar: values.bar

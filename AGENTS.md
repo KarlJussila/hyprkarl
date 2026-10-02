@@ -122,8 +122,9 @@ notifications, OSD, polkit prompt, and lock screen. `shell.qml` starts the
 desktop; `lock.qml` runs the lock screen as a separate process. Behavior comes
 from `defaults/shell.json` and `defaults/menu.json` with the user's files in
 `~/.config/quickshell/settings/` merged over them; appearance comes from the
-theme. Read `config/quickshell/AGENTS.md` before changing it, and use
-`hk-shell` to start, restart, or read its logs.
+theme. It runs from `~/.config/quickshell/`, where Stow links it, so personal
+QML can import and replace any part. Read `config/quickshell/AGENTS.md` before
+changing it, and use `hk-shell` to start, restart, or read its logs.
 
 ### Commands
 

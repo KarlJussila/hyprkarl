@@ -3,7 +3,7 @@
 # Read logs from the newest Hyprkarl Quickshell instance.
 
 if [[ $# -eq 0 ]]; then
-  exec qs log -p "$HYPRKARL_PATH/config/quickshell" -n -t 200
+  exec qs log -p "${XDG_CONFIG_HOME:-$HOME/.config}/quickshell" -n -t 200
 fi
 
-exec qs log -p "$HYPRKARL_PATH/config/quickshell" -n "$@"
+exec qs log -p "${XDG_CONFIG_HOME:-$HOME/.config}/quickshell" -n "$@"

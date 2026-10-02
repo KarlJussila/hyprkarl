@@ -38,6 +38,20 @@ The `modules` switches are read once at startup; changing them needs
 timers, processes, or IPC targets. Disabling one does not rewrite the
 keybindings or menu entries that point at it.
 
+## Replaceability
+
+The shell runs from `~/.config/quickshell/`, where Stow links these files next
+to the user's `settings/` and `custom/`, so personal QML can import any of it.
+The pitch is that a user can switch off, replace, or extend any built-in
+without touching Hyprkarl's files. Two decisions keep that true:
+
+- Keybindings, menus, and commands reach a module only through its IPC target.
+  The target names and method signatures are public: a user replacement
+  declares the same target. Changing one is a breaking change; document it in
+  the changelog and `docs/extending-hyprkarl.md`.
+- Methods that open something take the output name first, empty meaning the
+  focused output, so there is one method per action.
+
 `Theme.qml` reads `current/theme/quickshell.json` from XDG state. The compiler's
 `theme-generator/defaults/theme.yaml` supplies every value, so consumers read
 groups directly (`theme.panel.padding`, `theme.palette.accent`) and new values

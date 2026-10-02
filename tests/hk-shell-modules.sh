@@ -22,7 +22,7 @@ fail() {
 
 start_shell() {
   XDG_CONFIG_HOME="$CONFIG_HOME" XDG_STATE_HOME="$STATE_HOME" \
-    QML_IMPORT_PATH="$SHELL_ROOT" \
+    HYPRKARL_PATH="$TEST_ROOT/repo" QML_IMPORT_PATH="$SHELL_ROOT" \
     qs -d -p "$SHELL_ROOT" --no-color \
     || fail "Quickshell did not start"
 

@@ -26,7 +26,7 @@ If the lock process crashes, Hyprland keeps the session locked; recovery then
 needs access from outside the session. Read diagnostics with:
 
 ```bash
-qs -p "$HYPRKARL_PATH/config/quickshell/lock.qml" log
+qs -p ~/.config/quickshell/lock.qml log
 ```
 
 ## Customizing the lock
@@ -42,9 +42,11 @@ uses `config/quickshell/modules/lock/pam/fingerprint`, which runs only
 `pam_fprintd`. PAM resolves includes inside a custom directory, so that file
 cannot include `/etc/pam.d` stacks.
 
-To replace the lock entirely, set `HYPRKARL_LOCK_SOURCE` in
-`~/.config/uwsm/env.local` to your own QML entry file. Session environment
-changes need a new session.
+To replace the lock entirely, put your own `hk-lock` in `~/.local/bin/`; see
+[Replace a built-in](extending-hyprkarl.md#replace-a-built-in). Keybindings and
+Hypridle call `hk-lock`, so they use yours. A Quickshell lock can reuse the
+shipped authentication by importing `modules/lock` from
+`~/.config/quickshell/`.
 
 ## Polkit Design
 

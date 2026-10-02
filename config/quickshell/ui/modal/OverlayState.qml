@@ -59,20 +59,12 @@ QtObject {
     return open(surface, focusedScreenName(), {})
   }
 
-  function replaceFocused(surface: string, nextParameters: var): bool {
-    return replace(surface, focusedScreenName(), nextParameters)
-  }
-
   function toggle(surface: string, screen: string, nextParameters: var): bool {
     if (activeSurface === surface && screenName === screen) {
       close(surface)
       return true
     }
     return replace(surface, screen, nextParameters)
-  }
-
-  function toggleFocused(surface: string): bool {
-    return toggle(surface, focusedScreenName(), {})
   }
 
   function close(surface: string): void {

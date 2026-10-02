@@ -1,7 +1,7 @@
 #!/bin/bash
 # Shared Quickshell instance selection for hk-shell commands.
 
-HK_SHELL_CONFIG="$HYPRKARL_PATH/config/quickshell"
+HK_SHELL_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell"
 
 hk_shell_instances() {
   local instances

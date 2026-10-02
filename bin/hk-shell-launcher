@@ -1,10 +1,10 @@
 #!/bin/bash
 # hk-shell-launcher
-# Control the shell-native application launcher.
+# Control the shell-native application launcher. It opens on the output in
+# HYPRKARL_OUTPUT (set by bar clicks), or the focused one.
 
 action=${1:-toggle}
 if [[ "$action" == "close" ]]; then
-  exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call launcher close
+  exec qs -p "${XDG_CONFIG_HOME:-$HOME/.config}/quickshell" ipc call launcher close
 fi
-
-exec qs -p "$HYPRKARL_PATH/config/quickshell" ipc call launcher "$action"
+exec qs -p "${XDG_CONFIG_HOME:-$HOME/.config}/quickshell" ipc call launcher "$action" "${HYPRKARL_OUTPUT:-}"

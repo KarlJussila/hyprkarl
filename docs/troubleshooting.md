@@ -115,7 +115,7 @@ hk-shell restart
 
 `hk-shell start` prints a QML load error when Quickshell fails before
 registering the instance. For foreground development, stop the managed
-instance and run `qs -p "$HYPRKARL_PATH/config/quickshell"` in a terminal.
+instance and run `qs -p ~/.config/quickshell` in a terminal.
 If a user override caused the problem, correct it or remove
 `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`. A file that does not parse leaves the
 shipped defaults running and logs the error.

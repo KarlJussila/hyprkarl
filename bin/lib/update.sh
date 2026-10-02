@@ -6,9 +6,8 @@ export HYPRKARL_PATH="${HYPRKARL_PATH:-$HOME/.local/share/hyprkarl}"
 UPDATE_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/update"
 UPDATE_CONFIGURATION_REVISION="$UPDATE_STATE_DIR/configuration.revision"
 UPDATE_PENDING_SOURCE="$UPDATE_STATE_DIR/pending-source.revision"
-UPDATE_SHELL_RESTART_MARKER="$UPDATE_STATE_DIR/restart-shell-after-apply"
 UPDATE_PACKAGE_STATE="$UPDATE_STATE_DIR/packages.json"
-UPDATE_SYSTEM_MIGRATION_DIR="$UPDATE_STATE_DIR/system-migrations"
+UPDATE_MIGRATION_DIR="$UPDATE_STATE_DIR/migrations"
 UPDATE_LIB_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$UPDATE_LIB_DIR/theme.sh"
 
@@ -44,6 +43,19 @@ update_write_pending_source() {
 
 update_clear_pending_source() {
   rm -f "$UPDATE_PENDING_SOURCE"
+}
+
+# --- migrations ---
+
+# Migrations are numbered executables in migrations/, run once per machine.
+update_pending_migrations() {
+  local migration
+
+  for migration in "$HYPRKARL_PATH/migrations"/*; do
+    if [[ -f "$migration" ]] && [[ ! -e "$UPDATE_MIGRATION_DIR/${migration##*/}" ]]; then
+      printf '%s\n' "$migration"
+    fi
+  done
 }
 
 # --- canonical source ---

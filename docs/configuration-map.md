@@ -20,9 +20,9 @@ would edit.
 - `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/`
   Personal QML composition roots, widgets, and icon drawings
 - `packages/`
-  Package lists read by `setup-packages.sh` and `hk-update packages`
-- `system/migrations/`
-  Ordered one-time system changes run by setup and `hk-update system`
+  Package lists read by `hk-update packages`
+- `migrations/`
+  Numbered one-time changes that `hk-update apply` runs once per machine
 - `themes/`
   Shipped theme sources, overrides, wallpapers, icons, and previews
 - `theme-generator/`
@@ -61,16 +61,12 @@ Update records live under
 - `configuration.revision`
   Checkout revision whose configuration last completed the apply workflow
 - `packages.json`
-  Atomic snapshots of applied requirements and removal changes already reviewed
-- `restart-shell-after-apply`
-  Temporary restart intent retained when a source transition leaves Quickshell
-  stopped until configuration application succeeds
-- `system-migrations/<migration-id>`
-  Completion markers written one at a time after successful system migrations
+  Package lists as last applied, and removal changes already reviewed
+- `migrations/<migration-id>`
+  One file per migration that has run on this machine
 
 These files describe this installation. They are not configuration or generated
-source. Legacy commit markers under `config/hyprkarl/update/` are imported into
-this state during the first run of the corresponding new command.
+source.
 
 Personal executable lifecycle hooks live under
 `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/`. Hyprkarl supports `post-boot`, `post-update`,

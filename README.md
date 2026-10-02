@@ -40,12 +40,12 @@ Clone into `~/.local/share/` and run the setup script:
 ```bash
 git clone --depth=1 https://github.com/KarlJussila/hyprkarl.git ~/.local/share/hyprkarl
 cd ~/.local/share/hyprkarl
-./setup-all.sh
+./install.sh
 ```
 
 > **Note:** CachyOS's Hyprland edition now ships the Noctalia shell
 > (`cachyos-hypr-noctalia`) by default, which conflicts with hyprkarl.
-> `setup-all.sh` runs `setup-purge-noctalia.sh` first to remove it, backing up
+> `install.sh` runs `setup-purge-noctalia.sh` first to remove it, backing up
 > the configs it removes. It does nothing if Noctalia isn't installed.
 
 > **Warning:** If you already have configs you care about in `~/.config/` or
@@ -59,7 +59,7 @@ cd ~/.local/share/hyprkarl
 ~/.local/share/hyprkarl/uninstall.sh
 ```
 
-Removes all of Hyprkarl's config symlinks (reversing `setup-dotfiles.sh`).
+Removes all of Hyprkarl's config symlinks.
 User-owned application configs, installed packages, and completed system
 migration changes are left in place; the script lists what you may want to
 remove or undo manually.
@@ -299,8 +299,7 @@ Routine personalization lives outside the checkout under
 Git branch. Create a fork branch only when changing Hyprkarl's shipped code or
 defaults. Routine upstream updates do not edit personal files.
 
-Run `hk-update all` to review an exact upstream revision, apply it, review
-package removals once, and run pending system migrations. For the full workflow
-and the role of the initial setup wrappers, see
+Run `hk-update all` to review incoming changes and apply them: packages,
+one-time migrations, configuration, and theme. For the full workflow, see
 [docs/getting-started.md](docs/getting-started.md) and
 [docs/updating.md](docs/updating.md).

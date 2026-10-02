@@ -6,15 +6,14 @@ This page covers common Hyprkarl setup and runtime problems.
 
 Symptoms:
 
-- `setup-dotfiles.sh` or `hk-update apply` stops before restowing
-- the error lists paths under `~/.config/`,
-  `~/.local/share/applications/`, or the GTK theme destination
+- `install.sh` or `hk-update apply` stops before restowing
+- the error lists paths under `~/.config/` or
+  `~/.local/share/applications/`
 
 Cause:
 
 - a real file or unrelated link occupies a path reserved for a shipped
   Hyprkarl entry point
-- the GTK theme destination exists but is not a Hyprkarl-managed payload
 
 What to do:
 
@@ -151,7 +150,7 @@ Cause:
 
 What to do:
 
-- log out and back in, or reboot, after the Docker system migration changes
+- log out and back in, or reboot, after the Docker migration changes
   group membership
 - confirm that `id -nG "$USER"` includes `docker`
 - confirm that `docker ps` prints a container table, even if it is empty

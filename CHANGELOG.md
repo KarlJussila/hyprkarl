@@ -74,11 +74,14 @@ before `3df882e`) have no automatic upgrade. Follow
 
 - Breaking: `hk-update sync` fetches and shows incoming commits, then records
   the revision you reviewed; `hk-update apply` moves to it, seeds new starting
-  configs, restows, rebuilds the theme, and restarts the shell. `hk-update
-  packages` reviews removed packages once, and `hk-update system` runs
-  numbered one-time migrations. The `tui` and `dotfiles` actions and their
+  configs, restows, rebuilds the theme, and restarts the shell. Within
+  `apply`, packages are installed and retired ones reviewed once, then
+  numbered one-time migrations run. The `tui` and `dotfiles` actions and their
   `--force` and `--adopt` flags are gone. Update state lives under
   `~/.local/state/hyprkarl/update/`.
+- Breaking: `install.sh` replaces `setup-all.sh` and the `setup-*.sh` scripts.
+  It bootstraps the updater and runs the same `hk-update apply` an update
+  does.
 
 ### Commands
 

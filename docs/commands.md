@@ -6,22 +6,21 @@ does not try to document every internal script.
 ## Update
 
 - `hk-update check`
-  Report pending reviewed source, configuration application, package changes,
-  and system migrations without changing them.
+  Report the staged revision, the last applied revision, package changes, and
+  pending migrations without changing anything.
 - `hk-update all`
-  Run `sync`, `apply`, `packages`, and `system` in order, then run personal
-  `post-update` hooks. The update menu launches this command in a terminal.
+  Run `sync`, then `apply`, then personal `post-update` hooks. The update menu
+  launches this command in a terminal.
 - `hk-update sync`
   Fetch the configured canonical remote and branch, show incoming commits and
   changed files, and pin one confirmed commit in XDG state. It does not move
   the live checkout.
 - `hk-update apply`
-  Fast-forward to a reviewed commit when one is pending, migrate personal
-  configuration, restow shipped entry points, remove stale links, rebuild the
-  selected theme and GTK payload, reload affected applications, and record
-  success. With no reviewed revision, reapply the current checkout even when
-  that revision was already recorded, which also repairs shipped links and
-  generated output.
+  Fast-forward to the staged revision, then install and review packages, run
+  pending migrations, copy new starting configs, restow, rebuild the theme,
+  and reload. Quickshell is stopped meanwhile and started again however apply
+  ends. With nothing staged, reapply the current checkout, which also repairs
+  links and generated output.
 - `hk-update remove-stale`
   Remove stale hyprkarl symlinks and empty directories from `~/.config/` and
   related directories without restowing. Useful when cleaning up after removing
@@ -29,9 +28,6 @@ does not try to document every internal script.
 - `hk-update packages`
   Present all newly retired packages in one multi-select review, record that
   removal change once, and install missing requirements.
-- `hk-update system`
-  Confirm and run pending files under `system/migrations/` in lexical order,
-  recording each successful migration in XDG state.
 - `hk-config-seed`
   Copy Hyprkarl's starting config for each application that has none of its
   files yet, and create missing personal include files such as

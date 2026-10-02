@@ -78,18 +78,18 @@ git checkout -B main origin/main
 Hyprkarl updates from `main`. To follow `develop` instead, check it out and
 run `git config --local hyprkarl.updateBranch develop`.
 
-## 4. Run setup
+## 4. Run the installer
 
 ```bash
-./setup-all.sh
+./install.sh
 ```
 
 It installs the new packages and reviews the retired ones (AGS and its astal
 libraries, rofi, mako, hyprlock, hyprpolkitagent, and others) in one list.
-Then it copies starting configs, links the shipped ones, builds the theme, and
-starts the shell. Last, it reruns the one-time system migrations. They write
-the same files the old `setup-system.sh` did; `010-sddm-autologin` replaces
-`/etc/sddm.conf`, so reapply any personal edit to that file afterwards.
+Then it runs the one-time migrations, copies starting configs, links the
+shipped ones, and builds the theme. The migrations write the same files the
+old `setup-system.sh` did; `010-sddm-autologin` replaces `/etc/sddm.conf`, so
+reapply any personal edit to that file afterwards.
 
 ## 5. Restore personal files
 

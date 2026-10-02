@@ -94,8 +94,9 @@ record intact while retaining the reviewed source marker.
 
 The same harness exercises the single multi-select package-removal review,
 one-time acknowledgement for kept and failed removals, Escape cancellation
-without a state write, reinstall after a removal cascade, and ordered system
-migrations that resume after a failure.
+without a state write, reinstall after a removal cascade, and ordered
+migrations inside `apply` that resume after a failure. A failed apply still
+starts Quickshell again.
 
 ```bash
 tests/hk-update.sh

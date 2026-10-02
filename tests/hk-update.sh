@@ -122,6 +122,10 @@ run_isolated() {
   XDG_RUNTIME_DIR="$WORK/runtime" \
   GSETTINGS_BACKEND=memory \
   HYPRKARL_PATH="$CLONE" \
+  HK_TEST_INSTALLED="$WORK/installed-all" \
+  HK_TEST_INSTALL_LOG="$WORK/apply-installs.log" \
+  HK_TEST_REMOVE_LOG="$WORK/apply-removals.log" \
+  HK_TEST_GUM_LOG="$WORK/apply-gum.log" \
   PATH="$MOCKBIN:$ORIG/bin:$PATH" \
   "$@"
 }
@@ -136,6 +140,15 @@ setup_source_sandbox() {
   git -C "$CLONE" config hyprkarl.updateBranch "$branch"
   mkdir -p "$FAKEHOME/.config" "$FAKEHOME/.cache" \
     "$FAKEHOME/.local/state" "$FAKEHOME/.local/share/applications" "$WORK/runtime"
+
+  # Every required package is installed, and the shipped migrations already
+  # ran, so apply's package and migration steps touch nothing real.
+  sed 's/#.*//' "$CLONE/packages/pacman.txt" "$CLONE/packages/aur.txt" \
+    | tr -s ' \t' '\n' | grep . > "$WORK/installed-all"
+  mkdir -p "$FAKEHOME/.local/state/hyprkarl/update/migrations"
+  for migration in "$CLONE/migrations"/*; do
+    : > "$FAKEHOME/.local/state/hyprkarl/update/migrations/${migration##*/}"
+  done
 }
 
 test_source_and_theme_apply() {
@@ -206,18 +219,14 @@ test_source_and_theme_apply() {
       run_isolated "$ORIG/bin/hk-update-apply" >/dev/null 2>&1; then
     fail "invalid theme apply unexpectedly succeeded"
   fi
-  assert_equal "$(wc -l < "$shell_log")" "1" \
-    "failed apply restarted Quickshell on an incomplete source transition"
-  assert_equal "$(cut -d' ' -f1 "$shell_log")" "stop" \
-    "failed apply did not stop Quickshell before advancing source"
+  assert_equal "$(cut -d' ' -f1 "$shell_log" | paste -sd,)" "stop,start" \
+    "failed apply did not stop Quickshell and start it again"
   assert_equal "$(readlink "$FAKEHOME/.local/state/hyprkarl/current/theme")" "$old_selector" \
     "failed theme build replaced the active selector"
   assert_equal "$(cat "$FAKEHOME/.local/state/hyprkarl/update/configuration.revision")" "$old_applied" \
     "failed theme build recorded configuration success"
   assert_equal "$(cat "$FAKEHOME/.local/state/hyprkarl/update/pending-source.revision")" "$invalid_target" \
     "failed apply discarded its reviewed source marker"
-  [[ -e "$FAKEHOME/.local/state/hyprkarl/update/restart-shell-after-apply" ]] \
-    || fail "failed apply lost Quickshell restart intent"
 
   git -C "$CLONE" revert --no-edit "$invalid_target" >/dev/null \
     || fail "could not create repaired source revision"
@@ -225,13 +234,11 @@ test_source_and_theme_apply() {
   printf '%s\n' "$repaired_target" \
     > "$FAKEHOME/.local/state/hyprkarl/update/pending-source.revision"
   : > "$shell_log"
-  HK_TEST_SHELL_LOG="$shell_log" \
+  HK_TEST_SHELL_RUNNING=1 HK_TEST_SHELL_LOG="$shell_log" \
     run_isolated "$ORIG/bin/hk-update-apply" >/dev/null \
     || fail "repaired configuration retry failed"
-  assert_equal "$(cat "$shell_log")" "start $repaired_target" \
-    "successful retry did not restore the interrupted Quickshell session"
-  [[ ! -e "$FAKEHOME/.local/state/hyprkarl/update/restart-shell-after-apply" ]] \
-    || fail "successful retry did not clear Quickshell restart intent"
+  assert_equal "$(tail -n 1 "$shell_log")" "start $repaired_target" \
+    "successful retry did not start Quickshell from the repaired revision"
 }
 
 test_package_review() {
@@ -300,44 +307,40 @@ test_package_review() {
     "dependency removed by a package cascade was not reinstalled"
 }
 
-test_system_migrations() {
-  printf 'Testing ordered system migrations...\n'
-  migration_state="$WORK/migration-state"
+test_migrations() {
+  printf 'Testing ordered migrations during apply...\n'
   migration_log="$WORK/migrations.log"
-  rm -rf "$CLONE/system/migrations"
-  mkdir -p "$CLONE/system/migrations"
-  cat > "$CLONE/system/migrations/010-first" <<'EOF'
+  git -C "$CLONE" checkout -q packages
+  cat > "$CLONE/migrations/900-first" <<'EOF'
 #!/bin/bash
 printf 'first\n' >> "$HK_TEST_MIGRATION_LOG"
 EOF
-  cat > "$CLONE/system/migrations/020-second" <<'EOF'
+  cat > "$CLONE/migrations/910-second" <<'EOF'
 #!/bin/bash
 printf 'second\n' >> "$HK_TEST_MIGRATION_LOG"
 [[ "${HK_TEST_MIGRATION_FAIL:-0}" -eq 0 ]]
 EOF
-  chmod +x "$CLONE/system/migrations"/*
+  chmod +x "$CLONE/migrations"/9*
+  git -C "$CLONE" add migrations
+  git -C "$CLONE" commit -q -m "test: add migrations"
 
-  HOME="$FAKEHOME" XDG_STATE_HOME="$migration_state" HYPRKARL_PATH="$CLONE" \
-    HK_TEST_GUM_LOG="$gum_log" HK_TEST_MIGRATION_LOG="$migration_log" \
-    HK_TEST_MIGRATION_FAIL=1 PATH="$MOCKBIN:$ORIG/bin:$PATH" \
-    "$ORIG/bin/hk-update-system" >/dev/null 2>&1
-  assert_equal "$?" "1" "failed system migration did not fail the step"
-  [[ -e "$migration_state/hyprkarl/update/system-migrations/010-first" ]] \
-    || fail "successful migration was not recorded"
-  [[ ! -e "$migration_state/hyprkarl/update/system-migrations/020-second" ]] \
-    || fail "failed migration was recorded"
+  HK_TEST_MIGRATION_LOG="$migration_log" HK_TEST_MIGRATION_FAIL=1 \
+    run_isolated "$ORIG/bin/hk-update-apply" >/dev/null 2>&1
+  assert_equal "$?" "1" "a failed migration did not fail apply"
+  state="$FAKEHOME/.local/state/hyprkarl/update/migrations"
+  [[ -e "$state/900-first" ]] || fail "successful migration was not recorded"
+  [[ ! -e "$state/910-second" ]] || fail "failed migration was recorded"
 
-  HOME="$FAKEHOME" XDG_STATE_HOME="$migration_state" HYPRKARL_PATH="$CLONE" \
-    HK_TEST_GUM_LOG="$gum_log" HK_TEST_MIGRATION_LOG="$migration_log" \
-    PATH="$MOCKBIN:$ORIG/bin:$PATH" "$ORIG/bin/hk-update-system" >/dev/null \
-    || fail "system migration retry failed"
+  HK_TEST_MIGRATION_LOG="$migration_log" \
+    run_isolated "$ORIG/bin/hk-update-apply" >/dev/null \
+    || fail "apply did not resume after the migration was fixed"
   assert_equal "$(paste -sd, "$migration_log")" "first,second,second" \
-    "system migrations did not resume in order"
+    "migrations did not resume in order"
 }
 
 make_mock_commands
 setup_source_sandbox
 test_source_and_theme_apply
 test_package_review
-test_system_migrations
+test_migrations
 printf 'All update acceptance checks passed.\n'

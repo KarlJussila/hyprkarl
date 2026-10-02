@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-update-check
-# Report pending source, configuration, package, and system work. Read-only.
+# Report pending source, configuration, package, and migration work. Read-only.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"
@@ -67,15 +67,10 @@ elif [[ -z "$pacman_additions$aur_additions$removals" ]]; then
   printf '  Package declarations are up to date.\n'
 fi
 
-printf '\n=== System ===\n'
-system_pending=0
-for migration in "$HYPRKARL_PATH/system/migrations"/*; do
-  [[ -f "$migration" && -x "$migration" ]] || continue
-  id=$(basename "$migration")
-  if [[ -e "$UPDATE_SYSTEM_MIGRATION_DIR/$id" ]]; then
-    continue
-  fi
-  printf '  %s\n' "$id"
-  system_pending=1
-done
-[[ "$system_pending" -eq 0 ]] && printf '  System migrations are up to date.\n'
+printf '\n=== Migrations ===\n'
+mapfile -t migrations < <(update_pending_migrations)
+if [[ ${#migrations[@]} -eq 0 ]]; then
+  printf '  Migrations are up to date.\n'
+else
+  printf '  %s\n' "${migrations[@]##*/}"
+fi

@@ -45,10 +45,7 @@ than none.
 ## Setup Commands
 
 ```bash
-./setup-all.sh          # Full setup: packages, dotfiles, system config
-./setup-packages.sh     # Bootstrap and run the package update workflow
-./setup-dotfiles.sh     # Configure the update source and apply shipped configuration
-./setup-system.sh       # Run pending one-time system migrations
+./install.sh            # Install: bootstrap the updater, then run hk-update apply
 ./uninstall.sh          # Remove all config symlinks
 ```
 
@@ -66,7 +63,7 @@ it out in the changelog.
 
 ### Symlinks and starting configs
 
-`setup-dotfiles.sh` uses GNU Stow to link `config/` into `~/.config/` and
+`hk-update apply` uses GNU Stow to link `config/` into `~/.config/` and
 `applications/` into `~/.local/share/applications/`. `bin/` is put on `$PATH`
 by `config/uwsm/env`. Editing a stowed file edits the live config. Renaming or
 deleting one leaves a stale symlink, which `hk-update apply` (or
@@ -80,11 +77,12 @@ none of its files, and never overwrites an existing file. See
 ### Updates
 
 `hk-update sync` fetches and shows incoming commits and records the reviewed
-revision. `hk-update apply` fast-forwards to it, seeds starting configs,
-restows, rebuilds the theme, reloads consumers, and restarts the shell.
-`hk-update packages` and `hk-update system` handle package changes and the
-one-time scripts in `system/migrations/`. Machine update state lives under
-`~/.local/state/hyprkarl/update/`. See `docs/updating.md`.
+revision. `hk-update apply` fast-forwards to it, installs and reviews
+packages, runs pending scripts from `migrations/`, seeds starting configs,
+restows, rebuilds the theme, reloads consumers, and restarts the shell. The
+installer runs the same `apply`, so a fresh install and an update take one
+path. Machine update state lives under `~/.local/state/hyprkarl/update/`. See
+`docs/updating.md`; `docs/repo-conventions.md` covers writing a migration.
 
 ### Hyprland
 

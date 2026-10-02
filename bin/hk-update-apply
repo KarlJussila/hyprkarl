@@ -1,113 +1,86 @@
 #!/bin/bash
 # hk-update-apply
-# Advance to a reviewed source revision and apply shipped configuration.
+# Bring this machine to the reviewed source revision: packages, migrations,
+# starting configs, shipped links, theme, and reloads. With nothing reviewed,
+# reapply the current checkout.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"
 source "$SCRIPT_DIR/lib/shell.sh"
 
-restart_shell=0
-source_advanced=0
-inherited_restart=0
-
-if [[ -e "$UPDATE_SHELL_RESTART_MARKER" ]]; then
-  restart_shell=1
-  inherited_restart=1
-fi
-
-restore_shell() {
-  if [[ "$restart_shell" -eq 1 ]]; then
-    hk-shell start || return 1
-    rm -f "$UPDATE_SHELL_RESTART_MARKER"
-  fi
-}
-
-fail_apply() {
-  local message="$1"
-
-  printf '%s\n' "$message" >&2
-  if [[ "$restart_shell" -eq 1 ]] \
-      && { [[ "$source_advanced" -eq 1 ]] || [[ "$inherited_restart" -eq 1 ]]; }; then
-    printf 'Quickshell remains stopped because the reviewed source was advanced but configuration application did not finish.\n' >&2
-  else
-    restore_shell >/dev/null
-  fi
+fail() {
+  printf '%s\n' "$1" >&2
   exit 1
 }
-
-trap 'fail_apply "Configuration application interrupted."' INT TERM
 
 pending=$(update_read_pending_source)
 head=$(update_head_commit)
 
 if ! git -C "$HYPRKARL_PATH" diff --quiet \
     || ! git -C "$HYPRKARL_PATH" diff --cached --quiet; then
-  fail_apply "Tracked files in the Hyprkarl checkout have local changes. Commit or restore them before recording a configuration revision."
+  fail "Tracked files in the Hyprkarl checkout have local changes. Commit or restore them first."
 fi
 
 if [[ -n "$pending" ]] && [[ "$pending" != "$head" ]]; then
   branch=$(git -C "$HYPRKARL_PATH" branch --show-current)
   source_branch=$(update_source_branch)
   if [[ "$branch" != "$source_branch" ]]; then
-    fail_apply "The reviewed update targets '$source_branch', but this checkout is on '$branch'. Apply or merge it manually on this custom branch."
+    fail "The reviewed update targets '$source_branch', but this checkout is on '$branch'. Merge it manually on this custom branch."
   fi
   if ! update_commit_valid "$pending"; then
-    fail_apply "The reviewed source revision is no longer available. Run hk-update sync again."
+    fail "The reviewed source revision is no longer available. Run hk-update sync again."
   fi
   if ! git -C "$HYPRKARL_PATH" merge-base --is-ancestor HEAD "$pending"; then
-    fail_apply "The checkout and reviewed source have diverged. Review and merge the source manually."
+    fail "The checkout and reviewed source have diverged. Merge the source manually."
   fi
 fi
 
+# The shell runs from this checkout, so stop it while files change and start
+# it again however apply ends.
 if hk_shell_is_running; then
-  mkdir -p "$UPDATE_STATE_DIR" || exit 1
-  : > "$UPDATE_SHELL_RESTART_MARKER" || exit 1
   hk-shell stop || exit 1
-  restart_shell=1
-  inherited_restart=0
+  trap 'hk-shell start' EXIT
 fi
 
 if [[ -n "$pending" ]] && [[ "$pending" != "$head" ]]; then
-  if ! git -C "$HYPRKARL_PATH" merge --ff-only "$pending"; then
-    fail_apply "Could not fast-forward to the reviewed source revision."
-  fi
-  source_advanced=1
+  git -C "$HYPRKARL_PATH" merge --ff-only "$pending" \
+    || fail "Could not fast-forward to the reviewed source revision."
 fi
 
-"$HYPRKARL_PATH/bin/hk-config-seed" || fail_apply "Could not create starting configuration."
+# Packages first: a migration may configure a package this revision adds.
+hk-update-packages || fail "Package changes did not complete."
+
+mapfile -t migrations < <(update_pending_migrations)
+for migration in "${migrations[@]}"; do
+  printf 'Running migration %s...\n' "${migration##*/}"
+  "$migration" || fail "Migration ${migration##*/} failed; fix it and run hk-update apply again."
+  mkdir -p "$UPDATE_MIGRATION_DIR" && : > "$UPDATE_MIGRATION_DIR/${migration##*/}"
+done
+
+hk-config-seed || fail "Could not create starting configuration."
 
 conflicts=$(check_config_conflicts)
 if [[ -n "$conflicts" ]]; then
-  printf 'Cannot apply configuration because these paths are not managed by Hyprkarl:\n%s\n' "$conflicts" >&2
-  fail_apply "Move or rename the listed files, then run hk-update apply again."
+  printf 'These paths block Hyprkarl links:\n%s\n' "$conflicts" >&2
+  fail "Move or rename them, then run hk-update apply again."
 fi
 
 printf 'Rebuilding the selected theme...\n'
 theme_name=$(theme_current_name)
-theme_activate "${theme_name:-hyprkarl}" || fail_apply "Could not rebuild and apply the selected theme."
+theme_activate "${theme_name:-hyprkarl}" || fail "Could not rebuild the selected theme."
 
 printf 'Restowing shipped configuration...\n'
-stow_restow_config || fail_apply "Could not restow shipped configuration."
+stow_restow_config || fail "Could not restow shipped configuration."
 remove_stale_symlinks
 
-theme_ensure_wallpaper_selection \
-  || fail_apply "The theme was rebuilt, but its wallpaper selection could not be restored."
-hk-wallpaper-init --if-ready \
-  || fail_apply "The theme was rebuilt, but its live wallpaper could not be restored."
+theme_ensure_wallpaper_selection || fail "Could not restore the wallpaper selection."
+hk-wallpaper-init --if-ready || fail "Could not restore the live wallpaper."
 if pgrep -x Hyprland >/dev/null; then
-  hyprctl reload >/dev/null || fail_apply "Hyprland could not reload the applied configuration."
+  hyprctl reload >/dev/null || fail "Hyprland could not reload the applied configuration."
 fi
-hk-terminal-reload || fail_apply "Terminal configuration reload failed."
-hk-btop-reload || fail_apply "Btop configuration reload failed."
-if [[ "$restart_shell" -eq 1 ]]; then
-  if ! hk-shell start; then
-    restart_shell=0
-    fail_apply "Configuration was applied, but the Quickshell session could not restart."
-  fi
-  rm -f "$UPDATE_SHELL_RESTART_MARKER"
-  restart_shell=0
-fi
+hk-terminal-reload || fail "Terminal configuration reload failed."
+hk-btop-reload || fail "Btop configuration reload failed."
 
-update_write_configuration_revision || fail_apply "Configuration was applied, but its update state could not be recorded."
-update_clear_pending_source || fail_apply "Configuration was applied, but its pending source marker could not be cleared."
+update_write_configuration_revision || fail "Could not record the applied revision."
+update_clear_pending_source
 printf 'Configuration applied.\n'

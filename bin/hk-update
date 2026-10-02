@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-update
-# Review and apply Hyprkarl source, configuration, package, and system changes.
+# Review and apply Hyprkarl updates.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"
@@ -8,11 +8,10 @@ source "$SCRIPT_DIR/lib/update.sh"
 usage() {
   cat <<'EOF'
 Usage:
-  hk-update all           Review source, then apply every update category
-  hk-update sync          Fetch and stage one reviewed source revision
-  hk-update apply         Apply the reviewed source and shipped configuration
+  hk-update all           Review incoming changes, then apply them
+  hk-update sync          Fetch and review one source revision
+  hk-update apply         Apply it: packages, migrations, configuration, theme
   hk-update packages      Review removals and install new required packages
-  hk-update system        Run pending one-time system migrations
   hk-update check         Report pending work without changing anything
   hk-update remove-stale  Remove broken links into this checkout
 EOF
@@ -29,14 +28,12 @@ case "$action" in
     fi
     hk-update-sync || exit 1
     hk-update-apply || exit 1
-    hk-update-packages || exit 1
-    hk-update-system || exit 1
     if ! hk-hook-run post-update; then
       printf 'Update completed, but a post-update hook failed.\n' >&2
       exit 1
     fi
     ;;
-  sync|apply|packages|system|check|remove-stale)
+  sync|apply|packages|check|remove-stale)
     exec "hk-update-$action" "$@" ;;
   ""|-h|--help|help)
     usage

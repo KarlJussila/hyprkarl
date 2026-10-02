@@ -1,7 +1,7 @@
 #!/bin/bash
 # setup-purge-noctalia.sh
 # Removes the CachyOS Noctalia desktop shell and its leftover configs so
-# Hyprkarl installs onto a clean base. setup-all.sh runs it first; installing
+# Hyprkarl installs onto a clean base. install.sh runs it first; installing
 # Hyprkarl means replacing Noctalia, so it does not ask. It does nothing when
 # Noctalia is absent. Configs it removes are backed up.
 #
@@ -15,7 +15,7 @@
 #     packages/pacman.txt, so it would not come back. This script re-marks them
 #     explicit first to pin them in place.
 #
-# Not removed here: dolphin. setup-packages.sh handles it via remove.txt once
+# Not removed here: dolphin. The package review handles it via remove.txt once
 # the dependency above is gone.
 
 # --- Constants ---
@@ -52,7 +52,7 @@ CACHYOS_CONFIGS=(
 BACKUP_DIR="$HOME/.local/state/noctalia-purge-$(date +%Y%m%d-%H%M%S)"
 
 # --- Functions ---
-# Deliberately not gum: gum arrives with setup-packages.sh (packages/pacman.txt),
+# Deliberately not gum: install.sh installs gum after this script runs,
 # and this script runs before that. Plain bash only — assume nothing is installed.
 info()  { printf '\033[32m*\033[0m %s\n' "$*"; }
 warn()  { printf '\033[33m!\033[0m %s\n' "$*" >&2; }
@@ -168,7 +168,7 @@ purge_configs
 # process holds it, so a running noctalia keeps going on its mapped pages. Only
 # lazily-read data under /usr/share/noctalia (emoji picker, icons) breaks, and
 # xdg-desktop-portal-hyprland runs a deleted binary until its unit restarts.
-# Both clear on the reboot setup-all.sh already prompts for. Run from a TTY if
+# Both clear on the reboot install.sh already prompts for. Run from a TTY if
 # you would rather not touch a half-removed shell at all.
 if pgrep -x noctalia &>/dev/null; then
   warn "noctalia is still running from a deleted binary — it clears on reboot"

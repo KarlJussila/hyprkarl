@@ -51,8 +51,8 @@ or promise compatibility for third-party extensions.
   Files copied or rendered by setup and install commands
 - `applications/`
   Desktop files exposed under `~/.local/share/applications/`
-- `system/migrations/`
-  Focused system changes run once in lexical order and recorded in XDG state
+- `migrations/`
+  Numbered one-time changes run once per machine by `hk-update apply`
 - `docs/`
   Documentation for using and editing Hyprkarl
 
@@ -120,8 +120,19 @@ Git branch.
 - adding or removing a tracked entry point requires re-stowing with
   `hk-update apply`
 
-`setup-dotfiles.sh` is the initial-setup wrapper around the same configuration
-apply command. Use `hk-update apply` directly during normal maintenance.
+## Migrations
+
+When a release needs a one-time change on each machine, add an executable
+script to `migrations/` named with the next number (`060-...`). `hk-update
+apply` runs pending migrations in order, after packages and before
+configuration, and records each one only when it exits successfully. Use them
+for system changes (call `sudo` for those lines) and for converting a user's
+personal config when a setting is renamed or removed.
+
+Migrations also run on fresh installs, where there may be nothing to convert,
+so make each one safe there: check before changing, and succeed when nothing
+needs doing. Never rewrite a personal file beyond the change the migration
+exists for.
 
 For a new application integration, use its native configuration mechanism.
 When includes work, a small tracked bootstrap can load generated theme data,

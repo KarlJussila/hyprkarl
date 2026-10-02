@@ -20,31 +20,22 @@ The normal install path is:
 ```bash
 git clone --depth=1 https://github.com/KarlJussila/hyprkarl.git ~/.local/share/hyprkarl
 cd ~/.local/share/hyprkarl
-./setup-all.sh
+./install.sh
 ```
 
-`setup-all.sh` runs three scripts in order, stopping at the first failure:
+`install.sh` checks that it runs as your normal user on a pacman system from
+`~/.local/share/hyprkarl`, removes CachyOS's Noctalia shell if present,
+installs the few tools the updater needs, and then runs the same
+`hk-update apply` that every update uses. That installs the required packages,
+runs the one-time migrations (SDDM autologin, lid handling, sudo and faillock
+settings, LocalSend firewall rules, Docker), copies starting configs, links the
+shipped entry points, builds the theme, and reloads what is running. If a real
+file sits where Hyprkarl needs a link, it stops and lists it. Rerunning the
+installer is safe.
 
-- `setup-packages.sh`
-  Bootstraps the update command's package dependencies, then runs the same
-  one-time removal review and required-package installation used by
-  `hk-update packages`.
-- `setup-dotfiles.sh`
-  Configures the default source remote and branch, then runs the same apply
-  path used after an update. That path migrates personal configuration, uses
-  GNU Stow to expose shipped entry points and desktop files, builds the selected
-  theme and GTK payload, and reloads affected applications. Application configs
-  intended for personal editing are copied once as real files. Existing real
-  files and user-authored directory symlinks are left alone unless they occupy
-  a required Stow entry point, in which case setup stops and lists them.
-- `setup-system.sh`
-  Runs pending one-time system migrations. These configure SDDM autologin,
-  logind lid handling, sudo and faillock settings, LocalSend firewall rules,
-  and Docker without rerunning completed migrations on later updates.
-
-To leave Hyprkarl, `uninstall.sh` removes every config symlink (reversing
-`setup-dotfiles.sh`) and prints the user-owned configs, packages, and system
-settings it leaves in place for you to remove or undo manually.
+To leave Hyprkarl, `uninstall.sh` removes every config symlink and prints the
+user-owned configs, packages, and system settings it leaves in place for you
+to remove or undo manually.
 
 ## Understand the Symlink Model
 
@@ -90,10 +81,9 @@ hk-update all
 run one category yourself:
 
 ```bash
-hk-update sync          # fetch, review, and pin an exact source revision
-hk-update apply         # advance to that revision and apply configuration
+hk-update sync          # fetch and review incoming changes
+hk-update apply         # apply them: packages, migrations, configuration, theme
 hk-update packages      # review removals once and install requirements
-hk-update system        # run pending one-time system migrations
 hk-update check         # report pending work without changing it
 hk-update remove-stale  # remove broken links into the checkout only
 ```
@@ -107,7 +97,7 @@ Some changes do not take effect immediately:
 
 - `~/.config/uwsm/default` changes affect new sessions
 - `hk-default-shell` changes affect the next login
-- Docker group changes made by its system migration require a new login or reboot
+- Docker group changes made by its migration require a new login or reboot
 - most other changes can be reloaded live
 
 ## Where to Go Next

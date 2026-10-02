@@ -32,13 +32,11 @@ does not try to document every internal script.
 - `hk-update system`
   Confirm and run pending files under `system/migrations/` in lexical order,
   recording each successful migration in XDG state.
-- `hk-user-migrate`
-  Move personal configuration from the retired checkout `user/` directory to
-  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, materialize old
-  Hyprkarl-owned application links as real personal configs, seed terminal
-  override files, and stop if both old and new personal locations contain
-  data. The application seed migration is recorded in XDG state and does not
-  recreate later deletions. `hk-update apply` runs it before restowing.
+- `hk-config-seed`
+  Copy Hyprkarl's starting config for each application that has none of its
+  files yet, and create missing personal include files such as
+  `~/.config/kitty/local.conf`. Never overwrites an existing file.
+  `hk-update apply` runs it before restowing.
 
 `hk-update all` runs the `post-update` lifecycle hooks after every update step
 completes successfully. Individual update commands do not emit that event.

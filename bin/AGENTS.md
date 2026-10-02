@@ -158,13 +158,11 @@ system, then `post-update` order. Do not reintroduce the retired update TUI,
 dotfiles subcommand, per-package confirmation loop, routine system-setup rerun,
 or force/adopt paths.
 
-`hk-user-migrate` also owns the one-time application-config seed migration.
-Paths ignored by `config/.stow-local-ignore` are starting material, not live
-files. The migration may replace a link that points directly into Hyprkarl,
-but it must preserve real files and owner-authored symlink trees. Record a
-completed seed migration in XDG state so routine updates never recreate a file
-the user deletes. Add a new migration ID for a genuinely new seed operation;
-do not make copy-if-missing an every-update policy.
+`hk-config-seed` owns starting configs. Paths ignored by
+`config/.stow-local-ignore` are starting material, not live files. An
+application is seeded only when none of its seed files exist, and an existing
+file is never overwritten. Updates run it every time, so a new application's
+starting config reaches existing users.
 
 `lib/theme.sh` owns building and activating themes. `theme_activate` runs the
 integrated compiler on a built-in source (with an optional same-name

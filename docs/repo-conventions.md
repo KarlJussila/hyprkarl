@@ -103,10 +103,9 @@ then applied with `hk-update apply`.
 
 Non-ignored files under `config/` and files under `applications/` are exposed
 through GNU Stow. `config/.stow-local-ignore` separates stable tracked entry
-points from application starting configs. `hk-user-migrate` copies those seed
-configs once to their normal `~/.config/<application>/` paths and records the
-migration in XDG state. Updates never replace them or recreate files the user
-later removes.
+points from application starting configs. `hk-config-seed` copies those to
+their normal `~/.config/<application>/` paths when an application has none of
+them yet, and never overwrites a file that exists.
 
 Files under `defaults/` are read directly from the checkout by stable entry
 points. Personal configuration is read from the application's own directory
@@ -127,9 +126,8 @@ apply command. Use `hk-update apply` directly during normal maintenance.
 For a new application integration, use its native configuration mechanism.
 When includes work, a small tracked bootstrap can load generated theme data,
 shipped defaults, and personal settings last. Otherwise, provide a starting
-config copied once by `hk-user-migrate` and ignored by Stow. Add the seed
-migration explicitly; adding a file under `config/` alone does not create a
-user-owned copy.
+config: add it under `config/`, ignore it in `config/.stow-local-ignore`, and
+list it in `bin/hk-config-seed`.
 
 ## Contributor guides
 

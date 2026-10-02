@@ -198,20 +198,16 @@ The default terminal and editor commands update this file. Changes here require
 a new session.
 
 `~/.config/uwsm/env.local` is for machine-local environment variables such as API
-keys and personal settings. It is a real user-owned file. `hk-user-migrate`
-migrates an old checkout copy or creates it from a shipped example when absent.
+keys and personal settings. It is a real user-owned file that `hk-config-seed`
+creates from a shipped example when absent.
 
 ## Application Configuration
 
-`hk-user-migrate` converts the old application links and creates missing
-starting configs once. Completion is recorded at
-`${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/migrations/seeded-application-config-v1`.
-After that marker exists, Hyprkarl does not replace or recreate these files.
-Deleting one is a valid way to return that application to its own defaults.
-If a terminal already has a real primary config, migration moves it to the
-terminal's personal sidecar before Stow installs the small bootstrap. Existing
-application trees with personal config are otherwise left intact rather than
-being filled with Hyprkarl defaults.
+`hk-config-seed`, run by every `hk-update apply`, copies an application's
+starting config when you have none of its files, and never overwrites a file
+you have. An existing setup is left intact rather than filled with Hyprkarl
+defaults. To return an application to its own defaults, empty its config file;
+deleting every file brings Hyprkarl's starting config back on the next update.
 
 | Application | Personal editing path | How Hyprkarl participates | Apply changes | Replaced on update |
 |---|---|---|---|---|
@@ -260,13 +256,8 @@ The nine `modules` switches select the bar, panels, notifications, OSD, polkit,
 menu, applications, calculator, and wallpaper. Disabled modules do not keep
 services or polling processes running. A personal `userRoot.source` can replace
 the bar or add independent interfaces, using `import ui.modal` for shared modal
-windows. Locking runs on demand through `hk-lock`; `hk-suspend` waits for secure
-locking before suspending.
-
-`hk-user-migrate` moves old Quickshell personal files from `~/.config/hyprkarl/`
-into `quickshell/settings/` and `quickshell/custom/`. Conflicting copies are
-preserved and reported. It also seeds native PAM files once without overwriting
-existing policies.
+windows. Locking runs on demand through `hk-lock`; Hypridle locks before any
+suspend.
 
 Use `hk-shell start`, `stop`, `restart`, `status`, and `logs` to manage the
 desktop. The shell reloads the theme when `hk-theme set` switches builds.

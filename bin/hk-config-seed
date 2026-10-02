@@ -1,0 +1,74 @@
+#!/bin/bash
+# hk-config-seed
+# Copy Hyprkarl's starting configuration into ~/.config for applications that
+# have none yet. The copies are yours from then on; updates never change them.
+#
+# Each seed below is one application's starting config. A seed is copied only
+# when none of its files exist, so an existing setup is never mixed with
+# Hyprkarl's files. Deleting every file of a seed brings it back on the next
+# update. config/.stow-local-ignore keeps Stow from linking these paths.
+
+CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+SEED_ROOT="$HYPRKARL_PATH/config"
+
+seeds=(
+  btop
+  fastfetch
+  fish
+  gtk-3.0
+  gtk-4.0
+  hypr/hypridle.conf
+  hypr/hyprpaper.conf
+  hypr/hyprsunset.conf
+  nvim
+  qt5ct
+  qt6ct
+  uwsm/default
+  xdg-desktop-portal
+  xdg-desktop-portal-termfilechooser
+  xdg-terminals.list
+  yazi
+)
+
+# Personal files that shipped configs include; created once if missing.
+declare -A includes=(
+  [uwsm/env.local]=env.local.example
+  [alacritty/local.toml]=terminals/alacritty.toml
+  [foot/local.ini]=terminals/foot.ini
+  [ghostty/local.conf]=terminals/ghostty.conf
+  [kitty/local.conf]=terminals/kitty.conf
+)
+
+copy_seed_file() {
+  local relative="$1" source="$SEED_ROOT/$1" destination="$CONFIG_HOME/$1"
+
+  mkdir -p "$(dirname "$destination")" || return 1
+  if [[ -L "$source" ]]; then
+    cp -a "$source" "$destination"
+  else
+    sed "s|@CONFIG_HOME@|$CONFIG_HOME|g" "$source" > "$destination" \
+      && chmod --reference="$source" "$destination"
+  fi
+}
+
+for seed in "${seeds[@]}"; do
+  mapfile -t files < <(cd "$SEED_ROOT" && find "$seed" \( -type f -o -type l \))
+  for relative in "${files[@]}"; do
+    if [[ -e "$CONFIG_HOME/$relative" ]] || [[ -L "$CONFIG_HOME/$relative" ]]; then
+      continue 2
+    fi
+  done
+  for relative in "${files[@]}"; do
+    copy_seed_file "$relative" || exit 1
+  done
+  printf 'Created starting config for %s\n' "$seed"
+done
+
+for relative in "${!includes[@]}"; do
+  if [[ -e "$CONFIG_HOME/$relative" ]]; then
+    continue
+  fi
+  mkdir -p "$(dirname "$CONFIG_HOME/$relative")" || exit 1
+  cp "$HYPRKARL_PATH/templates/setup/${includes[$relative]}" "$CONFIG_HOME/$relative" || exit 1
+  printf 'Created %s\n' "$CONFIG_HOME/$relative"
+done

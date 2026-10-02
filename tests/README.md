@@ -3,16 +3,15 @@
 Focused checks and isolated acceptance harnesses for Hyprkarl. Tests that need
 a running Wayland session say so; the others keep their changes under `/tmp`.
 
-## `hk-user-migrate.sh`
+## `hk-config-seed.sh`
 
-Runs the personal-configuration migration against a disposable checkout and
-home. It verifies moved personal files, application-link materialization,
-preservation of existing files and external symlink trees, terminal sidecars
-and theme links, the XDG-state completion marker, deletion-safe idempotence,
-and a real destination conflict.
+Seeds starting configs into a disposable home. It checks that an existing
+application config is left alone, that an unrelated file does not block a
+seed, that links and the `@CONFIG_HOME@` placeholder are handled, and that a
+second run never overwrites a file.
 
 ```bash
-tests/hk-user-migrate.sh
+tests/hk-config-seed.sh
 ```
 
 ## `hk-theme-runtime.sh`

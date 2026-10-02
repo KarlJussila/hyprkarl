@@ -76,7 +76,7 @@ if [[ -n "$pending" ]] && [[ "$pending" != "$head" ]]; then
   source_advanced=1
 fi
 
-"$HYPRKARL_PATH/bin/hk-user-migrate" || fail_apply "Personal configuration migration failed."
+"$HYPRKARL_PATH/bin/hk-config-seed" || fail_apply "Could not create starting configuration."
 
 conflicts=$(check_config_conflicts)
 if [[ -n "$conflicts" ]]; then

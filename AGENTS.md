@@ -86,11 +86,13 @@ points from:
 `bin/` is not stowed; it is added to `$PATH` directly via `config/uwsm/env`.
 
 `config/.stow-local-ignore` also marks application starting configs that
-`hk-user-migrate` copies once as real user-owned files. Editing those seed
-files does not change an existing installation, and updates must never
-overwrite or recreate the personal copy. An XDG-state migration marker records
-that the seed operation completed. Keep native include bootstraps tracked only
-when they remain a useful stable entry point; see `docs/configuration-map.md`
+`hk-config-seed` copies as real user-owned files. Editing those seed files
+does not change an existing installation. An application is seeded only when
+none of its seed files exist, so an existing setup is never mixed with
+Hyprkarl's files. Updates run it every time: a new application's starting
+config reaches existing users, while files they already have are never
+overwritten. Keep native include bootstraps tracked only when they remain a
+useful stable entry point; see `docs/configuration-map.md`
 for the application-by-application ownership table.
 
 Editing a non-ignored tracked entry point edits the live running config
@@ -289,7 +291,7 @@ public workflow.
 `config/uwsm/env` sets session-wide environment variables (including
 `HYPRKARL_PATH` and `$PATH`). Changes require a new Hyprland session.
 `~/.config/uwsm/default` controls `$TERMINAL`, `$EDITOR`, and `$SHELL`.
-`~/.config/uwsm/env.local` holds machine-local variables. Both are real user-owned files, seeded or migrated by `hk-user-migrate` and never tracked.
+`~/.config/uwsm/env.local` holds machine-local variables. Both are real user-owned files, created by `hk-config-seed` and never tracked.
 
 ## Command Script Style
 

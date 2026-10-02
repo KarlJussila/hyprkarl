@@ -6,7 +6,7 @@
 # Machine-local Claude Code state — belongs to the repo checkout, not ~/.config
 \.claude
 
-# These are seed files for real user-owned configuration, not Stow targets.
+# Starting configs that bin/hk-config-seed copies once; not Stow targets.
 ^/btop($|/)
 ^/fastfetch($|/)
 ^/fish($|/)
@@ -17,7 +17,6 @@
 ^/qt5ct($|/)
 ^/qt6ct($|/)
 ^/uwsm/default$
-^/uwsm/env\.local$
 ^/xdg-desktop-portal($|/)
 ^/xdg-desktop-portal-termfilechooser($|/)
 ^/xdg-terminals\.list$

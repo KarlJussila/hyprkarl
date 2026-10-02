@@ -74,7 +74,9 @@ compiled from the same color tokens as the rest of the desktop.
 - Python 3.10+
 - `jinja2`, `colour`, `pillow`, and `pyyaml` from `requirements.txt`
 - `sassc` for Colloid GTK compilation
-- `grim` and `ydotool` for automated desktop screenshots
+- `grim` and `ydotool` for `capture`'s automated desktop screenshots;
+  Hyprkarl installs `grim`, but install `ydotool` yourself if you capture
+  theme previews
 
 The normal Hyprkarl package setup installs these dependencies from the system
 repositories. For development on another distribution, install the Python

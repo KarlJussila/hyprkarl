@@ -69,4 +69,3 @@ xdg-desktop-portal-hyprland
 xdg-user-dirs
 yay-bin
 yazi
-ydotool

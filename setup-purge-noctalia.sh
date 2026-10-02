@@ -1,9 +1,11 @@
 #!/bin/bash
 # setup-purge-noctalia.sh
 # Removes the CachyOS Noctalia desktop shell and its leftover configs so
-# Hyprkarl installs onto a clean base.
+# Hyprkarl installs onto a clean base. setup-all.sh runs it first; installing
+# Hyprkarl means replacing Noctalia, so it does not ask. It does nothing when
+# Noctalia is absent. Configs it removes are backed up.
 #
-# Run this BEFORE setup-all.sh. Ordering matters in both directions:
+# Ordering matters in both directions:
 #
 #   - cachyos-hypr-noctalia hard-depends on dolphin, so packages/remove.txt
 #     cannot drop dolphin until this script has run.
@@ -55,12 +57,6 @@ BACKUP_DIR="$HOME/.local/state/noctalia-purge-$(date +%Y%m%d-%H%M%S)"
 info()  { printf '\033[32m*\033[0m %s\n' "$*"; }
 warn()  { printf '\033[33m!\033[0m %s\n' "$*" >&2; }
 error() { printf '\033[31mx\033[0m %s\n' "$*" >&2; exit 1; }
-
-confirm() {
-  local reply
-  read -r -p "$1 [y/N] " reply
-  [[ "$reply" == [yY] ]]
-}
 
 installed_only() {
   local pkg
@@ -118,8 +114,7 @@ purge_packages() {
     return
   fi
 
-  # No --noconfirm: read the cascade list before agreeing to it.
-  sudo pacman -Rns "${pkgs[@]}" || warn "Package removal did not complete; configs left untouched"
+  sudo pacman -Rns --noconfirm "${pkgs[@]}" || error "Could not remove ${pkgs[*]}"
 }
 
 purge_configs() {
@@ -161,20 +156,13 @@ case "${1:-}" in
   *) echo "Usage: setup-purge-noctalia.sh [--dry-run]" >&2; exit 1 ;;
 esac
 
-if [[ -L "$HOME/.config/hypr/hyprland.lua" ]]; then
-  warn "Hyprkarl dotfiles already stowed — run this before setup-all.sh for a clean base"
-fi
-
-if [[ "$DRY_RUN" -eq 0 ]] && ! confirm "Purge Noctalia packages and CachyOS shell configs?"; then
-  info "Aborted"
+if [[ -z "$(installed_only "${PURGE_PKGS[@]}")" ]] && [[ ! -e "$HOME/.config/noctalia" ]]; then
   exit 0
 fi
 
 pin_shared_deps
 purge_packages
 purge_configs
-
-info "Done. Next: ./setup-all.sh (setup-packages.sh will now be able to drop dolphin)"
 
 # Removing a running binary is safe: the kernel keeps the inode alive while the
 # process holds it, so a running noctalia keeps going on its mapped pages. Only

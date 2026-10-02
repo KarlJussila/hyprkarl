@@ -45,8 +45,8 @@ cd ~/.local/share/hyprkarl
 
 > **Note:** CachyOS's Hyprland edition now ships the Noctalia shell
 > (`cachyos-hypr-noctalia`) by default, which conflicts with hyprkarl.
-> `setup-all.sh` runs `setup-purge-noctalia.sh` first to remove it — it will
-> ask for confirmation and is a no-op if Noctalia isn't installed.
+> `setup-all.sh` runs `setup-purge-noctalia.sh` first to remove it, backing up
+> the configs it removes. It does nothing if Noctalia isn't installed.
 
 > **Warning:** If you already have configs you care about in `~/.config/` or
 > `~/.local/share/applications/`, back them up first. The initial setup keeps

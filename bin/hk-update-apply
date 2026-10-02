@@ -77,7 +77,7 @@ theme_ensure_wallpaper_selection || fail "Could not restore the wallpaper select
 hk-wallpaper-init --if-ready || fail "Could not restore the live wallpaper."
 if pgrep -x Hyprland >/dev/null; then
   hyprctl reload >/dev/null || fail "Hyprland could not reload the applied configuration."
-  hk-theme-cursor || fail "Could not apply the theme's cursor."
+  theme_apply_cursor || fail "Could not apply the theme's cursor."
 fi
 hk-terminal-reload || fail "Terminal configuration reload failed."
 hk-btop-reload || fail "Btop configuration reload failed."

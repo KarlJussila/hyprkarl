@@ -89,6 +89,12 @@ theme_activate() {
   printf '[Icon Theme]\nInherits=%s\n' "$(<"$build/cursor.theme")" > "$HYPRKARL_DEFAULT_CURSOR"
 }
 
+# The theme's hyprland.lua sets Hyprland's cursor at startup; a reload does not
+# rerun that, so set it directly after switching.
+theme_apply_cursor() {
+  hyprctl setcursor "$(<"$HYPRKARL_CURRENT_THEME/cursor.theme")" "$XCURSOR_SIZE" >/dev/null
+}
+
 # Keep the current wallpaper if the new build still has it; otherwise pick the
 # theme's first wallpaper.
 theme_ensure_wallpaper_selection() {

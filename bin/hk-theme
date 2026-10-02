@@ -4,7 +4,6 @@
 #
 # Usage:
 #   hk-theme current
-#   hk-theme cursor
 #   hk-theme list
 #   hk-theme menu-entries
 #   hk-theme set <theme-name>
@@ -13,7 +12,6 @@ usage() {
   cat <<'EOF'
 Usage:
   hk-theme current
-  hk-theme cursor
   hk-theme list
   hk-theme menu-entries
   hk-theme set <theme-name>
@@ -24,7 +22,7 @@ action=${1:-}
 shift || true
 
 case "$action" in
-  current|cursor|list|menu-entries|set) exec "hk-theme-$action" "$@" ;;
+  current|list|menu-entries|set) exec "hk-theme-$action" "$@" ;;
   ""|-h|--help|help) usage; exit 0 ;;
   *) usage >&2; exit 1 ;;
 esac

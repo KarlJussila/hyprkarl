@@ -37,7 +37,6 @@ Item {
 
     readonly property string widgetId: root.widgetId
     readonly property string edge: root.edge
-    readonly property string orientation: "horizontal"
     readonly property string output: root.barWindow.screen.name
     readonly property var settings: root.config.settings ?? ({})
     readonly property var theme: root.theme

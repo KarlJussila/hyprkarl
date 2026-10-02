@@ -607,7 +607,6 @@ complete supported shell boundary:
 | `settings` | The instance's optional JSON settings object |
 | `theme` | Live semantic shell theme object |
 | `edge` | `top` or `bottom` for the owning bar |
-| `orientation` | Always `horizontal` |
 | `output` | Owning output name |
 | `barWindow` | Owning bar window for deliberate window-relative behavior |
 | `runCommand(command)` | Run non-login `bash -c` through `uwsm-app --` with `HYPRKARL_OUTPUT` set |

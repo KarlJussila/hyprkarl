@@ -164,7 +164,7 @@ explicitly with a relative `source`, and keep per-instance data in `settings`:
 ```
 
 The module root declares `required property var context`. That context supplies
-the live semantic theme, instance settings, bar edge and orientation, owning
+the live semantic theme, instance settings, bar edge, owning
 output/window, command helpers, and shared feature-panel entry points. Modules
 are instantiated once per rendered bar; they are not discovered or registered
 as plugins. See [User QML widgets](shell-configuration.md#user-qml-widgets) for

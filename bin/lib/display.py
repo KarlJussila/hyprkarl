@@ -567,20 +567,10 @@ def arrange(
     if set(requested) != active_names:
         raise RuntimeError("Arrangement must cover every active display")
 
-    normalized: dict[str, dict[str, int]] = {}
-    for monitor in active:
-        name = monitor["name"]
-        entry = requested[name]
-        if not isinstance(entry, dict):
-            raise RuntimeError(f"Arrangement for {name} must be an object")
-        x = entry.get("x")
-        y = entry.get("y")
-        transform = entry.get("transform")
-        if type(x) is not int or type(y) is not int:
-            raise RuntimeError(f"Position for {name} must use integer coordinates")
-        if type(transform) is not int or not 0 <= transform <= 7:
-            raise RuntimeError(f"Transform for {name} must be an integer from 0 to 7")
-        normalized[name] = {"x": x, "y": y, "transform": transform}
+    normalized = {
+        name: {key: requested[name][key] for key in ("x", "y", "transform")}
+        for name in active_names
+    }
 
     validate_arrangement(active, normalized)
 

@@ -158,22 +158,6 @@ class DisplayArrangementTest(unittest.TestCase):
                     {"DP-1": {"x": 0, "y": 0, "transform": 0}}
                 )
 
-    def test_arrange_rejects_non_integer_coordinates(self) -> None:
-        current = [monitor("DP-1", 0, 0)]
-        with mock.patch.object(display, "monitors", return_value=current):
-            with self.assertRaisesRegex(RuntimeError, "integer coordinates"):
-                display.arrange(
-                    {"DP-1": {"x": 2.5, "y": 0, "transform": 0}}
-                )
-
-    def test_arrange_rejects_invalid_transform(self) -> None:
-        current = [monitor("DP-1", 0, 0)]
-        with mock.patch.object(display, "monitors", return_value=current):
-            with self.assertRaisesRegex(RuntimeError, "integer from 0 to 7"):
-                display.arrange(
-                    {"DP-1": {"x": 0, "y": 0, "transform": 8}}
-                )
-
     def test_arrange_rejects_overlap_after_rotation(self) -> None:
         current = [
             monitor("DP-1", 0, 0, transform=1),

@@ -82,6 +82,7 @@ Scope {
     ApplicationPickerWindow {
       output: root.output
       theme: root.theme
+      hidden: root.shellConfig.applications.hidden
     }
   }
 

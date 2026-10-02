@@ -19,10 +19,10 @@ seed() {
   XDG_CONFIG_HOME="$CONFIG_HOME" HYPRKARL_PATH="$ORIG" "$ORIG/bin/hk-config-seed" >/dev/null
 }
 
-# An existing nvim setup and an unrelated GTK file are already present.
-mkdir -p "$CONFIG_HOME/nvim" "$CONFIG_HOME/gtk-3.0"
+# An existing nvim setup and an unrelated btop file are already present.
+mkdir -p "$CONFIG_HOME/nvim" "$CONFIG_HOME/btop"
 printf 'my own init\n' > "$CONFIG_HOME/nvim/init.lua"
-printf 'file:///tmp\n' > "$CONFIG_HOME/gtk-3.0/bookmarks"
+printf 'log\n' > "$CONFIG_HOME/btop/btop.log"
 
 seed || fail "seeding returned nonzero"
 
@@ -31,11 +31,11 @@ seed || fail "seeding returned nonzero"
   || fail "existing nvim config was overwritten"
 [[ ! -e "$CONFIG_HOME/nvim/lua/config/lazy.lua" ]] \
   || fail "seed files were mixed into an existing nvim config"
-[[ -f "$CONFIG_HOME/gtk-3.0/gtk.css" ]] \
-  || fail "an unrelated GTK file blocked the GTK seed"
+[[ -f "$CONFIG_HOME/btop/btop.conf" ]] \
+  || fail "an unrelated btop file blocked the btop seed"
 [[ -L "$CONFIG_HOME/btop/themes/current.theme" ]] \
   || fail "seed symlink was not preserved"
-grep -q "$CONFIG_HOME" "$CONFIG_HOME/qt6ct/qt6ct.conf" \
+grep -q "$CONFIG_HOME" "$CONFIG_HOME/fastfetch/config.jsonc" \
   || fail "@CONFIG_HOME@ was not substituted"
 [[ -f "$CONFIG_HOME/uwsm/env.local" ]] && [[ -f "$CONFIG_HOME/kitty/local.conf" ]] \
   && [[ -f "$CONFIG_HOME/hypr/hypridle.local.conf" ]] \

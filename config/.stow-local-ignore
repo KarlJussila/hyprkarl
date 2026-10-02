@@ -9,14 +9,5 @@
 # Starting configs that bin/hk-config-seed copies once; not Stow targets.
 ^/btop($|/)
 ^/fastfetch($|/)
-^/fish($|/)
-^/gtk-3\.0($|/)
-^/gtk-4\.0($|/)
 ^/nvim($|/)
-^/qt5ct($|/)
-^/qt6ct($|/)
-^/uwsm/default$
-^/xdg-desktop-portal($|/)
-^/xdg-desktop-portal-termfilechooser($|/)
-^/xdg-terminals\.list$
 ^/yazi($|/)

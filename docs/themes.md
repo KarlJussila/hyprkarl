@@ -226,9 +226,12 @@ This is a real copy because GTK discovery and asset loading have been
 unreliable through symlinked theme directories, so do not replace it with a
 symlink. Edit theme source and select the theme again instead of editing
 the installed copy. Dark sources compile Colloid's dark variant; `mode: light`
-compiles its light variant. The user-owned `~/.config/gtk-3.0/settings.ini` and
-`gtk-4.0/settings.ini` select the stable `hyprkarl` theme name; `hk-theme set`
-applies the light/dark preference through desktop settings.
+compiles its light variant. Hyprkarl's linked `~/.config/gtk-3.0/settings.ini`
+and `gtk-4.0/settings.ini` select the stable `hyprkarl` theme name, and its
+linked `gtk.css` files import the installed copy; `hk-theme set` applies the
+light/dark preference through desktop settings. Qt follows the theme too:
+`hk-theme set` writes `~/.config/qt5ct/qt5ct.conf` and `qt6ct.conf` with the
+theme's palette, fonts, and icon family.
 
 ## Wallpapers
 

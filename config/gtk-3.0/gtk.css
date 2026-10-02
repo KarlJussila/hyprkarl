@@ -1,3 +1,3 @@
-@import url("hyprkarl.css");
-
-/* Add personal GTK 3 rules below this line. */
+/* Managed by Hyprkarl: the active theme's GTK 3 styling. Personal GTK rules
+   belong in a personal theme; see docs/themes.md. */
+@import url("../../.local/share/themes/hyprkarl/gtk-3.0/gtk.css");

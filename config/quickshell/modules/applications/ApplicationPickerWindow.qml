@@ -10,7 +10,8 @@ PickerWindow {
 
   readonly property bool active: ApplicationPickerState.active
     && output.name === OverlayState.screenName
-  readonly property var entries: ApplicationPickerState.entriesFor(query)
+  required property var hidden
+  readonly property var entries: ApplicationPickerState.entriesFor(query, hidden)
   readonly property real rowHeight: theme.applicationPicker.iconSize
     + theme.menu.entryMargin * 2
     + theme.menu.selectionBorderWidth * 2

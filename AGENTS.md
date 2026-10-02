@@ -63,16 +63,21 @@ it out in the changelog.
 
 ### Symlinks and starting configs
 
-`hk-update apply` uses GNU Stow to link `config/` into `~/.config/` and
-`applications/` into `~/.local/share/applications/`. `bin/` is put on `$PATH`
-by `config/uwsm/env`. Editing a stowed file edits the live config. Renaming or
-deleting one leaves a stale symlink, which `hk-update apply` (or
+`hk-update apply` uses GNU Stow to link `config/` into `~/.config/`. `bin/` is
+put on `$PATH` by `config/uwsm/env`, after `~/.local/bin` so a personal command
+can replace an `hk-*` one. Editing a stowed file edits the live config.
+Renaming or deleting one leaves a stale symlink, which `hk-update apply` (or
 `hk-update remove-stale`) prunes.
 
-Paths listed in `config/.stow-local-ignore` are starting configs instead.
-`hk-config-seed` copies an application's starting config when the user has
-none of its files, and never overwrites an existing file. See
-`docs/configuration-map.md` for who owns what.
+Hyprkarl's defaults must keep updating, so choose how to configure an
+application in this order: a shipped file that loads a personal file (the
+terminals' `local.*`, the Hypr tools' `*.local.conf`); a default under
+`defaults/config/` or `defaults/share/`, which `config/uwsm/env` puts on
+`XDG_CONFIG_DIRS` or `XDG_DATA_DIRS` so a user's own file replaces it; output
+of the theme, for anything that is appearance. Copying a starting config is
+the last resort, for applications with no include mechanism: the paths in
+`config/.stow-local-ignore`, which `hk-config-seed` copies when the user has
+none of their files. See `docs/configuration-map.md` for each application.
 
 ### Updates
 
@@ -140,10 +145,10 @@ workflow.
 
 ### Session environment
 
-`config/uwsm/env` sets session-wide variables, including `HYPRKARL_PATH` and
-`$PATH`; changes need a new session. `~/.config/uwsm/default` sets
-`$TERMINAL`, `$EDITOR`, and `$SHELL`, and `~/.config/uwsm/env.local` holds
-machine-local variables. Both are user-owned.
+`config/uwsm/env` sets session-wide variables, including `HYPRKARL_PATH`,
+`$PATH`, and the XDG defaults directories; changes need a new session.
+`~/.config/uwsm/default` holds the editor `hk-default-editor` chose, and
+`~/.config/uwsm/env.local` holds machine-local variables. Both are user-owned.
 
 ## Command Script Style
 

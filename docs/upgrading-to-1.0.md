@@ -20,10 +20,11 @@ session restart at the end.
   polkit agent, the OSD, and hyprlock.
 - **Themes are compiled from one `theme.yaml`** instead of a directory of
   hand-written per-app files. Builds live under `~/.local/state/hyprkarl/`.
-- **Many application configs are now starting copies.** btop, fastfetch, fish,
-  GTK, nvim, Qt, the portals, yazi, Hypridle, Hyprpaper, Hyprsunset, and
-  `uwsm/default` are copied into `~/.config` once and are yours from then on.
-  Terminals keep a small shipped config that includes your `local.*` file.
+- **Application configs keep receiving Hyprkarl's defaults.** Terminals and
+  the Hypr tools load a personal `local` file after Hyprkarl's settings; the
+  portal and terminal choices are defaults your own file replaces; GTK and Qt
+  follow the theme. Only btop, fastfetch, Neovim, and Yazi are copied into
+  `~/.config` once and are yours from then on.
 - **The updater was rewritten.** `hk-update sync` reviews incoming commits and
   `hk-update apply` applies them. `tui`, `dotfiles`, `--force`, and `--adopt`
   are gone. Update records live under `~/.local/state/hyprkarl/update/`.
@@ -123,8 +124,11 @@ old settings no longer apply.
 | `config/rofi/**`, `bin/hk-menu-*` | `~/.config/quickshell/settings/menu.json`. See [Menu configuration](menu-configuration.md). |
 | `config/mako/**` | The `notifications` section of `shell.json`. See [Shell configuration](shell-configuration.md). |
 | `config/alacritty/alacritty.toml`, `config/foot/foot.ini`, `config/ghostty/config.ghostty`, `config/kitty/kitty.conf` | `~/.config/<terminal>/local.toml`, `local.ini`, or `local.conf`. |
-| `config/btop`, `fastfetch`, `fish`, `gtk-3.0`, `gtk-4.0`, `nvim`, `qt5ct`, `qt6ct`, `xdg-desktop-portal*`, `xdg-terminals.list`, `yazi` | The new copies in `~/.config/<app>/`. |
-| `config/uwsm/default` | `~/.config/uwsm/default`, or run `hk-default-terminal`, `hk-default-editor`, `hk-default-shell`. |
+| `config/btop`, `fastfetch`, `nvim`, `yazi` | The new copies in `~/.config/<app>/`. |
+| `config/fish` | Your own `~/.config/fish/config.fish`; Hyprkarl no longer ships one. |
+| `config/gtk-3.0`, `gtk-4.0`, `qt5ct`, `qt6ct` | A personal theme; GTK and Qt follow the theme. See [Themes](themes.md). |
+| `config/xdg-desktop-portal`, `xdg-terminals.list` | Your own file at the same path in `~/.config/`, which replaces Hyprkarl's default. |
+| `config/uwsm/default` | Run `hk-default-terminal`, `hk-default-editor`, or `hk-default-shell`, or set variables in `~/.config/uwsm/env.local`. |
 | `config/uwsm/env` | Put additions in `~/.config/uwsm/env.local`. |
 | Edits to `themes/<name>/*` | Values in `~/.config/hyprkarl/themes/<name>/theme.yaml`, or a template under its `overrides/`. See [Themes](themes.md). |
 | A theme directory you added | Recreate it as `~/.config/hyprkarl/themes/<name>/theme.yaml`; `themes/AGENTS.md` explains translating a palette. |

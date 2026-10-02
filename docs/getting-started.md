@@ -95,7 +95,7 @@ package review, and recovery details.
 
 Some changes do not take effect immediately:
 
-- `~/.config/uwsm/default` changes affect new sessions
+- `~/.config/uwsm/env.local` changes and `hk-default-editor` affect new sessions
 - `hk-default-shell` changes affect the next login
 - Docker group changes made by its migration require a new login or reboot
 - most other changes can be reloaded live

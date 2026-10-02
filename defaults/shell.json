@@ -43,6 +43,24 @@
       }
     }
   },
+  "applications": {
+    "hidden": [
+      "avahi-discover",
+      "bssh",
+      "bvnc",
+      "footclient",
+      "foot-server",
+      "octopi-cachecleaner",
+      "octopi-notifier",
+      "octopi-repoeditor",
+      "qv4l2",
+      "qvidcap",
+      "uuctl",
+      "vscodium-wayland",
+      "xgps",
+      "xgpsspeed"
+    ]
+  },
   "bar": {
     "edge": "top",
     "exclusive": true,

@@ -43,8 +43,8 @@ without good reason.
   strand an unconfirmed layout.
 - **`hk-open-with`** is the one Gio boundary for MIME lookup, default apps, and
   file-aware launching; QML must not duplicate it.
-- **Updates.** `hk-update` treats `config/`, `applications/`, `defaults/`, and
-  `themes/` as upstream-owned and never generates or replaces personal files.
+- **Updates.** `hk-update` treats `config/`, `defaults/`, and `themes/` as
+  upstream-owned and never generates or replaces personal files.
   See `docs/updating.md`. `hk-config-seed` copies an application's starting
   config only when the user has none of its files.
 - **Themes.** `lib/theme.sh` builds a theme, swaps `current/theme` to it,

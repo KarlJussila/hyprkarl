@@ -37,7 +37,7 @@ Cause:
 
 What to do:
 
-- if you changed `~/.config/uwsm/default`, restart the graphical session
+- if you changed `~/.config/uwsm/env.local` or ran `hk-default-editor`, restart the graphical session
 - if you changed the default shell, log out and log back in
 - if you changed Docker group membership, log in again or reboot
 - otherwise, restart or reload the affected app or service
@@ -193,10 +193,9 @@ Mako. If only one application's notifications are absent, inspect
 
 Symptoms:
 
-- you added a new tracked file under `config/` or `applications/`, but Hyprkarl
-  is still behaving as if that file does not exist
-- the file also does not appear under `~/.config/` or
-  `~/.local/share/applications/`
+- you added a new tracked file under `config/`, but Hyprkarl is still behaving
+  as if that file does not exist
+- the file also does not appear under `~/.config/`
 
 Cause:
 

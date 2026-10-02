@@ -11,19 +11,13 @@
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 SEED_ROOT="$HYPRKARL_PATH/config"
 
+# Only applications with no way to load Hyprkarl's defaults alongside a
+# personal file: btop rewrites its own config, fastfetch has no includes, and
+# Neovim and Yazi configs are personal code.
 seeds=(
   btop
   fastfetch
-  fish
-  gtk-3.0
-  gtk-4.0
   nvim
-  qt5ct
-  qt6ct
-  uwsm/default
-  xdg-desktop-portal
-  xdg-desktop-portal-termfilechooser
-  xdg-terminals.list
   yazi
 )
 

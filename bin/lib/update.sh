@@ -90,21 +90,13 @@ check_config_conflicts() {
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.config" \
     config
-  _stow_conflicts --restow --no-folding \
-    --dir="$HYPRKARL_PATH" \
-    --target="$HOME/.local/share/applications" \
-    applications
 }
 
 stow_restow_config() {
   stow --restow --no-folding \
     --dir="$HYPRKARL_PATH" \
     --target="$HOME/.config" \
-    config || return 1
-  stow --restow --no-folding \
-    --dir="$HYPRKARL_PATH" \
-    --target="$HOME/.local/share/applications" \
-    applications
+    config
 }
 
 remove_stale_symlinks() {

@@ -49,8 +49,6 @@ or promise compatibility for third-party extensions.
   command itself.
 - `templates/`
   Files copied or rendered by setup and install commands
-- `applications/`
-  Desktop files exposed under `~/.local/share/applications/`
 - `migrations/`
   Numbered one-time changes run once per machine by `hk-update apply`
 - `docs/`
@@ -99,8 +97,7 @@ then applied with `hk-update apply`.
 
 ## Stow Behavior
 
-Non-ignored files under `config/` and files under `applications/` are exposed
-through GNU Stow. `config/.stow-local-ignore` separates stable tracked entry
+Non-ignored files under `config/` are exposed through GNU Stow. `config/.stow-local-ignore` separates stable tracked entry
 points from application starting configs. `hk-config-seed` copies those to
 their normal `~/.config/<application>/` paths when an application has none of
 them yet, and never overwrites a file that exists.

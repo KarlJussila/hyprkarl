@@ -146,8 +146,11 @@ QtObject {
     return terms.every(term => searchText.includes(term))
   }
 
-  function entriesFor(query: string): var {
-    const entries = openWithActive ? openWithEntries : launcherEntries
+  // hidden: desktop entry IDs to leave out of the launcher.
+  function entriesFor(query: string, hidden: var): var {
+    const entries = openWithActive
+      ? openWithEntries
+      : launcherEntries.filter(entry => !hidden.includes(entry.id))
     const terms = query.trim().toLowerCase().split(/\s+/)
       .filter(term => term.length > 0)
     return terms.length === 0

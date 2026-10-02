@@ -8,6 +8,7 @@ JsonSettings {
   readonly property var bar: values.bar
   readonly property var osd: values.osd
   readonly property var notifications: values.notifications
+  readonly property var applications: values.applications
   readonly property var userRoot: values.userRoot
 
   // Module choices latch at startup; changing them needs hk-shell restart.

@@ -68,6 +68,8 @@ REQUIRED_BUNDLE_FILES = (
     "nvim/custom-colors.lua",
     "qt5ct/style-colors.conf",
     "qt6ct/style-colors.conf",
+    "qt5ct/qt5ct.conf",
+    "qt6ct/qt6ct.conf",
 )
 REQUIRED_BUNDLE_DIRECTORIES = ("icons", "wallpapers")
 

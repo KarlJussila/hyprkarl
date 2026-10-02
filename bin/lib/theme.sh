@@ -83,6 +83,14 @@ theme_activate() {
   gsettings set org.gnome.desktop.interface color-scheme "$scheme"
   gsettings set org.gnome.desktop.interface icon-theme "$icons"
 
+  # Qt's settings tools rewrite these files, so install copies instead of
+  # links; the next activation replaces any change made there.
+  for qt in qt5ct qt6ct; do
+    mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/$qt"
+    sed "s|@CURRENT_THEME@|$HYPRKARL_CURRENT_THEME|" "$build/$qt/$qt.conf" \
+      > "${XDG_CONFIG_HOME:-$HOME/.config}/$qt/$qt.conf"
+  done
+
   # Apps that draw their own cursor (Qt, X11, most toolkits) load the theme
   # named "default", which this alias points at the theme's cursor.
   mkdir -p "${HYPRKARL_DEFAULT_CURSOR%/*}"

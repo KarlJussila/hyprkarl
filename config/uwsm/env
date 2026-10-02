@@ -4,14 +4,19 @@
 export HYPRKARL_PATH=$HOME/.local/share/hyprkarl
 export PATH=$HOME/.local/bin:$HYPRKARL_PATH/bin:$PATH
 
-# Add flatpak directories
-export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+# Hyprkarl's defaults for XDG-aware programs: desktop entries, portal choices,
+# and terminal preference. A file you create under ~/.config or
+# ~/.local/share replaces the matching default.
+export XDG_CONFIG_DIRS="$HYPRKARL_PATH/defaults/config:${XDG_CONFIG_DIRS:-/etc/xdg}"
+export XDG_DATA_DIRS="$HYPRKARL_PATH/defaults/share:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 
 # Qt theme
 export QT_QPA_PLATFORMTHEME=qt6ct
 
-# Set default terminal and editor
-source "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/default"
+# Default editor; hk-default-editor records a different choice in uwsm/default
+export EDITOR=nvim
+[[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/default" ]] \
+  && source "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/default"
 
 # Set wifitui theme
 export WIFITUI_THEME="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/wifitui.toml"
@@ -19,3 +24,4 @@ export WIFITUI_THEME="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/the
 # Machine-local env vars (API keys, personal settings) — not tracked in git
 [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env.local" ]] \
   && source "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env.local"
+

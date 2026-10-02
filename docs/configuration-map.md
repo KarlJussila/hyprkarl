@@ -12,7 +12,8 @@ would edit.
 - `config/`
   Application config and session behavior
 - `defaults/`
-  Upstream-owned shell data and Hyprland behavior
+  Upstream-owned shell data, Hyprland behavior, and XDG defaults
+  (`config/`, `share/`) that a user's own file replaces
 - `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
   User-owned Hyprland configuration, themes, and hooks
 - `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/`
@@ -34,8 +35,6 @@ would edit.
   Documentation for using and editing Hyprkarl
 - `templates/`
   Files copied or rendered by setup and install commands
-- `applications/`
-  Desktop files exposed under `~/.local/share/applications/`
 
 ## Stateful Runtime Files
 
@@ -170,58 +169,77 @@ For Hyprland syntax and option reference, see the official Hyprland docs:
 `config/uwsm/env` sets the session-wide environment:
 
 - exports `HYPRKARL_PATH`
-- adds `~/.local/bin` and Hyprkarl's `bin/` to `PATH`
-- extends `XDG_DATA_DIRS` for Flatpak desktop entries
+- adds `~/.local/bin` and Hyprkarl's `bin/` to `PATH`, in that order, so a
+  personal command can replace an `hk-*` command of the same name
+- puts `defaults/config/` first in `XDG_CONFIG_DIRS` and `defaults/share/`
+  first in `XDG_DATA_DIRS`, after Flatpak's entries
+- sets `EDITOR=nvim` and `QT_QPA_PLATFORMTHEME`
 - points `WIFITUI_THEME` at the active theme
-- sets `QT_QPA_PLATFORMTHEME`
-- sources `~/.config/uwsm/default`
+- sources `~/.config/uwsm/default`, which `hk-default-editor` writes, if it
+  exists
 - sources `~/.config/uwsm/env.local` if it exists
 
-`~/.config/uwsm/default` is the user-editable place for:
-
-- `TERMINAL`
-- `EDITOR`
-- optional screenshot directory override
-- optional screen recording directory override
-
-The default terminal and editor commands update this file. Changes here require
-a new session.
-
-`~/.config/uwsm/env.local` is for machine-local environment variables such as API
-keys and personal settings. It is a real user-owned file that `hk-config-seed`
-creates from a shipped example when absent.
+`~/.config/uwsm/env.local` is for machine-local environment variables such as
+API keys, screenshot and recording folders, and any variable above you want to
+change. Hyprkarl creates it once from an example. Changes need a new session.
 
 ## Application Configuration
 
-`hk-config-seed`, run by every `hk-update apply`, copies an application's
-starting config when you have none of its files, and never overwrites a file
-you have. An existing setup is left intact rather than filled with Hyprkarl
-defaults. To return an application to its own defaults, empty its config file;
-deleting every file brings Hyprkarl's starting config back on the next update.
+Hyprkarl configures applications in one of four ways, chosen per application,
+so its defaults keep updating wherever the application allows it.
 
-| Application | Personal editing path | How Hyprkarl participates | Apply changes | Replaced on update |
-|---|---|---|---|---|
-| Alacritty | `~/.config/alacritty/local.toml` | Tracked `alacritty.toml` imports the generated theme, shipped terminal defaults, then this file | Automatic config reload or a new window | Bootstrap and shipped defaults only |
-| foot | `~/.config/foot/local.ini` | Tracked `foot.ini` includes the generated theme, shipped defaults, then this file | New window | Bootstrap only |
-| Ghostty | `~/.config/ghostty/local.conf` | Tracked `config.ghostty` loads the generated theme and then this optional file | Reload Ghostty's config or open a new window | Bootstrap only |
-| Kitty | `~/.config/kitty/local.conf` | Tracked `kitty.conf` includes the generated theme and then this file | `hk-terminal-reload` or a new window | Bootstrap only |
-| Btop | `~/.config/btop/` | Complete starting config with a stable active-theme link | Restart Btop; theme switches call `hk-btop-reload` | Never |
-| Fastfetch | `~/.config/fastfetch/` | Complete starting config and logo | Next run | Never |
-| Fish | `~/.config/fish/` | Complete starting config; Fish also loads its ordinary `conf.d/` files | New shell or source the changed file | Never |
-| GTK 3/4 | `~/.config/gtk-3.0/` and `~/.config/gtk-4.0/` | Personal `gtk.css` imports `hyprkarl.css`, which reads the materialized active GTK theme; `settings.ini` remains personal | Restart affected applications | Personal files never; `~/.local/share/themes/hyprkarl/` is regenerated |
-| Hypridle, Hyprpaper, Hyprsunset | `~/.config/hypr/hypridle.local.conf`, `hyprpaper.local.conf`, `hyprsunset.local.conf` | Tracked `hypr*.conf` sets Hyprkarl's behavior, then sources the local file. Hypridle's timeouts and actions are variables the local file can redefine | Restart the affected service | Bootstrap only |
-| Hyprtoolkit | Theme source under `~/.config/hyprkarl/themes/` | Stable tracked link to the generated active theme | `hk-theme set <name>` | Link is managed; generated target is replaced |
-| Neovim | `~/.config/nvim/` | Complete starting tree with stable theme links | Restart or reload Neovim | Never |
-| Qt5ct / Qt6ct | `~/.config/qt5ct/` and `~/.config/qt6ct/` | Personal Qt settings with stable generated palette links | Restart affected applications | Never |
-| Desktop portals | `~/.config/xdg-desktop-portal/` and `~/.config/xdg-desktop-portal-termfilechooser/` | Complete starting configs | Restart the portal services or begin a new session | Never |
-| Terminal preference | `~/.config/xdg-terminals.list` | Complete starting file used by `xdg-terminal-exec` | Next terminal launch | Never |
-| Yazi | `~/.config/yazi/` | Complete starting tree with plugins and a stable theme flavor link | Next Yazi launch | Never |
+**Shipped file plus a personal file.** Hyprkarl links its config into
+`~/.config`; that file loads the active theme and Hyprkarl's settings, then a
+personal file that Hyprkarl creates once and never replaces.
 
-The corresponding ignored paths under `config/` are shipped seed material,
-not the live personal copy. Editing one changes future first-run defaults, not
-the current user's configuration. A full replacement is always possible by
-changing or removing the personal files; the documented paths are a convenient
-layout, not a restriction.
+| Application | Personal file | Apply changes |
+|---|---|---|
+| Alacritty | `~/.config/alacritty/local.toml` | Automatic, or a new window |
+| foot | `~/.config/foot/local.ini` | New window |
+| Ghostty | `~/.config/ghostty/local.conf` | Reload Ghostty's config or open a new window |
+| Kitty | `~/.config/kitty/local.conf` | `hk-terminal-reload` or a new window |
+| Hypridle | `~/.config/hypr/hypridle.local.conf`; its timeouts and actions are variables you can redefine | Restart `hypridle.service` |
+| Hyprpaper, Hyprsunset | `~/.config/hypr/hyprpaper.local.conf`, `hyprsunset.local.conf` | Restart the service |
+| Hyprland | `~/.config/hyprkarl/hypr/<module>.lua`; see [Hyprland](#hyprland) | Automatic reload |
+
+**Hyprkarl defaults with your own file winning.** These programs search
+`XDG_CONFIG_DIRS` or `XDG_DATA_DIRS` after your own directories, so Hyprkarl's
+file applies until you create one at the same path under `~/.config` or
+`~/.local/share`. Yours then replaces it whole.
+
+| Default | Purpose | Your override |
+|---|---|---|
+| `defaults/config/xdg-desktop-portal/portals.conf` | Portal backends, including the terminal file chooser | `~/.config/xdg-desktop-portal/portals.conf` |
+| `defaults/config/xdg-terminals.list` | Terminal for `xdg-terminal-exec`; `hk-default-terminal` writes yours | `~/.config/xdg-terminals.list` |
+| `defaults/share/applications/` | Terminal arguments for Alacritty and foot; Nautilus without D-Bus activation, which opened two windows | A desktop file of the same name in `~/.local/share/applications/` |
+
+The launcher hides a few rarely used applications through
+`applications.hidden` in `shell.json`.
+
+**Owned by the theme.** These follow the active theme. Change them through a
+[personal theme](themes.md), not in place.
+
+| Application | How |
+|---|---|
+| GTK 3/4 | Linked `gtk.css` imports the theme copied to `~/.local/share/themes/hyprkarl/`; linked `settings.ini` selects it |
+| Qt5ct / Qt6ct | `hk-theme set` writes `qt5ct.conf` and `qt6ct.conf` with the theme's palette, fonts, and icons; changes made in the qt6ct window last until the next theme switch |
+| Hyprtoolkit | Linked `~/.config/hypr/hyprtoolkit.conf` |
+| Cursor | `hk-theme set` writes `~/.local/share/icons/default/index.theme` |
+| Desktop file chooser | Linked `xdg-desktop-portal-termfilechooser/config`, which opens Yazi in Hyprkarl's terminal |
+
+**Starting configs.** Where an application has no way to load Hyprkarl's
+defaults next to a personal file, `hk-config-seed` (run by every
+`hk-update apply`) copies a complete starting config when you have none of its
+files. It never overwrites a file, and the copy is yours from then on; updates
+do not change it. Delete every file of one to get Hyprkarl's current version
+on the next update.
+
+| Application | Why it is copied | Theme |
+|---|---|---|
+| Btop (`~/.config/btop/`) | Btop rewrites its own config | Linked active theme; theme switches call `hk-btop-reload` |
+| Fastfetch (`~/.config/fastfetch/`) | No includes | None |
+| Neovim (`~/.config/nvim/`) | A Neovim config is personal code | Linked colorscheme |
+| Yazi (`~/.config/yazi/`) | No includes for a second config | Linked flavor |
 
 ## Quickshell
 

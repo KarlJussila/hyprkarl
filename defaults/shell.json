@@ -1,5 +1,4 @@
 {
-  "version": 1,
   "modules": {
     "bar": true,
     "panels": true,
@@ -148,5 +147,9 @@
         }
       ]
     }
+  },
+  "userRoot": {
+    "source": "",
+    "settings": {}
   }
 }

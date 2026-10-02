@@ -122,7 +122,7 @@ call_user_test() {
 }
 
 initial=$(call_user_test snapshot) || fail "could not read personal QML context"
-jq -e '.configuration == 1 and .fixture == true and .name == ""' \
+jq -e '.configuration == "top" and .fixture == true and .name == ""' \
   <<< "$initial" >/dev/null \
   || fail "personal QML context did not expose configuration, settings, and overlay state"
 

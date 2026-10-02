@@ -29,10 +29,10 @@ PanelWindow {
   implicitHeight: surface.implicitHeight
   mask: Region {}
 
-  anchors.top: shellConfig.osdEdge === "top"
-  anchors.bottom: shellConfig.osdEdge === "bottom"
-  margins.top: shellConfig.osdEdge === "top" ? shellConfig.osdMargin : 0
-  margins.bottom: shellConfig.osdEdge === "bottom" ? shellConfig.osdMargin : 0
+  anchors.top: shellConfig.osd.edge === "top"
+  anchors.bottom: shellConfig.osd.edge === "bottom"
+  margins.top: shellConfig.osd.edge === "top" ? shellConfig.osd.margin : 0
+  margins.bottom: shellConfig.osd.edge === "bottom" ? shellConfig.osd.margin : 0
 
   WlrLayershell.namespace: "hyprkarl-quickshell-osd"
   WlrLayershell.layer: WlrLayer.Overlay
@@ -53,7 +53,7 @@ PanelWindow {
     implicitHeight: content.implicitHeight + root.theme.osdPadding * 2
     height: implicitHeight
     opacity: root.reveal
-    y: root.shellConfig.osdEdge === "top"
+    y: root.shellConfig.osd.edge === "top"
       ? (root.reveal - 1) * root.theme.osdSpacing
       : (1 - root.reveal) * root.theme.osdSpacing
     color: root.theme.popupSurface

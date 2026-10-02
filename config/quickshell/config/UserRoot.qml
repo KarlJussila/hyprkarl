@@ -15,7 +15,7 @@ Scope {
     id: userContext
 
     readonly property var configuration: root.shellConfig.values
-    readonly property var settings: root.shellConfig.userRootSettings
+    readonly property var settings: root.shellConfig.userRoot.settings
     readonly property var theme: root.theme
     readonly property var outputs: Quickshell.screens
     readonly property string overlayName: root.overlayState.activeSurface
@@ -54,21 +54,19 @@ Scope {
 
     onStatusChanged: {
       if (status === Loader.Error) {
-        console.warn("User QML root failed to load '"
-          + root.shellConfig.userRootSource + "'")
+        console.warn("User QML root failed to load '" + root.source + "'")
       }
     }
   }
 
   function load(): void {
     moduleLoader.active = false
-    if (!shellConfig.ready || !theme.ready
-        || shellConfig.userRootSource.length === 0) {
+    if (!theme.ready || source.length === 0) {
       return
     }
 
     moduleLoader.setSource(
-      Paths.userUrl("custom/" + shellConfig.userRootSource),
+      Paths.userUrl("custom/" + source),
       { "context": userContext }
     )
     moduleLoader.active = true
@@ -83,12 +81,8 @@ Scope {
     return loaded.notificationPosition(outputName)
   }
 
-  Connections {
-    target: root.shellConfig
-
-    function onReadyChanged(): void { root.load() }
-    function onUserRootSourceChanged(): void { root.load() }
-  }
+  readonly property string source: shellConfig.userRoot.source
+  onSourceChanged: load()
 
   Connections {
     target: root.theme

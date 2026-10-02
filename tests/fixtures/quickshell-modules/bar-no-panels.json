@@ -1,5 +1,4 @@
 {
-  "version": 1,
   "modules": {
     "bar": true,
     "panels": false,
@@ -12,17 +11,6 @@
     "wallpaper": false
   },
   "bar": {
-    "layoutEdits": [
-      {
-        "op": "override",
-        "id": "caffeine",
-        "set": {
-          "switch": {
-            "variant": "mark",
-            "thumbRadius": 4
-          }
-        }
-      }
-    ]
+    "edge": "bottom"
   }
 }

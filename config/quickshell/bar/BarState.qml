@@ -7,14 +7,12 @@ SystemMonitor {
   required property var shellConfig
   active: true
 
-  property Connections providerConnections: Connections {
-    target: root.shellConfig
-
-    function onCommandProvidersChanged(): void {
-      CommandState.configure(root.shellConfig.commandProviders)
-    }
+  readonly property var commandProviders: {
+    const layout = shellConfig.bar.layout
+    const anchor = layout.center.anchor ? [layout.center.anchor] : []
+    return layout.start.concat(layout.center.before, anchor, layout.center.after, layout.end)
+      .filter(widget => widget.kind === "command" && widget.command !== undefined)
   }
-
-  Component.onCompleted:
-    CommandState.configure(shellConfig.commandProviders)
+  onCommandProvidersChanged: CommandState.configure(commandProviders)
+  Component.onCompleted: CommandState.configure(commandProviders)
 }

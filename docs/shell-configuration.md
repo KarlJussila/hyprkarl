@@ -1,12 +1,8 @@
-# Shell Configuration and State Contract
+# Shell Configuration
 
-This document defines the lasting public configuration boundary for the
-Quickshell shell. The production bar implements default/user resolution, common
-version 1 structure validation, inline built-in and command widget instances,
-explicit per-bar and application-wide user-QML modules, explicit layout edits,
-and live last-valid reloads for ordinary configuration values. Built-in module
-selection is intentionally latched until a shell restart.
-Widget-specific setting validation belongs to each stable module contract.
+The Quickshell shell reads the shipped `defaults/shell.json` and merges your
+optional personal file over it. This document covers that file, the widget
+kinds you can place in the bar, and the personal QML hooks.
 
 ## Files and Ownership
 
@@ -18,17 +14,15 @@ ${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json
                       the owner's sparse override, when present
 ```
 
-The shipped file is upstream-owned. The user file is never rewritten during
-an update. The shell recursively merges ordinary objects from the user file
-over the shipped file, replaces scalars and arrays, then applies explicit
-layout operations. This lets new upstream defaults flow through without
-inventing implicit ordering or deletion rules for widget arrays.
+The shipped file is upstream-owned. Updates never rewrite your file. Objects
+in your file merge key by key over the shipped file; every other value,
+including arrays, replaces the shipped one. Anything you leave out keeps
+following the shipped default, so updates still reach it.
 
 For example, this is a complete user file that only moves the bar:
 
 ```json
 {
-  "version": 1,
   "bar": {
     "edge": "bottom"
   }
@@ -44,103 +38,77 @@ shell. Commands triggered by a widget retain its `HYPRKARL_OUTPUT` context.
 
 ## Merge and Layout Rules
 
-Ordinary JSON objects merge recursively. A user scalar replaces the inherited
-scalar. A user array replaces the inherited array in full; arrays are never
-concatenated or merged by position. Consequently, setting `bar.layout.start`
-directly means supplying that entire ordered section.
+A user array replaces the shipped array in full. The bar layout is a set of
+arrays (`start`, `center.before`, `center.after`, `end`) plus the single
+`center.anchor` widget. To change the widgets in one section, copy that section
+from `defaults/shell.json` into your file and edit it. You then own that
+section's order and contents; the other sections keep following updates.
 
-For smaller layout customizations, use ordered `bar.layoutEdits` instead:
+For example, this drops the GPU readout and shows the audio percentage by
+owning `start` and `end`:
 
 ```json
 {
-  "version": 1,
   "bar": {
-    "edge": "bottom",
-    "layoutEdits": [
-      { "op": "remove", "id": "gpu" },
-      {
-        "op": "move",
-        "id": "tray",
-        "section": "end",
-        "before": "audio"
-      },
-      {
-        "op": "override",
-        "id": "audio",
-        "set": { "showPercentage": true }
-      },
-      {
-        "op": "insert",
-        "section": "center.after",
-        "after": "caffeine",
-        "widget": {
-          "id": "night-light",
-          "kind": "toggle",
-          "onCommand": "hyprsunset -t 4000",
-          "offCommand": "pkill hyprsunset",
-          "syncCommand": "pgrep -x hyprsunset",
-          "onIcon": "󰖔",
-          "offIcon": "󰖨"
-        }
-      }
-    ]
+    "layout": {
+      "start": [
+        { "id": "menu", "kind": "command", "icon": "", "tooltip": "Main menu",
+          "primaryCommand": "hk-shell menu toggle main" },
+        { "id": "workspaces", "kind": "workspaces", "alwaysShow": [1],
+          "includeFocused": true, "includeOccupied": true },
+        { "id": "cpu", "kind": "cpu", "primary": "{temp}°",
+          "alternate": "{temp}° | {usage}%" },
+        { "id": "ram", "kind": "ram", "icon": "", "primary": "{usedPercent}%",
+          "alternate": "{used}/{total} | {swapUsed}/{swapTotal}" },
+        { "id": "tray", "kind": "tray", "direction": "end" }
+      ],
+      "end": [
+        { "id": "display", "kind": "display" },
+        { "id": "audio", "kind": "audio", "showPercentage": true,
+          "secondaryCommand": "hk-audio-launch" },
+        { "id": "bluetooth", "kind": "bluetooth",
+          "secondaryCommand": "hk-bluetooth-launch" },
+        { "id": "network", "kind": "network", "secondaryCommand": "hk-wifi-launch" },
+        { "id": "battery", "kind": "battery", "showPercentage": true,
+          "lowThreshold": 0.15, "powerCommand": "hk-shell menu toggle power" }
+      ]
+    }
   }
 }
 ```
 
-Operations run from top to bottom against the merged layout:
-
-- `remove` deletes the named instance.
-- `move` removes the named instance from its current section and places it in
-  the target `section`.
-- `override` recursively merges `set` into the named instance. It cannot
-  change the stable `id` or implementation `kind`.
-- `insert` places a complete new `widget` definition in the target section.
-
-The sections are `start`, `center.before`, `center.anchor`, `center.after`, and
-`end`. Array sections accept either `before` or `after`; with neither, the
-widget is appended. `center.anchor` is a single slot and accepts neither. To
-replace its occupant, remove or move the old widget before inserting or moving
-the new one. Referencing a missing ID, duplicating an ID, targeting a neighbor
-in another section, or occupying a nonempty anchor rejects the configuration.
-
-Stable IDs make every layout change unambiguous. Omission means inheritance,
-not removal, and an upstream widget can be added without rewriting the user's
-file. Operation order also permits deliberate sequences such as removing a
-widget and inserting a different implementation under the same ID.
+Set `"anchor": null` under `center` to leave the midpoint empty. Widget `id`
+values must be unique; command widgets share results by ID.
 
 ### Toggle indicators
 
 Every toggle indicator starts from the active theme's complete `switch`
 appearance. A `kind: "toggle"` widget may supply a sparse `switch` object when
-that instance needs different geometry or glyph placement:
+that instance needs different geometry or glyph placement. Put it in the
+widget's definition, in a section you own:
 
 ```json
 {
-  "version": 1,
-  "bar": {
-    "layoutEdits": [
-      {
-        "op": "override",
-        "id": "caffeine",
-        "set": {
-          "switch": {
-            "trackLength": 30,
-            "trackHeight": 10,
-            "trackRadius": 3,
-            "thumbSize": 16,
-            "thumbRadius": 4,
-            "thumbPadding": 6,
-            "borderWidth": 1,
-            "fontFamily": "JetBrains Mono Nerd Font Propo",
-            "fontSize": 9,
-            "onGlyphOffset": [1, 0],
-            "offGlyphOffset": [0, 0],
-            "transitionDuration": 140
-          }
-        }
-      }
-    ]
+  "id": "caffeine",
+  "kind": "toggle",
+  "onCommand": "hk-caffeine on",
+  "offCommand": "hk-caffeine off",
+  "syncCommand": "hk-caffeine status",
+  "onIcon": "",
+  "offIcon": "󰽖",
+  "switch": {
+    "trackLength": 30,
+    "trackHeight": 10,
+    "trackRadius": 3,
+    "thumbSize": 16,
+    "thumbRadius": 4,
+    "thumbPadding": 6,
+    "borderWidth": 1,
+    "fontFamily": "JetBrains Mono Nerd Font Propo",
+    "fontSize": 9,
+    "onGlyphOffset": [1, 0],
+    "offGlyphOffset": [0, 0],
+    "transitionDuration": 140
   }
 }
 ```
@@ -183,7 +151,6 @@ to disable:
 
 ```json
 {
-  "version": 1,
   "modules": {
     "bar": false,
     "notifications": false
@@ -203,17 +170,14 @@ to disable:
 | `calculator` | Calculator history state, IPC target, and window. |
 | `wallpaper` | Wallpaper-picker state, IPC target, and window. |
 
-Module values are read once when the shell starts. The JSON watcher still
-accepts an edited file and uses its ordinary settings, but it keeps the
-existing module set and logs a restart warning if it changed. Run
-`hk-shell restart` after changing `modules`. This avoids leaving a global
+Module values are read once when the shell starts; other settings still
+reload live. Run `hk-shell restart` after changing `modules`. This avoids leaving a global
 notification server, authentication agent, timer, watcher, or IPC handler from
 the previous selection alive in the running process.
 
 `modules.panels: false` removes the feature-panel popup host. It does not
 remove audio, battery, Bluetooth, clock, display, or network status widgets
-from a running bar. Remove those separately with `bar.layoutEdits` if the bar
-should not show them.
+from a running bar. Remove those by owning the `end` section without them.
 
 Disabling an implementation also leaves its existing entry points alone. For
 example, a shipped binding, menu row, or command widget may still refer to a
@@ -221,14 +185,13 @@ disabled menu, launcher, calculator, or wallpaper picker. Remove that entry
 from personal layout, menu, or Hyprland configuration, or point it at the
 replacement you run instead. A menu entry can be hidden with `enabled: false`.
 
-## Version 1 Shape
+## Shape
 
-Widget instances live inline where they are placed. This avoids a separate ID
-map when an instance is referenced only once.
+Widget instances live inline where they are placed. This is an abbreviated
+copy of the shipped file:
 
 ```json
 {
-  "version": 1,
   "modules": {
     "bar": true,
     "panels": true,
@@ -351,7 +314,6 @@ name. Each value is an icon descriptor:
 
 ```json
 {
-  "version": 1,
   "notifications": {
     "iconOverrides": {
       "discord": { "kind": "icon", "value": "discord" },
@@ -435,10 +397,7 @@ extent and sits directly against the monitor edge. See [Built-in
 modules](#built-in-modules) for the complete switch contract and restart
 boundary.
 
-Version 1 accepts `top` and `bottom`. Left and right are added only when
-vertical layouts and panel behavior are implemented and tested. The current
-layout and widgets are intentionally horizontal; edge-dependent popup
-placement remains explicit at the panel-window boundary.
+`bar.edge` accepts `top` or `bottom`. The bar and its widgets are horizontal.
 
 The same layout appears on every monitor initially. Do not add output-specific
 overrides until a concrete different-per-monitor use case defines their
@@ -446,7 +405,7 @@ selection and fallback rules.
 
 ## Extension Lanes
 
-Version 1 has three supported ways to place a widget:
+There are three ways to place a widget:
 
 1. A built-in widget uses `kind` to select a Hyprkarl-owned implementation.
 2. A command widget either polls an explicit command or reads a persistent
@@ -480,28 +439,17 @@ command process otherwise loses which bar was clicked. This keeps the menu on
 that output when Hyprland does not focus monitors on mouse movement. `mode`,
 `interval`, and `output` apply only when a provider `command` exists.
 
-A minimal polling widget treats trimmed standard output as its text:
+A minimal polling widget treats trimmed standard output as its text. Add it
+to a layout section you own:
 
 ```json
 {
-  "version": 1,
-  "bar": {
-    "layoutEdits": [
-      {
-        "op": "insert",
-        "section": "end",
-        "before": "audio",
-        "widget": {
-          "id": "load-average",
-          "kind": "command",
-          "command": "cut -d' ' -f1 /proc/loadavg",
-          "interval": 5000,
-          "icon": "󰓅",
-          "tooltip": "One-minute load average"
-        }
-      }
-    ]
-  }
+  "id": "load-average",
+  "kind": "command",
+  "command": "cut -d' ' -f1 /proc/loadavg",
+  "interval": 5000,
+  "icon": "󰓅",
+  "tooltip": "One-minute load average"
 }
 ```
 
@@ -578,21 +526,16 @@ command-widget presentation contract cannot express. `source` is a relative
 `.qml` path below `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/modules/` in the supported contract.
 `settings` is optional data owned entirely by that module.
 
-For example, this config entry inserts `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/modules/Greeting.qml`:
+For example, this layout entry places `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/modules/Greeting.qml`:
 
 ```json
 {
-  "op": "insert",
-  "section": "end",
-  "before": "audio",
-  "widget": {
-    "id": "greeting",
-    "kind": "qml",
-    "source": "Greeting.qml",
-    "settings": {
-      "text": "Hello",
-      "command": "notify-send 'Hello from Hyprkarl'"
-    }
+  "id": "greeting",
+  "kind": "qml",
+  "source": "Greeting.qml",
+  "settings": {
+    "text": "Hello",
+    "command": "notify-send 'Hello from Hyprkarl'"
   }
 }
 ```
@@ -636,7 +579,7 @@ complete supported shell boundary:
 | `settings` | The instance's optional JSON settings object |
 | `theme` | Live semantic shell theme object |
 | `edge` | `top` or `bottom` for the owning bar |
-| `orientation` | `horizontal` in version 1 |
+| `orientation` | Always `horizontal` |
 | `output` | Owning output name |
 | `barWindow` | Owning bar window for deliberate window-relative behavior |
 | `runCommand(command)` | Run non-login `bash -c` through `uwsm-app --` with `HYPRKARL_OUTPUT` set |
@@ -691,7 +634,6 @@ Configure it in `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.jso
 
 ```json
 {
-  "version": 1,
   "modules": { "bar": false },
   "userRoot": {
     "source": "Extensions.qml",
@@ -858,35 +800,19 @@ are not schema-policed. Ordinary changes to
 `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json` apply live. Restart the shell after
 editing dynamically loaded QML source or changing `modules`.
 
-## Validation and Resolution
+## Errors
 
-The loader validates the external file boundary and otherwise lets internal
-components rely on the parsed contract.
-
-- Missing `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json` selects the shipped default without warning.
-- An unreadable user file, invalid JSON, invalid effective field, unsupported
-  version, or invalid layout operation reports the file and failing path, then
-  starts with the shipped default.
-- An invalid shipped default is a Hyprkarl defect and must fail loudly; it is
-  not hidden behind another internal fallback.
-- Duplicate widget IDs are invalid because IDs identify instances for runtime
-  state and diagnostics.
-- Command widget fields are validated where the shared provider runtime needs
-  a stable process contract. Other widget kinds flow to `WidgetHost`; a missing
-  implementation becomes a normal QML loader error. User-QML `source` and
-  `settings` are likewise passed through because they belong to trusted user
-  code.
-
-The shell watches both files and recomputes the effective configuration when
-either changes, without recreating unrelated services. A failed JSON reload
-keeps the last valid running configuration and reports the new error. Restart
-the shell after changing module switches or dynamically loaded QML source.
+A missing personal file means the shipped defaults. If your file does not
+parse, the shell logs the file and the parse error and runs the shipped
+defaults until you fix it. The shell does not check field names or types;
+a wrong value surfaces as a QML error in `hk-shell logs` from the code that
+reads it.
 
 ## State Ownership
 
 | State | Owner | Persistence |
 | --- | --- | --- |
-| Widget order and instance settings | Shipped defaults plus sparse personal shell JSON edits | User-owned file |
+| Widget order and instance settings | Shipped defaults plus personal shell JSON | User-owned file |
 | Built-in bar enablement, edge, and exclusion behavior | Shipped defaults plus personal shell JSON | User-owned file |
 | OSD edge, margin, and dismissal timeouts | Shipped defaults plus personal shell JSON | User-owned file |
 | Notification placement, timing, filters, compact apps, and icon selection | Shipped defaults plus personal shell JSON, with an optional reactive user-root position | User-owned file; reactive position is memory only |
@@ -925,14 +851,8 @@ text sizing remain outside this panel slice.
 
 ## Update Contract
 
-Updates may change `defaults/shell.json` and bump its schema version. They do
-not edit `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`. New inherited values and widgets automatically
-appear unless the user replaced the relevant value or explicitly edited that
-widget by ID. When a future user schema version is no longer supported, the
-update must provide an explicit migration command or documented manual
-conversion before support is removed.
-
-The current supported runtime target is the installed Arch package,
-Quickshell 0.3.0-2.1 with Qt 6.11.1. Production work must record the exact
-package releases used for validation and rerun the lifecycle, popup, and
-multi-monitor checks before moving to a newer line.
+Updates may change `defaults/shell.json`. They never edit
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`. New
+defaults and widgets reach you unless your file replaces that value or layout
+section. If an update renames or removes a setting, the changelog says how to
+convert a personal file.

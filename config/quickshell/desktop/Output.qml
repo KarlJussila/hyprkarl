@@ -30,7 +30,7 @@ Scope {
     const bar = root.barWindow
     const visible = bar !== null && bar.visibleExtent > 0
     return {
-      "edge": root.shellConfig.edge,
+      "edge": root.shellConfig.bar.edge,
       "extent": visible ? bar.visibleExtent : 0,
       "connected": visible && root.theme.barMarginContent === 0,
       "reachesSide": visible && root.theme.barMarginOuter === 0
@@ -38,9 +38,9 @@ Scope {
   }
 
   function resolveNotificationPosition(): var {
-    if (root.shellConfig.notificationEdge !== "bar") {
+    if (root.shellConfig.notifications.edge !== "bar") {
       return {
-        "edge": root.shellConfig.notificationEdge,
+        "edge": root.shellConfig.notifications.edge,
         "extent": 0,
         "connected": false,
         "reachesSide": false
@@ -56,7 +56,7 @@ Scope {
 
   LazyLoader {
     id: barLoader
-    active: root.shellConfig.barEnabled
+    active: root.shellConfig.modules.bar
 
     BarWindow {
       screen: root.output
@@ -68,7 +68,7 @@ Scope {
   }
 
   LazyLoader {
-    active: root.shellConfig.menuEnabled
+    active: root.shellConfig.modules.menu
 
     MenuWindow {
       output: root.output
@@ -77,7 +77,7 @@ Scope {
   }
 
   LazyLoader {
-    active: root.shellConfig.applicationsEnabled
+    active: root.shellConfig.modules.applications
 
     ApplicationPickerWindow {
       output: root.output
@@ -86,7 +86,7 @@ Scope {
   }
 
   LazyLoader {
-    active: root.shellConfig.calculatorEnabled
+    active: root.shellConfig.modules.calculator
 
     CalculatorWindow {
       output: root.output
@@ -95,7 +95,7 @@ Scope {
   }
 
   LazyLoader {
-    active: root.shellConfig.wallpaperEnabled
+    active: root.shellConfig.modules.wallpaper
 
     WallpaperPickerWindow {
       output: root.output
@@ -104,7 +104,7 @@ Scope {
   }
 
   LazyLoader {
-    active: root.shellConfig.notificationsEnabled
+    active: root.shellConfig.modules.notifications
 
     NotificationWindow {
       output: root.output
@@ -116,7 +116,7 @@ Scope {
   }
 
   LazyLoader {
-    active: root.shellConfig.osdEnabled
+    active: root.shellConfig.modules.osd
 
     OsdWindow {
       output: root.output
@@ -127,7 +127,7 @@ Scope {
   }
 
   LazyLoader {
-    active: root.shellConfig.polkitEnabled
+    active: root.shellConfig.modules.polkit
 
     PolkitWindow {
       output: root.output

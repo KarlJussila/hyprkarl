@@ -133,8 +133,8 @@ purpose and display configuration.
 
 Use `~/.config/quickshell/settings/shell.json` for module switches, widget
 settings, and bar layout. Objects merge with the shipped defaults, while
-arrays replace them. `bar.layoutEdits` lets you change individual widgets by
-ID. See [Bar customization](customizing-bar.md) for examples.
+arrays replace them, so to change a bar layout section you copy it from the
+defaults and own it. See [Bar customization](customizing-bar.md) for examples.
 
 There are three ways to add your own interfaces:
 

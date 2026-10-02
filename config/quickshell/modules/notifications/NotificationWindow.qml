@@ -22,16 +22,16 @@ PanelWindow {
     : screenEntries
   readonly property bool touchesSurface: surfaceExtent !== 0
     && position.connected === true
-    && shellConfig.notificationGap === 0
+    && shellConfig.notifications.gap === 0
   readonly property bool touchesScreenSide:
-    shellConfig.notificationSideMargin === 0
+    shellConfig.notifications.sideMargin === 0
   readonly property bool touchesScreenEdge: surfaceExtent === 0
-    && shellConfig.notificationGap === 0
+    && shellConfig.notifications.gap === 0
   readonly property bool touchesAnchorCorner: touchesScreenSide
     && (touchesScreenEdge
       || (touchesSurface && position.reachesSide === true))
   readonly property real edgeOffset: surfaceExtent
-    + shellConfig.notificationGap
+    + shellConfig.notifications.gap
     - (touchesSurface ? theme.borderWidth : 0)
   readonly property bool connectedStack: theme.notificationStackSpacing === 0
 
@@ -44,17 +44,17 @@ PanelWindow {
   exclusiveZone: 0
   implicitWidth: Math.min(
     theme.notificationWidth,
-    output.width - shellConfig.notificationSideMargin)
+    output.width - shellConfig.notifications.sideMargin)
   implicitHeight: stack.implicitHeight
 
   anchors.top: resolvedEdge === "top"
   anchors.bottom: resolvedEdge === "bottom"
-  anchors.left: shellConfig.notificationSide === "left"
-  anchors.right: shellConfig.notificationSide === "right"
+  anchors.left: shellConfig.notifications.side === "left"
+  anchors.right: shellConfig.notifications.side === "right"
   margins.top: anchors.top ? edgeOffset : 0
   margins.bottom: anchors.bottom ? edgeOffset : 0
-  margins.left: anchors.left ? shellConfig.notificationSideMargin : 0
-  margins.right: anchors.right ? shellConfig.notificationSideMargin : 0
+  margins.left: anchors.left ? shellConfig.notifications.sideMargin : 0
+  margins.right: anchors.right ? shellConfig.notifications.sideMargin : 0
 
   WlrLayershell.namespace: "hyprkarl-quickshell-notifications"
   WlrLayershell.layer: WlrLayer.Overlay
@@ -141,10 +141,10 @@ PanelWindow {
 
           anchors.top: root.resolvedEdge === "top" ? parent.top : undefined
           anchors.bottom: root.resolvedEdge === "bottom" ? parent.bottom : undefined
-          anchors.left: root.shellConfig.notificationSide === "left"
+          anchors.left: root.shellConfig.notifications.side === "left"
             ? parent.left
             : undefined
-          anchors.right: root.shellConfig.notificationSide === "right"
+          anchors.right: root.shellConfig.notifications.side === "right"
             ? parent.right
             : undefined
           entry: parent.modelData
@@ -152,33 +152,33 @@ PanelWindow {
           theme: root.theme
           opacity: parent.reveal
           sharpTopLeft: (parent.touchesPrevious
-              && (root.shellConfig.notificationSide === "left"
+              && (root.shellConfig.notifications.side === "left"
                 || parent.previousCoversOuterCorner))
             || (parent.edgeAdjacent
               && root.touchesAnchorCorner
               && root.resolvedEdge === "top"
-              && root.shellConfig.notificationSide === "left")
+              && root.shellConfig.notifications.side === "left")
           sharpTopRight: (parent.touchesPrevious
-              && (root.shellConfig.notificationSide === "right"
+              && (root.shellConfig.notifications.side === "right"
                 || parent.previousCoversOuterCorner))
             || (parent.edgeAdjacent
               && root.touchesAnchorCorner
               && root.resolvedEdge === "top"
-              && root.shellConfig.notificationSide === "right")
+              && root.shellConfig.notifications.side === "right")
           sharpBottomLeft: (parent.touchesNext
-              && (root.shellConfig.notificationSide === "left"
+              && (root.shellConfig.notifications.side === "left"
                 || parent.nextCoversOuterCorner))
             || (parent.edgeAdjacent
               && root.touchesAnchorCorner
               && root.resolvedEdge === "bottom"
-              && root.shellConfig.notificationSide === "left")
+              && root.shellConfig.notifications.side === "left")
           sharpBottomRight: (parent.touchesNext
-              && (root.shellConfig.notificationSide === "right"
+              && (root.shellConfig.notifications.side === "right"
                 || parent.nextCoversOuterCorner))
             || (parent.edgeAdjacent
               && root.touchesAnchorCorner
               && root.resolvedEdge === "bottom"
-              && root.shellConfig.notificationSide === "right")
+              && root.shellConfig.notifications.side === "right")
         }
       }
     }

@@ -217,16 +217,15 @@ The Quickshell project under `config/quickshell/` groups desktop coordination in
 UI by purpose in `ui/`, and configuration loading in `config/`. `shell.qml`
 launches the desktop; `lock.qml` launches the lock module separately. It reads
 the upstream-owned `defaults/shell.json` and applies the optional sparse
-`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json` override. Objects merge recursively, arrays replace as
-complete ordered values, and `bar.layoutEdits` provides explicit widget-ID
-operations for surgical layout changes. Widget instances are defined inline
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json` override. Objects merge recursively and arrays replace, so a user who
+changes a layout section owns that section. Widget instances are defined inline
 in the default layout. The top-level `modules` object selects the nine optional
 built-in runtimes: bar, panels, notifications, OSD, polkit, menu,
 applications/open-with, calculator, and wallpaper. Module choices latch at
 shell startup, so `hk-shell restart` is required after changing them;
 `modules.bar` controls the built-in per-output bars, while
-`modules.panels` controls only their feature-panel popup hosts. Version 1
-accepts top and bottom bars only. Keep
+`modules.panels` controls only their feature-panel popup hosts. Bars sit on
+the top or bottom edge. Keep
 appearance defaults in each theme's `quickshell.json`; shell JSON owns
 placement and behavior. The shared toggle indicator deliberately also accepts
 sparse per-instance control geometry over the theme's `shell.switch` default.

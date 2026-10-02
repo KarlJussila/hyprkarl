@@ -1,5 +1,4 @@
 {
-  "version": 1,
   "modules": {
     "bar": false,
     "panels": false,

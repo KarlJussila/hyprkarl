@@ -75,7 +75,7 @@ QtObject {
     if (notification.urgency === NotificationUrgency.Critical) return 0
     if (notification.expireTimeout === 0) return 0
     if (notification.expireTimeout > 0) return notification.expireTimeout
-    return shellConfig.notificationDefaultTimeout
+    return shellConfig.notifications.defaultTimeout
   }
 
   function progressFor(notification): real {
@@ -101,7 +101,7 @@ QtObject {
     const source = entry.source
     const appName = source?.appName ?? entry.appName
     const appIcon = source?.appIcon ?? entry.appIcon
-    const overrides = shellConfig.notificationIconOverrides
+    const overrides = shellConfig.notifications.iconOverrides
     const appOverride = overrides[normalizedIconKey(appName)]
     if (appOverride) return appOverride
 
@@ -114,13 +114,13 @@ QtObject {
 
     const urgency = source?.urgency ?? entry.urgency
     return urgency === NotificationUrgency.Critical
-      ? shellConfig.notificationCriticalIcon
-      : shellConfig.notificationFallbackIcon
+      ? shellConfig.notifications.criticalIcon
+      : shellConfig.notifications.fallbackIcon
   }
 
   function compactFor(entry): bool {
     const appName = entry.source?.appName ?? entry.appName
-    return shellConfig.notificationCompactApplications.indexOf(
+    return shellConfig.notifications.compactApplications.indexOf(
       normalizedIconKey(appName)) !== -1
   }
 
@@ -211,7 +211,7 @@ QtObject {
 
   function present(entry): void {
     const entries = [entry].concat(visibleNotifications)
-    const overflow = entries.splice(shellConfig.notificationMaxVisible)
+    const overflow = entries.splice(shellConfig.notifications.maxVisible)
     visibleNotifications = entries
 
     for (const hidden of overflow) {
@@ -235,7 +235,7 @@ QtObject {
   function receive(notification): void {
     const entry = makeEntry(notification)
     const appName = normalizedIconKey(notification.appName)
-    if (shellConfig.notificationIgnoredApplications.indexOf(appName) !== -1) return
+    if (shellConfig.notifications.ignoredApplications.indexOf(appName) !== -1) return
 
     if (silenced) {
       remember(entry)
@@ -293,7 +293,7 @@ QtObject {
       "image": "",
       "urgency": NotificationUrgency.Normal,
       "progress": -1,
-      "timeout": shellConfig.notificationStatusTimeout,
+      "timeout": shellConfig.notifications.statusTimeout,
       "synchronousKey": "",
       "glyph": glyph,
       "revealed": false,

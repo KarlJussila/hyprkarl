@@ -9,7 +9,7 @@ Item {
   required property var systemState
   required property var panelHost
 
-  readonly property int islandY: shellConfig.edge === "top"
+  readonly property int islandY: shellConfig.bar.edge === "top"
     ? theme.barMarginScreen
     : theme.barMarginContent
   readonly property real contentHeight: Math.max(
@@ -22,9 +22,9 @@ Item {
 
   Island {
     id: startIsland
-    instances: root.shellConfig.start
+    instances: root.shellConfig.bar.layout.start
     side: "start"
-    edge: root.shellConfig.edge
+    edge: root.shellConfig.bar.edge
     barWindow: root.barWindow
     theme: root.theme
     systemState: root.systemState
@@ -37,10 +37,11 @@ Item {
 
   CenterIsland {
     id: centerIsland
-    before: root.shellConfig.centerBefore
-    anchor: root.shellConfig.centerAnchorInstances
-    after: root.shellConfig.centerAfter
-    edge: root.shellConfig.edge
+    before: root.shellConfig.bar.layout.center.before
+    anchor: root.shellConfig.bar.layout.center.anchor
+      ? [root.shellConfig.bar.layout.center.anchor] : []
+    after: root.shellConfig.bar.layout.center.after
+    edge: root.shellConfig.bar.edge
     barWindow: root.barWindow
     theme: root.theme
     systemState: root.systemState
@@ -53,9 +54,9 @@ Item {
 
   Island {
     id: endIsland
-    instances: root.shellConfig.end
+    instances: root.shellConfig.bar.layout.end
     side: "end"
-    edge: root.shellConfig.edge
+    edge: root.shellConfig.bar.edge
     barWindow: root.barWindow
     theme: root.theme
     systemState: root.systemState

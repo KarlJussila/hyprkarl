@@ -77,7 +77,7 @@ QtObject {
   function present(): void {
     screenName = focusedScreenName()
     requested = screenName.length > 0
-    hideTimer.interval = media ? shellConfig.osdMediaTimeout : shellConfig.osdTimeout
+    hideTimer.interval = media ? shellConfig.osd.mediaTimeout : shellConfig.osd.timeout
     hideTimer.restart()
   }
 

@@ -27,7 +27,7 @@ Scope {
 
     function snapshot(): string {
       return JSON.stringify({
-        "configuration": root.context.configuration.version,
+        "configuration": root.context.configuration.bar.edge,
         "fixture": root.context.settings.fixture,
         "outputCount": root.context.outputs.length,
         "themeForeground": String(root.context.theme.foreground),

@@ -22,11 +22,11 @@ PanelWindow {
   color: theme.windowSurface
   aboveWindows: true
   focusable: root.panelHost?.open ?? false
-  exclusionMode: shellConfig.exclusive ? ExclusionMode.Normal : ExclusionMode.Ignore
-  exclusiveZone: shellConfig.exclusive ? totalThickness : 0
+  exclusionMode: shellConfig.bar.exclusive ? ExclusionMode.Normal : ExclusionMode.Ignore
+  exclusiveZone: shellConfig.bar.exclusive ? totalThickness : 0
 
-  anchors.top: shellConfig.edge === "top"
-  anchors.bottom: shellConfig.edge === "bottom"
+  anchors.top: shellConfig.bar.edge === "top"
+  anchors.bottom: shellConfig.bar.edge === "bottom"
   anchors.left: true
   anchors.right: true
 
@@ -43,11 +43,11 @@ PanelWindow {
 
   LazyLoader {
     id: panelHostLoader
-    active: root.shellConfig.panelsEnabled
+    active: root.shellConfig.modules.panels
 
     PanelHost {
       barWindow: root
-      edge: root.shellConfig.edge
+      edge: root.shellConfig.bar.edge
       theme: root.theme
       screenshotActive: root.screenshotActive
     }

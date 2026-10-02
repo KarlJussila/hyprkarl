@@ -119,8 +119,8 @@ hk-shell restart
 registering the instance. For foreground development, stop the managed
 instance and run `qs -p "$HYPRKARL_PATH/config/quickshell"` in a terminal.
 If a user override caused the problem, correct it or remove
-`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`; the shell otherwise retains its last valid
-configuration during a live edit.
+`${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json`. A file that does not parse leaves the
+shipped defaults running and logs the error.
 
 ## Privilege Prompt Does Not Appear
 

@@ -48,10 +48,10 @@ under `themes/` or the personal configuration root.
 Shell JSON is data-only. Widget definitions live inline in the layout; `id`
 identifies the instance and `kind` selects the implementation loaded by
 `WidgetHost.qml`. Ordinary user objects merge recursively over the shipped
-default, while arrays replace as complete ordered values. Surgical layout
-changes use ordered `bar.layoutEdits` operations keyed by stable widget ID;
-do not infer deletion or array ordering from an ordinary deep merge, and do
-not restore a separate widget-definition map.
+default, while arrays replace, so a user who changes a layout section copies
+and owns it. `config/ShellConfig.qml` only merges the two files; consumers
+read values directly (`shellConfig.osd.timeout`) and the shipped defaults hold
+every setting, so do not add QML fallbacks or a schema validator.
 
 `kind: "qml"` is the documented user-code widget lane. Its `source` normally
 names a file relative to `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/custom/modules/`, but this is a resolution
@@ -79,8 +79,8 @@ change.
 `modules.bar` controls instantiation, not merely visibility. When false, do
 not retain per-output bar windows or run the system monitor and command-widget
 providers used only by them. `modules.panels` controls the `PanelHost`.
-It intentionally leaves status widgets in the bar; an owner removes those with
-`bar.layoutEdits` when desired. The remaining switches gate both a module's
+It intentionally leaves status widgets in the bar; an owner removes those by
+owning their layout section. The remaining switches gate both a module's
 windows and the state, watchers, timers, service registrations, processes, and
 IPC targets that exist only for it. A disabled implementation does not rewrite
 its existing keybindings, command widgets, or menu entries, so users remove or
@@ -137,8 +137,8 @@ The root also owns one `OsdState` and creates one `OsdWindow` per screen. The
 state exposes fixed typed IPC methods, routes each update to the focused
 Hyprland monitor, and restarts one dismissal timer so repeated changes
 coalesce. OSD windows are click-through and never request keyboard focus.
-`config/ShellConfig.qml` alone selects, validates, and watches shell JSON while
-retaining the last valid live configuration after a rejected edit. `bar/BarWindow.qml`
+`config/ShellConfig.qml` alone reads and watches shell JSON; a personal file
+that does not parse falls back to the defaults until fixed. `bar/BarWindow.qml`
 alone owns each bar window and its per-monitor `PanelHost`. Layout files
 own island geometry. Module directories own service-specific panel state and
 content; bar widgets remain concise status and entry points.
@@ -177,8 +177,7 @@ three islands and applies that resolved height to each island. Do not restore
 fixed `barThickness` bindings in widgets or let islands resolve their final
 heights independently.
 
-Version 1 deliberately accepts only top and bottom bars. Layout and widget
-code is horizontal until a vertical design exists; keep edge-dependent popup
+Bars sit on the top or bottom edge. Layout and widget code is horizontal until a vertical design exists; keep edge-dependent popup
 placement at the panel-window boundary so later vertical support does not need
 a new surface ownership model.
 

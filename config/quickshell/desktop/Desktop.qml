@@ -39,40 +39,39 @@ Scope {
     overlayState: OverlayState
   }
   LazyLoader {
-    active: configObject.panelsEnabled && themeObject.ready
+    active: configObject.modules.panels && themeObject.ready
 
     DisplayArrangement { shellContext: userRootObject.context }
   }
   LazyLoader {
-    active: configObject.panelsEnabled && themeObject.ready
+    active: configObject.modules.panels && themeObject.ready
 
     DisplayConfirmation { shellContext: userRootObject.context }
   }
   LazyLoader {
     id: barStateLoader
-    active: configObject.barEnabled
+    active: configObject.modules.bar
 
     BarState { shellConfig: configObject }
   }
 
   LazyLoader {
     id: osdStateLoader
-    active: configObject.osdEnabled
+    active: configObject.modules.osd
 
     OsdState { shellConfig: configObject }
   }
 
   LazyLoader {
     id: notificationStateLoader
-    active: configObject.notificationsEnabled
+    active: configObject.modules.notifications
 
     NotificationState { shellConfig: configObject }
   }
 
   Variants {
-    model: configObject.ready
-      && themeObject.ready
-      && (!configObject.menuEnabled || MenuState.ready)
+    model: themeObject.ready
+      && (!configObject.modules.menu || MenuState.ready)
       ? Quickshell.screens
       : []
 

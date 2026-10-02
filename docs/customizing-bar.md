@@ -28,32 +28,28 @@ boundaries without carrying untested vertical branches through every widget.
 ## Override the Shipped Configuration
 
 Create `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/shell.json` with only the values you want to
-change. Objects merge recursively over the shipped defaults. Arrays replace as
-complete ordered values, so use `bar.layoutEdits` when you only need to move,
-insert, override, or remove one widget by its stable ID.
+change. Objects merge key by key over the shipped defaults; arrays replace.
 
 For example, this moves the bar to the bottom without copying any upstream
 layout:
 
 ```json
 {
-  "version": 1,
   "bar": {
     "edge": "bottom"
   }
 }
 ```
 
-Deleting the user file returns to the shipped configuration. Valid edits apply
-live; an invalid edit is rejected and the last valid layout remains running.
-Version 1 supports top and bottom bars.
+Edits apply live, and deleting the file returns to the shipped configuration.
+If the file does not parse, the shell logs the error and runs the shipped
+defaults until you fix it. The bar supports top and bottom edges.
 
 Set `modules.bar` to `false` to remove the built-in bar without stopping the
 other built-in modules:
 
 ```json
 {
-  "version": 1,
   "modules": { "bar": false }
 }
 ```
@@ -66,12 +62,12 @@ for composing a replacement bar and publishing its reactive notification
 extent.
 
 `modules.panels: false` is narrower: it removes the feature-panel popup host
-but leaves the bar's status widgets. Remove individual status widgets with
-`bar.layoutEdits`. [Shell configuration](shell-configuration.md#built-in-modules)
+but leaves the bar's status widgets. Remove individual status widgets by
+owning their layout section (below). [Shell configuration](shell-configuration.md#built-in-modules)
 lists every built-in module switch.
 
 See [Shell Configuration](shell-configuration.md) for the full merge contract,
-widget schema, and layout-edit examples.
+widget schema, and layout examples.
 
 ## Reorder, Add, or Remove Widgets
 
@@ -80,19 +76,26 @@ identity and `kind` selects its built-in implementation. The bar has `start`,
 `center`, and `end` islands; the center island uses `before`, an optional
 midpoint `anchor`, and `after` so its anchor can remain exactly centered.
 
-Prefer `bar.layoutEdits` for focused personal changes. Replace a whole layout
-array only when you intend to own its complete ordering.
+To change a section, copy it from `defaults/shell.json` into your file and
+edit it. You then own that section; the other sections keep following updates.
 
-The shipped `display` widget opens controls for the bar's own output. Remove it
-with a layout edit if monitor controls do not belong in your bar:
+The shipped `display` widget opens controls for the bar's own output. To drop
+it, own the `end` section without it:
 
 ```json
 {
-  "version": 1,
   "bar": {
-    "layoutEdits": [
-      { "op": "remove", "id": "display" }
-    ]
+    "layout": {
+      "end": [
+        { "id": "audio", "kind": "audio", "showPercentage": false,
+          "secondaryCommand": "hk-audio-launch" },
+        { "id": "bluetooth", "kind": "bluetooth",
+          "secondaryCommand": "hk-bluetooth-launch" },
+        { "id": "network", "kind": "network", "secondaryCommand": "hk-wifi-launch" },
+        { "id": "battery", "kind": "battery", "showPercentage": true,
+          "lowThreshold": 0.15, "powerCommand": "hk-shell menu toggle power" }
+      ]
+    }
   }
 }
 ```
@@ -117,29 +120,17 @@ because it is backlight service state rather than monitor-layout state.
 ## Add a Command Widget
 
 Use `kind: "command"` for a personal readout that can be produced by a small
-command. This example inserts the one-minute load average before the audio
-widget without copying the shipped layout:
+command. Add an entry like this one-minute load average to a layout section
+you own:
 
 ```json
 {
-  "version": 1,
-  "bar": {
-    "layoutEdits": [
-      {
-        "op": "insert",
-        "section": "end",
-        "before": "audio",
-        "widget": {
-          "id": "load-average",
-          "kind": "command",
-          "command": "cut -d' ' -f1 /proc/loadavg",
-          "interval": 5000,
-          "icon": "󰓅",
-          "tooltip": "One-minute load average"
-        }
-      }
-    ]
-  }
+  "id": "load-average",
+  "kind": "command",
+  "command": "cut -d' ' -f1 /proc/loadavg",
+  "interval": 5000,
+  "icon": "󰓅",
+  "tooltip": "One-minute load average"
 }
 ```
 
@@ -147,7 +138,7 @@ The command runs once per interval for that ID even when several monitors
 render the bar. Polling starts a new process on every tick, so overly short
 intervals can waste CPU and battery. Use the persistent stream mode for
 high-frequency or event-driven values. The provider may return plain text or a
-small validated JSON presentation object. See
+small JSON presentation object. See
 [Shell Configuration](shell-configuration.md#command-widgets) for JSON output,
 stream mode, semantic states, click commands, failure behavior, and the
 complete contract.
@@ -165,15 +156,10 @@ explicitly with a relative `source`, and keep per-instance data in `settings`:
 
 ```json
 {
-  "op": "insert",
-  "section": "end",
-  "before": "audio",
-  "widget": {
-    "id": "greeting",
-    "kind": "qml",
-    "source": "Greeting.qml",
-    "settings": { "text": "Hello" }
-  }
+  "id": "greeting",
+  "kind": "qml",
+  "source": "Greeting.qml",
+  "settings": { "text": "Hello" }
 }
 ```
 

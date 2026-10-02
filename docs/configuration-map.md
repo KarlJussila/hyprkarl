@@ -255,9 +255,9 @@ launches its lock module in a separate process so bar restarts preserve locking.
 | `~/.config/hyprkarl/themes/<name>/` | Appearance, including `shell.lock` | `hk-theme set <name>` |
 
 `defaults/shell.json` and `defaults/menu.json` supply shipped behavior. Personal
-JSON objects merge recursively over them; arrays replace completely. Explicit
-widget-ID layout edits can add, remove, replace, or move individual widgets. An
-invalid live edit leaves the last valid configuration running.
+JSON objects merge recursively over them; arrays replace completely, so to
+change a bar layout section you copy and own it. A personal file that does not
+parse leaves the shipped defaults running until you fix it.
 
 The nine `modules` switches select the bar, panels, notifications, OSD, polkit,
 menu, applications, calculator, and wallpaper. Disabled modules do not keep

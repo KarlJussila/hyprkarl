@@ -16,7 +16,7 @@ Scope {
   property Component body: null
   property Component footer: null
   property var dismissAction: null
-  readonly property bool active: context.overlayName === name
+  readonly property bool active: context.surfaceName === name
 
   function dismiss(): void {
     if (dismissAction !== null) {
@@ -26,24 +26,24 @@ Scope {
     }
   }
 
-  function open(output: string, values: var): bool {
-    return context.openOverlay(name, output, values ?? ({}))
+  function open(output: string, parameters: var): bool {
+    return context.openSurface(name, output, parameters ?? ({}))
   }
 
-  function replace(output: string, values: var): bool {
-    return context.replaceOverlay(name, output, values ?? ({}))
+  function replace(output: string, parameters: var): bool {
+    return context.replaceSurface(name, output, parameters ?? ({}))
   }
 
-  function toggle(output: string, values: var): bool {
-    return context.toggleOverlay(name, output, values ?? ({}))
+  function toggle(output: string, parameters: var): bool {
+    return context.toggleSurface(name, output, parameters ?? ({}))
   }
 
   function close(): void {
-    if (active) context.closeOverlay()
+    if (active) context.closeSurface()
   }
 
   Variants {
-    model: root.context.outputs
+    model: Quickshell.screens
 
     ModalWindow {
       id: window
@@ -51,7 +51,7 @@ Scope {
       required property var modelData
       readonly property bool requested: modelData !== null
         && root.active
-        && root.context.overlayOutput === modelData.name
+        && root.context.surfaceOutput === modelData.name
       readonly property real contentPadding: root.context.theme.menu.entryPadding * 2
 
       output: modelData

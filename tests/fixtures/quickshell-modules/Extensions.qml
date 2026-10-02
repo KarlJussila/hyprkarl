@@ -33,39 +33,37 @@ Scope {
       return JSON.stringify({
         "configuration": root.context.configuration.bar.edge,
         "fixture": root.context.settings.fixture,
-        "outputCount": root.context.outputs.length,
         "themeForeground": String(root.context.theme.palette.foreground),
-        "name": root.context.overlayName,
-        "output": root.context.overlayOutput,
-        "values": root.context.overlayValues,
-        "revision": root.context.overlayRevision,
+        "name": root.context.surfaceName,
+        "output": root.context.surfaceOutput,
+        "parameters": root.context.surfaceParameters,
         "modalLoads": root.modalLoads,
         "modalUnloads": root.modalUnloads
       })
     }
 
     function open(name: string, output: string, section: string): bool {
-      return root.context.openOverlay(name, output, { "section": section })
+      return root.context.openSurface(name, output, { "section": section })
     }
 
     function replace(name: string, output: string, section: string): bool {
-      return root.context.replaceOverlay(name, output, { "section": section })
+      return root.context.replaceSurface(name, output, { "section": section })
     }
 
     function push(name: string, output: string, section: string): bool {
-      return root.context.pushOverlay(name, output, { "section": section })
+      return root.context.pushSurface(name, output, { "section": section })
     }
 
     function toggle(name: string, output: string, section: string): bool {
-      return root.context.toggleOverlay(name, output, { "section": section })
+      return root.context.toggleSurface(name, output, { "section": section })
     }
 
     function close(): void {
-      root.context.closeOverlay()
+      root.context.closeSurface()
     }
 
     function back(): bool {
-      return root.context.backOverlay()
+      return root.context.backSurface()
     }
   }
 }

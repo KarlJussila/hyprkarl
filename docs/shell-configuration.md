@@ -651,14 +651,13 @@ has these direct members:
 | `configuration` | The complete resolved shell JSON. |
 | `settings` | `userRoot.settings` from that JSON. |
 | `theme` | The live theme; groups such as `theme.palette` and `theme.menu` mirror `quickshell.json`. |
-| `outputs` | The current `Quickshell.screens` list. |
-| `overlayName`, `overlayOutput`, `overlayValues`, `overlayRevision` | The requested exclusive overlay and its change counter. |
-| `openOverlay(name, output, values)` | Opens only when no overlay is active. |
-| `replaceOverlay(name, output, values)` | Replaces the current overlay request. |
-| `pushOverlay(name, output, values)` | Opens a request that may return to the current overlay. |
-| `toggleOverlay(name, output, values)` | Closes the matching request or replaces it. |
-| `closeOverlay()` | Closes the current overlay. |
-| `backOverlay()` | Restores the last request saved by `pushOverlay`, when one exists. |
+| `surfaceName`, `surfaceOutput`, `surfaceParameters` | The requested surface: one focused interface, such as a menu, launcher, or your own modal, open on one output at a time. |
+| `openSurface(name, output, parameters)` | Opens only when no surface is open. |
+| `replaceSurface(name, output, parameters)` | Replaces the current surface. |
+| `pushSurface(name, output, parameters)` | Opens a surface that can return to the current one. |
+| `toggleSurface(name, output, parameters)` | Closes the matching surface or replaces the current one. |
+| `closeSurface()` | Closes the current surface. |
+| `backSurface()` | Restores the last request saved by `pushSurface`, when one exists. |
 
 `context.theme` reads the generated `quickshell.json` by group, for example
 `context.theme.palette.accent` or `context.theme.panel.padding`, matching the
@@ -668,7 +667,7 @@ document, for custom values such as
 derive those values from any source vocabulary by placing the final values
 under `shell` in `theme.yaml`.
 
-The same context lets a personal root handle a menu-defined overlay without
+The same context lets a personal root handle a menu-defined surface without
 registering anything. A menu action such as this:
 
 ```json
@@ -679,8 +678,8 @@ registering anything. A menu action such as this:
 }
 ```
 
-sets `context.overlayName` to `dashboard`, passes the object as
-`context.overlayValues`, and selects `context.overlayOutput`. The built-in
+sets `context.surfaceName` to `dashboard`, passes the object as
+`context.surfaceParameters`, and selects `context.surfaceOutput`. The built-in
 menu, picker, and display-arrangement surfaces use this same controller.
 
 For a shell-styled modal, import the public module and declare the modal in the
@@ -702,7 +701,7 @@ Scope {
     context: root.context
     name: "user.dashboard"
     title: "Dashboard"
-    subtitle: root.context.overlayValues.section ?? ""
+    subtitle: root.context.surfaceParameters.section ?? ""
     preferredWidth: 720
     preferredHeight: 480
 
@@ -722,8 +721,8 @@ Scope {
 Use a distinctive name such as `user.dashboard` to avoid accidental overlap
 with shipped surfaces; this is a naming convention, not an allowlist. A menu
 entry can request it by setting `surface` to the same name. The component also
-provides `open(output, values)`, `replace(output, values)`, `toggle(output,
-values)`, and `close()` convenience methods. Personal QML remains trusted and
+provides `open(output, parameters)`, `replace(output, parameters)`,
+`toggle(output, parameters)`, and `close()` convenience methods. Personal QML remains trusted and
 may create its own windows when the shared modal presentation is not suitable.
 Set `dismissAction` when outside click, Escape, or Q should do more than close,
 such as reverting a pending operation.

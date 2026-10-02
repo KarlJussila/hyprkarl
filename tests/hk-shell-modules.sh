@@ -1,5 +1,5 @@
 #!/bin/bash
-# Exercise disabled built-in modules and the personal overlay context.
+# Exercise disabled built-in modules and the personal surface context.
 
 REPO=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 FIXTURES="$REPO/tests/fixtures/quickshell-modules"
@@ -125,52 +125,52 @@ call_user_test() {
 initial=$(call_user_test snapshot) || fail "could not read personal QML context"
 jq -e '.configuration == "top" and .fixture == true and .name == ""' \
   <<< "$initial" >/dev/null \
-  || fail "personal QML context did not expose configuration, settings, and overlay state"
+  || fail "personal QML context did not expose configuration, settings, and surface state"
 
 output=$(jq -r '.[0].name' <<< "$(hyprctl -j monitors)")
-[[ -n "$output" && "$output" != null ]] || fail "no output available for overlay test"
+[[ -n "$output" && "$output" != null ]] || fail "no output available for surface test"
 
 call_user_test open dashboard "$output" weather >/dev/null \
-  || fail "openOverlay failed"
+  || fail "openSurface failed"
 opened=$(call_user_test snapshot)
 jq -e --arg output "$output" \
-  '.name == "dashboard" and .output == $output and .values.section == "weather"' \
+  '.name == "dashboard" and .output == $output and .parameters.section == "weather"' \
   <<< "$opened" >/dev/null \
-  || fail "personal overlay did not receive its request"
+  || fail "personal surface did not receive its request"
 
 call_user_test open blocked "$output" ignored >/dev/null
-jq -e '.name == "dashboard" and .values.section == "weather"' \
+jq -e '.name == "dashboard" and .parameters.section == "weather"' \
   <<< "$(call_user_test snapshot)" >/dev/null \
-  || fail "openOverlay replaced an existing overlay"
+  || fail "openSurface replaced an existing surface"
 call_user_test push launcher "$output" applications >/dev/null \
-  || fail "pushOverlay failed"
-jq -e '.name == "launcher" and .values.section == "applications"' \
+  || fail "pushSurface failed"
+jq -e '.name == "launcher" and .parameters.section == "applications"' \
   <<< "$(call_user_test snapshot)" >/dev/null \
-  || fail "pushed overlay did not receive its request"
+  || fail "pushed surface did not receive its request"
 [[ $(call_user_test back) == true ]] \
-  || fail "backOverlay did not restore the prior request"
-jq -e '.name == "dashboard" and .values.section == "weather"' \
+  || fail "backSurface did not restore the prior request"
+jq -e '.name == "dashboard" and .parameters.section == "weather"' \
   <<< "$(call_user_test snapshot)" >/dev/null \
-  || fail "backOverlay restored the wrong request"
+  || fail "backSurface restored the wrong request"
 call_user_test replace replacement "$output" controls >/dev/null \
-  || fail "replaceOverlay failed"
+  || fail "replaceSurface failed"
 replaced=$(call_user_test snapshot)
-jq -e '.name == "replacement" and .values.section == "controls"' \
+jq -e '.name == "replacement" and .parameters.section == "controls"' \
   <<< "$replaced" >/dev/null \
-  || fail "replaceOverlay did not replace the request"
+  || fail "replaceSurface did not replace the request"
 [[ $(call_user_test back) == false ]] \
-  || fail "replaceOverlay retained a stale return request"
+  || fail "replaceSurface retained a stale return request"
 
 call_user_test toggle replacement "$output" controls >/dev/null \
-  || fail "toggleOverlay did not close the matching request"
+  || fail "toggleSurface did not close the matching request"
 jq -e '.name == ""' <<< "$(call_user_test snapshot)" >/dev/null \
-  || fail "toggleOverlay left the matching request open"
+  || fail "toggleSurface left the matching request open"
 
 call_user_test toggle dashboard "$output" system >/dev/null \
-  || fail "toggleOverlay did not open a different request"
-call_user_test close >/dev/null || fail "closeOverlay failed"
+  || fail "toggleSurface did not open a different request"
+call_user_test close >/dev/null || fail "closeSurface failed"
 jq -e '.name == ""' <<< "$(call_user_test snapshot)" >/dev/null \
-  || fail "closeOverlay left a request open"
+  || fail "closeSurface left a request open"
 
 call_user_test open user.fixture "$output" modal >/dev/null \
   || fail "public personal modal did not open"

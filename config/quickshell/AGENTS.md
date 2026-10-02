@@ -68,7 +68,7 @@ All are explicit references, with no discovery or registration:
   (`bar/widgets/QmlWidget.qml` builds it).
 - One application-wide `userRoot.source` (`config/UserRoot.qml`) for
   independent surfaces or a replacement bar. Its context exposes config,
-  theme, outputs, and the overlay methods, plus an optional
+  theme, and the surface request and methods, plus an optional
   `notificationPosition(outputName)` hook.
 - `ui.modal.Modal` is the public frame for personal modals.
 - Notification `component` icons from `custom/icons/`.

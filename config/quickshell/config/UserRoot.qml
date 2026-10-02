@@ -17,33 +17,31 @@ Scope {
     readonly property var configuration: root.shellConfig.values
     readonly property var settings: root.shellConfig.userRoot.settings
     readonly property var theme: root.theme
-    readonly property var outputs: Quickshell.screens
-    readonly property string overlayName: root.overlayState.activeSurface
-    readonly property string overlayOutput: root.overlayState.screenName
-    readonly property var overlayValues: root.overlayState.parameters
-    readonly property int overlayRevision: root.overlayState.openRevision
+    readonly property string surfaceName: root.overlayState.activeSurface
+    readonly property string surfaceOutput: root.overlayState.screenName
+    readonly property var surfaceParameters: root.overlayState.parameters
 
-    function openOverlay(name: string, output: string, values: var): bool {
-      return root.overlayState.open(name, output, values)
+    function openSurface(name: string, output: string, parameters: var): bool {
+      return root.overlayState.open(name, output, parameters)
     }
 
-    function replaceOverlay(name: string, output: string, values: var): bool {
-      return root.overlayState.replace(name, output, values)
+    function replaceSurface(name: string, output: string, parameters: var): bool {
+      return root.overlayState.replace(name, output, parameters)
     }
 
-    function pushOverlay(name: string, output: string, values: var): bool {
-      return root.overlayState.push(name, output, values)
+    function pushSurface(name: string, output: string, parameters: var): bool {
+      return root.overlayState.push(name, output, parameters)
     }
 
-    function toggleOverlay(name: string, output: string, values: var): bool {
-      return root.overlayState.toggle(name, output, values)
+    function toggleSurface(name: string, output: string, parameters: var): bool {
+      return root.overlayState.toggle(name, output, parameters)
     }
 
-    function closeOverlay(): void {
+    function closeSurface(): void {
       root.overlayState.closeCurrent()
     }
 
-    function backOverlay(): bool {
+    function backSurface(): bool {
       return root.overlayState.back()
     }
   }

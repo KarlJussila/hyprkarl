@@ -46,7 +46,7 @@ an in-process fuzzy-search field. It searches the current menu and every
 declared descendant, keeps direct matches before deeper matches, and shows the
 parent path on deeper rows. Default-width menus hide that field and its divider
 until printable input reveals them; `search` and `reference` widths keep theirs
-visible, as do the launcher and calculator overlays. `widthRole` may be `default`, `search`, or
+visible, as do the launcher and calculator. `widthRole` may be `default`, `search`, or
 `reference` and selects the corresponding themed width. Searching keeps that
 width. `entryAlignment` may be `left`, `center`, or `right`; it defaults to
 `center`. Each object in `entries` has a stable dotted ID and:
@@ -69,13 +69,13 @@ personal commands belong in `~/.local/bin/`. The menu definition owns
 navigation. Themes, live keybindings,
 Nerd Font icons, Docker services, and every fingerprint choice are dynamic
 Quickshell menus. The app launcher, open-with chooser, calculator, and
-wallpaper carousel are dedicated Quickshell overlays because their
+wallpaper carousel are dedicated Quickshell surfaces because their
 rows and actions do not fit the command-menu data contract. Package pickers
 retain their focused terminal interfaces.
 
-A `surface` action switches directly to another Quickshell overlay without
+A `surface` action switches directly to another Quickshell surface without
 starting a process or calling back through shell IPC. The menu remains its
-return destination until the new overlay closes or replaces the request:
+return destination until the new surface closes or is replaced:
 
 ```json
 {
@@ -116,16 +116,16 @@ selected output:
 
 The action replaces the visible menu with `dashboard` while retaining the menu
 as its return destination. An application-wide
-user root reads `context.overlayName`, `context.overlayOutput`, and
-`context.overlayValues`, creates its own window for that name, and calls
-`context.backOverlay()` to return or `context.closeOverlay()` to close the
+user root reads `context.surfaceName`, `context.surfaceOutput`, and
+`context.surfaceParameters`, creates its own window for that name, and calls
+`context.backSurface()` to return or `context.closeSurface()` to close the
 whole request chain. See [Application-wide user
 QML](shell-configuration.md#application-wide-user-qml) for the full context.
 
 If `modules.menu` is disabled, the menu IPC target and its windows do not
 exist. Disabling another built-in module does not rewrite menu rows that point
 to it. Hide a no-longer-useful shipped row with `enabled: false`, or replace it
-with an entry for the program or personal overlay that takes over that job.
+with an entry for the program or personal surface that takes over that job.
 
 Keyboard navigation skips disabled rows and keeps the selected row immediately
 in view, including when wrapping between the first and last entries. Moving
@@ -341,7 +341,7 @@ Menu IDs include `main`, `config`, `defaults`, `install`, `uninstall`,
 Static forwarding `hk-menu-*` aliases are intentionally absent: custom
 bindings call the relevant `hk-shell` boundary directly. Use `hk-shell
 launcher`, `hk-shell calculator`, and `hk-shell wallpaper` for the dedicated
-overlays.
+surfaces.
 
 Keyboard navigation supports Up/Down, Home/End, and Enter to choose. Escape or
 an unmodified lowercase Q closes the whole menu. Left on an empty

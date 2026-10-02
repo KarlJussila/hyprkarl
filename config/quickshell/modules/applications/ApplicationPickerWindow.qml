@@ -11,9 +11,9 @@ PickerWindow {
   readonly property bool active: ApplicationPickerState.active
     && output.name === OverlayState.screenName
   readonly property var entries: ApplicationPickerState.entriesFor(query)
-  readonly property real rowHeight: theme.applicationPickerIconSize
-    + theme.menuEntryMargin * 2
-    + theme.menuSelectionBorderWidth * 2
+  readonly property real rowHeight: theme.applicationPicker.iconSize
+    + theme.menu.entryMargin * 2
+    + theme.menu.selectionBorderWidth * 2
   property bool pointerPositionKnown: false
   property point pointerPosition: Qt.point(0, 0)
   property bool selectionVisible: true
@@ -22,9 +22,9 @@ PickerWindow {
   title: ApplicationPickerState.openWithActive ? "Open With" : "Applications"
   placeholder: "Search applications…"
   showTextCursor: true
-  requestedWidth: theme.applicationPickerWidth
+  requestedWidth: theme.applicationPicker.width
   requestedBodyHeight: rowHeight * Math.max(1,
-    Math.min(theme.applicationPickerRows, entries.length))
+    Math.min(theme.applicationPicker.rows, entries.length))
     + (ApplicationPickerState.openWithActive ? defaultRow.height : 0)
 
   function resetSelection(): void {
@@ -95,18 +95,18 @@ PickerWindow {
 
   Text {
     anchors.fill: parent
-    anchors.margins: root.theme.menuEntryPadding
+    anchors.margins: root.theme.menu.entryPadding
     visible: applicationList.count === 0
     text: ApplicationPickerState.openWithLoading
       ? "Loading applications…"
       : ApplicationPickerState.openWithError.length > 0
         ? ApplicationPickerState.openWithError
         : "No matches"
-    color: root.theme.menuForeground
+    color: root.theme.menu.foreground
     opacity: 0.7
-    font.family: root.theme.menuFont
-    font.pixelSize: root.theme.menuFontSize
-    font.weight: root.theme.menuFontWeight
+    font.family: root.theme.menu.font
+    font.pixelSize: root.theme.menu.fontSize
+    font.weight: root.theme.menu.fontWeight
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
   }
@@ -140,21 +140,21 @@ PickerWindow {
 
       Rectangle {
         anchors.fill: parent
-        anchors.margins: root.theme.menuEntryMargin
-        color: root.theme.menuBackground
+        anchors.margins: root.theme.menu.entryMargin
+        color: root.theme.menu.background
         border.color: row.navigationCurrent
-          ? root.theme.menuAccent
+          ? root.theme.menu.accent
           : "transparent"
         border.width: row.navigationCurrent
-          ? root.theme.menuSelectionBorderWidth
+          ? root.theme.menu.selectionBorderWidth
           : 0
-        radius: root.theme.menuEntryRadius
+        radius: root.theme.menu.entryRadius
 
         Rectangle {
           anchors.fill: parent
-          color: root.theme.menuAccent
+          color: root.theme.menu.accent
           opacity: row.navigationCurrent
-            ? root.theme.menuSelectionAccentOpacity
+            ? root.theme.menu.selectionAccentOpacity
             : 0
           radius: parent.radius
         }
@@ -163,10 +163,10 @@ PickerWindow {
           id: icon
 
           anchors.left: parent.left
-          anchors.leftMargin: root.theme.menuEntryPadding
+          anchors.leftMargin: root.theme.menu.entryPadding
           anchors.verticalCenter: parent.verticalCenter
-          width: root.theme.applicationPickerIconSize
-          height: root.theme.applicationPickerIconSize
+          width: root.theme.applicationPicker.iconSize
+          height: root.theme.applicationPicker.iconSize
           sourceSize.width: width
           sourceSize.height: height
           fillMode: Image.PreserveAspectFit
@@ -177,18 +177,18 @@ PickerWindow {
         Column {
           anchors.left: icon.right
           anchors.right: defaultMarker.left
-          anchors.leftMargin: root.theme.menuEntryPadding
-          anchors.rightMargin: root.theme.menuEntryPadding
+          anchors.leftMargin: root.theme.menu.entryPadding
+          anchors.rightMargin: root.theme.menu.entryPadding
           anchors.verticalCenter: parent.verticalCenter
           spacing: 1
 
           Text {
             width: parent.width
             text: row.modelData.name
-            color: root.theme.menuForeground
-            font.family: root.theme.menuFont
-            font.pixelSize: root.theme.menuFontSize
-            font.weight: root.theme.menuFontWeight
+            color: root.theme.menu.foreground
+            font.family: root.theme.menu.font
+            font.pixelSize: root.theme.menu.fontSize
+            font.weight: root.theme.menu.fontWeight
             elide: Text.ElideRight
           }
 
@@ -196,11 +196,11 @@ PickerWindow {
             width: parent.width
             visible: text.length > 0
             text: row.modelData.genericName ?? ""
-            color: root.theme.menuForeground
+            color: root.theme.menu.foreground
             opacity: 0.6
-            font.family: root.theme.menuFont
-            font.pixelSize: Math.max(10, root.theme.menuFontSize - 2)
-            font.weight: root.theme.menuFontWeight
+            font.family: root.theme.menu.font
+            font.pixelSize: Math.max(10, root.theme.menu.fontSize - 2)
+            font.weight: root.theme.menu.fontWeight
             elide: Text.ElideRight
           }
         }
@@ -209,15 +209,15 @@ PickerWindow {
           id: defaultMarker
 
           anchors.right: parent.right
-          anchors.rightMargin: root.theme.menuEntryPadding
+          anchors.rightMargin: root.theme.menu.entryPadding
           anchors.verticalCenter: parent.verticalCenter
           visible: row.modelData.isDefault === true
           text: "Default"
-          color: root.theme.menuForeground
+          color: root.theme.menu.foreground
           opacity: 0.6
-          font.family: root.theme.menuFont
-          font.pixelSize: Math.max(10, root.theme.menuFontSize - 2)
-          font.weight: root.theme.menuFontWeight
+          font.family: root.theme.menu.font
+          font.pixelSize: Math.max(10, root.theme.menu.fontSize - 2)
+          font.weight: root.theme.menu.fontWeight
         }
       }
 
@@ -259,32 +259,32 @@ PickerWindow {
 
     Rectangle {
       anchors.fill: parent
-      color: root.theme.menuBackground
+      color: root.theme.menu.background
 
       Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        height: root.theme.menuInnerBorderWidth
-        color: root.theme.menuBorder
+        height: root.theme.menu.innerBorderWidth
+        color: root.theme.menu.border
       }
 
       Text {
         anchors.left: parent.left
-        anchors.leftMargin: root.theme.menuEntryPadding
+        anchors.leftMargin: root.theme.menu.entryPadding
         anchors.verticalCenter: parent.verticalCenter
         text: ApplicationPickerState.mimeType.length > 0
           ? "Set as default for " + ApplicationPickerState.mimeType
           : "Set as default"
-        color: root.theme.menuForeground
-        font.family: root.theme.menuFont
-        font.pixelSize: root.theme.menuFontSize
-        font.weight: root.theme.menuFontWeight
+        color: root.theme.menu.foreground
+        font.family: root.theme.menu.font
+        font.pixelSize: root.theme.menu.fontSize
+        font.weight: root.theme.menu.fontWeight
       }
 
       ToggleIndicator {
         anchors.right: parent.right
-        anchors.rightMargin: root.theme.menuEntryPadding
+        anchors.rightMargin: root.theme.menu.entryPadding
         anchors.verticalCenter: parent.verticalCenter
         active: ApplicationPickerState.setDefault
         theme: root.theme

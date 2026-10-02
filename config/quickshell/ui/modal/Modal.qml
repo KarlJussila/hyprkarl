@@ -11,7 +11,7 @@ Scope {
   required property string name
   property string title: ""
   property string subtitle: ""
-  property real preferredWidth: context.theme.menuSearchWidth
+  property real preferredWidth: context.theme.menu.searchWidth
   property real preferredHeight: 480
   property Component body: null
   property Component footer: null
@@ -52,7 +52,7 @@ Scope {
       readonly property bool requested: modelData !== null
         && root.active
         && root.context.overlayOutput === modelData.name
-      readonly property real contentPadding: root.context.theme.menuEntryPadding * 2
+      readonly property real contentPadding: root.context.theme.menu.entryPadding * 2
 
       output: modelData
       theme: root.context.theme
@@ -104,12 +104,12 @@ Scope {
           height: titleLabel.implicitHeight
             + (subtitleLabel.visible ? subtitleLabel.implicitHeight + 2 : 0)
             + window.contentPadding * 2
-          color: root.context.theme.menuBackground
+          color: root.context.theme.menu.background
 
           Rectangle {
             anchors.fill: parent
-            color: root.context.theme.menuAccent
-            opacity: root.context.theme.menuHeaderAccentOpacity
+            color: root.context.theme.menu.accent
+            opacity: root.context.theme.menu.headerAccentOpacity
           }
 
           Column {
@@ -125,10 +125,10 @@ Scope {
 
               width: parent.width
               text: root.title
-              color: root.context.theme.menuForeground
-              font.family: root.context.theme.menuFont
-              font.pixelSize: root.context.theme.menuFontSize
-              font.weight: root.context.theme.menuFontWeight
+              color: root.context.theme.menu.foreground
+              font.family: root.context.theme.menu.font
+              font.pixelSize: root.context.theme.menu.fontSize
+              font.weight: root.context.theme.menu.fontWeight
               elide: Text.ElideRight
               horizontalAlignment: Text.AlignHCenter
             }
@@ -139,10 +139,10 @@ Scope {
               visible: root.subtitle.length > 0
               width: parent.width
               text: root.subtitle
-              color: root.context.theme.menuForeground
+              color: root.context.theme.menu.foreground
               opacity: 0.65
-              font.family: root.context.theme.menuFont
-              font.pixelSize: root.context.theme.readoutFontSize
+              font.family: root.context.theme.menu.font
+              font.pixelSize: root.context.theme.typography.readoutSize
               elide: Text.ElideRight
               horizontalAlignment: Text.AlignHCenter
             }
@@ -155,8 +155,8 @@ Scope {
           anchors.left: parent.left
           anchors.right: parent.right
           anchors.top: header.bottom
-          height: root.context.theme.menuInnerBorderWidth
-          color: root.context.theme.menuBorder
+          height: root.context.theme.menu.innerBorderWidth
+          color: root.context.theme.menu.border
         }
 
         Item {
@@ -182,8 +182,8 @@ Scope {
           anchors.right: parent.right
           anchors.bottom: footerArea.top
           visible: root.footer !== null
-          height: visible ? root.context.theme.menuInnerBorderWidth : 0
-          color: root.context.theme.menuBorder
+          height: visible ? root.context.theme.menu.innerBorderWidth : 0
+          color: root.context.theme.menu.border
         }
 
         Item {

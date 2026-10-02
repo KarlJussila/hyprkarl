@@ -42,8 +42,8 @@ Item {
 
     Rectangle {
       width: parent.width
-      height: root.theme.panelInnerBorderWidth
-      color: root.theme.panelBorder
+      height: root.theme.panel.innerBorderWidth
+      color: root.theme.panel.border
     }
 
     Item {
@@ -51,8 +51,8 @@ Item {
 
       width: parent.width
       implicitHeight: body.implicitHeight
-        + root.theme.panelPadding * 2
-        + root.theme.panelOuterPadding
+        + root.theme.panel.padding * 2
+        + root.theme.panel.outerPadding
 
       Column {
         id: body
@@ -60,8 +60,8 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.margins: root.theme.panelPadding
-        spacing: root.theme.panelSpacing
+        anchors.margins: root.theme.panel.padding
+        spacing: root.theme.panel.spacing
       }
     }
   }

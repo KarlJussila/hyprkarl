@@ -4,10 +4,10 @@ Text {
   required property var theme
   property string navigationSection: ""
 
-  color: theme.panelForeground
+  color: theme.panel.foreground
   opacity: 0.7
-  font.family: theme.panelFont
-  font.pixelSize: theme.readoutFontSize
+  font.family: theme.panel.font
+  font.pixelSize: theme.typography.readoutSize
   font.capitalization: Font.AllUppercase
   font.letterSpacing: 0.8
 }

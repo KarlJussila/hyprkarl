@@ -13,7 +13,7 @@ Rectangle {
   readonly property string stateHome: (Quickshell.env("XDG_STATE_HOME")
     ?? Quickshell.env("HOME") + "/.local/state") + "/hyprkarl"
 
-  color: theme.popupSurface
+  color: theme.surfaces.popup
 
   Image {
     anchors.fill: parent
@@ -24,7 +24,7 @@ Rectangle {
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.popupSurface
+    color: root.theme.surfaces.popup
     opacity: root.theme.lock.dimOpacity
   }
 
@@ -33,10 +33,10 @@ Rectangle {
     anchors.horizontalCenter: parent.horizontalCenter
     y: root.height * 0.15
     text: Qt.formatTime(clock.date, root.theme.lock.clockFormat)
-    color: root.theme.foreground
-    font.family: root.theme.uiFontFamily
+    color: root.theme.palette.foreground
+    font.family: root.theme.typography.uiFamily
     font.pixelSize: root.theme.lock.clockFontSize
-    font.weight: root.theme.fontWeight
+    font.weight: root.theme.typography.weight
     renderType: Text.NativeRendering
   }
 
@@ -45,10 +45,10 @@ Rectangle {
     anchors.top: clockLabel.bottom
     anchors.topMargin: root.theme.lock.spacing / 2
     text: Qt.formatDate(clock.date, root.theme.lock.dateFormat)
-    color: root.theme.foreground
-    font.family: root.theme.uiFontFamily
+    color: root.theme.palette.foreground
+    font.family: root.theme.typography.uiFamily
     font.pixelSize: root.theme.lock.dateFontSize
-    font.weight: root.theme.fontWeight
+    font.weight: root.theme.typography.weight
     renderType: Text.NativeRendering
   }
 
@@ -58,9 +58,9 @@ Rectangle {
     width: Math.min(root.theme.lock.width,
       root.width - root.theme.lock.padding * 2)
     height: root.theme.lock.inputHeight
-    color: root.theme.popupSurface
-    border.color: failureHold.running ? root.theme.urgent : root.theme.accent
-    border.width: root.theme.borderWidth
+    color: root.theme.surfaces.popup
+    border.color: failureHold.running ? root.theme.palette.urgent : root.theme.palette.accent
+    border.width: root.theme.metrics.borderWidth
     radius: root.theme.lock.radius
     transform: Translate { id: fieldShake }
 
@@ -123,7 +123,7 @@ Rectangle {
         width: dots.dotSize
         height: width
         radius: width / 2
-        color: root.theme.foreground
+        color: root.theme.palette.foreground
       }
       add: Transition {
         NumberAnimation {
@@ -150,14 +150,14 @@ Rectangle {
     TextInput {
       id: input
       anchors.fill: parent
-      anchors.margins: root.theme.controlPadding
+      anchors.margins: root.theme.metrics.controlPadding
       focus: true
       enabled: !root.lockState.passwordBusy && !root.lockState.authenticated
       text: root.lockState.currentText
-      color: root.theme.foreground
-      selectionColor: root.theme.accent
-      selectedTextColor: root.theme.popupSurface
-      font.family: root.theme.monoFontFamily
+      color: root.theme.palette.foreground
+      selectionColor: root.theme.palette.accent
+      selectedTextColor: root.theme.surfaces.popup
+      font.family: root.theme.typography.monoFamily
       font.pixelSize: root.theme.lock.inputFontSize
       horizontalAlignment: TextInput.AlignHCenter
       verticalAlignment: TextInput.AlignVCenter

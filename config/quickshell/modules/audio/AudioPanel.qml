@@ -13,7 +13,7 @@ Item {
 
   signal externalCommandRequested(string command)
 
-  readonly property real preferredWidth: theme.panelWidth
+  readonly property real preferredWidth: theme.panel.width
   readonly property var output: Pipewire.defaultAudioSink
   readonly property var input: Pipewire.defaultAudioSource
   readonly property var outputNodes: Pipewire.nodes.values.filter(node =>

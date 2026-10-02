@@ -13,7 +13,7 @@ Item {
 
   signal externalCommandRequested(string command)
 
-  readonly property real preferredWidth: theme.panelWidth
+  readonly property real preferredWidth: theme.panel.width
   readonly property var adapter: BluetoothState.adapter
   readonly property var sortedDevices: BluetoothState.devices.slice().sort((left, right) => {
     return (left.name || left.deviceName || left.address).localeCompare(
@@ -82,11 +82,11 @@ Item {
       visible: root.adapter === null
       width: parent.width
       text: "No Bluetooth adapter is available."
-      color: root.theme.panelForeground
+      color: root.theme.panel.foreground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.panelFont
-      font.pixelSize: root.theme.panelFontSize
+      font.family: root.theme.panel.font
+      font.pixelSize: root.theme.panel.fontSize
     }
 
     PanelSectionLabel {
@@ -150,11 +150,11 @@ Item {
         && root.availableDevices.length === 0
       width: parent.width
       text: "No nearby devices found yet."
-      color: root.theme.panelForeground
+      color: root.theme.panel.foreground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.panelFont
-      font.pixelSize: root.theme.panelFontSize
+      font.family: root.theme.panel.font
+      font.pixelSize: root.theme.panel.fontSize
     }
 
     Repeater {

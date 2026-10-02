@@ -33,7 +33,7 @@ Item {
 
         definition: modelData
         edge: root.edge
-        showDivider: root.theme.showDividers && (index > 0 || root.leadingDivider)
+        showDivider: root.theme.bar.showDividers && (index > 0 || root.leadingDivider)
         barWindow: root.barWindow
         theme: root.theme
         systemState: root.systemState

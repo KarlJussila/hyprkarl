@@ -9,14 +9,14 @@ ModalWindow {
   readonly property bool active: WallpaperPickerState.active
     && output.name === OverlayState.screenName
   readonly property real carouselWidth: Math.floor(
-    width * theme.wallpaperPickerWidthScreenFraction)
+    width * theme.wallpaperPicker.widthScreenFraction)
   readonly property real previewHeight: Math.floor(Math.min(
-    height * theme.wallpaperPreviewHeightScreenFraction,
-    (carouselWidth - theme.wallpaperPickerGap * 4)
-      / theme.wallpaperPreviewAspectRatio))
+    height * theme.wallpaperPicker.previewHeightScreenFraction,
+    (carouselWidth - theme.wallpaperPicker.gap * 4)
+      / theme.wallpaperPicker.previewAspectRatio))
   readonly property real previewWidth: Math.floor(
-    previewHeight * theme.wallpaperPreviewAspectRatio)
-  readonly property real cellGap: theme.wallpaperPickerGap
+    previewHeight * theme.wallpaperPicker.previewAspectRatio)
+  readonly property real cellGap: theme.wallpaperPicker.gap
   readonly property real carouselDepth: cellGap
   readonly property var carouselEntries:
     WallpaperPickerState.entries.length === 2
@@ -79,18 +79,18 @@ ModalWindow {
 
   Text {
     anchors.fill: parent
-    anchors.margins: root.theme.menuEntryPadding
+    anchors.margins: root.theme.menu.entryPadding
     visible: wallpaperCarousel.count === 0
     text: WallpaperPickerState.loading
       ? "Loading wallpapers…"
       : WallpaperPickerState.error.length > 0
         ? WallpaperPickerState.error
         : "No wallpapers"
-    color: root.theme.menuForeground
+    color: root.theme.menu.foreground
     opacity: 0.7
-    font.family: root.theme.menuFont
-    font.pixelSize: root.theme.menuFontSize
-    font.weight: root.theme.menuFontWeight
+    font.family: root.theme.menu.font
+    font.pixelSize: root.theme.menu.fontSize
+    font.weight: root.theme.menu.fontWeight
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
   }
@@ -112,7 +112,7 @@ ModalWindow {
     highlightRangeMode: PathView.StrictlyEnforceRange
     snapMode: PathView.SnapOneItem
     maximumFlickVelocity: 5000
-    highlightMoveDuration: root.theme.panelTransitionDuration
+    highlightMoveDuration: root.theme.panel.transitionDuration
     onCountChanged: Qt.callLater(root.resetSelection)
 
     path: Path {
@@ -121,18 +121,18 @@ ModalWindow {
 
       PathAttribute {
         name: "cardScale"
-        value: root.theme.wallpaperPreviewSideScale
+        value: root.theme.wallpaperPicker.sideScale
       }
       PathAttribute {
         name: "cardOpacity"
-        value: root.theme.wallpaperPreviewSideOpacity
+        value: root.theme.wallpaperPicker.sideOpacity
       }
 
       PathArc {
         x: wallpaperCarousel.width / 2
         y: wallpaperCarousel.height / 2 + root.carouselDepth
         radiusX: wallpaperCarousel.width
-          * root.theme.wallpaperCarouselRadiusWidthFraction
+          * root.theme.wallpaperPicker.carouselRadiusWidthFraction
         radiusY: root.carouselDepth
         direction: PathArc.Counterclockwise
       }
@@ -144,18 +144,18 @@ ModalWindow {
         x: wallpaperCarousel.width / 2
         y: wallpaperCarousel.height / 2 - root.carouselDepth
         radiusX: wallpaperCarousel.width
-          * root.theme.wallpaperCarouselRadiusWidthFraction
+          * root.theme.wallpaperPicker.carouselRadiusWidthFraction
         radiusY: root.carouselDepth
         direction: PathArc.Counterclockwise
       }
 
       PathAttribute {
         name: "cardScale"
-        value: root.theme.wallpaperPreviewSideScale
+        value: root.theme.wallpaperPicker.sideScale
       }
       PathAttribute {
         name: "cardOpacity"
-        value: root.theme.wallpaperPreviewSideOpacity
+        value: root.theme.wallpaperPicker.sideOpacity
       }
     }
 
@@ -175,16 +175,16 @@ ModalWindow {
 
       Rectangle {
         anchors.fill: parent
-        color: root.theme.menuBackground
+        color: root.theme.menu.background
         border.color: cell.PathView.isCurrentItem
           ? WallpaperPickerState.action === "remove"
-            ? root.theme.urgent
-            : root.theme.menuAccent
-          : root.theme.menuBorder
+            ? root.theme.palette.urgent
+            : root.theme.menu.accent
+          : root.theme.menu.border
         border.width: cell.PathView.isCurrentItem
-          ? Math.max(3, root.theme.menuSelectionBorderWidth)
-          : Math.max(2, root.theme.menuSelectionBorderWidth)
-        radius: root.theme.menuEntryRadius
+          ? Math.max(3, root.theme.menu.selectionBorderWidth)
+          : Math.max(2, root.theme.menu.selectionBorderWidth)
+        radius: root.theme.menu.entryRadius
         clip: true
 
         Image {
@@ -205,22 +205,22 @@ ModalWindow {
           anchors.bottom: parent.bottom
           anchors.margins: parent.border.width
           height: wallpaperName.implicitHeight
-            + root.theme.menuEntryPadding * 2
-          color: root.theme.menuBackground
+            + root.theme.menu.entryPadding * 2
+          color: root.theme.menu.background
           opacity: 0.82 * cell.pathCardOpacity
 
           Text {
             id: wallpaperName
 
             anchors.fill: parent
-            anchors.margins: root.theme.menuEntryPadding
+            anchors.margins: root.theme.menu.entryPadding
             text: cell.modelData.current
               ? "Current  ·  " + cell.modelData.name
               : cell.modelData.name
-            color: root.theme.menuForeground
-            font.family: root.theme.menuFont
-            font.pixelSize: root.theme.menuFontSize
-            font.weight: root.theme.menuFontWeight
+            color: root.theme.menu.foreground
+            font.family: root.theme.menu.font
+            font.pixelSize: root.theme.menu.fontSize
+            font.weight: root.theme.menu.fontWeight
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideMiddle

@@ -32,15 +32,15 @@ ClippingRectangle {
   readonly property var iconDescriptor: notificationState.iconFor(entry)
 
   implicitWidth: compact
-    ? theme.notificationCompactWidth
-    : theme.notificationWidth
-  implicitHeight: content.implicitHeight + theme.notificationPadding * 2
-  color: theme.notificationSurface
+    ? theme.notification.compactWidth
+    : theme.notification.width
+  implicitHeight: content.implicitHeight + theme.notification.padding * 2
+  color: theme.surfaces.notification
   border.color: urgency === NotificationUrgency.Critical
-    ? theme.urgent
-    : theme.border
-  border.width: theme.borderWidth
-  radius: theme.notificationRadius
+    ? theme.palette.urgent
+    : theme.palette.border
+  border.width: theme.metrics.borderWidth
+  radius: theme.notification.radius
   topLeftRadius: sharpTopLeft ? 0 : radius
   topRightRadius: sharpTopRight ? 0 : radius
   bottomLeftRadius: sharpBottomLeft ? 0 : radius
@@ -86,12 +86,12 @@ ClippingRectangle {
     id: content
 
     anchors.fill: parent
-    anchors.margins: root.theme.notificationPadding
-    spacing: root.theme.notificationSpacing
+    anchors.margins: root.theme.notification.padding
+    spacing: root.theme.notification.spacing
 
     RowLayout {
       Layout.fillWidth: true
-      spacing: root.theme.notificationSpacing
+      spacing: root.theme.notification.spacing
 
       NotificationIcon {
         descriptor: root.iconDescriptor
@@ -109,30 +109,30 @@ ClippingRectangle {
         Text {
           Layout.fillWidth: true
           text: root.summary
-          color: root.theme.foreground
+          color: root.theme.palette.foreground
           textFormat: Text.PlainText
           wrapMode: Text.Wrap
           maximumLineCount: 2
           elide: Text.ElideRight
-          font.family: root.theme.uiFontFamily
-          font.pixelSize: root.theme.bodyFontSize
-          font.weight: root.theme.fontWeight
-          font.styleName: root.theme.fontStyle
+          font.family: root.theme.typography.uiFamily
+          font.pixelSize: root.theme.typography.bodySize
+          font.weight: root.theme.typography.weight
+          font.styleName: root.theme.typography.style
         }
 
         Text {
           Layout.fillWidth: true
           visible: text.length > 0
           text: root.body
-          color: root.theme.muted
+          color: root.theme.palette.muted
           textFormat: Text.PlainText
           wrapMode: Text.Wrap
           maximumLineCount: 4
           elide: Text.ElideRight
-          font.family: root.theme.uiFontFamily
-          font.pixelSize: root.theme.bodyFontSize
-          font.weight: root.theme.fontWeight
-          font.styleName: root.theme.fontStyle
+          font.family: root.theme.typography.uiFamily
+          font.pixelSize: root.theme.typography.bodySize
+          font.weight: root.theme.typography.weight
+          font.styleName: root.theme.typography.style
         }
 
       }
@@ -141,8 +141,8 @@ ClippingRectangle {
     Rectangle {
       Layout.fillWidth: true
       visible: root.progress >= 0
-      implicitHeight: root.theme.notificationProgressHeight
-      color: root.theme.border
+      implicitHeight: root.theme.notification.progressHeight
+      color: root.theme.palette.border
       radius: height / 2
 
       Rectangle {
@@ -150,7 +150,7 @@ ClippingRectangle {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: parent.width * root.progress / 100
-        color: root.theme.accent
+        color: root.theme.palette.accent
         radius: parent.radius
       }
     }

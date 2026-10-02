@@ -41,10 +41,10 @@ PopupWindow {
 
     onAnchoring: {
       let x = root.anchorItem.width / 2 - root.width / 2
-      let y = root.anchorItem.height + root.theme.barMarginContent + root.gap
+      let y = root.anchorItem.height + root.theme.bar.margin.content + root.gap
 
       if (root.edge === "bottom") {
-        y = -root.height - root.theme.barMarginContent - root.gap
+        y = -root.height - root.theme.bar.margin.content - root.gap
       } else if (root.edge === "left") {
         x = root.anchorItem.width + root.gap
         y = root.anchorItem.height / 2 - root.height / 2
@@ -61,18 +61,18 @@ PopupWindow {
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.tooltipSurface
-    border.color: root.theme.border
-    border.width: root.theme.borderWidth
-    radius: root.theme.tooltipRadius
+    color: root.theme.surfaces.tooltip
+    border.color: root.theme.palette.border
+    border.width: root.theme.metrics.borderWidth
+    radius: root.theme.tooltip.radius
 
     Text {
       id: label
       anchors.centerIn: parent
       text: root.text
-      color: root.theme.foreground
-      font.family: root.theme.uiFontFamily
-      font.pixelSize: root.theme.bodyFontSize
+      color: root.theme.palette.foreground
+      font.family: root.theme.typography.uiFamily
+      font.pixelSize: root.theme.typography.bodySize
     }
   }
 }

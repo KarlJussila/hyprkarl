@@ -59,16 +59,16 @@ Scope {
     }
   }
 
+  // The initial change signal and onCompleted can both arrive at startup;
+  // loading an already-loaded URL again would create a second root.
   function load(): void {
+    if (moduleLoader.source.toString() === url) return
     moduleLoader.active = false
-    if (!theme.ready || source.length === 0) {
+    if (url.length === 0) {
+      moduleLoader.source = ""
       return
     }
-
-    moduleLoader.setSource(
-      Paths.userUrl("custom/" + source),
-      { "context": userContext }
-    )
+    moduleLoader.setSource(url, { "context": userContext })
     moduleLoader.active = true
   }
 
@@ -82,13 +82,8 @@ Scope {
   }
 
   readonly property string source: shellConfig.userRoot.source
-  onSourceChanged: load()
-
-  Connections {
-    target: root.theme
-
-    function onReadyChanged(): void { root.load() }
-  }
-
+  readonly property string url: theme.ready && source.length > 0
+    ? Paths.userUrl("custom/" + source) : ""
+  onUrlChanged: load()
   Component.onCompleted: load()
 }

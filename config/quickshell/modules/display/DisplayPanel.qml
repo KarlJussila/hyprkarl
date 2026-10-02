@@ -15,7 +15,7 @@ Item {
   signal trialRequested(var layout, string panelOutput)
   signal trialStarted()
 
-  readonly property real preferredWidth: theme.panelWidth
+  readonly property real preferredWidth: theme.panel.width
   readonly property var target: displayState.outputs.find(
     output => output.name === displayState.target) ?? ({})
   readonly property var selectedOutput: displayState.outputs.find(
@@ -356,10 +356,10 @@ Item {
       visible: root.error.length > 0
       width: parent.width
       text: root.error
-      color: root.theme.urgent
+      color: root.theme.palette.urgent
       wrapMode: Text.Wrap
-      font.family: root.theme.panelFont
-      font.pixelSize: root.theme.readoutFontSize
+      font.family: root.theme.panel.font
+      font.pixelSize: root.theme.typography.readoutSize
     }
   }
 
@@ -368,7 +368,7 @@ Item {
 
     Column {
       width: parent?.width ?? 0
-      spacing: root.theme.panelSpacing
+      spacing: root.theme.panel.spacing
 
       PanelSectionLabel {
         visible: root.displayState.brightness.available
@@ -426,7 +426,7 @@ Item {
 
     Column {
       width: parent?.width ?? 0
-      spacing: root.theme.panelSpacing
+      spacing: root.theme.panel.spacing
 
       PanelRow {
         readonly property bool canToggle: !root.draftEnabled
@@ -521,7 +521,7 @@ Item {
 
     Column {
       width: parent?.width ?? 0
-      spacing: root.theme.panelSpacing
+      spacing: root.theme.panel.spacing
 
       PanelRow {
         width: parent.width
@@ -555,7 +555,7 @@ Item {
 
     Column {
       width: parent?.width ?? 0
-      spacing: root.theme.panelSpacing
+      spacing: root.theme.panel.spacing
 
       Repeater {
         model: root.refreshOptions

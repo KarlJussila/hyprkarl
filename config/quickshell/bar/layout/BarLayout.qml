@@ -10,8 +10,8 @@ Item {
   required property var panelHost
 
   readonly property int islandY: shellConfig.bar.edge === "top"
-    ? theme.barMarginScreen
-    : theme.barMarginContent
+    ? theme.bar.margin.screen
+    : theme.bar.margin.content
   readonly property real contentHeight: Math.max(
     startIsland.implicitHeight,
     centerIsland.implicitHeight,
@@ -30,7 +30,7 @@ Item {
     systemState: root.systemState
     panelHost: root.panelHost
 
-    x: root.theme.barMarginOuter
+    x: root.theme.bar.margin.outer
     y: root.islandY
     height: root.contentHeight
   }
@@ -62,7 +62,7 @@ Item {
     systemState: root.systemState
     panelHost: root.panelHost
 
-    x: parent.width - root.theme.barMarginOuter - width
+    x: parent.width - root.theme.bar.margin.outer - width
     y: root.islandY
     height: root.contentHeight
   }

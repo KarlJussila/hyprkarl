@@ -30,21 +30,21 @@ ShellButton {
         anchors.verticalCenter: parent.verticalCenter
         level: root.percentage / 100
         charging: root.charging
-        surfaceColor: root.theme.barSurface
-        indicatorColor: root.theme.foreground
-        lowColor: root.theme.warning
-        accentColor: root.theme.accent
+        surfaceColor: root.theme.surfaces.bar
+        indicatorColor: root.theme.palette.foreground
+        lowColor: root.theme.palette.warning
+        accentColor: root.theme.palette.accent
         lowThreshold: root.config.lowThreshold
       }
 
       Text {
         visible: root.config.showPercentage
         text: root.percentageText
-        color: root.theme.foreground
-        font.family: root.theme.monoFontFamily
-        font.pixelSize: root.theme.readoutFontSize
-        font.weight: root.theme.fontWeight
-        font.styleName: root.theme.fontStyle
+        color: root.theme.palette.foreground
+        font.family: root.theme.typography.monoFamily
+        font.pixelSize: root.theme.typography.readoutSize
+        font.weight: root.theme.typography.weight
+        font.styleName: root.theme.typography.style
       }
     }
   }

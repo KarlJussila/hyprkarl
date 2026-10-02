@@ -189,8 +189,14 @@ shell:
     fingerprintCompleteDuration: 450
 
   menu:
+    background: "{{shell.surfaces.popup}}"
+    foreground: "{{shell.palette.foreground}}"
+    accent: "{{shell.palette.accent}}"
+    border: "{{shell.palette.border}}"
     scrim: "#22000000"
+    font: "{{shell.typography.uiFamily}}"
     fontSize: 14
+    fontWeight: "{{shell.typography.weight}}"
     width: 280
     searchWidth: "{{shell.menu.width * 2}}"
     referenceWidth: 800

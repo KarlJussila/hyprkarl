@@ -16,9 +16,9 @@ Item {
   implicitHeight: implicitWidth
   property real progress: 0
   property real failurePulse: 0
-  readonly property color ink: Qt.tint(theme.accent,
-    Qt.rgba(theme.urgent.r, theme.urgent.g, theme.urgent.b,
-      theme.urgent.a * failurePulse))
+  readonly property color urgent: theme.palette.urgent
+  readonly property color ink: Qt.tint(theme.palette.accent,
+    Qt.rgba(urgent.r, urgent.g, urgent.b, urgent.a * failurePulse))
   transform: Translate { id: shakeTransform }
   // Material Design Icons fingerprint, matching nf-md-fingerprint (F0237).
   // Centerlines derived from SVG revision f08b713c8eef826e6bfe826c65240326546648ea.

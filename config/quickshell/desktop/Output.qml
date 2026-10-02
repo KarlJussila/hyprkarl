@@ -32,8 +32,8 @@ Scope {
     return {
       "edge": root.shellConfig.bar.edge,
       "extent": visible ? bar.visibleExtent : 0,
-      "connected": visible && root.theme.barMarginContent === 0,
-      "reachesSide": visible && root.theme.barMarginOuter === 0
+      "connected": visible && root.theme.bar.margin.content === 0,
+      "reachesSide": visible && root.theme.bar.margin.outer === 0
     }
   }
 

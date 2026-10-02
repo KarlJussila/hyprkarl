@@ -15,25 +15,25 @@ Item {
 
   readonly property string widgetId: definition.id
   readonly property var loadedItem: loader.item
-  readonly property int dividerExtent: showDivider && loadedItem?.visible ? theme.borderWidth : 0
+  readonly property int dividerExtent: showDivider && loadedItem?.visible ? theme.metrics.borderWidth : 0
   readonly property int mainPaddingOffset: loadedItem && ("hostMainPaddingOffset" in loadedItem)
     ? loadedItem.hostMainPaddingOffset
     : 0
-  readonly property int mainPadding: Math.max(0, theme.widgetMainPadding + mainPaddingOffset)
+  readonly property int mainPadding: Math.max(0, theme.bar.widgetPadding.main + mainPaddingOffset)
   property bool initialized: false
 
   implicitWidth: loadedItem?.visible
     ? loader.implicitWidth + dividerExtent + mainPadding * 2
     : 0
   implicitHeight: loadedItem?.visible
-    ? loader.implicitHeight + theme.widgetCrossPadding * 2
+    ? loader.implicitHeight + theme.bar.widgetPadding.cross * 2
     : 0
   width: implicitWidth
   height: parent.height
 
   Rectangle {
     visible: root.dividerExtent > 0
-    color: root.theme.border
+    color: root.theme.palette.border
     width: root.dividerExtent
     height: parent.height
   }

@@ -14,12 +14,12 @@ PanelWindow {
   required property bool screenshotActive
 
   readonly property var panelHost: panelHostLoader.item
-  readonly property int totalThickness: theme.barMarginScreen
+  readonly property int totalThickness: theme.bar.margin.screen
     + barLayout.contentHeight
-    + theme.barMarginContent
+    + theme.bar.margin.content
   readonly property real visibleExtent: totalThickness
 
-  color: theme.windowSurface
+  color: theme.surfaces.window
   aboveWindows: true
   focusable: root.panelHost?.open ?? false
   exclusionMode: shellConfig.bar.exclusive ? ExclusionMode.Normal : ExclusionMode.Ignore

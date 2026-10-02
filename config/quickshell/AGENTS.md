@@ -198,6 +198,9 @@ minimum thickness, spacing, radii, borders, dividers, and the panel gap.
 `config/Theme.qml` watches the XDG-state `current/theme.json` selector, then
 reads the immutable artifact named there. The selector changes atomically on a
 theme switch, so the theme file watcher always follows a stable file.
+Consumers read theme groups directly (`theme.panel.padding`,
+`theme.palette.accent`). The compiler's `defaults/theme.yaml` supplies every
+value, so add new values there rather than as QML fallbacks.
 
 `shell.switch` is the complete shared default for `ToggleIndicator` geometry,
 border, glyph typography and offsets, and transition duration. The component's

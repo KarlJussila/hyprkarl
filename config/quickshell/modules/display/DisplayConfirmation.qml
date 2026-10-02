@@ -14,20 +14,20 @@ Modal {
   subtitle: DisplayConfirmationState.remainingSeconds === 1
     ? "Reverting in 1 second"
     : `Reverting in ${DisplayConfirmationState.remainingSeconds} seconds`
-  preferredWidth: shellContext.theme.menuSearchWidth
+  preferredWidth: shellContext.theme.menu.searchWidth
   preferredHeight: 250
   dismissAction: () => DisplayConfirmationState.revert()
 
   body: Component {
     Column {
-      spacing: root.shellContext.theme.menuEntryPadding * 2
+      spacing: root.shellContext.theme.menu.entryPadding * 2
 
       Text {
         width: parent.width
         text: "Confirm that the new layout is visible and usable. It will be restored automatically if you do nothing."
-        color: root.shellContext.theme.menuForeground
-        font.family: root.shellContext.theme.menuFont
-        font.pixelSize: root.shellContext.theme.menuFontSize
+        color: root.shellContext.theme.menu.foreground
+        font.family: root.shellContext.theme.menu.font
+        font.pixelSize: root.shellContext.theme.menu.fontSize
         wrapMode: Text.Wrap
         horizontalAlignment: Text.AlignHCenter
       }
@@ -35,13 +35,13 @@ Modal {
       Rectangle {
         width: parent.width
         height: 6
-        color: root.shellContext.theme.menuBorder
+        color: root.shellContext.theme.menu.border
         radius: height / 2
 
         Rectangle {
           width: parent.width * DisplayConfirmationState.remainingFraction
           height: parent.height
-          color: root.shellContext.theme.menuAccent
+          color: root.shellContext.theme.menu.accent
           radius: parent.radius
         }
       }

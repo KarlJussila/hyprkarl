@@ -12,14 +12,14 @@ Modal {
   name: DisplayArrangementState.surface
   title: "Arrange displays"
   subtitle: "Drag to position · Right-click a frame to rotate clockwise"
-  preferredWidth: shellContext.theme.displayArrangementWidth
-  preferredHeight: shellContext.theme.displayArrangementHeight
+  preferredWidth: shellContext.theme.displayArrangement.width
+  preferredHeight: shellContext.theme.displayArrangement.height
 
   body: Component {
     Item {
       id: arrangement
 
-      readonly property real canvasPadding: root.shellContext.theme.menuEntryPadding * 2
+      readonly property real canvasPadding: root.shellContext.theme.menu.entryPadding * 2
       readonly property real layoutScale: Math.max(0.01, Math.min(
         (canvas.width - canvasPadding * 2) / DisplayArrangementState.viewportWidth,
         (canvas.height - canvasPadding * 2) / DisplayArrangementState.viewportHeight
@@ -90,10 +90,10 @@ Modal {
               || DisplayArrangementState.validationError
         color: (DisplayArrangementState.error.length > 0
           || DisplayArrangementState.validationError.length > 0)
-          ? root.shellContext.theme.urgent
-          : root.shellContext.theme.menuForeground
-        font.family: root.shellContext.theme.menuFont
-        font.pixelSize: root.shellContext.theme.readoutFontSize
+          ? root.shellContext.theme.palette.urgent
+          : root.shellContext.theme.menu.foreground
+        font.family: root.shellContext.theme.menu.font
+        font.pixelSize: root.shellContext.theme.typography.readoutSize
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.Wrap
       }
@@ -105,12 +105,12 @@ Modal {
         anchors.right: parent.right
         anchors.top: status.bottom
         anchors.bottom: positionReadout.top
-        anchors.topMargin: root.shellContext.theme.menuEntryPadding
-        anchors.bottomMargin: root.shellContext.theme.menuEntryPadding
+        anchors.topMargin: root.shellContext.theme.menu.entryPadding
+        anchors.bottomMargin: root.shellContext.theme.menu.entryPadding
         color: "transparent"
-        border.color: root.shellContext.theme.menuBorder
-        border.width: root.shellContext.theme.menuInnerBorderWidth
-        radius: root.shellContext.theme.menuEntryRadius
+        border.color: root.shellContext.theme.menu.border
+        border.width: root.shellContext.theme.menu.innerBorderWidth
+        radius: root.shellContext.theme.menu.entryRadius
         clip: true
 
         Repeater {
@@ -141,12 +141,12 @@ Modal {
             height: logicalHeight * arrangement.layoutScale
             color: "transparent"
             border.color: selected
-              ? root.shellContext.theme.menuAccent
-              : root.shellContext.theme.menuBorder
+              ? root.shellContext.theme.menu.accent
+              : root.shellContext.theme.menu.border
             border.width: selected
-              ? Math.max(2, root.shellContext.theme.menuSelectionBorderWidth)
-              : Math.max(1, root.shellContext.theme.menuInnerBorderWidth)
-            radius: root.shellContext.theme.menuEntryRadius
+              ? Math.max(2, root.shellContext.theme.menu.selectionBorderWidth)
+              : Math.max(1, root.shellContext.theme.menu.innerBorderWidth)
+            radius: root.shellContext.theme.menu.entryRadius
 
             Rectangle {
               readonly property int quarterTurn:
@@ -154,9 +154,9 @@ Modal {
               readonly property bool vertical:
                 quarterTurn === 1 || quarterTurn === 3
               readonly property real edge:
-                root.shellContext.theme.displayArrangementBezelFraction
+                root.shellContext.theme.displayArrangement.bezelFraction
               readonly property real stroke: Math.max(
-                1, root.shellContext.theme.menuInnerBorderWidth)
+                1, root.shellContext.theme.menu.innerBorderWidth)
 
               x: quarterTurn === 1
                 ? displayFrame.width * edge
@@ -181,18 +181,18 @@ Modal {
             Column {
               anchors.centerIn: parent
               width: Math.max(0,
-                parent.width - root.shellContext.theme.menuEntryPadding * 2)
+                parent.width - root.shellContext.theme.menu.entryPadding * 2)
               spacing: 2
 
               Text {
                 width: parent.width
                 text: displayFrame.description || displayFrame.name
                 color: displayFrame.selected
-                  ? root.shellContext.theme.menuAccent
-                  : root.shellContext.theme.menuForeground
-                font.family: root.shellContext.theme.menuFont
-                font.pixelSize: root.shellContext.theme.menuFontSize
-                font.weight: root.shellContext.theme.menuFontWeight
+                  ? root.shellContext.theme.menu.accent
+                  : root.shellContext.theme.menu.foreground
+                font.family: root.shellContext.theme.menu.font
+                font.pixelSize: root.shellContext.theme.menu.fontSize
+                font.weight: root.shellContext.theme.menu.fontWeight
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
               }
@@ -201,10 +201,10 @@ Modal {
                 visible: displayFrame.description.length > 0
                 width: parent.width
                 text: displayFrame.name
-                color: root.shellContext.theme.menuForeground
+                color: root.shellContext.theme.menu.foreground
                 opacity: 0.6
-                font.family: root.shellContext.theme.monoFontFamily
-                font.pixelSize: root.shellContext.theme.readoutFontSize
+                font.family: root.shellContext.theme.typography.monoFamily
+                font.pixelSize: root.shellContext.theme.typography.readoutSize
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
               }
@@ -271,10 +271,10 @@ Modal {
         text: selectedOutput
           ? `${selectedOutput.name}  ${selectedOutput.positionX}, ${selectedOutput.positionY}  ·  ${selectedOutput.outputTransform % 4 * 90}°`
           : ""
-        color: root.shellContext.theme.menuForeground
+        color: root.shellContext.theme.menu.foreground
         opacity: 0.7
-        font.family: root.shellContext.theme.monoFontFamily
-        font.pixelSize: root.shellContext.theme.readoutFontSize
+        font.family: root.shellContext.theme.typography.monoFamily
+        font.pixelSize: root.shellContext.theme.typography.readoutSize
         horizontalAlignment: Text.AlignHCenter
       }
     }
@@ -297,7 +297,7 @@ Modal {
       Row {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        spacing: root.shellContext.theme.menuEntryPadding
+        spacing: root.shellContext.theme.menu.entryPadding
 
         ModalButton {
           theme: root.shellContext.theme

@@ -10,7 +10,7 @@ Item {
   required property var theme
   required property bool active
 
-  readonly property real preferredWidth: theme.panelWidth
+  readonly property real preferredWidth: theme.panel.width
   property int monthOffset: 0
   readonly property int currentYear: ClockState.now.getFullYear()
   readonly property int currentMonth: ClockState.now.getMonth()
@@ -49,13 +49,13 @@ Item {
         width: parent.width - 68
         height: 34
         text: Qt.formatDate(root.viewedMonth, "MMMM yyyy")
-        color: root.theme.panelForeground
+        color: root.theme.panel.foreground
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.family: root.theme.panelFont
-        font.pixelSize: root.theme.panelFontSize + 1
-        font.weight: root.theme.panelFontWeight
-        font.styleName: root.theme.fontStyle
+        font.family: root.theme.panel.font
+        font.pixelSize: root.theme.panel.fontSize + 1
+        font.weight: root.theme.panel.fontWeight
+        font.styleName: root.theme.typography.style
       }
 
       CalendarNavButton {
@@ -82,12 +82,12 @@ Item {
         width: weekdayRow.width / 7
         height: weekdayRow.height
         text: model.shortName
-        color: root.theme.panelForeground
+        color: root.theme.panel.foreground
         opacity: 0.65
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.family: root.theme.monoFontFamily
-        font.pixelSize: root.theme.readoutFontSize
+        font.family: root.theme.typography.monoFamily
+        font.pixelSize: root.theme.typography.readoutSize
         font.capitalization: Font.AllUppercase
       }
     }
@@ -122,15 +122,15 @@ Item {
           width: Math.min(parent.width, parent.height) - 4
           height: width
           visible: dayCell.isToday
-          color: root.theme.panelBackground
-          border.color: root.theme.panelAccent
-          border.width: root.theme.panelSelectionBorderWidth
-          radius: root.theme.panelEntryRadius
+          color: root.theme.panel.background
+          border.color: root.theme.panel.accent
+          border.width: root.theme.panel.selectionBorderWidth
+          radius: root.theme.panel.entryRadius
 
           Rectangle {
             anchors.fill: parent
-            color: root.theme.panelAccent
-            opacity: root.theme.panelSelectionAccentOpacity
+            color: root.theme.panel.accent
+            opacity: root.theme.panel.selectionAccentOpacity
             radius: parent.radius
           }
         }
@@ -138,13 +138,13 @@ Item {
         Text {
           anchors.fill: parent
           text: dayCell.model.day
-          color: dayCell.isToday ? root.theme.panelAccent : root.theme.panelForeground
+          color: dayCell.isToday ? root.theme.panel.accent : root.theme.panel.foreground
           opacity: dayCell.inViewedMonth ? 1 : 0.35
           horizontalAlignment: Text.AlignHCenter
           verticalAlignment: Text.AlignVCenter
-          font.family: root.theme.monoFontFamily
-          font.pixelSize: root.theme.readoutFontSize
-          font.weight: dayCell.isToday ? root.theme.panelFontWeight : Font.Normal
+          font.family: root.theme.typography.monoFamily
+          font.pixelSize: root.theme.typography.readoutSize
+          font.weight: dayCell.isToday ? root.theme.panel.fontWeight : Font.Normal
         }
       }
     }

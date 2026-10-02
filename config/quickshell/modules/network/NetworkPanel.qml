@@ -15,7 +15,7 @@ Item {
 
   signal externalCommandRequested(string command)
 
-  readonly property real preferredWidth: theme.panelWidth
+  readonly property real preferredWidth: theme.panel.width
   readonly property var wifiDevice: NetworkState.wifiDevice
   property var passwordNetwork: null
 
@@ -88,11 +88,11 @@ Item {
       text: !Networking.wifiEnabled
         ? "Turn on Wi-Fi to view nearby networks."
         : root.wifiDevice === null ? "No Wi-Fi adapter is available." : "No networks found yet."
-      color: root.theme.panelForeground
+      color: root.theme.panel.foreground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.panelFont
-      font.pixelSize: root.theme.panelFontSize
+      font.family: root.theme.panel.font
+      font.pixelSize: root.theme.panel.fontSize
     }
 
     Repeater {
@@ -146,31 +146,31 @@ Item {
           visible: networkEntry.enteringPassword
           color: "transparent"
           border.color: NavigationState.currentItem === password
-            ? root.theme.panelAccent
-            : root.theme.panelBorder
-          border.width: root.theme.panelSelectionBorderWidth
-          radius: root.theme.panelEntryRadius
+            ? root.theme.panel.accent
+            : root.theme.panel.border
+          border.width: root.theme.panel.selectionBorderWidth
+          radius: root.theme.panel.entryRadius
 
           Text {
             anchors.left: parent.left
-            anchors.leftMargin: root.theme.panelEntryPadding
+            anchors.leftMargin: root.theme.panel.entryPadding
             anchors.verticalCenter: parent.verticalCenter
             visible: password.text.length === 0 && !password.activeFocus
             text: "Password"
-            color: root.theme.panelForeground
+            color: root.theme.panel.foreground
             opacity: 0.5
-            font.family: root.theme.panelFont
-            font.pixelSize: root.theme.panelFontSize
+            font.family: root.theme.panel.font
+            font.pixelSize: root.theme.panel.fontSize
           }
 
           TextInput {
             id: password
 
             anchors.fill: parent
-            anchors.margins: root.theme.panelEntryPadding
-            color: root.theme.panelForeground
-            font.family: root.theme.monoFontFamily
-            font.pixelSize: root.theme.panelFontSize
+            anchors.margins: root.theme.panel.entryPadding
+            color: root.theme.panel.foreground
+            font.family: root.theme.typography.monoFamily
+            font.pixelSize: root.theme.panel.fontSize
             echoMode: TextInput.Password
             selectByMouse: true
             property string navigationSection: "networks"

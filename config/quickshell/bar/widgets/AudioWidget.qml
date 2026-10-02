@@ -27,18 +27,18 @@ ShellButton {
         anchors.verticalCenter: parent.verticalCenter
         volume: root.audio?.volume ?? 0
         muted: root.audio?.muted ?? false
-        indicatorColor: root.theme.foreground
-        inactiveWaveColor: root.theme.border
+        indicatorColor: root.theme.palette.foreground
+        inactiveWaveColor: root.theme.palette.border
       }
 
       Text {
         visible: root.config.showPercentage
         text: `${root.percentage}%`
-        color: root.theme.foreground
-        font.family: root.theme.monoFontFamily
-        font.pixelSize: root.theme.readoutFontSize
-        font.weight: root.theme.fontWeight
-        font.styleName: root.theme.fontStyle
+        color: root.theme.palette.foreground
+        font.family: root.theme.typography.monoFamily
+        font.pixelSize: root.theme.typography.readoutSize
+        font.weight: root.theme.typography.weight
+        font.styleName: root.theme.typography.style
       }
     }
   }

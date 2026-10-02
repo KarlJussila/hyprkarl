@@ -32,8 +32,8 @@ PanelWindow {
       || (touchesSurface && position.reachesSide === true))
   readonly property real edgeOffset: surfaceExtent
     + shellConfig.notifications.gap
-    - (touchesSurface ? theme.borderWidth : 0)
-  readonly property bool connectedStack: theme.notificationStackSpacing === 0
+    - (touchesSurface ? theme.metrics.borderWidth : 0)
+  readonly property bool connectedStack: theme.notification.stackSpacing === 0
 
   visible: entries.length > 0
   screen: output
@@ -43,7 +43,7 @@ PanelWindow {
   exclusionMode: ExclusionMode.Ignore
   exclusiveZone: 0
   implicitWidth: Math.min(
-    theme.notificationWidth,
+    theme.notification.width,
     output.width - shellConfig.notifications.sideMargin)
   implicitHeight: stack.implicitHeight
 
@@ -67,8 +67,8 @@ PanelWindow {
     anchors.bottom: root.resolvedEdge === "bottom" ? parent.bottom : undefined
     width: root.width
     spacing: root.connectedStack
-      ? -root.theme.borderWidth
-      : root.theme.notificationStackSpacing
+      ? -root.theme.metrics.borderWidth
+      : root.theme.notification.stackSpacing
 
     Repeater {
       model: ScriptModel {
@@ -89,16 +89,16 @@ PanelWindow {
         readonly property bool touchesNext: root.connectedStack
           && index < root.entries.length - 1
         readonly property int toastWidth: root.notificationState.compactFor(modelData)
-          ? root.theme.notificationCompactWidth
-          : root.theme.notificationWidth
+          ? root.theme.notification.compactWidth
+          : root.theme.notification.width
         readonly property bool previousCoversOuterCorner: touchesPrevious
           && (root.notificationState.compactFor(root.entries[index - 1])
-            ? root.theme.notificationCompactWidth
-            : root.theme.notificationWidth) >= toastWidth
+            ? root.theme.notification.compactWidth
+            : root.theme.notification.width) >= toastWidth
         readonly property bool nextCoversOuterCorner: touchesNext
           && (root.notificationState.compactFor(root.entries[index + 1])
-            ? root.theme.notificationCompactWidth
-            : root.theme.notificationWidth) >= toastWidth
+            ? root.theme.notification.compactWidth
+            : root.theme.notification.width) >= toastWidth
         property real reveal: modelData.revealed ? 1 : 0
 
         width: stack.width
@@ -107,7 +107,7 @@ PanelWindow {
 
         Behavior on reveal {
           NumberAnimation {
-            duration: root.theme.notificationTransitionDuration
+            duration: root.theme.notification.transitionDuration
             easing.type: Easing.OutCubic
           }
         }
@@ -115,7 +115,7 @@ PanelWindow {
         Timer {
           id: removalTimer
 
-          interval: root.theme.notificationTransitionDuration
+          interval: root.theme.notification.transitionDuration
           onTriggered: root.notificationState.finishRemoval(delegate.modelData)
         }
 

@@ -15,20 +15,20 @@ Item {
   readonly property bool highlighted: root.current || root.selected
 
   activeFocusOnTab: enabled && action !== null
-  implicitWidth: parent?.width ?? label.implicitWidth + root.theme.panelEntryPadding * 2
+  implicitWidth: parent?.width ?? label.implicitWidth + root.theme.panel.entryPadding * 2
   implicitHeight: 34
 
   Rectangle {
     anchors.fill: parent
     color: "transparent"
-    border.color: root.highlighted ? root.theme.panelAccent : root.theme.panelBorder
-    border.width: root.theme.panelSelectionBorderWidth
-    radius: root.theme.panelEntryRadius
+    border.color: root.highlighted ? root.theme.panel.accent : root.theme.panel.border
+    border.width: root.theme.panel.selectionBorderWidth
+    radius: root.theme.panel.entryRadius
 
     Rectangle {
       anchors.fill: parent
-      color: root.theme.panelAccent
-      opacity: root.current ? root.theme.panelSelectionAccentOpacity : 0
+      color: root.theme.panel.accent
+      opacity: root.current ? root.theme.panel.selectionAccentOpacity : 0
       radius: parent.radius
     }
   }
@@ -38,10 +38,10 @@ Item {
 
     anchors.centerIn: parent
     text: root.icon.length > 0 ? `${root.icon}  ${root.text}` : root.text
-    color: root.selected ? root.theme.panelAccent : root.theme.panelForeground
-    font.family: root.theme.panelFont
-    font.pixelSize: root.theme.panelFontSize
-    font.weight: root.theme.panelFontWeight
+    color: root.selected ? root.theme.panel.accent : root.theme.panel.foreground
+    font.family: root.theme.panel.font
+    font.pixelSize: root.theme.panel.fontSize
+    font.weight: root.theme.panel.fontWeight
   }
 
   MouseArea {

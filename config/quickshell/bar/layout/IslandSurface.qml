@@ -12,8 +12,8 @@ Item {
     && cornerStyle("screen", leftRole) === "curve"
   readonly property bool rightCurve: rightRole === "inner"
     && cornerStyle("screen", rightRole) === "curve"
-  readonly property real leftInset: leftCurve ? theme.cornerCurveSize : 0
-  readonly property real rightInset: rightCurve ? theme.cornerCurveSize : 0
+  readonly property real leftInset: leftCurve ? theme.bar.island.curveSize : 0
+  readonly property real rightInset: rightCurve ? theme.bar.island.curveSize : 0
   readonly property real bodyLeft: leftInset
   readonly property real bodyRight: width - rightInset
   readonly property string paintKey: [
@@ -22,23 +22,23 @@ Item {
     edge,
     leftRole,
     rightRole,
-    theme.barSurface,
-    theme.border,
-    theme.borderWidth,
-    theme.islandRadius,
-    theme.cornerCurveSize,
-    theme.cornerCurveRadius,
-    JSON.stringify(theme.islandCorners),
-    JSON.stringify(theme.islandBorders)
+    theme.surfaces.bar,
+    theme.palette.border,
+    theme.metrics.borderWidth,
+    theme.bar.island.radius,
+    theme.bar.island.curveSize,
+    theme.bar.island.curveRadius,
+    JSON.stringify(theme.bar.island.corners),
+    JSON.stringify(theme.bar.island.borders)
   ].join("|")
 
   function cornerStyle(longEdge: string, role: string): string {
     const key = longEdge + role.charAt(0).toUpperCase() + role.slice(1)
-    return theme.islandCorners[key]
+    return theme.bar.island.corners[key]
   }
 
   function borderEnabled(side: string): bool {
-    return theme.islandBorders[side] === true
+    return theme.bar.island.borders[side] === true
   }
 
   onPaintKeyChanged: canvas.requestPaint()
@@ -81,9 +81,9 @@ Item {
     }
 
     function strokeCurvedSide(context, side, x, startY, endY, y0, y1): void {
-      const size = Math.min(root.theme.cornerCurveSize, height)
-      const control = root.theme.cornerCurveRadius * 0.6
-      const clipDepth = root.theme.borderWidth
+      const size = Math.min(root.theme.bar.island.curveSize, height)
+      const control = root.theme.bar.island.curveRadius * 0.6
+      const clipDepth = root.theme.metrics.borderWidth
       const top = root.edge === "top"
 
       context.beginPath()
@@ -108,9 +108,9 @@ Item {
     }
 
     function drawCurve(context, side): void {
-      const size = Math.min(root.theme.cornerCurveSize, height)
-      const control = root.theme.cornerCurveRadius * 0.6
-      const clipDepth = root.theme.borderWidth
+      const size = Math.min(root.theme.bar.island.curveSize, height)
+      const control = root.theme.bar.island.curveRadius * 0.6
+      const clipDepth = root.theme.metrics.borderWidth
       const top = root.edge === "top"
 
       context.beginPath()
@@ -143,21 +143,21 @@ Item {
       const topRightStyle = root.cornerStyle(root.edge === "top" ? "screen" : "content", root.rightRole)
       const bottomLeftStyle = root.cornerStyle(root.edge === "top" ? "content" : "screen", root.leftRole)
       const bottomRightStyle = root.cornerStyle(root.edge === "top" ? "content" : "screen", root.rightRole)
-      const maxRadius = Math.max(0, Math.min(root.theme.islandRadius, height / 2, (root.bodyRight - root.bodyLeft) / 2))
+      const maxRadius = Math.max(0, Math.min(root.theme.bar.island.radius, height / 2, (root.bodyRight - root.bodyLeft) / 2))
       const topLeft = topLeftStyle === "round" ? maxRadius : 0
       const topRight = topRightStyle === "round" ? maxRadius : 0
       const bottomRight = bottomRightStyle === "round" ? maxRadius : 0
       const bottomLeft = bottomLeftStyle === "round" ? maxRadius : 0
 
-      context.fillStyle = root.theme.barSurface
+      context.fillStyle = root.theme.surfaces.bar
       roundedBody(context, root.bodyLeft, 0, root.bodyRight, height, topLeft, topRight, bottomRight, bottomLeft)
       context.fill()
 
-      context.fillStyle = root.theme.barSurface
+      context.fillStyle = root.theme.surfaces.bar
       if (root.leftCurve) drawCurve(context, "left")
       if (root.rightCurve) drawCurve(context, "right")
 
-      const borderWidth = root.theme.borderWidth
+      const borderWidth = root.theme.metrics.borderWidth
       if (borderWidth <= 0) return
 
       const inset = borderWidth / 2
@@ -175,7 +175,7 @@ Item {
       const leftBorder = root.borderEnabled(root.leftRole)
       const rightBorder = root.borderEnabled(root.rightRole)
 
-      context.strokeStyle = root.theme.border
+      context.strokeStyle = root.theme.palette.border
       context.lineWidth = borderWidth
       context.lineCap = "butt"
       context.lineJoin = "round"

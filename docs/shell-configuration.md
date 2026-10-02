@@ -364,7 +364,7 @@ Item {
     onPaint: {
       const context = getContext("2d")
       context.clearRect(0, 0, width, height)
-      context.strokeStyle = root.theme.foreground
+      context.strokeStyle = root.theme.palette.foreground
       context.lineWidth = 2 / Screen.devicePixelRatio
       context.beginPath()
       context.arc(width / 2, height / 2, Math.min(width, height) / 3, 0, Math.PI * 2)
@@ -558,9 +558,9 @@ Item {
     id: label
     anchors.centerIn: parent
     text: root.context.settings.text
-    color: root.context.theme.foreground
-    font.family: root.context.theme.uiFontFamily
-    font.pixelSize: root.context.theme.bodyFontSize
+    color: root.context.theme.palette.foreground
+    font.family: root.context.theme.typography.uiFamily
+    font.pixelSize: root.context.theme.typography.bodySize
   }
 
   MouseArea {
@@ -650,7 +650,7 @@ has these direct members:
 |---|---|
 | `configuration` | The complete resolved shell JSON. |
 | `settings` | `userRoot.settings` from that JSON. |
-| `theme` | The live typed theme object. |
+| `theme` | The live theme; groups such as `theme.palette` and `theme.menu` mirror `quickshell.json`. |
 | `outputs` | The current `Quickshell.screens` list. |
 | `overlayName`, `overlayOutput`, `overlayValues`, `overlayRevision` | The requested exclusive overlay and its change counter. |
 | `openOverlay(name, output, values)` | Opens only when no overlay is active. |
@@ -660,10 +660,11 @@ has these direct members:
 | `closeOverlay()` | Closes the current overlay. |
 | `backOverlay()` | Restores the last request saved by `pushOverlay`, when one exists. |
 
-The ordinary typed theme properties remain available, while
-`context.theme.document` exposes the complete generated `quickshell.json` for
-custom values such as
-`context.theme.document.extensions.dashboard.background`. Theme authors may
+`context.theme` reads the generated `quickshell.json` by group, for example
+`context.theme.palette.accent` or `context.theme.panel.padding`, matching the
+names under `shell` in `theme.yaml`. `context.theme.values` is the whole
+document, for custom values such as
+`context.theme.values.extensions.dashboard.background`. Theme authors may
 derive those values from any source vocabulary by placing the final values
 under `shell` in `theme.yaml`.
 
@@ -710,7 +711,7 @@ Scope {
         Text {
           anchors.centerIn: parent
           text: "Personal modal content"
-          color: root.context.theme.menuForeground
+          color: root.context.theme.menu.foreground
         }
       }
     }
@@ -763,7 +764,7 @@ Scope {
       anchors.left: true
       anchors.right: true
       implicitHeight: 30
-      color: root.context.theme.barSurface
+      color: root.context.theme.surfaces.bar
 
       // Bind this to the animated onscreen portion for an autohiding bar.
       property real notificationExtent: height

@@ -86,8 +86,11 @@ cp "$FIXTURES/shell.json" "$CONFIG_HOME/quickshell/settings/shell.json"
 cp "$FIXTURES/Extensions.qml" \
   "$CONFIG_HOME/quickshell/custom/Extensions.qml"
 cp "$FIXTURES/theme.json" "$STATE_HOME/hyprkarl/current/theme.json"
-cp "$FIXTURES/quickshell.json" \
-  "$STATE_HOME/hyprkarl/themes/test/quickshell.json"
+# Use a real compiled theme so the shell sees the complete theme contract.
+(cd "$REPO/theme-generator" \
+  && python -m theme_generator build hyprkarl -o "$TEST_ROOT/theme" >/dev/null) \
+  || fail "could not build the test theme"
+cp "$TEST_ROOT/theme/quickshell.json" "$STATE_HOME/hyprkarl/themes/test/"
 
 start_shell
 
@@ -181,6 +184,11 @@ jq -e '.name == "user.fixture" and .modalLoads == 1' \
   <<< "$(call_user_test snapshot)" >/dev/null \
   || fail "public personal modal body did not load on demand"
 call_user_test close >/dev/null || fail "public personal modal did not close"
+# The body unloads once the theme's close animation finishes.
+for _ in {1..40}; do
+  [[ $(call_user_test snapshot | jq -r '.modalUnloads') -eq 1 ]] && break
+  sleep 0.05
+done
 call_user_test open user.fixture "$output" modal >/dev/null \
   || fail "public personal modal did not reopen"
 for _ in {1..20}; do

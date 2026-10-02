@@ -24,10 +24,12 @@ TestCase {
       "offGlyphOffset": [0, 0],
       "transitionDuration": 0
     })
-    property color barSurface: "#101010"
-    property color accent: "#ff00ff"
-    property color border: "#404040"
-    property color foreground: "#f0f0f0"
+    property var surfaces: ({ "bar": "#101010" })
+    property var palette: ({
+      "accent": "#ff00ff",
+      "border": "#404040",
+      "foreground": "#f0f0f0"
+    })
   }
 
   Component {
@@ -52,7 +54,7 @@ TestCase {
     compare(indicator.thumbSize, 16)
     compare(indicator.indicatorBorderWidth, 2)
     compare(indicator.filled, false)
-    compare(indicator.thumbFillColor, testTheme.barSurface)
+    compare(indicator.thumbFillColor, testTheme.surfaces.bar)
     indicator.destroy()
   }
 
@@ -89,12 +91,12 @@ TestCase {
     compare(indicator.implicitHeight, 18)
     compare(indicator.thumbX, 1)
     compare(indicator.filled, false)
-    compare(indicator.thumbFillColor, testTheme.barSurface)
+    compare(indicator.thumbFillColor, testTheme.surfaces.bar)
     indicator.active = true
     compare(indicator.thumbX, 1)
-    compare(indicator.trackColor, testTheme.accent)
-    compare(indicator.borderColor, testTheme.accent)
-    compare(indicator.thumbFillColor, testTheme.barSurface)
+    compare(indicator.trackColor, testTheme.palette.accent)
+    compare(indicator.borderColor, testTheme.palette.accent)
+    compare(indicator.thumbFillColor, testTheme.surfaces.bar)
     indicator.destroy()
   }
 
@@ -109,7 +111,7 @@ TestCase {
       })
       verify(indicator !== null)
       compare(indicator.filled, true)
-      compare(indicator.thumbFillColor, testTheme.accent)
+      compare(indicator.thumbFillColor, testTheme.palette.accent)
       indicator.destroy()
     }
   }

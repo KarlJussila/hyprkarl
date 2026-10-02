@@ -15,26 +15,26 @@ Item {
   readonly property bool highlighted: root.current
 
   activeFocusOnTab: enabled && action !== null
-  implicitWidth: label.implicitWidth + root.theme.menuEntryPadding * 4
+  implicitWidth: label.implicitWidth + root.theme.menu.entryPadding * 4
   implicitHeight: 34
   opacity: enabled ? 1 : 0.45
 
   Rectangle {
     anchors.fill: parent
-    color: root.accent ? root.theme.menuAccent : "transparent"
+    color: root.accent ? root.theme.menu.accent : "transparent"
     border.color: root.current && root.accent
-      ? root.theme.menuForeground
+      ? root.theme.menu.foreground
       : root.highlighted || root.accent
-        ? root.theme.menuAccent
-        : root.theme.menuBorder
-    border.width: root.theme.menuSelectionBorderWidth
-    radius: root.theme.menuEntryRadius
+        ? root.theme.menu.accent
+        : root.theme.menu.border
+    border.width: root.theme.menu.selectionBorderWidth
+    radius: root.theme.menu.entryRadius
 
     Rectangle {
       anchors.fill: parent
-      color: root.theme.menuAccent
+      color: root.theme.menu.accent
       opacity: !root.accent && root.current
-        ? root.theme.menuSelectionAccentOpacity
+        ? root.theme.menu.selectionAccentOpacity
         : 0
       radius: parent.radius
     }
@@ -45,10 +45,10 @@ Item {
 
     anchors.centerIn: parent
     text: root.text
-    color: root.accent ? root.theme.menuBackground : root.theme.menuForeground
-    font.family: root.theme.menuFont
-    font.pixelSize: root.theme.menuFontSize
-    font.weight: root.theme.menuFontWeight
+    color: root.accent ? root.theme.menu.background : root.theme.menu.foreground
+    font.family: root.theme.menu.font
+    font.pixelSize: root.theme.menu.fontSize
+    font.weight: root.theme.menu.fontWeight
   }
 
   MouseArea {

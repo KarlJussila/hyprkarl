@@ -14,7 +14,7 @@ Item {
   signal externalCommandRequested(string command)
 
   readonly property var battery: UPower.displayDevice
-  readonly property real preferredWidth: theme.powerPanelWidth
+  readonly property real preferredWidth: theme.panel.powerWidth
 
   implicitWidth: parent?.width ?? 0
   implicitHeight: content.implicitHeight
@@ -98,11 +98,11 @@ Item {
       visible: PowerProfiles.holds.length > 0
       width: parent.width
       text: `${PowerProfiles.holds.length} application hold${PowerProfiles.holds.length === 1 ? "" : "s"} the current profile. Choosing another profile releases ${PowerProfiles.holds.length === 1 ? "it" : "them"}.`
-      color: root.theme.panelForeground
+      color: root.theme.panel.foreground
       opacity: 0.65
       wrapMode: Text.Wrap
-      font.family: root.theme.panelFont
-      font.pixelSize: root.theme.readoutFontSize
+      font.family: root.theme.panel.font
+      font.pixelSize: root.theme.typography.readoutSize
     }
 
     PanelRow {

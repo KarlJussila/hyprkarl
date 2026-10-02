@@ -18,14 +18,14 @@ Item {
   Rectangle {
     anchors.fill: parent
     color: "transparent"
-    border.color: root.highlighted ? root.theme.panelAccent : "transparent"
-    border.width: root.highlighted ? root.theme.panelSelectionBorderWidth : 0
-    radius: root.theme.panelEntryRadius
+    border.color: root.highlighted ? root.theme.panel.accent : "transparent"
+    border.width: root.highlighted ? root.theme.panel.selectionBorderWidth : 0
+    radius: root.theme.panel.entryRadius
 
     Rectangle {
       anchors.fill: parent
-      color: root.theme.panelAccent
-      opacity: root.current ? root.theme.panelSelectionAccentOpacity : 0
+      color: root.theme.panel.accent
+      opacity: root.current ? root.theme.panel.selectionAccentOpacity : 0
       radius: parent.radius
     }
   }
@@ -33,10 +33,10 @@ Item {
   Text {
     anchors.centerIn: parent
     text: root.icon
-    color: root.theme.panelForeground
-    font.family: root.theme.panelFont
-    font.pixelSize: root.theme.panelFontSize
-    font.weight: root.theme.panelFontWeight
+    color: root.theme.panel.foreground
+    font.family: root.theme.panel.font
+    font.pixelSize: root.theme.panel.fontSize
+    font.weight: root.theme.panel.fontWeight
   }
 
   MouseArea {

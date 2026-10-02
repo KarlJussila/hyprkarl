@@ -39,31 +39,31 @@ Item {
 
       Text {
         text: "["
-        color: root.theme.accent
+        color: root.theme.palette.accent
         opacity: workspaceButton.workspace.focused ? 1 : 0
-        font.family: root.theme.monoFontFamily
-        font.pixelSize: root.theme.readoutFontSize
-        font.weight: root.theme.fontWeight
-        font.styleName: root.theme.fontStyle
+        font.family: root.theme.typography.monoFamily
+        font.pixelSize: root.theme.typography.readoutSize
+        font.weight: root.theme.typography.weight
+        font.styleName: root.theme.typography.style
       }
 
       Text {
         text: workspaceButton.workspace.id
-        color: workspaceButton.workspace.focused ? root.theme.accent : root.theme.foreground
-        font.family: root.theme.monoFontFamily
-        font.pixelSize: root.theme.readoutFontSize
-        font.weight: root.theme.fontWeight
-        font.styleName: root.theme.fontStyle
+        color: workspaceButton.workspace.focused ? root.theme.palette.accent : root.theme.palette.foreground
+        font.family: root.theme.typography.monoFamily
+        font.pixelSize: root.theme.typography.readoutSize
+        font.weight: root.theme.typography.weight
+        font.styleName: root.theme.typography.style
       }
 
       Text {
         text: "]"
-        color: root.theme.accent
+        color: root.theme.palette.accent
         opacity: workspaceButton.workspace.focused ? 1 : 0
-        font.family: root.theme.monoFontFamily
-        font.pixelSize: root.theme.readoutFontSize
-        font.weight: root.theme.fontWeight
-        font.styleName: root.theme.fontStyle
+        font.family: root.theme.typography.monoFamily
+        font.pixelSize: root.theme.typography.readoutSize
+        font.weight: root.theme.typography.weight
+        font.styleName: root.theme.typography.style
       }
     }
 

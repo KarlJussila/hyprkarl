@@ -12,16 +12,16 @@ Item {
   property var action: null
 
   implicitWidth: parent?.width ?? 0
-  implicitHeight: labels.implicitHeight + root.theme.panelHeaderPadding * 2
+  implicitHeight: labels.implicitHeight + root.theme.panel.headerPadding * 2
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.panelBackground
+    color: root.theme.panel.background
 
     Rectangle {
       anchors.fill: parent
-      color: root.theme.panelAccent
-      opacity: root.theme.panelHeaderAccentOpacity
+      color: root.theme.panel.accent
+      opacity: root.theme.panel.headerAccentOpacity
     }
   }
 
@@ -33,22 +33,22 @@ Item {
       : parent.left
     anchors.right: headerAction.visible ? headerAction.left : parent.right
     anchors.leftMargin: leadingHeaderAction.visible
-      ? root.theme.panelSpacing
-      : root.theme.panelHeaderPadding
+      ? root.theme.panel.spacing
+      : root.theme.panel.headerPadding
     anchors.rightMargin: headerAction.visible
-      ? root.theme.panelSpacing
-      : root.theme.panelHeaderPadding
+      ? root.theme.panel.spacing
+      : root.theme.panel.headerPadding
     anchors.verticalCenter: parent.verticalCenter
     spacing: 2
 
     Text {
       width: parent.width
       text: root.title
-      color: root.theme.panelForeground
-      font.family: root.theme.panelFont
-      font.pixelSize: root.theme.panelFontSize + 1
-      font.weight: root.theme.panelFontWeight
-      font.styleName: root.theme.fontStyle
+      color: root.theme.panel.foreground
+      font.family: root.theme.panel.font
+      font.pixelSize: root.theme.panel.fontSize + 1
+      font.weight: root.theme.panel.fontWeight
+      font.styleName: root.theme.typography.style
       elide: Text.ElideRight
     }
 
@@ -56,10 +56,10 @@ Item {
       width: parent.width
       visible: root.subtitle.length > 0
       text: root.subtitle
-      color: root.theme.panelForeground
+      color: root.theme.panel.foreground
       opacity: 0.65
-      font.family: root.theme.panelFont
-      font.pixelSize: root.theme.readoutFontSize
+      font.family: root.theme.panel.font
+      font.pixelSize: root.theme.typography.readoutSize
       elide: Text.ElideRight
     }
   }
@@ -71,7 +71,7 @@ Item {
     width: 24
     height: 24
     anchors.left: parent.left
-    anchors.leftMargin: root.theme.panelHeaderPadding
+    anchors.leftMargin: root.theme.panel.headerPadding
     anchors.verticalCenter: parent.verticalCenter
     theme: root.theme
     icon: root.leadingActionIcon
@@ -85,7 +85,7 @@ Item {
     width: 24
     height: 24
     anchors.right: parent.right
-    anchors.rightMargin: root.theme.panelHeaderPadding
+    anchors.rightMargin: root.theme.panel.headerPadding
     anchors.verticalCenter: parent.verticalCenter
     theme: root.theme
     icon: root.actionIcon

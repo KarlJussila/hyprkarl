@@ -17,7 +17,7 @@ Item {
   readonly property string kind: descriptor?.kind ?? "none"
   readonly property string value: descriptor?.value ?? ""
   readonly property bool visibleIcon: hasNotificationImage || kind !== "none"
-  readonly property int iconSize: theme.notificationIconSize
+  readonly property int iconSize: theme.notification.iconSize
   readonly property string imageSource: resolveImage(
     hasNotificationImage ? notificationImage : value)
   readonly property string componentSource: resolveComponent()
@@ -74,11 +74,11 @@ Item {
     anchors.centerIn: parent
     visible: !root.hasNotificationImage && root.kind === "glyph"
     text: root.value
-    color: root.theme.foreground
-    font.family: root.theme.uiFontFamily
-    font.pixelSize: root.theme.notificationIconSize
-    font.weight: root.theme.fontWeight
-    font.styleName: root.theme.fontStyle
+    color: root.theme.palette.foreground
+    font.family: root.theme.typography.uiFamily
+    font.pixelSize: root.theme.notification.iconSize
+    font.weight: root.theme.typography.weight
+    font.styleName: root.theme.typography.style
   }
 
   Loader {

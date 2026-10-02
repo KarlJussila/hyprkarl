@@ -25,7 +25,7 @@ PanelWindow {
   aboveWindows: true
   exclusionMode: ExclusionMode.Ignore
   exclusiveZone: 0
-  implicitWidth: osdState.media ? theme.osdMediaWidth : theme.osdWidth
+  implicitWidth: osdState.media ? theme.osd.mediaWidth : theme.osd.width
   implicitHeight: surface.implicitHeight
   mask: Region {}
 
@@ -40,7 +40,7 @@ PanelWindow {
 
   Behavior on reveal {
     NumberAnimation {
-      duration: root.theme.osdTransitionDuration
+      duration: root.theme.osd.transitionDuration
       easing.type: root.active ? Easing.OutCubic : Easing.InCubic
     }
   }
@@ -50,16 +50,16 @@ PanelWindow {
 
     anchors.left: parent.left
     anchors.right: parent.right
-    implicitHeight: content.implicitHeight + root.theme.osdPadding * 2
+    implicitHeight: content.implicitHeight + root.theme.osd.padding * 2
     height: implicitHeight
     opacity: root.reveal
     y: root.shellConfig.osd.edge === "top"
-      ? (root.reveal - 1) * root.theme.osdSpacing
-      : (1 - root.reveal) * root.theme.osdSpacing
-    color: root.theme.popupSurface
-    border.color: root.theme.border
-    border.width: root.theme.borderWidth
-    radius: root.theme.osdRadius
+      ? (root.reveal - 1) * root.theme.osd.spacing
+      : (1 - root.reveal) * root.theme.osd.spacing
+    color: root.theme.surfaces.popup
+    border.color: root.theme.palette.border
+    border.width: root.theme.metrics.borderWidth
+    radius: root.theme.osd.radius
 
     ColumnLayout {
       id: content
@@ -67,17 +67,17 @@ PanelWindow {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: root.theme.osdPadding
-      anchors.rightMargin: root.theme.osdPadding
-      spacing: root.theme.osdSpacing
+      anchors.leftMargin: root.theme.osd.padding
+      anchors.rightMargin: root.theme.osd.padding
+      spacing: root.theme.osd.spacing
 
       RowLayout {
         Layout.fillWidth: true
-        spacing: root.theme.osdSpacing
+        spacing: root.theme.osd.spacing
 
         Item {
-          implicitWidth: root.theme.osdIconSize
-          implicitHeight: root.theme.osdIconSize
+          implicitWidth: root.theme.osd.iconSize
+          implicitHeight: root.theme.osd.iconSize
 
           AudioIndicator {
             visible: root.osdState.kind === "volume"
@@ -85,8 +85,8 @@ PanelWindow {
             anchors.centerIn: parent
             volume: root.osdState.value / 100
             muted: root.osdState.muted
-            indicatorColor: root.theme.foreground
-            inactiveWaveColor: root.theme.border
+            indicatorColor: root.theme.palette.foreground
+            inactiveWaveColor: root.theme.palette.border
           }
 
           Text {
@@ -94,11 +94,11 @@ PanelWindow {
               && root.osdState.kind !== "output"
             anchors.centerIn: parent
             text: root.osdState.glyph
-            color: root.theme.foreground
-            font.family: root.theme.uiFontFamily
-            font.pixelSize: root.theme.osdIconSize
-            font.weight: root.theme.fontWeight
-            font.styleName: root.theme.fontStyle
+            color: root.theme.palette.foreground
+            font.family: root.theme.typography.uiFamily
+            font.pixelSize: root.theme.osd.iconSize
+            font.weight: root.theme.typography.weight
+            font.styleName: root.theme.typography.style
           }
         }
 
@@ -109,11 +109,11 @@ PanelWindow {
           Text {
             Layout.fillWidth: true
             text: root.osdState.title
-            color: root.theme.foreground
-            font.family: root.theme.uiFontFamily
-            font.pixelSize: root.theme.bodyFontSize
-            font.weight: root.theme.fontWeight
-            font.styleName: root.theme.fontStyle
+            color: root.theme.palette.foreground
+            font.family: root.theme.typography.uiFamily
+            font.pixelSize: root.theme.typography.bodySize
+            font.weight: root.theme.typography.weight
+            font.styleName: root.theme.typography.style
             elide: Text.ElideRight
           }
 
@@ -121,11 +121,11 @@ PanelWindow {
             Layout.fillWidth: true
             visible: text.length > 0
             text: root.osdState.detail
-            color: root.theme.muted
-            font.family: root.theme.uiFontFamily
-            font.pixelSize: root.theme.bodyFontSize
-            font.weight: root.theme.fontWeight
-            font.styleName: root.theme.fontStyle
+            color: root.theme.palette.muted
+            font.family: root.theme.typography.uiFamily
+            font.pixelSize: root.theme.typography.bodySize
+            font.weight: root.theme.typography.weight
+            font.styleName: root.theme.typography.style
             elide: Text.ElideRight
           }
         }
@@ -133,19 +133,19 @@ PanelWindow {
         Text {
           visible: root.osdState.showValue
           text: root.osdState.value + "%"
-          color: root.theme.foreground
-          font.family: root.theme.monoFontFamily
-          font.pixelSize: root.theme.readoutFontSize
-          font.weight: root.theme.fontWeight
-          font.styleName: root.theme.fontStyle
+          color: root.theme.palette.foreground
+          font.family: root.theme.typography.monoFamily
+          font.pixelSize: root.theme.typography.readoutSize
+          font.weight: root.theme.typography.weight
+          font.styleName: root.theme.typography.style
         }
       }
 
       Rectangle {
         Layout.fillWidth: true
-        implicitHeight: root.theme.osdProgressHeight
+        implicitHeight: root.theme.osd.progressHeight
         visible: root.osdState.showProgress
-        color: root.theme.border
+        color: root.theme.palette.border
         radius: height / 2
 
         Rectangle {
@@ -153,7 +153,7 @@ PanelWindow {
           anchors.top: parent.top
           anchors.bottom: parent.bottom
           width: parent.width * root.osdState.value / 100
-          color: root.theme.accent
+          color: root.theme.palette.accent
           radius: parent.radius
         }
       }

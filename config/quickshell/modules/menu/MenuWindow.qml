@@ -11,10 +11,10 @@ PickerWindow {
   readonly property string widthRole:
     MenuState.menus[MenuState.currentMenu]?.widthRole ?? "default"
   readonly property real baseWidth: widthRole === "reference"
-    ? theme.menuReferenceWidth
+    ? theme.menu.referenceWidth
     : widthRole === "search"
-      ? theme.menuSearchWidth
-      : theme.menuWidth
+      ? theme.menu.searchWidth
+      : theme.menu.width
   readonly property string entryAlignment:
     MenuState.menus[MenuState.currentMenu]?.entryAlignment ?? "center"
   readonly property bool searching: query.trim().length > 0
@@ -24,11 +24,11 @@ PickerWindow {
       ? Text.AlignRight
       : Text.AlignHCenter
   readonly property real rowHeight: emptyLabel.implicitHeight
-    + theme.menuEntryPadding * 2
-    + theme.menuEntryMargin * 2
+    + theme.menu.entryPadding * 2
+    + theme.menu.entryMargin * 2
   readonly property real bodyHeight: menuList.count > 0
     ? searching
-      ? Math.min(menuList.contentHeight, rowHeight * theme.menuSearchRows)
+      ? Math.min(menuList.contentHeight, rowHeight * theme.menu.searchRows)
       : menuList.contentHeight
     : rowHeight
   property bool pointerPositionKnown: false
@@ -191,20 +191,20 @@ PickerWindow {
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.menuBackground
+    color: root.theme.menu.background
 
     Text {
       id: emptyLabel
 
       anchors.fill: parent
-      anchors.margins: root.theme.menuEntryPadding
+      anchors.margins: root.theme.menu.entryPadding
       visible: menuList.count === 0
       text: MenuState.menuMessage(MenuState.currentMenu, root.query)
-      color: root.theme.menuForeground
+      color: root.theme.menu.foreground
       opacity: 0.7
-      font.family: root.theme.menuFont
-      font.pixelSize: root.theme.menuFontSize
-      font.weight: root.theme.menuFontWeight
+      font.family: root.theme.menu.font
+      font.pixelSize: root.theme.menu.fontSize
+      font.weight: root.theme.menu.fontWeight
       horizontalAlignment: Text.AlignHCenter
       verticalAlignment: Text.AlignVCenter
       elide: Text.ElideRight
@@ -229,7 +229,7 @@ PickerWindow {
         required property string section
 
         width: ListView.view.width
-        height: section === "descendant" ? root.theme.menuEntryMargin * 2 + 1 : 0
+        height: section === "descendant" ? root.theme.menu.entryMargin * 2 + 1 : 0
         visible: section === "descendant"
 
         Rectangle {
@@ -237,7 +237,7 @@ PickerWindow {
           anchors.right: parent.right
           anchors.verticalCenter: parent.verticalCenter
           height: 1
-          color: root.theme.menuBorder
+          color: root.theme.menu.border
         }
       }
 

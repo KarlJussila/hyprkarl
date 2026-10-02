@@ -8,10 +8,10 @@ Item {
   BatteryIndicator {
     anchors.centerIn: parent
     level: parent.progress < 0 ? 1 : parent.progress / 100
-    surfaceColor: parent.theme.notificationSurface
-    indicatorColor: parent.theme.foreground
-    lowColor: parent.theme.urgent
-    accentColor: parent.theme.accent
-    nativeScale: parent.theme.notificationIndicatorScale
+    surfaceColor: parent.theme.surfaces.notification
+    indicatorColor: parent.theme.palette.foreground
+    lowColor: parent.theme.palette.urgent
+    accentColor: parent.theme.palette.accent
+    nativeScale: parent.theme.notification.indicatorScale
   }
 }

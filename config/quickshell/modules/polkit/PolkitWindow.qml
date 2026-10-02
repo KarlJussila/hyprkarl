@@ -56,7 +56,7 @@ PanelWindow {
 
   Behavior on reveal {
     NumberAnimation {
-      duration: root.theme.polkitTransitionDuration
+      duration: root.theme.polkit.transitionDuration
       easing.type: root.active ? Easing.OutCubic : Easing.InCubic
     }
   }
@@ -104,16 +104,16 @@ PanelWindow {
     id: frame
 
     anchors.centerIn: parent
-    width: Math.min(root.theme.polkitWidth,
-      root.width - root.theme.polkitPadding * 2)
+    width: Math.min(root.theme.polkit.width,
+      root.width - root.theme.polkit.padding * 2)
     implicitHeight: header.height + divider.height
-      + body.implicitHeight + root.theme.polkitPadding * 2
+      + body.implicitHeight + root.theme.polkit.padding * 2
     height: Math.min(implicitHeight,
-      root.height - root.theme.polkitPadding * 2)
-    color: root.theme.popupSurface
-    border.color: root.theme.border
-    border.width: root.theme.borderWidth
-    radius: root.theme.polkitRadius
+      root.height - root.theme.polkit.padding * 2)
+    color: root.theme.surfaces.popup
+    border.color: root.theme.palette.border
+    border.width: root.theme.metrics.borderWidth
+    radius: root.theme.polkit.radius
     opacity: root.reveal
     scale: 0.96 + root.reveal * 0.04
 
@@ -127,21 +127,21 @@ PanelWindow {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: parent.top
-      anchors.leftMargin: root.theme.borderWidth
-      anchors.rightMargin: root.theme.borderWidth
-      anchors.topMargin: root.theme.borderWidth
-      height: headerLabel.implicitHeight + root.theme.polkitPadding * 2
-      color: root.theme.popupSurface
+      anchors.leftMargin: root.theme.metrics.borderWidth
+      anchors.rightMargin: root.theme.metrics.borderWidth
+      anchors.topMargin: root.theme.metrics.borderWidth
+      height: headerLabel.implicitHeight + root.theme.polkit.padding * 2
+      color: root.theme.surfaces.popup
       topLeftRadius: Math.max(0,
-        root.theme.polkitRadius - root.theme.borderWidth)
+        root.theme.polkit.radius - root.theme.metrics.borderWidth)
       topRightRadius: topLeftRadius
       bottomLeftRadius: 0
       bottomRightRadius: 0
 
       Rectangle {
         anchors.fill: parent
-        color: root.theme.accent
-        opacity: root.theme.polkitHeaderAccentOpacity
+        color: root.theme.palette.accent
+        opacity: root.theme.polkit.headerAccentOpacity
         topLeftRadius: parent.topLeftRadius
         topRightRadius: parent.topRightRadius
         bottomLeftRadius: 0
@@ -152,13 +152,13 @@ PanelWindow {
         id: headerLabel
 
         anchors.fill: parent
-        anchors.margins: root.theme.polkitPadding
+        anchors.margins: root.theme.polkit.padding
         text: "Authentication Required"
-        color: root.theme.foreground
-        font.family: root.theme.uiFontFamily
-        font.pixelSize: root.theme.bodyFontSize + 1
-        font.weight: root.theme.fontWeight
-        font.styleName: root.theme.fontStyle
+        color: root.theme.palette.foreground
+        font.family: root.theme.typography.uiFamily
+        font.pixelSize: root.theme.typography.bodySize + 1
+        font.weight: root.theme.typography.weight
+        font.styleName: root.theme.typography.style
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
       }
@@ -170,8 +170,8 @@ PanelWindow {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: header.bottom
-      height: root.theme.borderWidth
-      color: root.theme.border
+      height: root.theme.metrics.borderWidth
+      color: root.theme.palette.border
     }
 
     ColumnLayout {
@@ -180,20 +180,20 @@ PanelWindow {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: divider.bottom
-      anchors.leftMargin: root.theme.polkitPadding
-        + root.theme.borderWidth
-      anchors.rightMargin: root.theme.polkitPadding
-        + root.theme.borderWidth
-      anchors.topMargin: root.theme.polkitPadding
-      spacing: root.theme.polkitSpacing
+      anchors.leftMargin: root.theme.polkit.padding
+        + root.theme.metrics.borderWidth
+      anchors.rightMargin: root.theme.polkit.padding
+        + root.theme.metrics.borderWidth
+      anchors.topMargin: root.theme.polkit.padding
+      spacing: root.theme.polkit.spacing
 
       RowLayout {
         Layout.fillWidth: true
-        spacing: root.theme.polkitSpacing
+        spacing: root.theme.polkit.spacing
 
         Item {
-          implicitWidth: root.theme.polkitIconSize
-          implicitHeight: root.theme.polkitIconSize
+          implicitWidth: root.theme.polkit.iconSize
+          implicitHeight: root.theme.polkit.iconSize
 
           IconImage {
             anchors.fill: parent
@@ -205,21 +205,21 @@ PanelWindow {
             anchors.centerIn: parent
             visible: root.resolvedIcon.length === 0
             text: "󰌾"
-            color: root.theme.accent
-            font.family: root.theme.uiFontFamily
-            font.pixelSize: root.theme.polkitIconSize
-            font.weight: root.theme.fontWeight
+            color: root.theme.palette.accent
+            font.family: root.theme.typography.uiFamily
+            font.pixelSize: root.theme.polkit.iconSize
+            font.weight: root.theme.typography.weight
           }
         }
 
         Text {
           Layout.fillWidth: true
           text: root.flow?.message ?? ""
-          color: root.theme.foreground
-          font.family: root.theme.uiFontFamily
-          font.pixelSize: root.theme.bodyFontSize
-          font.weight: root.theme.fontWeight
-          font.styleName: root.theme.fontStyle
+          color: root.theme.palette.foreground
+          font.family: root.theme.typography.uiFamily
+          font.pixelSize: root.theme.typography.bodySize
+          font.weight: root.theme.typography.weight
+          font.styleName: root.theme.typography.style
           wrapMode: Text.Wrap
         }
       }
@@ -232,10 +232,10 @@ PanelWindow {
         Text {
           Layout.fillWidth: true
           text: "Authenticate as"
-          color: root.theme.muted
-          font.family: root.theme.uiFontFamily
-          font.pixelSize: root.theme.readoutFontSize
-          font.weight: root.theme.fontWeight
+          color: root.theme.palette.muted
+          font.family: root.theme.typography.uiFamily
+          font.pixelSize: root.theme.typography.readoutSize
+          font.weight: root.theme.typography.weight
         }
 
         Repeater {
@@ -261,11 +261,11 @@ PanelWindow {
         text: root.flow?.supplementaryMessage
           || (root.flow?.failed ? "Authentication failed. Try again." : "")
         color: root.flow?.supplementaryIsError || root.flow?.failed
-          ? root.theme.urgent
-          : root.theme.muted
-        font.family: root.theme.uiFontFamily
-        font.pixelSize: root.theme.readoutFontSize
-        font.weight: root.theme.fontWeight
+          ? root.theme.palette.urgent
+          : root.theme.palette.muted
+        font.family: root.theme.typography.uiFamily
+        font.pixelSize: root.theme.typography.readoutSize
+        font.weight: root.theme.typography.weight
         wrapMode: Text.Wrap
       }
 
@@ -277,33 +277,33 @@ PanelWindow {
         Text {
           Layout.fillWidth: true
           text: root.flow?.inputPrompt ?? "Response"
-          color: root.theme.muted
-          font.family: root.theme.uiFontFamily
-          font.pixelSize: root.theme.readoutFontSize
-          font.weight: root.theme.fontWeight
+          color: root.theme.palette.muted
+          font.family: root.theme.typography.uiFamily
+          font.pixelSize: root.theme.typography.readoutSize
+          font.weight: root.theme.typography.weight
           elide: Text.ElideRight
         }
 
         Rectangle {
           Layout.fillWidth: true
           implicitHeight: 38
-          color: root.theme.controlSurface
+          color: root.theme.surfaces.control
           border.color: responseInput.activeFocus
-            ? root.theme.accent
-            : root.theme.border
-          border.width: root.theme.borderWidth
-          radius: root.theme.controlRadius
+            ? root.theme.palette.accent
+            : root.theme.palette.border
+          border.width: root.theme.metrics.borderWidth
+          radius: root.theme.metrics.radius
 
           TextInput {
             id: responseInput
 
             anchors.fill: parent
-            anchors.margins: root.theme.controlPadding
-            color: root.theme.foreground
-            selectionColor: root.theme.accent
-            selectedTextColor: root.theme.popupSurface
-            font.family: root.theme.monoFontFamily
-            font.pixelSize: root.theme.bodyFontSize
+            anchors.margins: root.theme.metrics.controlPadding
+            color: root.theme.palette.foreground
+            selectionColor: root.theme.palette.accent
+            selectedTextColor: root.theme.surfaces.popup
+            font.family: root.theme.typography.monoFamily
+            font.pixelSize: root.theme.typography.bodySize
             verticalAlignment: TextInput.AlignVCenter
             echoMode: root.flow?.responseVisible
               ? TextInput.Normal
@@ -319,7 +319,7 @@ PanelWindow {
 
       RowLayout {
         Layout.fillWidth: true
-        spacing: root.theme.polkitSpacing
+        spacing: root.theme.polkit.spacing
 
         PanelAction {
           Layout.fillWidth: true

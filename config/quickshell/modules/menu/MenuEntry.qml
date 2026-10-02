@@ -34,32 +34,32 @@ Item {
   }
 
   implicitHeight: content.implicitHeight
-    + root.theme.menuEntryPadding * 2
-    + root.theme.menuEntryMargin * 2
+    + root.theme.menu.entryPadding * 2
+    + root.theme.menu.entryMargin * 2
   opacity: disabled ? 0.45 : 1
 
   Rectangle {
     anchors.fill: parent
-    anchors.margins: root.theme.menuEntryMargin
-    color: root.theme.menuBackground
+    anchors.margins: root.theme.menu.entryMargin
+    color: root.theme.menu.background
     border.color: root.selected
-      ? root.theme.menuAccent
+      ? root.theme.menu.accent
       : "transparent"
-    border.width: root.selected ? root.theme.menuSelectionBorderWidth : 0
-    radius: root.theme.menuEntryRadius
+    border.width: root.selected ? root.theme.menu.selectionBorderWidth : 0
+    radius: root.theme.menu.entryRadius
 
     Rectangle {
       anchors.fill: parent
-      color: root.theme.menuAccent
-      opacity: root.selected ? root.theme.menuSelectionAccentOpacity : 0
-      radius: root.theme.menuEntryRadius
+      color: root.theme.menu.accent
+      opacity: root.selected ? root.theme.menu.selectionAccentOpacity : 0
+      radius: root.theme.menu.entryRadius
     }
 
     Column {
       id: content
 
       anchors.fill: parent
-      anchors.margins: root.theme.menuEntryPadding
+      anchors.margins: root.theme.menu.entryPadding
 
       Text {
         width: parent.width
@@ -68,10 +68,10 @@ Item {
           : root.entry.icon
           ? root.entry.icon + " " + root.entry.label
           : root.entry.label
-        color: root.theme.menuForeground
-        font.family: root.theme.menuFont
-        font.pixelSize: root.theme.menuFontSize
-        font.weight: root.theme.menuFontWeight
+        color: root.theme.menu.foreground
+        font.family: root.theme.menu.font
+        font.pixelSize: root.theme.menu.fontSize
+        font.weight: root.theme.menu.fontWeight
         horizontalAlignment: root.textAlignment
         elide: Text.ElideRight
       }
@@ -80,11 +80,11 @@ Item {
         width: parent.width
         visible: text.length > 0
         text: root.entry.searchDetail ?? ""
-        color: root.theme.menuForeground
+        color: root.theme.menu.foreground
         opacity: 0.55
-        font.family: root.theme.menuFont
-        font.pixelSize: Math.max(10, root.theme.menuFontSize - 2)
-        font.weight: root.theme.menuFontWeight
+        font.family: root.theme.menu.font
+        font.pixelSize: Math.max(10, root.theme.menu.fontSize - 2)
+        font.weight: root.theme.menu.fontWeight
         horizontalAlignment: root.textAlignment
         elide: Text.ElideRight
       }

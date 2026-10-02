@@ -21,7 +21,7 @@ Item {
   implicitWidth: hasContent
     ? surface.leftInset + content.implicitWidth + surface.rightInset
     : 0
-  implicitHeight: Math.max(theme.barMinThickness, content.implicitHeight)
+  implicitHeight: Math.max(theme.bar.minimumThickness, content.implicitHeight)
 
   IslandSurface {
     id: surface
@@ -47,17 +47,17 @@ Item {
 
         definition: modelData
         edge: root.edge
-        showDivider: root.theme.showDividers && index > 0
-        leadingBoundaryInset: root.theme.showDividers
+        showDivider: root.theme.bar.showDividers && index > 0
+        leadingBoundaryInset: root.theme.bar.showDividers
           && root.instances.length > 1
           && index === 0
           && surface.borderEnabled(root.leftRole)
-            ? root.theme.borderWidth : 0
-        trailingBoundaryInset: root.theme.showDividers
+            ? root.theme.metrics.borderWidth : 0
+        trailingBoundaryInset: root.theme.bar.showDividers
           && root.instances.length > 1
           && index === root.instances.length - 1
           && surface.borderEnabled(root.rightRole)
-            ? root.theme.borderWidth : 0
+            ? root.theme.metrics.borderWidth : 0
         barWindow: root.barWindow
         theme: root.theme
         systemState: root.systemState

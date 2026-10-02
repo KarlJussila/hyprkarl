@@ -8,6 +8,7 @@ Scope {
 
   required property var context
   property int modalLoads: 0
+  property int modalUnloads: 0
 
   Modal {
     context: root.context
@@ -18,7 +19,10 @@ Scope {
     preferredHeight: 320
 
     body: Component {
-      Item { Component.onCompleted: root.modalLoads++ }
+      Item {
+        Component.onCompleted: root.modalLoads++
+        Component.onDestruction: root.modalUnloads++
+      }
     }
   }
 
@@ -30,12 +34,13 @@ Scope {
         "configuration": root.context.configuration.bar.edge,
         "fixture": root.context.settings.fixture,
         "outputCount": root.context.outputs.length,
-        "themeForeground": String(root.context.theme.foreground),
+        "themeForeground": String(root.context.theme.palette.foreground),
         "name": root.context.overlayName,
         "output": root.context.overlayOutput,
         "values": root.context.overlayValues,
         "revision": root.context.overlayRevision,
-        "modalLoads": root.modalLoads
+        "modalLoads": root.modalLoads,
+        "modalUnloads": root.modalUnloads
       })
     }
 

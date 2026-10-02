@@ -163,7 +163,7 @@ Author personal themes or sparse overlays under
 See [Themes](themes.md) for values, template replacements, and assets.
 
 Personal QML receives the active theme through its context, including custom
-values in `context.theme.document`. Scripts and other applications can read
+values in `context.theme.values`. Scripts and other applications can read
 generated files through
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/`; the generated
 `theme.yaml` contains the resolved values. The sibling `current/wallpaper`

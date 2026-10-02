@@ -15,10 +15,10 @@ Item {
   required property var systemState
   required property var panelHost
 
-  readonly property int hostMainPaddingOffset: theme.trayMainPaddingOffset
+  readonly property int hostMainPaddingOffset: theme.bar.trayPaddingOffset
   readonly property int triggerDividerPadding: Math.max(
     0,
-    theme.widgetMainPadding + hostMainPaddingOffset
+    theme.bar.widgetPadding.main + hostMainPaddingOffset
   )
   readonly property bool towardEnd: config.direction !== "start"
   readonly property real contentX: (width - implicitWidth) / 2
@@ -30,7 +30,7 @@ Item {
   component TrayItem: Item {
     required property var trayItem
 
-    implicitWidth: root.theme.barMinThickness
+    implicitWidth: root.theme.bar.minimumThickness
     implicitHeight: 15
     height: root.height
 
@@ -63,7 +63,7 @@ Item {
       anchors.centerIn: parent
       width: 8
       height: 14
-      property color indicatorColor: root.theme.foreground
+      property color indicatorColor: root.theme.palette.foreground
       property bool pointsLeft: root.towardEnd ? root.expanded : !root.expanded
 
       onIndicatorColorChanged: requestPaint()
@@ -101,7 +101,7 @@ Item {
     id: trayPanel
 
     readonly property real innerPadding: trayRow.implicitWidth > 0
-      ? root.theme.widgetMainPadding
+      ? root.theme.bar.widgetPadding.main
       : 0
 
     x: root.contentX + (root.towardEnd ? trigger.width : 0)
@@ -110,7 +110,7 @@ Item {
       ? trayRow.implicitWidth
         + root.triggerDividerPadding
         + innerPadding
-        + root.theme.borderWidth
+        + root.theme.metrics.borderWidth
       : 0
     height: root.height
     clip: true
@@ -127,19 +127,19 @@ Item {
         ? root.triggerDividerPadding
         : trayPanel.width - root.triggerDividerPadding - width
       y: 0
-      width: root.theme.borderWidth
+      width: root.theme.metrics.borderWidth
       height: parent.height
-      color: root.theme.border
+      color: root.theme.palette.border
     }
 
     Row {
       id: trayRow
 
       x: root.towardEnd
-        ? root.triggerDividerPadding + root.theme.borderWidth + trayPanel.innerPadding
+        ? root.triggerDividerPadding + root.theme.metrics.borderWidth + trayPanel.innerPadding
         : trayPanel.width
           - root.triggerDividerPadding
-          - root.theme.borderWidth
+          - root.theme.metrics.borderWidth
           - trayPanel.innerPadding
           - width
 

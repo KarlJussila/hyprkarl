@@ -7,7 +7,7 @@ ShellButton {
 
   visible: systemState.recording
   text: config.icon
-  textColor: theme.urgent
+  textColor: theme.palette.urgent
   tooltip: "Recording — click to stop"
   primaryCommand: config.command
 }

@@ -61,13 +61,13 @@ Item {
       width: parent.width
       height: visible ? 3 : 0
       radius: 2
-      color: root.theme.panelBorder
+      color: root.theme.panel.border
 
       Rectangle {
         width: parent.width * Math.max(0, Math.min(1, peakMonitor.peak))
         height: parent.height
         radius: parent.radius
-        color: root.theme.panelAccent
+        color: root.theme.panel.accent
       }
     }
   }

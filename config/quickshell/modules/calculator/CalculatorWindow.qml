@@ -23,9 +23,9 @@ PickerWindow {
   title: "Calculator"
   placeholder: "Calculate…"
   showTextCursor: true
-  requestedWidth: theme.calculatorWidth
+  requestedWidth: theme.calculator.width
   requestedBodyHeight: rowHeight * Math.max(1,
-    Math.min(theme.calculatorHistoryRows, rows.length))
+    Math.min(theme.calculator.historyRows, rows.length))
 
   function buildRows(): var {
     const rows = []
@@ -39,7 +39,7 @@ PickerWindow {
     for (const entry of CalculatorState.history) {
       if (entry.expression !== query.trim()) rows.push(entry)
     }
-    return rows.slice(0, theme.calculatorHistoryRows)
+    return rows.slice(0, theme.calculator.historyRows)
   }
 
   function resetSelection(): void {
@@ -142,18 +142,18 @@ PickerWindow {
 
   Text {
     anchors.fill: parent
-    anchors.margins: root.theme.menuEntryPadding
+    anchors.margins: root.theme.menu.entryPadding
     visible: calculationList.count === 0
     text: root.evaluationError.length > 0
       ? root.evaluationError
       : root.query.length > 0
         ? "Calculating…"
         : "No recent calculations"
-    color: root.theme.menuForeground
+    color: root.theme.menu.foreground
     opacity: 0.7
-    font.family: root.theme.menuFont
-    font.pixelSize: root.theme.menuFontSize
-    font.weight: root.theme.menuFontWeight
+    font.family: root.theme.menu.font
+    font.pixelSize: root.theme.menu.fontSize
+    font.weight: root.theme.menu.fontWeight
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
     wrapMode: Text.Wrap
@@ -182,21 +182,21 @@ PickerWindow {
 
       Rectangle {
         anchors.fill: parent
-        anchors.margins: root.theme.menuEntryMargin
-        color: root.theme.menuBackground
+        anchors.margins: root.theme.menu.entryMargin
+        color: root.theme.menu.background
         border.color: row.navigationCurrent
-          ? root.theme.menuAccent
+          ? root.theme.menu.accent
           : "transparent"
         border.width: row.navigationCurrent
-          ? root.theme.menuSelectionBorderWidth
+          ? root.theme.menu.selectionBorderWidth
           : 0
-        radius: root.theme.menuEntryRadius
+        radius: root.theme.menu.entryRadius
 
         Rectangle {
           anchors.fill: parent
-          color: root.theme.menuAccent
+          color: root.theme.menu.accent
           opacity: row.navigationCurrent
-            ? root.theme.menuSelectionAccentOpacity
+            ? root.theme.menu.selectionAccentOpacity
             : 0
           radius: parent.radius
         }
@@ -204,14 +204,14 @@ PickerWindow {
         Text {
           anchors.left: parent.left
           anchors.right: result.left
-          anchors.leftMargin: root.theme.menuEntryPadding
-          anchors.rightMargin: root.theme.menuEntryPadding
+          anchors.leftMargin: root.theme.menu.entryPadding
+          anchors.rightMargin: root.theme.menu.entryPadding
           anchors.verticalCenter: parent.verticalCenter
           text: row.modelData.expression
-          color: root.theme.menuForeground
-          font.family: root.theme.menuFont
-          font.pixelSize: root.theme.menuFontSize
-          font.weight: root.theme.menuFontWeight
+          color: root.theme.menu.foreground
+          font.family: root.theme.menu.font
+          font.pixelSize: root.theme.menu.fontSize
+          font.weight: root.theme.menu.fontWeight
           elide: Text.ElideRight
         }
 
@@ -219,14 +219,14 @@ PickerWindow {
           id: result
 
           anchors.right: parent.right
-          anchors.rightMargin: root.theme.menuEntryPadding
+          anchors.rightMargin: root.theme.menu.entryPadding
           anchors.verticalCenter: parent.verticalCenter
           width: parent.width * 0.46
           text: row.modelData.result
-          color: root.theme.menuForeground
-          font.family: root.theme.menuFont
-          font.pixelSize: root.theme.menuFontSize
-          font.weight: root.theme.menuFontWeight
+          color: root.theme.menu.foreground
+          font.family: root.theme.menu.font
+          font.pixelSize: root.theme.menu.fontSize
+          font.weight: root.theme.menu.fontWeight
           horizontalAlignment: Text.AlignRight
           elide: Text.ElideLeft
         }

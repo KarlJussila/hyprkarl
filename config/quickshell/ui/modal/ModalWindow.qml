@@ -11,7 +11,7 @@ PanelWindow {
   required property var theme
   property bool shown: false
   property bool framed: true
-  property real requestedWidth: theme.menuSearchWidth
+  property real requestedWidth: theme.menu.searchWidth
   property real requestedHeight: 0
   property real reveal: shown ? 1 : 0
   readonly property alias modalBody: body
@@ -38,7 +38,7 @@ PanelWindow {
 
   Behavior on reveal {
     NumberAnimation {
-      duration: root.theme.panelTransitionDuration
+      duration: root.theme.panel.transitionDuration
       easing.type: root.shown ? Easing.OutCubic : Easing.InCubic
     }
   }
@@ -52,7 +52,7 @@ PanelWindow {
 
   Rectangle {
     anchors.fill: parent
-    color: root.theme.menuScrim
+    color: root.theme.menu.scrim
     opacity: root.reveal
 
     MouseArea {
@@ -65,7 +65,7 @@ PanelWindow {
     id: frame
 
     readonly property real frameInset: root.framed
-      ? root.theme.menuOuterBorderWidth + root.theme.menuOuterPadding
+      ? root.theme.menu.outerBorderWidth + root.theme.menu.outerPadding
       : 0
 
     anchors.centerIn: parent
@@ -76,10 +76,10 @@ PanelWindow {
       ? Math.min(root.requestedHeight, root.height)
       : root.height
     opacity: root.reveal
-    color: root.framed ? root.theme.menuBackground : "transparent"
-    border.color: root.theme.menuBorder
-    border.width: root.framed ? root.theme.menuOuterBorderWidth : 0
-    radius: root.framed ? root.theme.menuOuterRadius : 0
+    color: root.framed ? root.theme.menu.background : "transparent"
+    border.color: root.theme.menu.border
+    border.width: root.framed ? root.theme.menu.outerBorderWidth : 0
+    radius: root.framed ? root.theme.menu.outerRadius : 0
 
     MouseArea {
       anchors.fill: parent
@@ -91,16 +91,16 @@ PanelWindow {
 
       anchors.fill: parent
       anchors.margins: frame.frameInset
-      color: root.framed ? root.theme.menuBackground : "transparent"
-      border.color: root.theme.menuBorder
-      border.width: root.framed ? root.theme.menuInnerBorderWidth : 0
-      radius: root.framed ? root.theme.menuInnerRadius : 0
+      color: root.framed ? root.theme.menu.background : "transparent"
+      border.color: root.theme.menu.border
+      border.width: root.framed ? root.theme.menu.innerBorderWidth : 0
+      radius: root.framed ? root.theme.menu.innerRadius : 0
 
       Item {
         id: body
 
         anchors.fill: parent
-        anchors.margins: root.framed ? root.theme.menuInnerBorderWidth : 0
+        anchors.margins: root.framed ? root.theme.menu.innerBorderWidth : 0
         clip: root.framed
       }
     }

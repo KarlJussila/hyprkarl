@@ -18,10 +18,10 @@ ModalWindow {
   readonly property bool searchShown: searchable
     && (searchPinned || searchInput.text.length > 0)
 
-  requestedWidth: theme.menuSearchWidth
-  requestedHeight: root.theme.menuOuterBorderWidth * 2
-    + root.theme.menuOuterPadding * 2
-    + root.theme.menuInnerBorderWidth * 2
+  requestedWidth: theme.menu.searchWidth
+  requestedHeight: root.theme.menu.outerBorderWidth * 2
+    + root.theme.menu.outerPadding * 2
+    + root.theme.menu.innerBorderWidth * 2
     + header.height
     + headerDivider.height
     + searchArea.height
@@ -61,18 +61,18 @@ ModalWindow {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: parent.top
-      height: headerLabel.implicitHeight + root.theme.menuHeaderPadding * 2
-      color: root.theme.menuBackground
+      height: headerLabel.implicitHeight + root.theme.menu.headerPadding * 2
+      color: root.theme.menu.background
       topLeftRadius: Math.max(0,
-        root.theme.menuInnerRadius - root.theme.menuInnerBorderWidth)
+        root.theme.menu.innerRadius - root.theme.menu.innerBorderWidth)
       topRightRadius: topLeftRadius
       bottomLeftRadius: 0
       bottomRightRadius: 0
 
       Rectangle {
         anchors.fill: parent
-        color: root.theme.menuAccent
-        opacity: root.theme.menuHeaderAccentOpacity
+        color: root.theme.menu.accent
+        opacity: root.theme.menu.headerAccentOpacity
         topLeftRadius: parent.topLeftRadius
         topRightRadius: parent.topRightRadius
         bottomLeftRadius: 0
@@ -83,12 +83,12 @@ ModalWindow {
         id: headerLabel
 
         anchors.fill: parent
-        anchors.margins: root.theme.menuHeaderPadding
+        anchors.margins: root.theme.menu.headerPadding
         text: root.title
-        color: root.theme.menuForeground
-        font.family: root.theme.menuFont
-        font.pixelSize: root.theme.menuFontSize
-        font.weight: root.theme.menuFontWeight
+        color: root.theme.menu.foreground
+        font.family: root.theme.menu.font
+        font.pixelSize: root.theme.menu.fontSize
+        font.weight: root.theme.menu.fontWeight
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
       }
@@ -100,8 +100,8 @@ ModalWindow {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: header.bottom
-      height: root.theme.menuInnerBorderWidth
-      color: root.theme.menuBorder
+      height: root.theme.menu.innerBorderWidth
+      color: root.theme.menu.border
     }
 
     Rectangle {
@@ -113,31 +113,31 @@ ModalWindow {
       visible: root.searchShown
       height: visible
         ? searchInput.implicitHeight
-          + root.theme.menuEntryPadding * 2
-          + root.theme.menuEntryMargin * 2
+          + root.theme.menu.entryPadding * 2
+          + root.theme.menu.entryMargin * 2
         : 0
-      color: root.theme.menuBackground
+      color: root.theme.menu.background
 
       Rectangle {
         anchors.fill: parent
-        anchors.margins: root.theme.menuEntryMargin
-        color: root.theme.menuBackground
+        anchors.margins: root.theme.menu.entryMargin
+        color: root.theme.menu.background
         border.color: searchInput.activeFocus && root.showTextCursor
-          ? root.theme.menuAccent
-          : root.theme.menuBorder
-        border.width: root.theme.menuSelectionBorderWidth
-        radius: root.theme.menuEntryRadius
+          ? root.theme.menu.accent
+          : root.theme.menu.border
+        border.width: root.theme.menu.selectionBorderWidth
+        radius: root.theme.menu.entryRadius
 
         Text {
           anchors.fill: parent
-          anchors.margins: root.theme.menuEntryPadding
+          anchors.margins: root.theme.menu.entryPadding
           visible: searchInput.text.length === 0
           text: root.placeholder
-          color: root.theme.menuForeground
+          color: root.theme.menu.foreground
           opacity: 0.55
-          font.family: root.theme.menuFont
-          font.pixelSize: root.theme.menuFontSize
-          font.weight: root.theme.menuFontWeight
+          font.family: root.theme.menu.font
+          font.pixelSize: root.theme.menu.fontSize
+          font.weight: root.theme.menu.fontWeight
           verticalAlignment: Text.AlignVCenter
         }
 
@@ -145,13 +145,13 @@ ModalWindow {
           id: searchInput
 
           anchors.fill: parent
-          anchors.margins: root.theme.menuEntryPadding
-          color: root.theme.menuForeground
-          selectionColor: root.theme.menuAccent
-          selectedTextColor: root.theme.menuBackground
-          font.family: root.theme.menuFont
-          font.pixelSize: root.theme.menuFontSize
-          font.weight: root.theme.menuFontWeight
+          anchors.margins: root.theme.menu.entryPadding
+          color: root.theme.menu.foreground
+          selectionColor: root.theme.menu.accent
+          selectedTextColor: root.theme.menu.background
+          font.family: root.theme.menu.font
+          font.pixelSize: root.theme.menu.fontSize
+          font.weight: root.theme.menu.fontWeight
           verticalAlignment: TextInput.AlignVCenter
           cursorDelegate: root.showTextCursor ? null : hiddenTextCursor
           selectByMouse: true
@@ -168,8 +168,8 @@ ModalWindow {
       anchors.right: parent.right
       anchors.top: searchArea.bottom
       visible: root.searchShown
-      height: visible ? root.theme.menuInnerBorderWidth : 0
-      color: root.theme.menuBorder
+      height: visible ? root.theme.menu.innerBorderWidth : 0
+      color: root.theme.menu.border
     }
 
     Item {

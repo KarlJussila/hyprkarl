@@ -29,17 +29,17 @@ Scope {
       ? [sectionKeyTarget, focusedControl, panelFocus]
       : [sectionKeyTarget, panelFocus]
 
-  readonly property bool touchesBar: theme.panelGap === 0 && theme.barMarginContent === 0
+  readonly property bool touchesBar: theme.panel.gap === 0 && theme.bar.margin.content === 0
   readonly property bool touchesLeft: anchorX <= 0.5
   readonly property bool touchesRight: anchorX + panel.width >= barWindow.width - 0.5
   readonly property bool sharpTopLeft: touchesBar && edge === "top" && touchesLeft
   readonly property bool sharpTopRight: touchesBar && edge === "top" && touchesRight
   readonly property bool sharpBottomLeft: touchesBar && edge === "bottom" && touchesLeft
   readonly property bool sharpBottomRight: touchesBar && edge === "bottom" && touchesRight
-  readonly property real frameInset: theme.panelOuterPadding
-  readonly property real frameOverhead: theme.panelOuterBorderWidth * 2
+  readonly property real frameInset: theme.panel.outerPadding
+  readonly property real frameOverhead: theme.panel.outerBorderWidth * 2
     + frameInset * 2
-    + theme.panelInnerBorderWidth * 2
+    + theme.panel.innerBorderWidth * 2
 
   function toggle(id: string, item: Item, component: Component): void {
     if (activeId === id) {
@@ -109,14 +109,14 @@ Scope {
 
   Behavior on reveal {
     NumberAnimation {
-      duration: root.theme.panelTransitionDuration
+      duration: root.theme.panel.transitionDuration
       easing.type: root.open ? Easing.OutCubic : Easing.InCubic
     }
   }
 
   Timer {
     id: unloadTimer
-    interval: root.theme.panelTransitionDuration
+    interval: root.theme.panel.transitionDuration
     onTriggered: {
       if (root.open) return
       root.trigger = null
@@ -142,7 +142,7 @@ Scope {
     color: "transparent"
     grabFocus: false
     visible: root.open || root.reveal > 0
-    implicitWidth: Math.min(loadedContent?.preferredWidth ?? root.theme.panelWidth, root.barWindow.width)
+    implicitWidth: Math.min(loadedContent?.preferredWidth ?? root.theme.panel.width, root.barWindow.width)
     implicitHeight: Math.min(
       contentHeight + root.frameOverhead,
       availableHeight
@@ -150,10 +150,10 @@ Scope {
     mask: Region {
       width: root.open ? panel.width : 0
       height: root.open ? panel.height : 0
-      topLeftRadius: root.sharpTopLeft ? 0 : root.theme.panelOuterRadius
-      topRightRadius: root.sharpTopRight ? 0 : root.theme.panelOuterRadius
-      bottomLeftRadius: root.sharpBottomLeft ? 0 : root.theme.panelOuterRadius
-      bottomRightRadius: root.sharpBottomRight ? 0 : root.theme.panelOuterRadius
+      topLeftRadius: root.sharpTopLeft ? 0 : root.theme.panel.outerRadius
+      topRightRadius: root.sharpTopRight ? 0 : root.theme.panel.outerRadius
+      bottomLeftRadius: root.sharpBottomLeft ? 0 : root.theme.panel.outerRadius
+      bottomRightRadius: root.sharpBottomRight ? 0 : root.theme.panel.outerRadius
     }
 
     Shortcut {
@@ -181,8 +181,8 @@ Scope {
         if (!root.trigger) return
 
         const relativeY = root.edge === "top"
-          ? root.trigger.height + root.theme.barMarginContent + root.theme.panelGap - root.theme.panelOuterBorderWidth
-          : root.theme.panelOuterBorderWidth - root.theme.barMarginContent - root.theme.panelGap
+          ? root.trigger.height + root.theme.bar.margin.content + root.theme.panel.gap - root.theme.panel.outerBorderWidth
+          : root.theme.panel.outerBorderWidth - root.theme.bar.margin.content - root.theme.panel.gap
         const point = root.trigger.QsWindow.contentItem.mapFromItem(
           root.trigger,
           root.trigger.width / 2 - panel.width / 2,
@@ -213,10 +213,10 @@ Scope {
         height: panel.height
         anchors.top: root.edge === "top" ? parent.top : undefined
         anchors.bottom: root.edge === "bottom" ? parent.bottom : undefined
-        color: root.theme.panelBackground
-        border.color: root.theme.panelBorder
-        border.width: root.theme.panelOuterBorderWidth
-        radius: root.theme.panelOuterRadius
+        color: root.theme.panel.background
+        border.color: root.theme.panel.border
+        border.width: root.theme.panel.outerBorderWidth
+        radius: root.theme.panel.outerRadius
         topLeftRadius: root.sharpTopLeft ? 0 : radius
         topRightRadius: root.sharpTopRight ? 0 : radius
         bottomLeftRadius: root.sharpBottomLeft ? 0 : radius
@@ -227,10 +227,10 @@ Scope {
 
           anchors.fill: parent
           anchors.margins: root.frameInset
-          color: root.theme.panelBackground
-          border.color: root.theme.panelBorder
-          border.width: root.theme.panelInnerBorderWidth
-          radius: root.theme.panelInnerRadius
+          color: root.theme.panel.background
+          border.color: root.theme.panel.border
+          border.width: root.theme.panel.innerBorderWidth
+          radius: root.theme.panel.innerRadius
           topLeftRadius: root.sharpTopLeft ? 0 : radius
           topRightRadius: root.sharpTopRight ? 0 : radius
           bottomLeftRadius: root.sharpBottomLeft ? 0 : radius
@@ -264,7 +264,7 @@ Scope {
                 readonly property rect sectionRect: navigator.currentSectionRect
                 readonly property rect sectionBounds: navigator.currentSectionBounds
                 readonly property rect contentBounds: navigator.currentContentBounds
-                readonly property real verticalInset: root.theme.panelSpacing / 2
+                readonly property real verticalInset: root.theme.panel.spacing / 2
                 readonly property bool firstSection: contentBounds.height > 0
                   && Math.abs(sectionRect.y - contentBounds.y) < 0.5
                 readonly property bool lastSection: contentBounds.height > 0
@@ -280,12 +280,12 @@ Scope {
                     - sectionRect.y - sectionRect.height
                   : verticalInset
 
-                x: root.theme.panelInnerBorderWidth
+                x: root.theme.panel.innerBorderWidth
                 y: Math.max(0, sectionRect.y - topInset)
                 width: Math.max(0, viewport.width - x * 2)
                 height: sectionRect.height + topInset + bottomInset
                 visible: root.open && sectionRect.width > 0 && sectionRect.height > 0
-                color: root.theme.panelSectionBackground
+                color: root.theme.panel.sectionBackground
               }
 
               Loader {

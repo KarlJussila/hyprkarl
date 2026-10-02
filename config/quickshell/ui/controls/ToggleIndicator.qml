@@ -50,10 +50,10 @@ Item {
     active ? activeGlyphOffset : inactiveGlyphOffset
 
   property real progress: active ? 1 : 0
-  property color surfaceColor: theme.barSurface
-  property color accentColor: theme.accent
-  property color outlineColor: theme.border
-  property color foregroundColor: theme.foreground
+  property color surfaceColor: theme.surfaces.bar
+  property color accentColor: theme.palette.accent
+  property color outlineColor: theme.palette.border
+  property color foregroundColor: theme.palette.foreground
   property color trackColor: active ? accentColor : surfaceColor
   property color borderColor: active ? accentColor : outlineColor
   readonly property color thumbFillColor:

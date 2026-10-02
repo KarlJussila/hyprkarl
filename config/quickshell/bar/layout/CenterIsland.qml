@@ -24,7 +24,7 @@ Item {
     ? surface.leftInset + visibleExtent + surface.rightInset
     : 0
   implicitHeight: Math.max(
-    theme.barMinThickness,
+    theme.bar.minimumThickness,
     startGroup.implicitHeight,
     centerGroup.implicitHeight,
     endGroup.implicitHeight

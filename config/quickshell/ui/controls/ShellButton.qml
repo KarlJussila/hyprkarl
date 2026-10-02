@@ -18,7 +18,7 @@ Item {
   required property string edge
   required property var barWindow
   required property var panelHost
-  property color textColor: theme.foreground
+  property color textColor: theme.palette.foreground
   readonly property bool hovered: mouse.containsMouse
 
   readonly property real contentWidth: contentComponent ? contentLoader.implicitWidth : label.implicitWidth
@@ -44,10 +44,10 @@ Item {
     anchors.centerIn: parent
     text: root.text
     color: root.textColor
-    font.family: root.theme.uiFontFamily
-    font.pixelSize: root.theme.bodyFontSize
-    font.weight: root.theme.fontWeight
-    font.styleName: root.theme.fontStyle
+    font.family: root.theme.typography.uiFamily
+    font.pixelSize: root.theme.typography.bodySize
+    font.weight: root.theme.typography.weight
+    font.styleName: root.theme.typography.style
     textFormat: Text.PlainText
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter

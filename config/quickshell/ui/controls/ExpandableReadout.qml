@@ -18,11 +18,11 @@ Item {
     anchors.left: parent.left
     anchors.top: parent.top
     text: root.icon
-    color: root.theme.foreground
-    font.family: root.theme.uiFontFamily
-    font.pixelSize: root.theme.bodyFontSize
-    font.weight: root.theme.fontWeight
-    font.styleName: root.theme.fontStyle
+    color: root.theme.palette.foreground
+    font.family: root.theme.typography.uiFamily
+    font.pixelSize: root.theme.typography.bodySize
+    font.weight: root.theme.typography.weight
+    font.styleName: root.theme.typography.style
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
   }
@@ -51,11 +51,11 @@ Item {
       x: root.gap
       y: 0
       text: root.text
-      color: root.theme.foreground
-      font.family: root.theme.monoFontFamily
-      font.pixelSize: root.theme.readoutFontSize
-      font.weight: root.theme.fontWeight
-      font.styleName: root.theme.fontStyle
+      color: root.theme.palette.foreground
+      font.family: root.theme.typography.monoFamily
+      font.pixelSize: root.theme.typography.readoutSize
+      font.weight: root.theme.typography.weight
+      font.styleName: root.theme.typography.style
       horizontalAlignment: Text.AlignHCenter
       verticalAlignment: Text.AlignVCenter
     }

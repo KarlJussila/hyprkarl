@@ -22,7 +22,8 @@ fi
 "$SCRIPT_DIR/setup-purge-noctalia.sh" || exit 1
 
 # The update workflow itself needs these before it can install the rest.
-sudo pacman -S --needed --noconfirm gum jq python || exit 1
+# Upgrade first: installing from a stale package database fails.
+sudo pacman -Syu --needed --noconfirm gum jq python || exit 1
 source "$SCRIPT_DIR/bin/lib/update.sh"
 update_configure_source || exit 1
 

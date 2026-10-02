@@ -61,6 +61,7 @@ case "$1" in
   -Qqt) grep -Fxv -f "${HK_TEST_REQUIRED:-/dev/null}" "$HK_TEST_INSTALLED" ;;
   -D) printf '%s\n' "$*" >> "$HK_TEST_ASDEPS_LOG" ;;
   -Q) grep -Fxq "$2" "$HK_TEST_INSTALLED" ;;
+  -Syu) shift 3; [[ $# -gt 0 ]] && printf '%s\n' "$*" >> "$HK_TEST_INSTALL_LOG"; exit 0 ;;
   *) exit 0 ;;
 esac
 EOF
@@ -78,12 +79,10 @@ if [[ -n "${HK_TEST_REMOVE_CASCADE:-}" ]]; then
 fi
 EOF
 
-  for command in hk-pkg-install hk-pkg-install-aur; do
-    cat > "$MOCKBIN/$command" <<'EOF'
+  cat > "$MOCKBIN/hk-pkg-install-aur" <<'EOF'
 #!/bin/bash
 printf '%s\n' "$*" >> "$HK_TEST_INSTALL_LOG"
 EOF
-  done
 
   cat > "$MOCKBIN/sudo" <<'EOF'
 #!/bin/bash

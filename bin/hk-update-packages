@@ -83,9 +83,13 @@ while IFS= read -r package; do
   grep -Fxq "$package" <<<"$installed" || missing_aur+=("$package")
 done < <(jq -r '.additions.aur[]' <<<"$plan")
 
-if [[ ${#missing_pacman[@]} -gt 0 ]]; then
-  printf 'Installing required packages: %s\n' "${missing_pacman[*]}"
-  hk-pkg-install "${missing_pacman[@]}" || exit 1
+# Installing from a stale package database fails once mirrors drop the old
+# versions, and Arch does not support syncing without upgrading, so new
+# packages come with a system upgrade.
+if [[ ${#missing_pacman[@]} -gt 0 ]] || [[ ${#missing_aur[@]} -gt 0 ]]; then
+  printf 'Upgrading the system and installing required packages: %s\n' \
+    "${missing_pacman[*]}"
+  sudo pacman -Syu --needed --noconfirm "${missing_pacman[@]}" || exit 1
 fi
 if [[ ${#missing_aur[@]} -gt 0 ]]; then
   printf 'Installing required AUR packages: %s\n' "${missing_aur[*]}"

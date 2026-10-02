@@ -51,7 +51,7 @@ without good reason.
   copies the GTK theme, and sets GTK settings. Wallpaper additions and
   removals persist under the personal theme source; never modify checked-in
   theme sources from a command.
-- **Hooks.** `hk-hook-run` runs the user's executables for `post-boot`,
+- **Hooks.** `hk-hook-run` runs the user's executables for `login`,
   `post-update`, `theme-set`, and `wallpaper-set`. Add an event only for a
   real public action.
 - **Lock.** `hk-lock` starts `lock.qml`; `hk-suspend` only suspends, and

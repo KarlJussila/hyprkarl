@@ -4,7 +4,7 @@ hl.on("hyprland.start", function()
     -- cursor has no Hyprcursor version, so set the theme's cursor explicitly.
     hl.exec_cmd([[hyprctl setcursor "$(cat "${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/cursor.theme")" "$XCURSOR_SIZE"]])
     hl.exec_cmd("systemctl --user start hypridle.service")
-    hl.exec_cmd([[hk-shell start; hk-hook-run post-boot || notify-send "Hyprkarl post-boot hook failed" "Check the hook output in the Hyprland log."]])
+    hl.exec_cmd([[hk-shell start; hk-hook-run login || notify-send "Hyprkarl login hook failed" "Check the hook output in the Hyprland log."]])
     hl.exec_cmd("uwsm app -- hyprpaper")
     hl.exec_cmd("hk-wallpaper init || hk-wallpaper cycle")
 

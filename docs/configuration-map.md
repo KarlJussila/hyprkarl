@@ -62,7 +62,7 @@ These files describe this installation. They are not configuration or generated
 source.
 
 Personal executable lifecycle hooks live under
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/`. Hyprkarl supports `post-boot`, `post-update`,
+`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/`. Hyprkarl supports `login`, `post-update`,
 `theme-set`, and `wallpaper-set`; files run in lexical order. See
 [Extending Hyprkarl](extending-hyprkarl.md#add-a-lifecycle-hook).
 

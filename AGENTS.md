@@ -134,7 +134,7 @@ adding or editing one.
 ### Lifecycle hooks
 
 `hk-hook-run` runs the user's executables in
-`~/.config/hyprkarl/hooks/<event>.d/` in lexical order. Events: `post-boot`,
+`~/.config/hyprkarl/hooks/<event>.d/` in lexical order. Events: `login`,
 `post-update`, `theme-set`, `wallpaper-set`. Add an event only for a concrete
 workflow.
 

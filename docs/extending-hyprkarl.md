@@ -48,10 +48,10 @@ launcher.
 
 ## Add a lifecycle hook
 
-Hooks run after session startup, a complete update, a theme switch, or a
+Hooks run after you log in, a complete update, a theme switch, or a
 wallpaper change. Put executable files in the corresponding
 `~/.config/hyprkarl/hooks/<event>.d/` directory. The event names are
-`post-boot`, `post-update`, `theme-set`, and `wallpaper-set`.
+`login`, `post-update`, `theme-set`, and `wallpaper-set`.
 
 For example, to reload an application after switching themes:
 

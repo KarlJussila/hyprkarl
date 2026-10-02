@@ -47,7 +47,7 @@ completes successfully. Individual update commands do not emit that event.
 
 - `hk-hook-run <event>`
   Run personal executable hooks from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/` in lexical order.
-  Supported events are `post-boot`, `post-update`, `theme-set`, and
+  Supported events are `login`, `post-update`, `theme-set`, and
   `wallpaper-set`. This is normally called by the corresponding Hyprkarl
   action rather than manually.
 

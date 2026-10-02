@@ -28,6 +28,7 @@ declare -A includes=(
   [foot/local.ini]=terminals/foot.ini
   [ghostty/local.conf]=terminals/ghostty.conf
   [kitty/local.conf]=terminals/kitty.conf
+  [hypr/hyprland.local.lua]=hypr/hyprland.local.lua
   [hypr/hypridle.local.conf]=hypr/hypridle.local.conf
   [hypr/hyprpaper.local.conf]=hypr/hyprpaper.local.conf
   [hypr/hyprsunset.local.conf]=hypr/hyprsunset.local.conf

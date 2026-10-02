@@ -1,0 +1,14 @@
+-- Personal Hyprland settings, loaded after Hyprkarl's modules, the active
+-- theme, and the display layout, so anything here wins. Hyprkarl creates this
+-- file once and never replaces it. Hyprkarl's own modules under
+-- $HYPRKARL_PATH/defaults/hypr/ show the syntax.
+--
+-- To split this file up, require your own files from ~/.config/hypr/; give
+-- them names that differ from Hyprkarl's modules (envs, bindings, input, ...).
+--
+-- hl.config({ input = { kb_layout = "us,fi" } })
+--
+-- hl.unbind("SUPER + RETURN")
+-- hl.bind("SUPER + RETURN", hl.dsp.exec_cmd("uwsm-app -- my-terminal"), {
+--     description = "Terminal",
+-- })

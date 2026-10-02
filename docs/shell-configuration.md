@@ -862,7 +862,7 @@ and invokes `hk-display`; it does not own a second monitor model or write shell
 JSON. Confirmed output enablement, resolution, refresh rate, and scale persist in
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/`, whose generated Lua
 loads after shipped monitor defaults and before explicit
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua`. Brightness is backlight service state and is not
+`~/.config/hypr/hyprland.local.lua`. Brightness is backlight service state and is not
 copied into that layout. The overview exposes it when available and opens a
 staged settings page for each connected output. Resolution and refresh rate
 have separate pickers, with refresh options filtered to modes reported for the

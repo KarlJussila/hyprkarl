@@ -116,8 +116,8 @@ old settings no longer apply.
 
 | Old path in the checkout | New home |
 |---|---|
-| `config/hypr/*.lua`, `config/hypr/bindings/*`, `config/hypr/windows/*` | `~/.config/hyprkarl/hypr/<module>.lua`, loaded after the shipped module of the same name. Write only your additions; use `hl.unbind()` before rebinding a shipped key. |
-| `~/.config/hypr/hyprland.conf` (a real file, not a link) | Lines other installers appended, such as autostart entries. Hyprland ignores this file because `hyprland.lua` exists; move them to `~/.config/hyprkarl/hypr/autostart.lua`. |
+| `config/hypr/*.lua`, `config/hypr/bindings/*`, `config/hypr/windows/*` | `~/.config/hypr/hyprland.local.lua`, loaded after all of Hyprkarl's settings. Write only your changes; use `hl.unbind()` before rebinding a shipped key. |
+| `~/.config/hypr/hyprland.conf` (a real file, not a link) | Lines other installers appended, such as autostart entries. Hyprland ignores this file because `hyprland.lua` exists; move them into a `hl.on("hyprland.start", ...)` block in `~/.config/hypr/hyprland.local.lua`. |
 | `config/hypr/hypridle.conf`, `hyprpaper.conf`, `hyprsunset.conf` | `~/.config/hypr/hypridle.local.conf` and its Hyprpaper and Hyprsunset siblings, loaded after Hyprkarl's files. For Hypridle, redefine the timeout and command variables listed at the top of the shipped `hypridle.conf` rather than copying listeners. |
 | `config/hypr/hyprlock.conf` | Gone. Lock appearance is theme data under `shell.lock`; see [Authentication](authentication-surfaces.md). |
 | `config/ags/**` | `~/.config/quickshell/settings/shell.json`; custom widgets become command or QML widgets. See [Customizing the bar](customizing-bar.md). |

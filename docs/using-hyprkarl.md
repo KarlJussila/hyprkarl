@@ -65,7 +65,7 @@ Some common keybindings are:
   Open `btop`
 
 Shipped keybindings are defined in `defaults/hypr/bindings/`; personal bindings
-belong in `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/bindings.lua`. The keybindings menu reads the live bindings
+belong in `~/.config/hypr/hyprland.local.lua`. The keybindings menu reads the live bindings
 from Hyprland.
 
 ## System Tray

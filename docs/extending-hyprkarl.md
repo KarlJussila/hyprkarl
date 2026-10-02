@@ -12,7 +12,7 @@ For changes to Hyprkarl's shipped implementation, start with
 | What you want to change | Personal location |
 |---|---|
 | Application preferences | The application's own configuration directory; see the [ownership table](configuration-map.md#application-configuration) |
-| Hyprland settings and keybindings | `~/.config/hyprkarl/hypr/*.lua` |
+| Hyprland settings and keybindings | `~/.config/hypr/hyprland.local.lua` |
 | Quickshell behavior, modules, and bar layout | `~/.config/quickshell/settings/shell.json` |
 | Menu entries | `~/.config/quickshell/settings/menu.json` |
 | Quickshell widgets and independent interfaces | `~/.config/quickshell/custom/` |
@@ -95,17 +95,10 @@ entry providers.
 
 ## Customize Hyprland
 
-Create only the files you need under `~/.config/hyprkarl/hypr/`. Hyprkarl loads
-those after the shipped settings, active theme, and generated display layout.
-The supported filenames, in load order, are:
-
-```text
-envs.lua, autostart.lua, monitors.lua, permissions.lua, looknfeel.lua,
-animations.lua, gum.lua, windows.lua, input.lua, bindings.lua
-```
-
-For example, `input.lua` can change selected values without copying the
-shipped configuration:
+Put personal Hyprland settings in `~/.config/hypr/hyprland.local.lua`. Hyprkarl creates it once and
+loads it after the shipped settings, active theme, and generated display
+layout, so it can change selected values without copying the shipped
+configuration:
 
 ```lua
 hl.config({
@@ -116,7 +109,7 @@ hl.config({
 })
 ```
 
-For keybindings, use `bindings.lua`:
+Keybindings go in the same file:
 
 ```lua
 hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("uwsm-app -- my-command"), {
@@ -126,7 +119,9 @@ hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("uwsm-app -- my-command"), {
 
 Descriptions appear in the keybindings menu. Binding and window-rule calls
 add to the existing configuration; use `hl.unbind()` before replacing a
-shipped binding. The files under `defaults/hypr/` are useful examples.
+shipped binding. The files under `defaults/hypr/` are useful examples. To split
+your settings across files, `require` them from `~/.config/hypr/` under names
+that differ from Hyprkarl's modules.
 
 Validate with `Hyprland --verify-config` before reloading. See the
 [Hyprland configuration map](configuration-map.md#hyprland) for each module's

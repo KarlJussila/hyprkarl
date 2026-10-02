@@ -78,7 +78,7 @@ Activating a theme points the default cursor,
 `~/.local/share/icons/default/index.theme`, at it, and sets Hyprland's own
 cursor. Apps that draw their own cursor pick up a change when they restart.
 Cursor size is not part of the theme: set `XCURSOR_SIZE` and `HYPRCURSOR_SIZE`
-in `~/.config/hyprkarl/hypr/envs.lua` and start a new session.
+in `~/.config/hypr/hyprland.local.lua` and start a new session.
 
 Themes may also opt into the shared Hyprkarl wallpaper:
 

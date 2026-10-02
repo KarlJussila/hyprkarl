@@ -275,7 +275,7 @@ olive-moss highlights and restrained ochre accents.
 
 These are the basic keybindings to get you started. You can search the rest in
 the keybindings menu. Personal additions and overrides belong in
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/bindings.lua`; shipped bindings live under `defaults/hypr/bindings/`.
+`~/.config/hypr/hyprland.local.lua`; shipped bindings live under `defaults/hypr/bindings/`.
 
 ```
 SUPER + K              ->  Searchable list of keybinds

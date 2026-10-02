@@ -48,8 +48,8 @@ before `3df882e`) have no automatic upgrade. Follow
   never touch it and no Git branch is needed. Hyprland modules, hooks, and
   themes go in `~/.config/hyprkarl/`; shell and menu settings and personal QML
   go in `~/.config/quickshell/`.
-- Breaking: shipped Hyprland modules moved to `defaults/hypr/`. A personal
-  module with the same name in `~/.config/hyprkarl/hypr/` loads after it.
+- Breaking: shipped Hyprland modules moved to `defaults/hypr/`. Personal
+  Hyprland settings go in `~/.config/hypr/hyprland.local.lua`, which loads last.
 - Breaking: application configs keep receiving Hyprkarl's defaults. Terminals
   and Hypridle, Hyprpaper, and Hyprsunset load Hyprkarl's settings, then your
   `local.*` file; Hypridle's timeouts and actions are variables you redefine

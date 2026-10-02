@@ -1,4 +1,5 @@
--- Stable Hyprland bootstrap for Hyprkarl's shipped defaults and user overrides.
+-- Hyprkarl's Hyprland bootstrap: shipped modules, the active theme, the
+-- display layout, then your ~/.config/hypr/hyprland.local.lua.
 -- See https://wiki.hypr.land/Configuring/Start/
 
 local hyprkarl_path = assert(
@@ -8,7 +9,7 @@ local hyprkarl_path = assert(
 local defaults_path = hyprkarl_path .. "/defaults/hypr"
 local home = assert(os.getenv("HOME"))
 local config_home = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
-local user_path = config_home .. "/hyprkarl/hypr"
+local user_path = config_home .. "/hypr"
 local state_home = os.getenv("XDG_STATE_HOME") or (home .. "/.local/state")
 
 package.path = table.concat({
@@ -38,8 +39,8 @@ for _, module in ipairs(modules) do
     require(module)
 end
 
--- The theme is a shipped/default visual layer. User modules load afterward so
--- explicit personal values win over both behavioral and theme defaults.
+-- The theme loads after the shipped modules; your file loads last, so your
+-- values win over both.
 local theme_path = state_home .. "/hyprkarl/current/theme/hyprland.lua"
 local theme, theme_error = loadfile(theme_path)
 if not theme then
@@ -67,10 +68,6 @@ local function load_optional_file(path)
 end
 
 -- Display-panel changes are generated machine state. They override the
--- shipped catch-all rule without editing the repository, while explicit user
--- monitor rules below retain the final say.
+-- shipped catch-all rule, while your monitor rules still have the final say.
 load_optional_file(state_home .. "/hyprkarl/display/monitors.lua")
-
-for _, module in ipairs(modules) do
-    load_optional_file(user_path .. "/" .. module .. ".lua")
-end
+load_optional_file(user_path .. "/hyprland.local.lua")

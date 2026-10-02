@@ -98,7 +98,7 @@ https://wiki.hypr.land/Configuring/Start/.
 `config/hypr/hyprland.lua` loads the shipped modules from `defaults/hypr/`
 (envs, autostart, monitors, permissions, looknfeel, animations, gum, windows,
 input, bindings), then the active theme, then the display layout written by
-`hk-display`, then the user's matching modules from `~/.config/hyprkarl/hypr/`.
+`hk-display`, then the user's `~/.config/hypr/hyprland.local.lua`.
 Bindings are split under `defaults/hypr/bindings/` and window rules under
 `defaults/hypr/windows/`.
 

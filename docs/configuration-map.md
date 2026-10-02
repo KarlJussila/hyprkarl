@@ -83,7 +83,7 @@ Display-panel layout state lives separately under
 
 `hk-display` is the only writer. These are machine state, not personal editing
 surfaces; use the shell arranger for active-output positioning and rotation and
-`${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/monitors.lua` for explicit authored rules.
+`~/.config/hypr/hyprland.local.lua` for explicit monitor rules.
 
 The shell calculator keeps its five most recent expression/result pairs in
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/calculator-history.json`.
@@ -94,8 +94,8 @@ This is disposable interaction history, not an editing surface.
 Hyprland is configured in **Lua** (`hyprland.lua`), required since Hyprland 0.55
 (hyprlang `.conf` is deprecated). `config/hypr/hyprland.lua` is the stable live
 bootstrap. Shipped behavior lives under `defaults/hypr/`; the bootstrap adds
-that directory and `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` to Lua's module path, then loads the shipped
-modules in this order:
+that directory, then `~/.config/hypr/`, to Lua's module path and loads the
+shipped modules in this order:
 
 - `envs.lua`
   Hyprland environment variables (`hl.env()`)
@@ -130,9 +130,8 @@ The bootstrap next loads the active theme from
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/current/theme/hyprland.lua`
 (theme colors), the generated
 `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/display/monitors.lua`, then
-matching optional files from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/` in the same order. The generated
-layout wins over shipped monitor defaults, while user calls win over shipped,
-theme, and generated values. Missing generated and user files are skipped;
+`~/.config/hypr/hyprland.local.lua`. The generated layout wins over shipped monitor defaults, and your file
+wins over everything. A missing generated or personal file is skipped;
 syntax, read, and runtime errors are reported.
 
 `bindings.lua` then requires:
@@ -155,9 +154,9 @@ Validate edits with `Hyprland --verify-config` (non-destructive: parses the conf
 and reports errors without launching). There is no automatic fallback if
 `hyprland.lua` is broken.
 
-For personal changes, create only the relevant `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hypr/*.lua` files. The
-files under `defaults/hypr/` are upstream-owned references and should not be
-edited for ordinary personalization. See
+Personal changes go in `~/.config/hypr/hyprland.local.lua`. The files under `defaults/hypr/` are
+upstream-owned references and should not be edited for ordinary
+personalization. See
 [Extending Hyprkarl](extending-hyprkarl.md#customize-hyprland).
 
 For Hyprland syntax and option reference, see the official Hyprland docs:
@@ -200,7 +199,7 @@ personal file that Hyprkarl creates once and never replaces.
 | Kitty | `~/.config/kitty/local.conf` | `hk-terminal-reload` or a new window |
 | Hypridle | `~/.config/hypr/hypridle.local.conf`; its timeouts and actions are variables you can redefine | Restart `hypridle.service` |
 | Hyprpaper, Hyprsunset | `~/.config/hypr/hyprpaper.local.conf`, `hyprsunset.local.conf` | Restart the service |
-| Hyprland | `~/.config/hyprkarl/hypr/<module>.lua`; see [Hyprland](#hyprland) | Automatic reload |
+| Hyprland | `~/.config/hypr/hyprland.local.lua`; see [Hyprland](#hyprland) | Automatic reload |
 
 **Hyprkarl defaults with your own file winning.** These programs search
 `XDG_CONFIG_DIRS` or `XDG_DATA_DIRS` after your own directories, so Hyprkarl's

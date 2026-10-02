@@ -64,7 +64,9 @@ time. Missing required packages install automatically. Packages dropped from
 the lists or added to `remove.txt` appear once in a checklist, all selected;
 uncheck any you want to keep. The comment on a `remove.txt` line is the reason
 shown. Escape cancels without recording anything. Once reviewed, a removal is
-not offered again, even if you kept the package.
+not offered again, even if you kept the package. A retired package that another
+installed package still needs is not offered; Hyprkarl marks it as a
+dependency instead, so pacman removes it once nothing needs it.
 
 ## Migrations
 

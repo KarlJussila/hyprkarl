@@ -10,17 +10,29 @@ PACKAGE_STATE_TOOL="$SCRIPT_DIR/lib/update_packages.py"
 
 plan=$(python3 "$PACKAGE_STATE_TOOL" plan "$PACKAGES_DIR" "$UPDATE_PACKAGE_STATE") || exit 1
 installed=$(pacman -Qq) || exit 1
+unrequired=$(pacman -Qqt) || exit 1
 
+# pacman refuses to remove a package another one needs, and one refusal fails
+# the whole removal. Offer only packages nothing depends on; mark the rest as
+# dependencies so pacman drops them once nothing needs them.
 removal_rows=()
 already_absent=()
+still_needed=()
 while IFS=$'\t' read -r package reason; do
   [[ -z "$package" ]] && continue
-  if grep -Fxq "$package" <<<"$installed"; then
-    removal_rows+=("$package — $reason"$'\t'"$package")
-  else
+  if ! grep -Fxq "$package" <<<"$installed"; then
     already_absent+=("$package")
+  elif ! grep -Fxq "$package" <<<"$unrequired"; then
+    still_needed+=("$package")
+  else
+    removal_rows+=("$package — $reason"$'\t'"$package")
   fi
 done < <(jq -r '.removals[] | [.package, .reason] | @tsv' <<<"$plan")
+
+if [[ ${#still_needed[@]} -gt 0 ]]; then
+  printf 'Kept because other packages need them: %s\n' "${still_needed[*]}"
+  sudo pacman -D --asdeps "${still_needed[@]}" >/dev/null || exit 1
+fi
 
 selected_removals=()
 if [[ ${#removal_rows[@]} -gt 0 ]]; then

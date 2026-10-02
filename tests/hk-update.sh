@@ -58,6 +58,8 @@ EOF
 #!/bin/bash
 case "$1" in
   -Qq) cat "$HK_TEST_INSTALLED" ;;
+  -Qqt) grep -Fxv -f "${HK_TEST_REQUIRED:-/dev/null}" "$HK_TEST_INSTALLED" ;;
+  -D) printf '%s\n' "$*" >> "$HK_TEST_ASDEPS_LOG" ;;
   -Q) grep -Fxq "$2" "$HK_TEST_INSTALLED" ;;
   *) exit 0 ;;
 esac
@@ -305,6 +307,21 @@ test_package_review() {
     || fail "post-removal package refresh failed"
   assert_equal "$(cat "$install_log")" "newdep" \
     "dependency removed by a package cascade was not reinstalled"
+
+  printf 'old-five\n' >> "$installed_file"
+  printf 'old-five\n' > "$WORK/required"
+  printf 'old-five # needed elsewhere\n' >> "$CLONE/packages/remove.txt"
+  : > "$remove_log"
+  : > "$WORK/asdeps.log"
+  HOME="$FAKEHOME" XDG_STATE_HOME="$package_state" HYPRKARL_PATH="$CLONE" \
+    HK_TEST_INSTALLED="$installed_file" HK_TEST_REQUIRED="$WORK/required" \
+    HK_TEST_ASDEPS_LOG="$WORK/asdeps.log" HK_TEST_REMOVE_LOG="$remove_log" \
+    HK_TEST_INSTALL_LOG="$install_log" HK_TEST_GUM_LOG="$gum_log" \
+    PATH="$MOCKBIN:$ORIG/bin:$PATH" "$ORIG/bin/hk-update-packages" >/dev/null \
+    || fail "a removal still required by another package failed the step"
+  [[ ! -s "$remove_log" ]] || fail "a package other packages need was removed"
+  assert_equal "$(cat "$WORK/asdeps.log")" "-D --asdeps old-five" \
+    "a still-needed package was not marked as a dependency"
 }
 
 test_migrations() {

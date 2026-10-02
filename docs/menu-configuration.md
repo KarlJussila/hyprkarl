@@ -55,7 +55,7 @@ width. `entryAlignment` may be `left`, `center`, or `right`; it defaults to
 - `order`: numeric display order; IDs break ties deterministically
 - `label`: displayed text
 - `icon`: optional displayed glyph
-- `enabled`: optional boolean; `false` removes the entry from rendering
+- `hidden`: optional boolean; `true` removes the entry from the menu and search
 - `disabled`: optional boolean; `true` leaves the entry dimmed in its own menu
   but prevents selection and omits it from search results
 - `checkedCommand`: optional command evaluated when the menu opens; exit zero
@@ -124,7 +124,7 @@ QML](shell-configuration.md#application-wide-user-qml) for the full context.
 
 If `modules.menu` is disabled, the menu IPC target and its windows do not
 exist. Disabling another built-in module does not rewrite menu rows that point
-to it. Hide a no-longer-useful shipped row with `enabled: false`, or replace it
+to it. Hide a no-longer-useful shipped row with `hidden: true`, or replace it
 with an entry for the program or personal surface that takes over that job.
 
 Keyboard navigation skips disabled rows and keeps the selected row immediately
@@ -270,7 +270,7 @@ field without copying the entry:
       "label": "Applications"
     },
     "main.uninstall": {
-      "enabled": false
+      "hidden": true
     },
     "main.update": {
       "disabled": true
@@ -298,7 +298,7 @@ unique stable ID:
 ```
 
 The override cannot delete object keys because removal would make future
-upstream additions ambiguous. Set an entry's `enabled` field to `false`
+upstream additions ambiguous. Set an entry's `hidden` field to `true`
 instead.
 
 ## Appearance

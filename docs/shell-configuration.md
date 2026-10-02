@@ -183,7 +183,7 @@ Disabling an implementation also leaves its existing entry points alone. For
 example, a shipped binding, menu row, or command widget may still refer to a
 disabled menu, launcher, calculator, or wallpaper picker. Remove that entry
 from personal layout, menu, or Hyprland configuration, or point it at the
-replacement you run instead. A menu entry can be hidden with `enabled: false`.
+replacement you run instead. A menu entry can be hidden with `hidden: true`.
 
 ## Shape
 

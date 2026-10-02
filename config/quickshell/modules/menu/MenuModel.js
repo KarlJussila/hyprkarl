@@ -12,7 +12,7 @@ function orderedEntries(entries, menuId) {
   var result = []
   for (var entryId of Object.keys(entries || {})) {
     var entry = entries[entryId]
-    if (entry.parent === menuId && entry.enabled !== false) {
+    if (entry.parent === menuId && !entry.hidden) {
       result.push(Object.assign({ "id": entryId }, entry))
     }
   }

@@ -29,7 +29,7 @@ TestCase {
       "parent": "main",
       "order": 30,
       "label": "Hidden",
-      "enabled": false,
+      "hidden": true,
       "action": { "type": "command", "command": "false" }
     },
     "install.docker": {

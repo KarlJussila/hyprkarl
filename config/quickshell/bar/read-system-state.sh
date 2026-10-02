@@ -21,23 +21,41 @@ find_cpu_temp() {
   cpu_temp_file=/dev/null
 }
 
+# NVIDIA reports no usage or VRAM in sysfs. Prints usage, VRAM used, and VRAM
+# total in MiB.
+nvidia_query() {
+  nvidia-smi --id="$(basename "$(readlink -f "$1/device")")" \
+    --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits
+}
+
 read_gpu() {
-  local card status total best_total=-1 control delay boot now_ms
+  local card vendor status total best_total=-1 control delay boot now_ms
   gpu_card=
   for card in /sys/class/drm/card[0-9]*; do
-    [[ -r $card/device/vendor ]] || continue
+    read -r vendor 2>/dev/null < "$card/device/vendor" || continue
     read -r status < "$card/device/power/runtime_status" 2>/dev/null || status=active
     [[ $status != suspended ]] || continue
-    read -r total < "$card/device/mem_info_vram_total" 2>/dev/null || total=0
+    if [[ $vendor == 0x10de ]]; then
+      # Total VRAM never changes, so ask nvidia-smi once per card.
+      if [[ -z ${nvidia_vram_total[$card]} ]]; then
+        IFS=', ' read -r _ _ total < <(nvidia_query "$card") || total=0
+        nvidia_vram_total[$card]=$((total * 1048576))
+      fi
+      total=${nvidia_vram_total[$card]}
+    else
+      read -r total < "$card/device/mem_info_vram_total" 2>/dev/null || total=0
+    fi
     if ((total > best_total)); then
       best_total=$total
       gpu_card=$card
+      gpu_vendor=$vendor
     fi
   done
 
   if [[ -n $gpu_card ]]; then
     read -r control < "$gpu_card/device/power/control" 2>/dev/null || control=on
-    read -r delay < "$gpu_card/device/power/autosuspend_delay_ms" 2>/dev/null || delay=0
+    # NVIDIA does not expose its delay; assume a conservative one.
+    read -r delay < "$gpu_card/device/power/autosuspend_delay_ms" 2>/dev/null || delay=15000
     read -r boot < "$gpu_card/device/boot_vga" 2>/dev/null || boot=0
     now_ms=${EPOCHREALTIME/./}
     now_ms=${now_ms:0:13}
@@ -50,9 +68,16 @@ read_gpu() {
       return
     fi
 
-    read -r gpu_usage < "$gpu_card/device/gpu_busy_percent" 2>/dev/null || gpu_usage=0
-    read -r gpu_vram_used < "$gpu_card/device/mem_info_vram_used" 2>/dev/null || gpu_vram_used=0
-    read -r gpu_vram_total < "$gpu_card/device/mem_info_vram_total" 2>/dev/null || gpu_vram_total=0
+    if [[ $gpu_vendor == 0x10de ]]; then
+      IFS=', ' read -r gpu_usage gpu_vram_used gpu_vram_total < <(nvidia_query "$gpu_card") \
+        || { gpu_usage=0; gpu_vram_used=0; gpu_vram_total=0; }
+      gpu_vram_used=$((gpu_vram_used * 1048576))
+      gpu_vram_total=$((gpu_vram_total * 1048576))
+    else
+      read -r gpu_usage < "$gpu_card/device/gpu_busy_percent" 2>/dev/null || gpu_usage=0
+      read -r gpu_vram_used < "$gpu_card/device/mem_info_vram_used" 2>/dev/null || gpu_vram_used=0
+      read -r gpu_vram_total < "$gpu_card/device/mem_info_vram_total" 2>/dev/null || gpu_vram_total=0
+    fi
     last_gpu_card=$gpu_card
     last_gpu_read_ms=$now_ms
   else
@@ -63,6 +88,7 @@ read_gpu() {
 }
 
 find_cpu_temp
+declare -A nvidia_vram_total
 last_gpu_card=
 last_gpu_read_ms=0
 gpu_usage=0

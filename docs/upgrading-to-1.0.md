@@ -1,8 +1,8 @@
 # Upgrading to 1.0 from an older install
 
-This guide is for an install from before the August 2026 overhaul: the `develop`
-branch at or before commit `3df882e`, or anything older. You have one if
-`~/.local/share/hyprkarl/config/ags/` exists. Those versions used an AGS bar,
+This guide is for an install from before 1.0, including `develop` and `main`
+from before the August 2026 overhaul and branches made from them. You have one
+if `~/.local/share/hyprkarl/config/ags/` exists. Those versions used an AGS bar,
 rofi menus, mako, hyprlock, and `hk-update tui`.
 
 There is no automatic upgrade from those versions. The steps below are written
@@ -30,27 +30,26 @@ session restart at the end.
 
 ## 1. Save your customizations
 
-Run this in the old checkout before changing anything. It records every change
-you made to tracked files (committed or not) and copies out your untracked
-personal files.
+Copy the whole checkout aside before changing anything. The copy keeps your
+commits, uncommitted edits, and untracked and ignored files, and is usually a
+few hundred megabytes at most.
 
 ```bash
-cd ~/.local/share/hyprkarl
-backup=~/hyprkarl-backup
-mkdir -p "$backup"
-base=$(git merge-base HEAD origin/develop)
-git diff "$base" > "$backup/changes.patch"
-git diff --stat "$base" > "$backup/changed-files.txt"
-git status --porcelain --ignored > "$backup/status.txt"
-cp -a config/uwsm/env.local "$backup/" 2>/dev/null
-cp -a --parents themes/*/wallpapers "$backup/"
+cp -a ~/.local/share/hyprkarl ~/hyprkarl-backup
 ```
 
-`changes.patch` holds your edits to shipped files. `status.txt` lists untracked
-(`??`) and ignored (`!!`) files: wallpapers you added show up as ignored, and
-any other personal file you created in the checkout appears there too. Copy
-those into the backup as well (`config/ags/node_modules` and
-`config/hyprkarl/update/` can be skipped).
+Later steps read your changes from it:
+
+```bash
+cd ~/hyprkarl-backup
+git status --short --ignored     # edits, plus untracked (??) and ignored (!!) files
+git diff                         # uncommitted edits
+git log --oneline --branches --not --remotes   # your commits not on GitHub
+```
+
+Wallpapers you added show up as ignored files under `themes/*/wallpapers/`.
+`config/ags/node_modules`, `config/ags/@girs`, and `config/hyprkarl/` are
+generated and can be ignored.
 
 ## 2. Remove the old links
 
@@ -61,7 +60,7 @@ GTK theme copy, and the old update records. It leaves real files alone.
 ./uninstall.sh
 ```
 
-Hyprland and your terminal keep running, but the bar and `hk-*` keybindings
+It asks for confirmation first. Hyprland and your terminal keep running, but the bar and `hk-*` keybindings
 stop working until step 4 finishes.
 
 ## 3. Update the checkout
@@ -69,11 +68,15 @@ stop working until step 4 finishes.
 This discards your local edits in the checkout; they are in the backup.
 
 ```bash
+git remote set-branches origin '*'
 git fetch origin
 git reset --hard
 git clean -fdx config applications themes
 git checkout -B main origin/main
 ```
+
+`set-branches` matters if the checkout was cloned with `--single-branch` or
+`--depth`: otherwise `fetch` only updates the branch it was cloned from.
 
 Hyprkarl updates from `main`. To follow `develop` instead, check it out and
 run `git config --local hyprkarl.updateBranch develop`.
@@ -84,8 +87,11 @@ run `git config --local hyprkarl.updateBranch develop`.
 ./install.sh
 ```
 
-It installs the new packages and reviews the retired ones (AGS and its astal
-libraries, rofi, mako, hyprlock, hyprpolkitagent, and others) in one list.
+It upgrades the system, installs the new packages, and reviews the retired
+ones (AGS and its astal libraries, rofi, mako, hyprlock, hyprpolkitagent, and
+others) in one list. Removing them also removes dependencies nothing else
+needs, such as Node.js, which came in with AGS; reinstall any you use
+yourself, for example for an npm-installed tool.
 Then it runs the one-time migrations, copies starting configs, links the
 shipped ones, and builds the theme. The migrations write the same files the
 old `setup-system.sh` did; `010-sddm-autologin` replaces `/etc/sddm.conf`, so
@@ -93,9 +99,9 @@ reapply any personal edit to that file afterwards.
 
 ## 5. Restore personal files
 
-```bash
-cp ~/hyprkarl-backup/env.local ~/.config/uwsm/env.local
-```
+If `config/uwsm/env.local` exists in the backup, copy it to
+`~/.config/uwsm/env.local`. Newer installs already keep that file in
+`~/.config/uwsm/`, where the uninstall left it alone.
 
 For wallpapers you added, copy each theme's extra files to
 `~/.config/hyprkarl/themes/<theme>/wallpapers/`, then run
@@ -110,6 +116,7 @@ old settings no longer apply.
 | Old path in the checkout | New home |
 |---|---|
 | `config/hypr/*.lua`, `config/hypr/bindings/*`, `config/hypr/windows/*` | `~/.config/hyprkarl/hypr/<module>.lua`, loaded after the shipped module of the same name. Write only your additions; use `hl.unbind()` before rebinding a shipped key. |
+| `~/.config/hypr/hyprland.conf` (a real file, not a link) | Lines other installers appended, such as autostart entries. Hyprland ignores this file because `hyprland.lua` exists; move them to `~/.config/hyprkarl/hypr/autostart.lua`. |
 | `config/hypr/hypridle.conf`, `hyprpaper.conf`, `hyprsunset.conf` | The new copies in `~/.config/hypr/`. Apply your edit there; the new Hypridle file uses Lua dispatcher syntax and locks before sleep. |
 | `config/hypr/hyprlock.conf` | Gone. Lock appearance is theme data under `shell.lock`; see [Authentication](authentication-surfaces.md). |
 | `config/ags/**` | `~/.config/quickshell/settings/shell.json`; custom widgets become command or QML widgets. See [Customizing the bar](customizing-bar.md). |

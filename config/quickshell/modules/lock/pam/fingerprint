@@ -1,2 +1,4 @@
-# Separate from password authentication so the two can run concurrently.
+# Fingerprint only; password authentication runs separately through login.
+# PAM resolves includes inside this directory, so this file cannot include
+# /etc/pam.d stacks.
 auth required pam_fprintd.so

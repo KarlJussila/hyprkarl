@@ -37,8 +37,10 @@ Appearance lives in personal theme sources under `shell.lock`: `width`,
 `transitionDuration`, `fadeDuration`, `failureDuration`, `fingerprintSize`,
 and `fingerprintCompleteDuration`. Run `hk-theme set <name>` to apply them.
 
-The PAM policies ship in `config/quickshell/modules/lock/pam/`. `password`
-includes `system-auth`; `fingerprint` runs `pam_fprintd` first.
+Password authentication uses the system's `/etc/pam.d/login` stack. Fingerprint
+uses `config/quickshell/modules/lock/pam/fingerprint`, which runs only
+`pam_fprintd`. PAM resolves includes inside a custom directory, so that file
+cannot include `/etc/pam.d` stacks.
 
 To replace the lock entirely, set `HYPRKARL_LOCK_SOURCE` in
 `~/.config/uwsm/env.local` to your own QML entry file. Session environment

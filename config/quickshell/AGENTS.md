@@ -521,7 +521,9 @@ lock. The lock engages unconditionally; the theme only decorates it. Suspend
 ordering belongs to Hypridle (`before_sleep_cmd` plus `inhibit_sleep = 3`), not
 the locker. Password and fingerprint PAM conversations stay independent; abort
 fingerprint before sleep and restart it on resume. Fingerprint scanning follows
-enrollment (`hk-fingerprint list`). PAM policies ship in `modules/lock/pam/`.
+enrollment (`hk-fingerprint list`). Password uses `/etc/pam.d/login`; the
+fingerprint-only service ships in `modules/lock/pam/` (PAM resolves includes
+inside a custom directory, so it cannot include system stacks).
 Keep `modules/lock/licenses/material-design-icons.txt` with the fingerprint
 SVG. Check the lock live; see `../../docs/authentication-surfaces.md`.
 

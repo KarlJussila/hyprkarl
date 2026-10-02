@@ -101,11 +101,9 @@ Scope {
     unlocked()
   }
 
+  // Quickshell's default service: /etc/pam.d/login.
   PamContext {
     id: password
-    configDirectory: Quickshell.shellPath("modules/lock/pam")
-    config: "password"
-
     onPamMessage: {
       root.passwordFailed = messageIsError
       if (responseRequired && !responseVisible && root.queuedResponse !== null) {

@@ -5,9 +5,12 @@ import Quickshell.Io
 QtObject {
   id: root
 
-  property string activeName: ""
-  property string activeArtifact: ""
-  property var values: ({})
+  // Bindings, not load handlers: the first read loads the files synchronously,
+  // so consumers built at startup (the lock surface) never see an empty theme.
+  readonly property var selection: JSON.parse(selector.text())
+  readonly property string activeName: selection.name
+  readonly property string activeArtifact: selection.artifact
+  readonly property var values: JSON.parse(source.text())
   readonly property var document: values
   readonly property bool ready: activeName.length > 0 && Object.keys(values).length > 0
 
@@ -199,28 +202,12 @@ QtObject {
     blockLoading: true
     watchChanges: true
     onFileChanged: reload()
-    onLoaded: root.selectTheme()
   }
 
   property FileView source: FileView {
-    path: root.activeArtifact.length === 0
-      ? ""
-      : root.stateHome + "/themes/" + root.activeArtifact + "/quickshell.json"
+    path: root.stateHome + "/themes/" + root.activeArtifact + "/quickshell.json"
     blockLoading: true
     watchChanges: true
     onFileChanged: reload()
-    onLoaded: root.load()
   }
-
-  function selectTheme(): void {
-    const selection = JSON.parse(selector.text())
-    activeName = selection.name
-    activeArtifact = selection.artifact
-  }
-
-  function load(): void {
-    values = JSON.parse(source.text())
-  }
-
-  Component.onCompleted: selectTheme()
 }

@@ -13,7 +13,8 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - Read [Getting Started](getting-started.md) for installation and the symlink
   model.
 - Read [Updating](updating.md) for source review, configuration application,
-  package review, and system migrations.
+  package review, and system migrations. Coming from the AGS-era `develop`
+  branch? Read [Upgrading to 1.0](upgrading-to-1.0.md) first.
 - Read [Using Hyprkarl](using-hyprkarl.md) for the standard workflow: menus,
   keybindings, themes, wallpapers, defaults, and utilities.
 - Read [Configuration Map](configuration-map.md) if you need to know where a
@@ -48,6 +49,7 @@ repo checked out at `~/.local/share/hyprkarl/`.
 
 - [Getting Started](getting-started.md)
 - [Updating](updating.md)
+- [Upgrading to 1.0](upgrading-to-1.0.md)
 - [Using Hyprkarl](using-hyprkarl.md)
 - [Configuration Map](configuration-map.md)
 - [Themes](themes.md)

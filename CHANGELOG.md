@@ -7,6 +7,23 @@ surfaces) — they are called out explicitly.
 
 ## Unreleased
 
+Installs from the `develop` branch at or before `3df882e` (the AGS era) have
+no automatic upgrade path. Follow [Upgrading to 1.0](docs/upgrading-to-1.0.md).
+
+- Breaking: replaced hyprlock with a Quickshell lock screen that runs as its own
+  process. It locks before reading the theme, uses `/etc/pam.d/login` for
+  passwords, and scans fingerprints when fingers are enrolled. `hk-suspend`
+  now only suspends; Hypridle locks first. Lock appearance is theme data under
+  `shell.lock`.
+- Caffeine now holds a systemd idle inhibitor instead of stopping Hypridle, so
+  manual suspend and lid close still lock while it is on.
+- Breaking: `shell.json` and `menu.json` personal files merge over the shipped
+  defaults with no `version` field and no schema validation. `bar.layoutEdits`
+  is gone; to change a bar section, copy it from `defaults/shell.json` and
+  edit it. A personal file that does not parse leaves the defaults running.
+- Breaking: personal QML reads theme values by group, matching `theme.yaml`:
+  `theme.palette.foreground`, `theme.panel.padding`, `theme.menu.accent`.
+  `theme.document` is now `theme.values`.
 - Added a built-in `tokyo-night` theme based on Tokyo Night's original dark
   Night palette.
 - Added a built-in `loam` theme with warm brown surfaces, olive-moss
@@ -23,43 +40,38 @@ surfaces) — they are called out explicitly.
 - Breaking: replaced the baseline-commit updater and guided TUI with a staged
   source workflow. `hk-update sync` fetches, reviews, and pins one exact source
   revision without moving the live checkout; `hk-update apply` fast-forwards
-  to it, migrates and restows configuration, rebuilds the selected theme and
+  to it, seeds starting configs and restows, rebuilds the selected theme and
   GTK payload, reloads consumers, and records success. `hk-update all` now runs
   sync, apply, packages, system migrations, then `post-update`. The retired
   `tui` and `dotfiles` actions and their `--force` and `--adopt` paths are gone.
 - Moved update records to `${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/update/`.
   Package requirements and one-time removal reviews use an atomically replaced
   `packages.json`; system changes are ordered files under `system/migrations/`
-  with one success marker per migration. Old checkout-local commit markers are
-  imported on first use.
+  with one success marker per migration.
 - Breaking: integrated the theme compiler into Hyprkarl and converted
   `themes/<name>/` to authoring source only. `hk-theme set` now merges shared
   defaults, a built-in source, and an optional same-name personal source;
-  renders and validates a complete bundle; and activates an immutable XDG-state
-  artifact. The sibling generator dependency, `hk-theme build`, and generator
-  `sync` command are gone.
+  renders and validates a complete build under XDG state; and points
+  `current/theme` at it. The sibling generator dependency, `hk-theme build`,
+  and generator `sync` command are gone.
 - Personal themes now live as source under
   `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/`. A new theme requires
   `theme.yaml`; a same-name overlay may contain only sparse values, overrides,
-  or assets. Migration moves legacy complete bundles to dated backups under
-  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/theme-backups/` instead of
-  treating generated output as editable source.
+  or assets. Old hand-written theme directories must be recreated as
+  `theme.yaml` sources.
 - Fixed light theme generation so GTK 3 and GTK 4 compile the light Colloid
   variant and activation applies the matching desktop color-scheme preference.
-- Breaking: moved personal shell JSON, menu JSON, Hyprland modules, hooks,
-  Quickshell extensions, and themes from the checkout's `user/` tree to
-  `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`. `hk-user-migrate` performs the
-  one-time move before a dotfiles update and materializes UWSM defaults,
-  machine-local environment, and terminal preferences as real user files.
-  Ordinary personalization no longer requires a Git branch.
-- Breaking: application preferences are now user-owned files in their normal
-  `~/.config/<application>/` directories. A one-time migration materializes
-  old Stow links for Btop, Fastfetch, Fish, GTK, Hyprland helpers, Neovim, Qt,
-  portals, terminal selection, and Yazi without overwriting existing files;
-  an XDG-state marker prevents later updates from recreating deletions.
-  Alacritty, foot, Ghostty, and Kitty retain small tracked bootstraps and load
-  personal `local.*` overrides last. Ghostty's entry point is now the native
-  `config.ghostty` filename.
+- Breaking: personal configuration lives outside the checkout. Hyprland
+  modules, hooks, and themes go in `~/.config/hyprkarl/`; shell and menu
+  settings and personal QML go in `~/.config/quickshell/`. Ordinary
+  personalization no longer requires a Git branch.
+- Breaking: application preferences are user-owned files in their normal
+  `~/.config/<application>/` directories. `hk-config-seed` copies Hyprkarl's
+  starting config for Btop, Fastfetch, Fish, GTK, Hyprland helpers, Neovim,
+  Qt, portals, terminal selection, and Yazi when you have none of an
+  application's files, and never overwrites one. Alacritty, foot, Ghostty, and
+  Kitty keep small tracked bootstraps and load personal `local.*` files last.
+  Ghostty's entry point is now the native `config.ghostty` filename.
 - Added a per-output display panel with internal-backlight brightness, cleaned
   scale presets, and output enable/disable controls. `hk-display` now owns
   Hyprland discovery, live changes, and an XDG-state layout that survives
@@ -68,7 +80,7 @@ surfaces) — they are called out explicitly.
   and rotations while preserving mode, refresh rate, and scale. Right-click
   rotates a frame clockwise; its physical-bottom marker rotates with it, and
   overlapping drafts cannot be applied. The
-  same reusable `Hyprkarl.Modal` component is available to the explicit
+  same reusable `ui.modal.Modal` component is available to the explicit
   personal QML root, with no discovery or registration layer.
 - Replaced display-list enable switches with staged per-output settings for
   enablement, resolution, refresh rate, and scale. Resolution and refresh rate
@@ -96,7 +108,7 @@ surfaces) — they are called out explicitly.
   changes require `hk-shell restart`; disabled modules no longer construct
   their built-in windows, state, services, timers, watchers, processes, or IPC
   targets. `modules.panels` disables popup panels only, so status widgets stay
-  in an enabled bar until a layout edit removes them.
+  in an enabled bar until you remove them from your layout.
 - Expanded the explicitly referenced application-wide user QML root. Its
   context now exposes current outputs and direct overlay request and control
   fields, so personal QML can receive a custom menu overlay and close or

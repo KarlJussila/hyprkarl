@@ -49,11 +49,13 @@ bright:
   cyan: "#a4daff"
   white: "#c0caf5"
 
+# Purple leads so accents stand apart from the blue base and text; blue and
+# teal follow.
 accent:
   primary:
-    base: "{{tokyo.accent}}"
-    soft: "{{darken(accent.primary.base,12)}}"
-    bright: "{{tokyo.teal}}"
+    base: "{{ansi.magenta}}"
+    soft: "{{tokyo.purple}}"
+    bright: "{{bright.magenta}}"
 
   secondary:
     base: "{{ansi.blue}}"
@@ -61,9 +63,9 @@ accent:
     bright: "{{bright.blue}}"
 
   tertiary:
-    base: "{{ansi.magenta}}"
-    soft: "{{tokyo.purple}}"
-    bright: "{{bright.magenta}}"
+    base: "{{ansi.cyan}}"
+    soft: "{{tokyo.accent}}"
+    bright: "{{tokyo.teal}}"
 
 status:
   success: "{{ansi.green}}"

@@ -29,8 +29,9 @@ Coding agents such as Claude Code and Codex tend to configure Linux the usual
 way: editing whatever file they find, setting variables in `~/.bashrc`, or
 installing another bar or notifier. On Hyprkarl that breaks updates or
 quietly stops Hyprkarl's defaults from reaching you. `hk-update apply`
-therefore links a `hyprkarl` skill into the skill folders of the agents you
-have installed (`~/.agents/skills`, `~/.claude/skills`, `~/.codex/skills`).
+therefore links a `hyprkarl` skill into the skill folders agents read
+(`~/.agents/skills`, `~/.claude/skills`, `~/.codex/skills`), creating them if
+needed, so an agent you install later has it from the start.
 Agents load it when you ask for a desktop change, and it sends each change to
 the personal file meant for it. A skill of your own named `hyprkarl` is left
 alone, and `uninstall.sh` removes the links.
@@ -316,14 +317,48 @@ add under `shell` in `theme.yaml`.
 
 ## Replace a built-in
 
-Every built-in part of the shell can be switched off and replaced without
-editing Hyprkarl's files. Keybindings, the bar, and menu entries reach each
-part through a named IPC target, so a replacement that answers the same target
-works with all of them unchanged.
+Any built-in part of the desktop can be replaced, by your own QML or by
+another program such as Rofi or Waybar, without editing Hyprkarl's files.
+Keybindings, menus, and bar widgets reach each part through an `hk-*` command,
+so a replacement only has to take over those commands:
 
-To replace one, set its switch under `modules` in `shell.json` to `false`, then
-declare the target in your [application-wide QML
-root](#application-wide-qml):
+1. **Switch the built-in off** under `modules` in `shell.json`, then run
+   `hk-shell restart`.
+2. **Start the replacement at login** if it runs all the time, in an
+   `hl.on("hyprland.start", ...)` block in `~/.config/hypr/hyprland.local.lua`,
+   launched with `uwsm app -- <program>`.
+3. **Take over its commands.** A script with the same name in `~/.local/bin/`
+   runs instead of Hyprkarl's for every caller. For example,
+   `~/.local/bin/hk-shell-launcher` makes `SUPER + SPACE` and every other
+   launcher shortcut open Rofi:
+
+   ```bash
+   #!/bin/bash
+   exec rofi -show drun
+   ```
+
+4. **Repoint menu entries** that open a built-in directly: `main.launch`,
+   `wallpaper.select`, and `wallpaper.remove`. Give them a `command` action in
+   your `menu.json`.
+
+| Built-in | Switch | Commands to take over |
+|---|---|---|
+| Bar | `bar` | None; start your bar at login |
+| Application launcher | `applications` | `hk-shell-launcher` |
+| Open-with chooser | `applications` | `hk-shell-open-with` |
+| Menu | `menu` | `hk-shell-menu` |
+| Calculator | `calculator` | `hk-shell-calculator` |
+| Wallpaper picker | `wallpaper` | `hk-shell-wallpaper` |
+| Notifications | `notifications` | `hk-shell-notifications`; start your notification daemon at login |
+| OSD | `osd` | `hk-shell-osd` |
+| Polkit prompt | `polkit` | None; start your polkit agent at login |
+| Lock screen | None | `hk-lock` |
+| Idle and suspend | None; run `systemctl --user mask hypridle.service` | Start your idle daemon at login |
+| Wallpaper program | None | `hk-wallpaper-init` (starts it at login) and `hk-wallpaper-set` |
+
+A QML replacement can skip step 3. The `hk-shell` commands talk to the shell
+through named IPC targets, and once a built-in is switched off, your
+[application-wide QML](#application-wide-qml) can answer its target instead:
 
 ```qml
 import Quickshell.Io
@@ -337,26 +372,22 @@ IpcHandler {
 }
 ```
 
-`output` names the monitor to open on; an empty string means the focused one.
+`output` names the monitor to open on; an empty string means the focused
+one. The targets and their methods:
 
-| Built-in | Switch | Target and methods your replacement provides |
-|---|---|---|
-| Bar | `bar` | None. Build your own bar in the root; optionally provide `notificationPosition()` |
-| Application launcher | `applications` | `launcher`: `open(output)`, `toggle(output)`, `close()` |
-| Open-with chooser | `applications` | `openWith`: `open(output, path)`, `close()` |
-| Menu | `menu` | `menu`: `open(output, menu)`, `toggle(output, menu)`, `close()` |
-| Calculator | `calculator` | `calculator`: `open(output)`, `toggle(output)`, `close()` |
-| Wallpaper picker | `wallpaper` | `wallpaper`: `open(output, action)`, `close()`; `action` is `set` or `remove` |
-| Notifications | `notifications` | Any notification server. For the keybindings: `notifications`: `dismiss()`, `dismissAll()`, `toggleSilenced()`, `restore()` |
-| OSD | `osd` | `osd`: `volume(percent, muted)`, `output(percent, muted, description)`, `microphone(muted)`, `display(percent)`, `keyboard(percent)`, `media(action, percent, title, artist)` |
-| Polkit prompt | `polkit` | Any polkit agent |
-| Lock screen | None | Your own `hk-lock` in `~/.local/bin/` |
+| Target | Methods |
+|---|---|
+| `launcher` | `open(output)`, `toggle(output)`, `close()` |
+| `openWith` | `open(output, path)`, `close()` |
+| `menu` | `open(output, menu)`, `toggle(output, menu)`, `close()` |
+| `calculator` | `open(output)`, `toggle(output)`, `close()` |
+| `wallpaper` | `open(output, action)`, `close()`; `action` is `set` or `remove` |
+| `notifications` | `dismiss()`, `dismissAll()`, `toggleSilenced()`, `restore()` |
+| `osd` | `volume(percent, muted)`, `output(percent, muted, description)`, `microphone(muted)`, `display(percent)`, `keyboard(percent)`, `media(action, percent, title, artist)` |
 
-Menu entries that open the launcher, calculator, or wallpaper picker do so by
-surface name (`launcher`, `calculator`, `wallpaper`). With the built-in
-switched off, your root sees that request as described under
-[Application-wide QML](#application-wide-qml)
-and can open its replacement.
+The menu entries that open the launcher or wallpaper picker request a
+[surface](#application-wide-qml) by that name, so a QML root can handle those
+too, by watching `surfaceName`.
 
 ## Use the active theme in personal code
 

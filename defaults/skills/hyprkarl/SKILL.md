@@ -41,7 +41,7 @@ never edit files under `~/.local/state/hyprkarl/`, which are generated.
 
 | Change | Where |
 |---|---|
-| Hyprland: settings, keybindings, window rules, monitors, input, autostart | `~/.config/hypr/hyprland.local.lua`, which loads last and wins |
+| Hyprland: settings, keybindings, window rules, monitors, input, autostart | `~/.config/hypr/hyprland.local.lua`, which loads last and wins; monitors also through the display panel |
 | Idle timeouts, screen-off, suspend | `~/.config/hypr/hypridle.local.conf`, by redefining the variables at the top of `~/.config/hypr/hypridle.conf` |
 | Night light schedule, wallpaper daemon | `~/.config/hypr/hyprsunset.local.conf`, `hyprpaper.local.conf` |
 | Terminal settings | `~/.config/<terminal>/local.toml`, `local.ini`, or `local.conf` |
@@ -79,16 +79,12 @@ never edit files under `~/.local/state/hyprkarl/`, which are generated.
   theme engines. Hyprkarl's theme writes all of these; change them through a
   personal theme and `hk-theme set`. A personal overlay needs only the values
   that change; see `$HYPRKARL_PATH/docs/themes.md`.
-- **Do not install a second bar, notifier, launcher, or locker** (Waybar,
-  Mako, Dunst, SwayNC, Rofi, Wofi, Fuzzel, Hyprlock, Swaylock, Swayidle). The
-  Quickshell shell already does each job. If the user wants a different one,
-  switch Hyprkarl's off and replace it as described under "Replace a built-in"
-  in `extending-hyprkarl.md`, so keybindings and menus keep working.
-- **Do not change defaults the generic way.** The terminal is
-  `hk-default-terminal`, the editor `hk-default-editor`, and the login shell
-  `hk-default-shell`. Wallpapers are `hk-wallpaper add`, not a new wallpaper
-  daemon. Monitors are the display panel, `hk-display`, or `hl.monitor()` in
-  `hyprland.local.lua`.
+- **Replace a built-in through Hyprkarl, not around it.** The user may want
+  a different bar, launcher, notifier, locker, or idle daemon. Switch
+  Hyprkarl's off and take over the `hk-*` commands that reach it, as described
+  under "Replace a built-in" in `$HYPRKARL_PATH/docs/extending-hyprkarl.md`, so
+  keybindings, menus, and the bar keep working. Running a second one beside
+  Hyprkarl's leaves both fighting over the same job.
 - **Do not add packages to Hyprkarl's lists.** Install with
   `hk-pkg install [--aur|--flatpak] <package>`; Hyprkarl does not track
   personal packages. Do not remove packages Hyprkarl requires
@@ -96,24 +92,11 @@ never edit files under `~/.local/state/hyprkarl/`, which are generated.
 - **Do not update Hyprkarl with Git.** Updates are `hk-update all`, which the
   user runs in a terminal because it asks questions. System packages are
   `hk-pkg-upgrade`.
-- **Do not change `/etc` or system services** to customize the desktop. Almost
-  everything has a user-level place above. If something really needs root,
-  explain it and let the user run the command.
+- **Do not change `/etc` or anything that needs root** to customize the
+  desktop. Almost everything has a user-level place above. If something really
+  needs root, explain it and let the user run the command.
 - **To change what an `hk-*` command does,** put a script with the same name
   in `~/.local/bin/`, which shadows Hyprkarl's. Do not edit the original.
-
-## Apply and verify
-
-| After changing | Run |
-|---|---|
-| `hyprland.local.lua` | `hyprctl reload`, then `hyprctl configerrors` |
-| `shell.json`, `menu.json` | Nothing; check `hk-shell logs` for errors. `modules` changes and QML need `hk-shell restart` |
-| A theme | `hk-theme set <name>` |
-| Hypr tool local files | `systemctl --user restart hypridle.service` (or the matching tool) |
-| Terminal local files | `hk-terminal-reload`, or a new window |
-| `env.local` | A new login |
-
-Tell the user when a change needs a new login or a restart they must do.
 
 ## Finding things
 

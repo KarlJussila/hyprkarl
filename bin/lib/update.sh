@@ -127,14 +127,13 @@ remove_stale_symlinks() {
   done
 }
 
-# Link Hyprkarl's skills into installed agents' skill folders, so an agent
-# asked to change the desktop learns where changes belong. A skill of the
-# user's own with the same name stays.
+# Link Hyprkarl's skills into the agents' skill folders, creating them, so an
+# agent installed after Hyprkarl already finds them. A skill of the user's own
+# with the same name stays.
 link_agent_skills() {
   local agent_home skill link
 
   for agent_home in "${AGENT_HOMES[@]}"; do
-    [[ -d "$agent_home" ]] || continue
     for skill in "$HYPRKARL_PATH"/defaults/skills/*/; do
       skill=${skill%/}
       link="$agent_home/skills/${skill##*/}"

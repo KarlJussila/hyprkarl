@@ -54,8 +54,9 @@ and are not for editing:
   Hyprland loads, and `layout.json`. Rules in `hyprland.local.lua` still win.
 - `calculator-history.json` keeps the calculator's last five results.
 
-`hk-update apply` links Hyprkarl's agent skill into the skill folders of the
-coding agents you have installed (`~/.agents`, `~/.claude`, `~/.codex`); see
+`hk-update apply` links Hyprkarl's agent skill into the skill folders of
+coding agents (`~/.agents`, `~/.claude`, `~/.codex`), creating them, so an
+agent you install later finds it; see
 [Extending Hyprkarl](extending-hyprkarl.md#ask-an-ai-agent). A theme switch
 also writes outside that folder: the GTK theme to
 `~/.local/share/themes/hyprkarl/`, `~/.config/qt5ct/qt5ct.conf` and

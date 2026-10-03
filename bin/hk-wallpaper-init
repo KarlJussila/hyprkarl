@@ -1,30 +1,29 @@
 #!/bin/bash
 # hk-wallpaper-init
-# Initialize the current wallpaper on startup.
+# Start hyprpaper and show the current wallpaper. Hyprland's autostart runs
+# this, so a personal hk-wallpaper-init in ~/.local/bin can start a different
+# wallpaper program instead.
+#
+# Usage:
+#   hk-wallpaper-init              start hyprpaper if needed, then show the wallpaper
+#   hk-wallpaper-init --if-ready   only reapply the wallpaper to a running hyprpaper
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/theme.sh"
 
-CURRENT_WALLPAPER_LINK="$HYPRKARL_CURRENT_WALLPAPER"
-IF_READY=0
+SOCKET="/run/user/$(id -u)/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprpaper.sock"
 
 if [[ "${1:-}" == "--if-ready" ]]; then
-  IF_READY=1
+  [[ -S "$SOCKET" ]] && [[ -e "$HYPRKARL_CURRENT_WALLPAPER" ]] || exit 0
+else
+  if ! pgrep -x hyprpaper >/dev/null; then
+    setsid uwsm-app -- hyprpaper &
+  fi
+  until [[ -S "$SOCKET" ]]; do
+    sleep 0.1
+  done
+  # No selection yet: the caller picks one with hk-wallpaper cycle.
+  [[ -e "$HYPRKARL_CURRENT_WALLPAPER" ]] || exit 1
 fi
 
-if [[ ! -L "$CURRENT_WALLPAPER_LINK" ]] || [[ ! -e "$CURRENT_WALLPAPER_LINK" ]]; then
-  [[ "$IF_READY" -eq 1 ]] && exit 0
-  exit 1
-fi
-
-# Wait for hyprpaper socket to be ready.
-SOCKET="/run/user/$(id -u)/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprpaper.sock"
-if [[ "$IF_READY" -eq 1 ]] && [[ ! -S "$SOCKET" ]]; then
-  exit 0
-fi
-until [[ -S "$SOCKET" ]]; do
-  sleep 0.1
-done
-
-WALLPAPER=$(readlink -f "$CURRENT_WALLPAPER_LINK")
-hyprctl hyprpaper wallpaper ",$WALLPAPER"
+hyprctl hyprpaper wallpaper ",$(readlink -f "$HYPRKARL_CURRENT_WALLPAPER")"

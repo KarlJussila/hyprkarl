@@ -39,7 +39,7 @@ same change, for both audiences:
   theme authoring. Each adjacent `CLAUDE.md` only imports its `AGENTS.md`.
 - **The user's agents:** `defaults/skills/hyprkarl/SKILL.md` guides coding
   agents that customize an installed system on the user's behalf.
-  `hk-update apply` links it into installed agents' skill folders. Update it
+  `hk-update apply` links it into the agents' skill folders. Update it
   whenever a personal file, command, or the right place for a kind of change
   moves.
 

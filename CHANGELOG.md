@@ -70,7 +70,8 @@ before `3df882e`) have no automatic upgrade. Follow
 - A `hyprkarl` skill for coding agents (Claude Code, Codex, and others that
   read `~/.agents/skills`) explains where each kind of change belongs, so an
   agent customizing the system works with Hyprkarl instead of around it.
-  `hk-update apply` links it for the agents you have installed.
+  Installing or updating links it where those agents look, including for
+  agents installed later.
 
 ### Themes
 

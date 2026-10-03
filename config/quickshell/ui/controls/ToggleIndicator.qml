@@ -9,27 +9,22 @@ Item {
   property var appearance: ({})
   required property var theme
 
-  readonly property var defaults: theme.switchAppearance
-  readonly property string variant: appearance.variant ?? "switch"
-  readonly property real trackLength: appearance.trackLength ?? defaults.trackLength
-  readonly property real trackHeight: appearance.trackHeight ?? defaults.trackHeight
-  readonly property real trackRadius: appearance.trackRadius ?? defaults.trackRadius
-  readonly property real thumbSize: appearance.thumbSize ?? defaults.thumbSize
-  readonly property real thumbRadius: appearance.thumbRadius ?? defaults.thumbRadius
-  readonly property real thumbPadding: appearance.thumbPadding ?? defaults.thumbPadding
-  readonly property real indicatorBorderWidth:
-    appearance.borderWidth ?? defaults.borderWidth
-  readonly property bool filled:
-    appearance.filled ?? defaults.filled ?? false
-  readonly property string glyphFontFamily:
-    appearance.fontFamily ?? defaults.fontFamily
-  readonly property real glyphFontSize: appearance.fontSize ?? defaults.fontSize
-  readonly property var activeGlyphOffset:
-    appearance.onGlyphOffset ?? defaults.onGlyphOffset
-  readonly property var inactiveGlyphOffset:
-    appearance.offGlyphOffset ?? defaults.offGlyphOffset
-  readonly property int transitionDuration:
-    appearance.transitionDuration ?? defaults.transitionDuration
+  // The theme's switch look with this toggle's own overrides on top.
+  readonly property var style: Object.assign({}, theme.switchAppearance, appearance)
+  readonly property string variant: style.variant ?? "switch"
+  readonly property real trackLength: style.trackLength
+  readonly property real trackHeight: style.trackHeight
+  readonly property real trackRadius: style.trackRadius
+  readonly property real thumbSize: style.thumbSize
+  readonly property real thumbRadius: style.thumbRadius
+  readonly property real thumbPadding: style.thumbPadding
+  readonly property real indicatorBorderWidth: style.borderWidth
+  readonly property bool filled: style.filled
+  readonly property string glyphFontFamily: style.fontFamily
+  readonly property real glyphFontSize: style.fontSize
+  readonly property var activeGlyphOffset: style.onGlyphOffset
+  readonly property var inactiveGlyphOffset: style.offGlyphOffset
+  readonly property int transitionDuration: style.transitionDuration
 
   readonly property real strokeInset:
     Math.max(1, Math.ceil(indicatorBorderWidth / 2))
@@ -168,22 +163,10 @@ Item {
     font.pixelSize: root.glyphFontSize
   }
 
-  onProgressChanged: canvas.requestPaint()
-  onTrackColorChanged: canvas.requestPaint()
-  onBorderColorChanged: canvas.requestPaint()
-  onThumbFillColorChanged: canvas.requestPaint()
-  onSurfaceColorChanged: canvas.requestPaint()
-  onContentWidthChanged: canvas.requestPaint()
-  onContentHeightChanged: canvas.requestPaint()
-  onVariantChanged: canvas.requestPaint()
-  onTrackXChanged: canvas.requestPaint()
-  onTrackYChanged: canvas.requestPaint()
-  onTrackLengthChanged: canvas.requestPaint()
-  onTrackHeightChanged: canvas.requestPaint()
-  onTrackRadiusChanged: canvas.requestPaint()
-  onThumbXChanged: canvas.requestPaint()
-  onThumbYChanged: canvas.requestPaint()
-  onThumbSizeChanged: canvas.requestPaint()
-  onThumbRadiusChanged: canvas.requestPaint()
-  onIndicatorBorderWidthChanged: canvas.requestPaint()
+  readonly property var paintState: [
+    progress, trackColor, borderColor, thumbFillColor, contentWidth,
+    contentHeight, variant, trackX, trackY, trackLength, trackHeight,
+    trackRadius, thumbX, thumbY, thumbSize, thumbRadius, indicatorBorderWidth
+  ]
+  onPaintStateChanged: canvas.requestPaint()
 }

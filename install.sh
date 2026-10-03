@@ -23,9 +23,17 @@ fi
 
 # The update workflow itself needs these before it can install the rest.
 # Upgrade first: installing from a stale package database fails.
-sudo pacman -Syu --needed --noconfirm gum jq python || exit 1
+sudo pacman -Syu --needed --noconfirm gum jq python stow || exit 1
 source "$SCRIPT_DIR/bin/lib/update.sh"
 update_configure_source || exit 1
+
+# The system's own configs for applications Hyprkarl configures, such as
+# CachyOS's hyprland.lua, would block Hyprkarl's links.
+backup="$HOME/.local/state/hyprkarl/replaced-configs-$(date +%Y%m%d-%H%M%S)"
+moved=$(move_config_conflicts "$backup") || exit 1
+if [[ -n "$moved" ]]; then
+  printf 'Moved these configs, which Hyprkarl replaces, to %s:\n%s\n' "$backup" "$moved"
+fi
 
 # The same apply an update uses: packages, migrations, starting configs,
 # shipped links, and the theme.

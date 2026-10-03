@@ -95,6 +95,18 @@ check_config_conflicts() {
     config
 }
 
+# Moves files that block shipped links into $1, keeping their paths under
+# ~/.config, and prints each. Only the installer does this: a fresh system's
+# defaults are Hyprkarl's to replace, while an update leaves the user's files.
+move_config_conflicts() {
+  local backup="$1" target
+  while IFS= read -r target; do
+    mkdir -p "$backup/$(dirname "$target")" || return 1
+    mv "$HOME/.config/$target" "$backup/$target" || return 1
+    printf '  %s\n' "$target"
+  done < <(check_config_conflicts | sed -n 's/.* over existing target \(.*\) since .*/\1/p')
+}
+
 stow_restow_config() {
   stow --restow --no-folding \
     --dir="$HYPRKARL_PATH" \

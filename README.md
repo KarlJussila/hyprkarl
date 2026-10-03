@@ -38,9 +38,10 @@ cd ~/.local/share/hyprkarl
 ./install.sh
 ```
 
-The installer removes CachyOS's default Noctalia shell first, backing up its
-configs. If you have configs of your own in `~/.config/`, it stops and lists
-any that are in the way of Hyprkarl's files.
+The installer removes CachyOS's default Noctalia shell first. Configs in
+`~/.config/` that Hyprkarl replaces, such as CachyOS's `hyprland.lua`, are
+moved to `~/.local/state/hyprkarl/replaced-configs-<date>/`, and the
+installer lists them.
 
 To remove Hyprkarl's links again, run `~/.local/share/hyprkarl/uninstall.sh`.
 It lists what it leaves behind: your own files, packages, and system changes.

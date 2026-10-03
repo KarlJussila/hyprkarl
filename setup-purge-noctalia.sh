@@ -9,11 +9,11 @@
 #
 #   - cachyos-hypr-noctalia hard-depends on dolphin, so packages/remove.txt
 #     cannot drop dolphin until this script has run.
-#   - cachyos-hypr-noctalia is the ONLY requirer of uwsm, grim and slurp, so a
-#     plain `pacman -Rns` would sweep them out. Hyprkarl needs uwsm (SDDM
-#     autologin launches hyprland-uwsm.desktop) but does not list it in
-#     packages/pacman.txt, so it would not come back. This script re-marks them
-#     explicit first to pin them in place.
+#   - `pacman -Rns` would sweep out dependencies Noctalia shares with
+#     Hyprkarl, such as Quickshell, only for the install to download them
+#     again, and uwsm, which Hyprkarl needs (SDDM autologin launches
+#     hyprland-uwsm.desktop) but does not list. This script marks them
+#     explicit first to keep them.
 #
 # Not removed here: dolphin. The package review handles it via remove.txt once
 # the dependency above is gone.
@@ -21,12 +21,7 @@
 # --- Constants ---
 PURGE_PKGS=(cachyos-hypr-noctalia noctalia)
 
-# Swept by -Rns but needed afterwards, and NOT restored by packages/pacman.txt.
-# Marked explicit so recursive removal skips them.
-#
-# Only uwsm qualifies. Deliberately absent: grim and slurp are also swept, but
-# hyprshot (pacman.txt) depends on both and pulls them back as proper deps.
-# Pinning them here would leave them explicit forever, masquerading as orphans.
+# Needed afterwards but not in Hyprkarl's package lists, which are kept too.
 KEEP_PKGS=(uwsm)
 
 # Noctalia / CachyOS shell configs with no Hyprkarl counterpart. Stow never
@@ -52,6 +47,7 @@ CACHYOS_CONFIGS=(
 )
 
 BACKUP_DIR="$HOME/.local/state/noctalia-purge-$(date +%Y%m%d-%H%M%S)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # --- Functions ---
 # Deliberately not gum: install.sh installs gum after this script runs,
@@ -68,14 +64,15 @@ installed_only() {
 }
 
 pin_shared_deps() {
-  local pkgs
-  mapfile -t pkgs < <(installed_only "${KEEP_PKGS[@]}")
+  local pkgs required
+  mapfile -t required < <(sed 's/#.*//' "$SCRIPT_DIR/packages/pacman.txt" "$SCRIPT_DIR/packages/aur.txt" | awk 'NF {print $1}')
+  mapfile -t pkgs < <(installed_only "${KEEP_PKGS[@]}" "${required[@]}")
 
   if [[ ${#pkgs[@]} -eq 0 ]]; then
     return
   fi
 
-  info "Pinning shared dependencies as explicit: ${pkgs[*]}"
+  info "Keeping packages Hyprkarl also uses: ${pkgs[*]}"
   if [[ "$DRY_RUN" -ne 0 ]]; then
     return
   fi
@@ -83,14 +80,15 @@ pin_shared_deps() {
 }
 
 # Dry-run preview. Uses -Rs, not -Rns: --nosave and --print are mutually
-# exclusive. Read-only, so no sudo. The real run pins KEEP_PKGS first, which
-# this preview cannot reflect, so those lines are annotated rather than dropped.
+# exclusive. Read-only, so no sudo. The real run pins the kept packages first,
+# which this preview cannot reflect, so those lines are annotated rather than
+# dropped.
 preview_removal() {
   local line
   local name
   local keep
 
-  keep=" ${KEEP_PKGS[*]} "
+  keep=" ${KEEP_PKGS[*]} $(sed 's/#.*//' "$SCRIPT_DIR/packages/pacman.txt" "$SCRIPT_DIR/packages/aur.txt" | xargs) "
   while read -r line; do
     name="$(sed 's/-[^-]*-[^-]*$//' <<<"$line")"
     if [[ "$keep" == *" $name "* ]]; then

@@ -52,9 +52,10 @@ missing links, rebuild the theme, or apply a custom branch you merged by hand.
 
 ### Stow conflicts
 
-Hyprkarl does not overwrite a real file at a path it links. `hk-update check`
-and `apply` list any such conflict; move or rename the file and run `apply`
-again.
+An update does not overwrite a real file at a path Hyprkarl links.
+`hk-update check` and `apply` list any such conflict; move or rename the file
+and run `apply` again. Only the installer moves them aside itself, into
+`~/.local/state/hyprkarl/replaced-configs-<date>/`.
 
 ## Packages: `hk-update packages`
 

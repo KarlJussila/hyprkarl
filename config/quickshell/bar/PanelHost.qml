@@ -83,7 +83,6 @@ Scope {
     Qt.callLater(() => {
       if (!root.open) return
       barWindow.contentItem.forceActiveFocus()
-      barWindow.requestActivate()
     })
   }
 

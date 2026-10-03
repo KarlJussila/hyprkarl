@@ -30,41 +30,27 @@ stable](updating.md#what-updates-keep-stable).
   ends. With nothing staged, reapply the current checkout, which also repairs
   links and generated output.
 - `hk-update remove-stale`
-  Remove stale hyprkarl symlinks and empty directories from `~/.config/` and
-  related directories without restowing. Useful when cleaning up after removing
-  files from the repo.
+  Remove Hyprkarl links in `~/.config` whose target no longer exists.
 - `hk-update packages`
-  Present all newly retired packages in one multi-select review, record that
-  removal change once, and install missing requirements.
+  Install newly required packages and review retired ones; `apply` runs it.
 - `hk-config-seed`
-  Copy Hyprkarl's starting config for each application that has none of its
-  files yet, and create missing personal include files such as
-  `~/.config/kitty/local.conf`. Never overwrites an existing file.
-  `hk-update apply` runs it before restowing.
-
-`hk-update all` runs the `post-update` lifecycle hooks after every update step
-completes successfully. Individual update commands do not emit that event.
+  Create missing personal files and starting configs, never overwriting one;
+  `apply` runs it.
 
 ## Lifecycle Hooks
 
 - `hk-hook-run <event>`
-  Run personal executable hooks from `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/hooks/<event>.d/` in lexical order.
-  Supported events are `login`, `post-update`, `theme-set`, and
-  `wallpaper-set`. This is normally called by the corresponding Hyprkarl
-  action rather than manually.
+  Run the hooks in `~/.config/hyprkarl/hooks/<event>.d/` in name order. Events
+  are `login`, `post-update`, `theme-set`, and `wallpaper-set`; Hyprkarl runs
+  each at that moment.
 
 ## Menus and Launching
 
 - `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`
-  Control the Quickshell menu through its public IPC boundary. For example,
-  `hk-shell menu toggle main`, `hk-shell menu open theme`, and
-  `hk-shell menu open fingerprint`. Ordinary calls target the focused output;
-  shell command widgets supply their clicked-output context automatically.
-  Static forwarding aliases are not part of the command surface; bindings and
-  scripts should use this command directly.
+  Open, toggle, or close a menu, such as `hk-shell menu toggle main`. It opens
+  on the focused monitor, or on the clicked bar's monitor from a bar widget.
 - `hk-shell launcher [toggle|open|close]`
-  Control the Quickshell application launcher. It searches Quickshell's
-  resident desktop-entry index and launches the selected desktop file.
+  Control the application launcher.
 - `hk-shell calculator [toggle|open|close]`
   Control the Quickshell calculator. Results come from `qalc`; choosing one
   copies it to the clipboard and stores up to five recent calculations in XDG
@@ -75,10 +61,7 @@ completes successfully. Individual update commands do not emit that event.
   Print the live Hyprland keybindings shown by the searchable `keybindings`
   shell menu.
 - `hk-icon-data-update`
-  Download the latest Nerd Font glyph list from the upstream cheat-sheet and
-  regenerate the provider-ready
-  `~/.local/share/hyprkarl/data/nerdfont-menu.json`. Re-run after upgrading
-  Nerd Fonts to pick up new icons shown by the searchable `icons` shell menu.
+  Refresh the `icons` menu's Nerd Font glyph list from upstream.
 
 ### Launching apps
 
@@ -97,6 +80,9 @@ completes successfully. Individual update commands do not emit that event.
 - `hk-editor-launch [args...]`
   Launch the editor set in `$EDITOR` (with `nvim` as a fallback). Known TUI
   editors run inside the hyprkarl terminal; everything else runs detached.
+- `hk-tui-launch <command> [args...]`
+  Run a terminal program in a floating Hyprkarl terminal window, as the menus
+  do for updates and package pickers.
 - `hk-terminal-open [args...]`
   Open a terminal window with the hyprkarl terminal app-id, waiting for it
   to close before returning. Arguments are forwarded to `xdg-terminal-exec`.
@@ -231,37 +217,19 @@ completes successfully. Individual update commands do not emit that event.
 These commands manage and communicate with the session-started production
 shell.
 
-- `hk-shell start`
-  Start the Hyprkarl Quickshell configuration as a UWSM service if it is not
-  already running. The service uses the stable user-session environment. The
-  command verifies that Quickshell registered a live instance and reports QML
-  load failures.
-- `hk-shell stop`
-  Stop every running instance of the Hyprkarl Quickshell configuration. It is
-  safe to run when the bar is already stopped and does not return until both
-  the registered config generations and their Quickshell processes have
-  exited.
-- `hk-shell restart`
-  Stop and start the bar after shutdown completes.
+- `hk-shell start`, `stop`, `restart`
+  Start, stop, or restart the shell. `start` reports QML load errors.
 - `hk-shell status`
-  Print JSON containing `running` and the registered instances' IDs, process
-  IDs, and launch times. Exits nonzero when stopped.
+  Print JSON with `running` and the running instances; exits nonzero when
+  stopped.
 - `hk-shell logs [qs log options]`
-  Read the newest running instance's log, or the newest stopped instance when
-  the shell is not running. With no options it shows the last 200 lines;
-  native options such as `--follow`, `--tail 100`, and `--no-color` pass
-  through to `qs log`.
-- `hk-shell menu [toggle|open] [menu-id]` / `hk-shell menu close`
-  Open, toggle, or close the shell-native command menu. This is also described
-  with the menu commands above.
+  Show the shell's log, the last 200 lines by default; options such as
+  `--follow` pass through to `qs log`.
 - `hk-shell notifications <dismiss|dismiss-all|toggle-silenced|restore>`
-  Control the shell-native notification service. `restore` brings back the
-  most recently dismissed or expired notification as a visual snapshot.
-- `hk-shell osd <surface> ...`
-  Send semantic state to the shell-native OSD on the focused output. These
-  narrow calls are public for custom keybindings and commands; the built-in
-  media and hardware helpers use the same interface. A media percentage of
-  `-1` omits its progress bar. Supported forms are:
+  Dismiss notifications, silence them, or bring back the last one dismissed.
+- `hk-shell osd <kind> ...`
+  Show an OSD popup on the focused monitor, for your own keybindings. A media
+  percentage of `-1` leaves out the progress bar:
 
   ```text
   hk-shell osd volume <percent> [muted]
@@ -300,17 +268,12 @@ shell.
 - `hk-caffeine [on|off|toggle|status]`
   Pause idle locking and sleep with a systemd idle inhibitor. Hypridle keeps
   running, so manual suspend and lid close still lock first.
-- `hk-display <state|arrange|preview|confirm|revert|scale|toggle|brightness> [arguments]`
-  Query or change display state through the backend used by the Quickshell
-  display panel. `state [output]` prints JSON; `arrange <arrangement-json>`
-  accepts one `{ "output": { "x": 0, "y": 0, "transform": 0 } }` entry for
-  every active output and rejects overlapping transformed rectangles. The
-  display panel uses `preview <layout-json>` to apply a complete
-  connected-output layout for ten seconds, followed by `confirm <token>` or
-  `revert <token>`; an independent watchdog also reverts an expired trial.
-  `scale <output> <factor>` and `toggle <output>` are direct command-line
-  changes. `brightness <output> <percent>` controls an available internal
-  backlight without adding it to the monitor layout.
+- `hk-display <state|scale|toggle|brightness> [arguments]`
+  The display panel's backend. `state [output]` prints JSON,
+  `scale <output> <factor>` and `toggle <output>` change a monitor and save
+  the layout, and `brightness <output> <percent>` sets a built-in screen's
+  backlight. The panel also uses internal `arrange`, `preview`, `confirm`,
+  and `revert` actions.
 - `hk-playerctl`
   Control media playback and show track state in the shell OSD.
 - `hk-volume`
@@ -330,11 +293,10 @@ shell.
 
 ## Internal Helpers
 
-These `hk-*` commands exist in `bin/` but are not meant to be typed directly.
-They are invoked by other scripts, keybindings, and bar widgets. Listed for
-completeness so they can be discovered with grep:
+Other scripts, keybindings, and bar widgets call these; they can change in
+any release:
 
-- Launching glue: `hk-tui-launch`, `hk-app-restart`
+- Launching glue: `hk-app-restart`
 - Hardware actions bound to function keys: `hk-brightness-display`,
   `hk-brightness-keyboard`, `hk-audio-switch`, `hk-battery-monitor`; display
   dispatcher actions: `hk-display-state`, `hk-display-arrange`,
@@ -345,9 +307,6 @@ completeness so they can be discovered with grep:
   `hk-show-done`, `hk-suggest-reboot`
 - Lookup helpers: `hk-battery-find`, `hk-icon-find`, `hk-cmd-present`,
   `hk-terminal-cwd`
-
-If you need behavior one of these provides from your own script, source or
-shell it out the same way the existing callers do.
 
 ## Notes
 

@@ -64,6 +64,17 @@ Item {
       : null
 
     PanelRow {
+      visible: NetworkState.wiredDevice !== null
+      width: parent.width
+      theme: root.theme
+      icon: "󰈀"
+      title: "Ethernet"
+      detail: NetworkState.wiredDevice?.linkSpeed > 0
+        ? `${NetworkState.wiredDevice.linkSpeed} Mb/s`
+        : ""
+    }
+
+    PanelRow {
       width: parent.width
       theme: root.theme
       navigationSection: "wifi"

@@ -16,10 +16,14 @@ ShellButton {
     ? panelHost.activeId === widgetId
     : false
 
-  text: !NetworkState.wifiDevice || !NetworkState.wifiHardwareEnabled || !NetworkState.wifiEnabled
+  readonly property var wiredDevice: NetworkState.wiredDevice
+
+  text: wiredDevice ? "󰈀"
+    : !NetworkState.wifiDevice || !NetworkState.wifiHardwareEnabled || !NetworkState.wifiEnabled
     ? "󰤭"
     : connectedNetwork ? signalIcon(connectedNetwork.signalStrength) : "󰤯"
-  tooltip: !NetworkState.wifiDevice || !NetworkState.wifiHardwareEnabled
+  tooltip: wiredDevice ? "Ethernet"
+    : !NetworkState.wifiDevice || !NetworkState.wifiHardwareEnabled
     ? "Wi-Fi unavailable" : !NetworkState.wifiEnabled ? "Wi-Fi off"
     : connectedNetwork ? connectedNetwork.name : "Not connected"
   tooltipSuppressed: panelOpen

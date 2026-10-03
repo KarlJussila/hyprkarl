@@ -7,6 +7,7 @@ QtObject {
   id: root
 
   readonly property var wifiDevice: Networking.devices.values.find(device => device.type === DeviceType.Wifi) ?? null
+  readonly property var wiredDevice: Networking.devices.values.find(device => device.type === DeviceType.Wired && device.connected) ?? null
   readonly property var connectedNetwork: wifiDevice?.networks.values.find(network => network.connected) ?? null
   readonly property var networks: wifiDevice?.networks.values ?? []
   readonly property bool wifiEnabled: Networking.wifiEnabled

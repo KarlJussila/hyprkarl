@@ -21,12 +21,21 @@ revision. Staging records it in XDG state; nothing in the checkout changes
 yet. It needs a clean checkout on the configured branch. Running `sync` again
 reviews a newer revision.
 
-Fresh installs follow `origin/main`. To follow another remote or branch:
+Fresh installs follow `origin/main`. To follow `develop` instead:
 
 ```bash
-git -C ~/.local/share/hyprkarl config hyprkarl.updateRemote origin
-git -C ~/.local/share/hyprkarl config hyprkarl.updateBranch develop
+cd ~/.local/share/hyprkarl
+git remote set-branches origin '*'
+git fetch origin
+git switch -c develop
+git config hyprkarl.updateBranch develop
+hk-update all
 ```
+
+The install clone fetches only `main`, so `set-branches` lets `fetch` see the
+other branches. The new local branch starts at the commit you already have,
+and `hk-update all` brings it forward like any update. Set
+`hyprkarl.updateRemote` to follow a remote other than `origin`.
 
 ## Apply: `hk-update apply`
 

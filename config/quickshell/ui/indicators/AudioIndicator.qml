@@ -9,7 +9,7 @@ Canvas {
   property color inactiveWaveColor: indicatorColor
   property real nativeScale: 1
 
-  implicitWidth: 17 * nativeScale
+  implicitWidth: 18 * nativeScale
   implicitHeight: 14 * nativeScale
 
   onVolumeChanged: requestPaint()

@@ -18,7 +18,8 @@ rules in `../../AGENTS.md` apply; this file adds what is specific to the shell.
   `modal`, `navigation`, `indicators`, `animation`). Put domain-independent UI
   here from the start, even with one caller.
 - `config/`: `JsonSettings.qml` (defaults plus personal file, merged),
-  `ShellConfig.qml`, `Theme.qml`, `UserRoot.qml`, `Paths.qml`.
+  `ShellConfig.qml`, `Theme.qml`, `UserRoot.qml`, `Paths.qml`, and
+  `Screens.qml` (which monitor a surface opens on).
 
 QML type files are uppercase; directories and module namespaces are lowercase.
 Widget files are loaded by name at runtime, so directories keep checked-in
@@ -145,6 +146,9 @@ From the repository root:
 tests/hk-shell-modules.sh
 hk-shell restart && hk-shell logs --tail 100 --no-color
 ```
+
+Stow links files one by one, so a new QML file reaches the running shell only
+after `hk-update apply` (or a restow) puts its link in place.
 
 The installed type metadata leaves about 20 known `qmllint` warnings
 (`PopupAnchor`, `PanelWindow`, and similar); compare the count rather than

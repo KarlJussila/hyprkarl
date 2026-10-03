@@ -94,7 +94,8 @@ The manual owns the detailed contracts:
 Stop the production desktop before multi-file QML edits. Quickshell watches
 source files and can load an incomplete intermediate generation. A staged tree
 outside the live source is also suitable. Personal QML loaded dynamically needs
-`hk-shell restart` after source edits.
+`hk-shell restart` after source edits. A new file in this directory reaches the
+running shell only once `hk-update apply` links it.
 
 From the repository root:
 

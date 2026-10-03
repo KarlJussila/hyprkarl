@@ -4,7 +4,7 @@ Notable changes to Hyprkarl. Releases are annotated git tags on `main`;
 entries here are written by hand when a release is cut. From v1.0.0, a
 breaking change bumps the major version and is called out explicitly.
 
-## Unreleased
+## v1.0.2 (2026-10-03)
 
 - Notifications render the markup apps send in their text (bold, italic,
   underline, links) instead of showing the tags. Images in the text are

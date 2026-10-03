@@ -2,7 +2,7 @@ import QtQuick
 import "../controls"
 import "../navigation"
 
-Item {
+NavigationControl {
   id: root
 
   required property var theme
@@ -15,13 +15,9 @@ Item {
   property bool switchVisible: false
   property bool switchActive: false
   property var switchAppearance: ({})
-  property string navigationSection: "main"
-  property var action: null
   readonly property bool navigationSelected: root.selected
-  readonly property bool current: NavigationState.currentItem === root
   readonly property bool highlighted: root.current || root.selected
 
-  activeFocusOnTab: enabled && action !== null
   implicitWidth: parent?.width ?? 0
   implicitHeight: 40 + (error.length > 0 ? 20 : 0)
 
@@ -126,29 +122,5 @@ Item {
     font.family: root.theme.panel.font
     font.pixelSize: root.theme.typography.readoutSize
     elide: Text.ElideRight
-  }
-
-  MouseArea {
-    id: mouse
-
-    anchors.fill: parent
-    hoverEnabled: true
-    enabled: root.enabled && root.action !== null
-    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-    onPressed: NavigationState.usePointer(root, root.navigationSection)
-    onClicked: root.action()
-  }
-
-  HoverHandler {
-    enabled: root.enabled && root.action !== null
-    blocking: false
-    onPointChanged: if (hovered) NavigationState.usePointer(root, root.navigationSection)
-  }
-
-  Keys.onPressed: event => {
-    if (!root.action || (event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Space)) return
-    NavigationState.useKeyboard(root, Qt.ShortcutFocusReason, root.navigationSection)
-    root.action()
-    event.accepted = true
   }
 }

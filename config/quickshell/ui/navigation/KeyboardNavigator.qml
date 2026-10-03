@@ -27,7 +27,6 @@ QtObject {
     if (!parent) return
     for (const child of parent.children) {
       if (child.visible && child.width > 0 && child.height > 0
-          && typeof child.navigationSection === "string"
           && child.navigationSection === section) {
         result.push(child)
       }
@@ -40,15 +39,11 @@ QtObject {
   }
 
   function navigationSection(item: Item): string {
-    return typeof item.navigationSection === "string"
-      && item.navigationSection.length > 0
-      ? item.navigationSection
-      : "main"
+    return item.navigationSection || "main"
   }
 
   function navigationSelected(item: Item): bool {
-    return typeof item.navigationSelected === "boolean"
-      && item.navigationSelected
+    return item.navigationSelected === true
   }
 
   function sectionEntry(items: var, section: string): Item {
@@ -69,7 +64,7 @@ QtObject {
 
     let ancestor = items[0]
     while (ancestor) {
-      if (typeof ancestor[propertyName] !== "undefined") {
+      if (ancestor[propertyName] !== undefined) {
         const source = ancestor[propertyName]
         const topLeft = ancestor.mapToItem(navigationRoot, source.x, source.y)
         const bottomRight = ancestor.mapToItem(

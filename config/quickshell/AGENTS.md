@@ -108,8 +108,9 @@ bars are a later design task, so do not carry untested vertical branches.
   user's choice; the docs warn about the cost.
 - **Keyboard navigation.** `KeyboardNavigator` and `NavigationState` give
   panels and modals one current control across pointer and keyboard. Controls
-  join with `activeFocusOnTab` and group with `navigationSection`. Do not add
-  a second focus chain.
+  join with `activeFocusOnTab` and group with `navigationSection`; shipped
+  buttons and rows build on `NavigationControl`, which does that and runs
+  `action` on click or Enter. Do not add a second focus chain.
 - **Overlays.** `OverlayState` keeps menu, launcher, calculator, wallpaper
   picker, display arranger, and personal modals mutually exclusive and routes
   them to a monitor. Menu surface actions push, so Back returns to the menu.

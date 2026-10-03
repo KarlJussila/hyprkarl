@@ -87,7 +87,7 @@ Rectangle {
 
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: percentageLabel.implicitWidth
+        width: percentageLabel.width
         height: parent.height
 
         BatteryIndicator {

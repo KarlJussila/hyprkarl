@@ -1,3 +1,4 @@
 module ui.navigation
 KeyboardNavigator 1.0 KeyboardNavigator.qml
+NavigationControl 1.0 NavigationControl.qml
 singleton NavigationState 1.0 NavigationState.qml

@@ -37,9 +37,11 @@ Item {
     Row {
       width: parent.width
 
-      CalendarNavButton {
+      PanelHeaderButton {
+        width: 34
+        height: 34
         theme: root.theme
-        text: "󰅁"
+        icon: "󰅁"
         navigationSection: "month"
         action: () => root.monthOffset--
       }
@@ -57,9 +59,11 @@ Item {
         font.styleName: root.theme.typography.style
       }
 
-      CalendarNavButton {
+      PanelHeaderButton {
+        width: 34
+        height: 34
         theme: root.theme
-        text: "󰅂"
+        icon: "󰅂"
         navigationSection: "month"
         action: () => root.monthOffset++
       }

@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Window
 
 Canvas {
   id: root
@@ -22,15 +21,16 @@ Canvas {
   onPaint: {
     const context = getContext("2d")
     const scale = root.nativeScale
-    const centerY = height / 2
-    const activeWaves = muted ? 0 : volume <= 0 ? 0 : volume <= 0.25 ? 1 : volume <= 0.5 ? 2 : volume <= 0.75 ? 3 : 4
-    const radii = [3, 4.8, 6.6, 8.4].map(radius => radius * scale)
-    const drawnWidth = 7.4 * scale + radii[radii.length - 1] + 1.2 * scale
-    const offset = (width - drawnWidth) / 2 + 0.5 * scale
+    // Lines one unit wide on half-unit coordinates stay sharp at scale 1; the
+    // waves are spaced so neighbours keep a clear gap between them.
+    const radii = [3, 6, 9].map(radius => radius * scale)
+    const activeWaves = muted ? 0 : Math.min(radii.length, Math.ceil(volume * radii.length))
+    const centerY = Math.floor(height / 2) + 0.5 * scale
+    const offset = Math.round((width - 16 * scale) / 2 - scale)
 
     context.clearRect(0, 0, width, height)
     context.strokeStyle = indicatorColor
-    context.lineWidth = 2 * scale / Screen.devicePixelRatio
+    context.lineWidth = scale
     context.lineCap = "round"
     context.lineJoin = "round"
 
@@ -49,7 +49,7 @@ Canvas {
         ? indicatorColor
         : inactiveWaveColor
       context.beginPath()
-      context.arc(offset + 7.4 * scale, centerY, radii[index], -0.78, 0.78)
+      context.arc(offset + 7.5 * scale, centerY, radii[index], -0.78, 0.78)
       context.stroke()
     }
 

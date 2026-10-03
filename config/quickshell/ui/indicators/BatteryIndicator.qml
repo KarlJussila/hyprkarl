@@ -13,6 +13,7 @@ Item {
   property real nativeScale: 1
 
   readonly property color fillColor: level <= lowThreshold ? lowColor : indicatorColor
+  readonly property var boltPoints: [[11, 0], [6.5, 5.6], [9, 5.6], [7, 10], [11.5, 4.4], [9, 4.4]]
 
   implicitWidth: 18 * nativeScale
   implicitHeight: 10 * nativeScale
@@ -51,25 +52,39 @@ Item {
 
         context.fillStyle = root.indicatorColor
         context.fillRect(16 * scale, 3 * scale, 2 * scale, 4 * scale)
-      }
-    }
 
-    Text {
-      x: 2 * root.nativeScale
-      y: 0
-      width: 14 * root.nativeScale
-      height: 10 * root.nativeScale
-      visible: root.charging
-      horizontalAlignment: Text.AlignHCenter
-      verticalAlignment: Text.AlignVCenter
-      text: "󱐋"
-      color: root.accentColor
-      font.family: "JetBrains Mono Nerd Font Propo"
-      font.pixelSize: 8 * root.nativeScale
+        if (!root.charging)
+          return
+
+        // The bolt sits in a cutout through the fill and outline, so it stays
+        // visible whatever color is behind it.
+        context.beginPath()
+        root.boltPoints.forEach(([x, y], index) => {
+          if (index === 0)
+            context.moveTo(x * scale, y * scale)
+          else
+            context.lineTo(x * scale, y * scale)
+        })
+        context.closePath()
+
+        context.globalCompositeOperation = "destination-out"
+        context.strokeStyle = "black"
+        context.fillStyle = "black"
+        context.lineJoin = "round"
+        context.lineWidth = 2 * scale
+        context.stroke()
+        context.fill()
+        context.globalCompositeOperation = "source-over"
+
+        context.fillStyle = root.accentColor
+        context.fill()
+      }
     }
   }
 
   onLevelChanged: canvas.requestPaint()
+  onChargingChanged: canvas.requestPaint()
+  onAccentColorChanged: canvas.requestPaint()
   onSurfaceColorChanged: canvas.requestPaint()
   onIndicatorColorChanged: canvas.requestPaint()
   onLowColorChanged: canvas.requestPaint()

@@ -7,16 +7,13 @@ ModalWindow {
 
   property string title: ""
   property string placeholder: "Search…"
-  property bool searchable: true
   property bool searchPinned: true
-  property bool showTextCursor: false
   property bool clearQueryOnShow: true
   property real requestedBodyHeight: 0
   property alias query: searchInput.text
   property alias body: pickerBody
   default property alias bodyData: pickerBody.data
-  readonly property bool searchShown: searchable
-    && (searchPinned || searchInput.text.length > 0)
+  readonly property bool searchShown: searchPinned || searchInput.text.length > 0
 
   requestedWidth: theme.menu.searchWidth
   requestedHeight: root.theme.menu.outerBorderWidth * 2
@@ -30,7 +27,7 @@ ModalWindow {
 
   function resetInput(): void {
     if (clearQueryOnShow) searchInput.clear()
-    if (searchable && searchShown) searchInput.forceActiveFocus()
+    if (searchShown) searchInput.forceActiveFocus()
     else contentItem.forceActiveFocus()
   }
 
@@ -44,12 +41,6 @@ ModalWindow {
     () => contentItem.forceActiveFocus())
 
   onShownChanged: if (shown) Qt.callLater(root.resetInput)
-
-  Component {
-    id: hiddenTextCursor
-
-    Item {}
-  }
 
   Item {
     parent: root.modalBody
@@ -122,7 +113,7 @@ ModalWindow {
         anchors.fill: parent
         anchors.margins: root.theme.menu.entryMargin
         color: root.theme.menu.background
-        border.color: searchInput.activeFocus && root.showTextCursor
+        border.color: searchInput.activeFocus
           ? root.theme.menu.accent
           : root.theme.menu.border
         border.width: root.theme.menu.selectionBorderWidth
@@ -153,7 +144,6 @@ ModalWindow {
           font.pixelSize: root.theme.menu.fontSize
           font.weight: root.theme.menu.fontWeight
           verticalAlignment: TextInput.AlignVCenter
-          cursorDelegate: root.showTextCursor ? null : hiddenTextCursor
           selectByMouse: true
           clip: true
           Keys.onPressed: event => root.keyPressed(event, true)

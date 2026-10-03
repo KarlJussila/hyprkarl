@@ -22,7 +22,6 @@ PickerWindow {
   shown: active
   title: ApplicationPickerState.openWithActive ? "Open With" : "Applications"
   placeholder: "Search applications…"
-  showTextCursor: true
   requestedWidth: theme.applicationPicker.width
   requestedBodyHeight: rowHeight * Math.max(1,
     Math.min(theme.applicationPicker.rows, entries.length))

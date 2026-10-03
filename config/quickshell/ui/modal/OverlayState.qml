@@ -55,10 +55,6 @@ QtObject {
     return setRequest(previous.surface, previous.screen, previous.parameters)
   }
 
-  function openFocused(surface: string): bool {
-    return open(surface, focusedScreenName(), {})
-  }
-
   function toggle(surface: string, screen: string, nextParameters: var): bool {
     if (activeSurface === surface && screenName === screen) {
       close(surface)

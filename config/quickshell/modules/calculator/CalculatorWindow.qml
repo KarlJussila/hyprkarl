@@ -22,7 +22,6 @@ PickerWindow {
   shown: active
   title: "Calculator"
   placeholder: "Calculate…"
-  showTextCursor: true
   requestedWidth: theme.calculator.width
   requestedBodyHeight: rowHeight * Math.max(1,
     Math.min(theme.calculator.historyRows, rows.length))

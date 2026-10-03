@@ -39,9 +39,7 @@ PickerWindow {
   shown: active
   title: MenuState.menus[MenuState.currentMenu]?.title ?? ""
   placeholder: "Search…"
-  searchable: true
   searchPinned: widthRole !== "default"
-  showTextCursor: true
   clearQueryOnShow: false
   requestedWidth: baseWidth
   requestedBodyHeight: bodyHeight

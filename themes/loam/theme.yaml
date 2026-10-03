@@ -49,9 +49,9 @@ accent:
     bright: "{{bright.green}}"
 
   secondary:
-    base: "{{mix(ansi.green,ansi.yellow,12)}}"
+    base: "{{ansi.yellow}}"
     soft: "{{darken(accent.secondary.base,20)}}"
-    bright: "{{mix(bright.green,bright.yellow,12)}}"
+    bright: "{{bright.yellow}}"
 
   tertiary:
     base: "{{base.foreground_dim}}"

@@ -9,6 +9,8 @@ breaking change bumps the major version and is called out explicitly.
 - Tokyo Night uses its purple as the main accent, with blue and teal after
   it, so the shell, window borders, and wallpaper stand apart from its blue
   base instead of blending into it.
+- Loam's secondary accent is its amber instead of a slightly yellower copy of
+  its green, so Yazi, Qt highlights, btop, and fastfetch get a second color.
 - Fastfetch belongs to the theme: each theme renders its whole config, with
   the logo in the theme's own accents. Change it with `fastfetch` keys in a
   theme overlay, or replace it with your own `~/.config/fastfetch/config.jsonc`.

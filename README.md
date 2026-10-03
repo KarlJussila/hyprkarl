@@ -96,8 +96,8 @@ The full manual lives under `docs/`.
   Repo layout and main editing surfaces
 - [docs/themes.md](docs/themes.md)
   Theme structure, wallpaper layout, and theme switching
-- [docs/customizing-bar.md](docs/customizing-bar.md)
-  Bar widget layout, styling, and runtime control
+- [docs/shell-configuration.md](docs/shell-configuration.md)
+  Bar layout, widgets, notifications, and other shell settings
 - [docs/extending-hyprkarl.md](docs/extending-hyprkarl.md)
   Personal scripts, hooks, menus, keybindings, and Quickshell interfaces
 - [docs/troubleshooting.md](docs/troubleshooting.md)

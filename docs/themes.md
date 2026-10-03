@@ -200,19 +200,12 @@ The compiler renders the resolved graph into consumer files for:
 
 - Quickshell (including the lock screen), Hyprland, and Hyprtoolkit;
 - Alacritty, foot, Ghostty, Kitty, `btop`, `wifitui`, Yazi, and Neovim;
-- Qt 5 and Qt 6 palettes;
+- Qt 5 and Qt 6 palettes and settings;
 - GTK 3 and GTK 4, including a palette-derived Colloid theme;
-- theme metadata, icons, wallpapers, and previews.
+- the cursor theme name, theme metadata, icons, wallpapers, and previews.
 
-The generated `quickshell.json` owns semantic colors, typography, geometry,
-borders, spacing, and component-specific appearance for the bar, panels,
-menus, OSD, notifications, polkit, application picker, calculator, and
-wallpaper picker. Its `switch` object supplies the shared toggle indicator's
-default geometry, border, glyph typography and offsets, and transition timing.
-A shell widget may sparsely override those defaults when one application needs
-different control geometry without changing the rest of the theme. See
-[Customizing the bar](customizing-bar.md#change-the-appearance) for the bar
-and switch appearance contract.
+`quickshell.json` holds the shell's appearance; see [Shell
+appearance](#shell-appearance).
 
 The generated `theme.yaml` contains the fully merged and resolved graph for
 inspection. It is output, not the next authoring source.
@@ -236,6 +229,38 @@ linked `gtk.css` files import the installed copy; `hk-theme set` applies the
 light/dark preference through desktop settings. Qt follows the theme too:
 `hk-theme set` writes `~/.config/qt5ct/qt5ct.conf` and `qt6ct.conf` with the
 theme's palette, fonts, and icon family.
+
+## Shell appearance
+
+Everything the shell draws comes from the theme's `shell` object, which the
+build writes to `quickshell.json`; the running shell picks up a theme switch
+without restarting. Its groups are `palette`, `surfaces`, `typography`,
+`metrics`, `switch`, `bar`, `panel`, `tooltip`, `osd`, `notification`,
+`polkit`, `lock`, `menu`, `applicationPicker`, `calculator`,
+`wallpaperPicker`, and `displayArrangement`.
+`theme-generator/defaults/theme.yaml` lists every value with its default.
+Most defaults derive from the palette, so a palette change already reaches the
+shell; set a single value under `shell.<group>` to change just that.
+
+The bar's island shapes are relative to the bar, so one theme works for top
+and bottom bars. `screen` faces the monitor edge, `content` the windows,
+`outer` the monitor's side, and `inner` the neighboring island:
+
+```yaml
+shell:
+  bar:
+    island:
+      corners:
+        screenOuter: square
+        screenInner: curve    # concave join; corners are otherwise square or round
+        contentOuter: square
+        contentInner: round
+      borders:
+        screen: false
+        content: true
+        outer: false
+        inner: true
+```
 
 ## Wallpapers
 

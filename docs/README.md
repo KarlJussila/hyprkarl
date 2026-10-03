@@ -32,8 +32,9 @@ repo checked out at `~/.local/share/hyprkarl/`.
   [Themes](themes.md)
 - Change wallpapers:
   [Using Hyprkarl (Wallpapers)](using-hyprkarl.md#wallpapers) and [Themes](themes.md)
-- Reorder widgets or restyle the bar:
-  [Customizing the Bar](customizing-bar.md)
+- Reorder bar widgets or change shell behavior:
+  [Shell Configuration](shell-configuration.md); restyle it through
+  [Themes](themes.md#shell-appearance)
 - Change default terminal, editor, or shell:
   [Using Hyprkarl](using-hyprkarl.md#defaults-terminal-editor-shell)
 - Add personal scripts, hooks, menu actions, keybindings, or QML:
@@ -53,7 +54,6 @@ repo checked out at `~/.local/share/hyprkarl/`.
 - [Using Hyprkarl](using-hyprkarl.md)
 - [Configuration Map](configuration-map.md)
 - [Themes](themes.md)
-- [Customizing the Bar](customizing-bar.md)
 - [Extending Hyprkarl](extending-hyprkarl.md)
 - [Troubleshooting](troubleshooting.md)
 - [Command Reference](commands.md)

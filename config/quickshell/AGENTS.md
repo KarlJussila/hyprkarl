@@ -76,6 +76,17 @@ All are explicit references, with no discovery or registration:
 Do not validate user sources or settings. Dynamically loaded QML is outside
 Quickshell's reload graph, so source edits need `hk-shell restart`.
 
+## Design direction
+
+The shell keeps the old AGS bar's compact, information-dense character.
+Feature panels should feel like composed desktop controls, each with its own
+hierarchy rather than one generic quick-settings grid; Omarchy and macOS are
+references for control quality, not layouts to copy. Put current state and
+common actions first, show failures where the action happened, and keep
+advanced controls reachable without crowding the default view. Every visible
+state comes from the theme. Bars are horizontal (top or bottom) only; vertical
+bars are a later design task, so do not carry untested vertical branches.
+
 ## Decisions worth knowing
 
 - **Launching.** Run user actions through `uwsm-app --` so applications

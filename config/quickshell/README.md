@@ -71,7 +71,6 @@ Appearance comes from personal theme sources, applied with `hk-theme set <name>`
 The manual owns the detailed contracts:
 
 - [Shell settings and QML extensions](../../docs/shell-configuration.md)
-- [Bar customization](../../docs/customizing-bar.md)
 - [Menu configuration](../../docs/menu-configuration.md)
 - [Authentication](../../docs/authentication-surfaces.md)
 - [Themes](../../docs/themes.md)

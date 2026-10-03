@@ -129,36 +129,178 @@ purpose and display configuration.
 
 ## Extend Quickshell
 
-Use `~/.config/quickshell/settings/shell.json` for module switches, widget
-settings, and bar layout. Objects merge with the shipped defaults, while
-arrays replace them, so to change a bar layout section you copy it from the
-defaults and own it. See [Bar customization](customizing-bar.md) for examples.
+Most shell changes are settings in `~/.config/quickshell/settings/shell.json`;
+see [Shell configuration](shell-configuration.md). That includes [command
+widgets](shell-configuration.md#command-widgets), which put a script's output
+or a button in the bar without any QML. For more, write QML:
 
-There are three ways to add your own interfaces:
-
-- A [command widget](shell-configuration.md#command-widgets) displays output
-  from a script or provides a static button. It can poll or read a persistent
-  stream, and supports click commands.
-- A [QML widget](shell-configuration.md#user-qml-widgets) provides custom
-  rendering or interaction within a bar. Put its source under
-  `~/.config/quickshell/custom/modules/` and reference it explicitly with
-  `kind: "qml"`.
-- An [application-wide QML root](shell-configuration.md#application-wide-user-qml)
-  creates independent windows or a replacement bar. Put its source under
-  `~/.config/quickshell/custom/` and reference it with `userRoot.source`.
-  Set `modules.bar` to `false` if it replaces the built-in bar.
-
-Personal QML can reuse the project's UI types. For example, `import ui.modal`
-provides `Modal` for a shell-styled focused interface. The linked QML guides
-document the available context, theme values, and methods.
-
-Ordinary JSON settings reload live. Run `hk-shell restart` after changing
-module switches or personal QML source.
+- a **QML widget** renders and behaves however you like inside the bar;
+- an **application-wide root** adds windows of its own, a different bar, or
+  replacements for built-in parts.
 
 The shell runs from `~/.config/quickshell/`, where Hyprkarl's files are links
-next to your `settings/` and `custom/`. Personal QML can import any shipped
-module or component by its path in that tree, such as `import ui.modal` or
-`import "../modules/lock"` from `custom/`.
+next to your `settings/` and `custom/`. Your QML can import any of it, such as
+`import ui.modal` or `import "../modules/lock"` from `custom/`. It runs inside
+the shell with no sandbox; an error in it is logged and leaves the rest of the
+shell running. Run `hk-shell restart` after editing a QML file.
+
+### QML widgets
+
+Put the file under `~/.config/quickshell/custom/modules/` and place it in a
+bar section with `kind: "qml"`. `settings` is yours to define:
+
+```json
+{
+  "id": "greeting",
+  "kind": "qml",
+  "source": "Greeting.qml",
+  "settings": { "text": "Hello", "command": "notify-send Hello" }
+}
+```
+
+```qml
+import QtQuick
+
+Item {
+    id: root
+    required property var context
+    property string tooltip: "Run greeting"
+
+    implicitWidth: label.implicitWidth
+    implicitHeight: label.implicitHeight
+
+    Text {
+        id: label
+        anchors.centerIn: parent
+        text: root.context.settings.text
+        color: root.context.theme.palette.foreground
+        font.family: root.context.theme.typography.uiFamily
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: root.context.runCommand(root.context.settings.command)
+    }
+}
+```
+
+Each monitor's bar gets its own instance. `context` provides:
+
+| Member | Meaning |
+|---|---|
+| `widgetId`, `settings` | The widget's `id` and `settings` from `shell.json` |
+| `theme` | The live theme; see [Theme values](#theme-values) |
+| `edge` | `top` or `bottom` |
+| `output`, `barWindow` | The monitor's name and the bar window |
+| `runCommand(command)` | Runs a command with `HYPRKARL_OUTPUT` set |
+| `togglePanel(trigger, component)`, `closePanel()` | Opens content in the bar's popup panel, attached to `trigger` |
+| `launchPanelCommand(command)` | Closes the panel, then runs a command |
+
+The widget may also set `tooltip` (text shown on hover), `tooltipSuppressed`,
+and `widgetVisible` (false hides it entirely; plain `visible` only hides its
+content).
+
+### Application-wide QML
+
+Point `userRoot.source` at a file under `~/.config/quickshell/custom/`. The
+shell loads it once, so it can hold your own windows (one per monitor with
+`Variants`), global state, or a whole bar. To replace the built-in bar, also
+turn it off:
+
+```json
+{
+  "modules": { "bar": false },
+  "userRoot": { "source": "Extensions.qml", "settings": {} }
+}
+```
+
+Its root declares `required property var context`, which provides:
+
+| Member | Meaning |
+|---|---|
+| `configuration`, `settings` | The merged `shell.json`, and its `userRoot.settings` |
+| `theme` | The live theme; see [Theme values](#theme-values) |
+| `surfaceName`, `surfaceOutput`, `surfaceParameters` | The open surface, if any |
+| `openSurface(name, output, parameters)` | Opens a surface unless one is open |
+| `replaceSurface(...)`, `toggleSurface(...)` | Opens it in place of the current one, or closes it if it is the current one |
+| `pushSurface(...)`, `backSurface()` | Opens one that can return to the current one, and returns |
+| `closeSurface()` | Closes the current surface |
+
+A **surface** is one focused interface open on one monitor at a time: a menu,
+the launcher, or one of yours. A menu entry opens one by name:
+
+```json
+{ "type": "surface", "surface": "user.dashboard", "parameters": { "section": "weather" } }
+```
+
+Your root sees `surfaceName` change to `user.dashboard` and shows its window.
+`Modal` from `ui.modal` does the window part, matching the shell's own menus,
+including keyboard navigation:
+
+```qml
+import QtQuick
+import Quickshell
+import ui.modal
+
+Scope {
+    id: root
+    required property var context
+
+    Modal {
+        context: root.context
+        name: "user.dashboard"
+        title: "Dashboard"
+        subtitle: root.context.surfaceParameters.section ?? ""
+
+        body: Component {
+            Text {
+                text: "Personal content"
+                color: root.context.theme.menu.foreground
+            }
+        }
+    }
+}
+```
+
+`Modal` opens on the surface's monitor whenever the surface has its `name`,
+and offers `open(output, parameters)`, `replace`, `toggle`, and `close`. Use a
+`user.` prefix to avoid Hyprkarl's names. Set `dismissAction` to run something
+other than closing on Escape or an outside click. Controls with
+`activeFocusOnTab: true` join its keyboard navigation; give one
+`property string navigationSection` to group it, and
+`property bool navigationSelected: true` to make it the one keyboard entry
+lands on.
+
+A replacement bar can tell notifications where it is, so they keep sitting
+against it, with a root function:
+
+```qml
+function notificationPosition(outputName: string): var {
+    return { "edge": "top", "extent": 30, "connected": true, "reachesSide": true }
+}
+```
+
+`extent` is the bar's current height from that edge, `connected` joins the
+notification border to the bar's, and `reachesSide` sharpens the shared
+corner. Return `null` for the default position. It is a normal QML binding, so
+an animated bar can return its live height.
+
+### Notification icons
+
+A notification icon with `"kind": "component"` (see [Shell
+configuration](shell-configuration.md#notifications)) is a small QML drawing
+under `~/.config/quickshell/custom/icons/`. Its root is an `Item` with writable
+`progress` and `theme` properties. `progress` carries a notification's
+`int:value` hint from 0 to 100, or -1 without one.
+
+### Theme values
+
+`context.theme` reads the active theme's `shell` values by group, such as
+`theme.palette.accent` or `theme.panel.padding`; see
+[Themes](themes.md#shell-appearance). `theme.values` is the whole document,
+so a personal theme can carry values for your own QML, for example
+`theme.values.extensions.dashboard.background` from an `extensions` group you
+add under `shell` in `theme.yaml`.
 
 ## Replace a built-in
 
@@ -169,7 +311,7 @@ works with all of them unchanged.
 
 To replace one, set its switch under `modules` in `shell.json` to `false`, then
 declare the target in your [application-wide QML
-root](shell-configuration.md#application-wide-user-qml):
+root](#application-wide-qml):
 
 ```qml
 import Quickshell.Io
@@ -201,7 +343,7 @@ IpcHandler {
 Menu entries that open the launcher, calculator, or wallpaper picker do so by
 surface name (`launcher`, `calculator`, `wallpaper`). With the built-in
 switched off, your root sees that request as described under
-[Application-wide user QML](shell-configuration.md#application-wide-user-qml)
+[Application-wide QML](#application-wide-qml)
 and can open its replacement.
 
 ## Use the active theme in personal code

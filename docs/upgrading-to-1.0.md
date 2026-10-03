@@ -120,7 +120,7 @@ old settings no longer apply.
 | `~/.config/hypr/hyprland.conf` (a real file, not a link) | Lines other installers appended, such as autostart entries. Hyprland ignores this file because `hyprland.lua` exists; move them into a `hl.on("hyprland.start", ...)` block in `~/.config/hypr/hyprland.local.lua`. |
 | `config/hypr/hypridle.conf`, `hyprpaper.conf`, `hyprsunset.conf` | `~/.config/hypr/hypridle.local.conf` and its Hyprpaper and Hyprsunset siblings, loaded after Hyprkarl's files. For Hypridle, redefine the timeout and command variables listed at the top of the shipped `hypridle.conf` rather than copying listeners. |
 | `config/hypr/hyprlock.conf` | Gone. Lock appearance is theme data under `shell.lock`; see [Authentication](authentication-surfaces.md). |
-| `config/ags/**` | `~/.config/quickshell/settings/shell.json`; custom widgets become command or QML widgets. See [Customizing the bar](customizing-bar.md). |
+| `config/ags/**` | `~/.config/quickshell/settings/shell.json`; custom widgets become command or QML widgets. See [Shell configuration](shell-configuration.md). |
 | `config/rofi/**`, `bin/hk-menu-*` | `~/.config/quickshell/settings/menu.json`. See [Menu configuration](menu-configuration.md). |
 | `config/mako/**` | The `notifications` section of `shell.json`. See [Shell configuration](shell-configuration.md). |
 | `config/alacritty/alacritty.toml`, `config/foot/foot.ini`, `config/ghostty/config.ghostty`, `config/kitty/kitty.conf` | `~/.config/<terminal>/local.toml`, `local.ini`, or `local.conf`. |

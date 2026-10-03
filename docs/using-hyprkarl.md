@@ -68,6 +68,23 @@ Shipped keybindings are defined in `defaults/hypr/bindings/`; personal bindings
 belong in `~/.config/hypr/hyprland.local.lua`. The keybindings menu reads the live bindings
 from Hyprland.
 
+## Bar Panels
+
+Clicking the audio, network, Bluetooth, battery, display, or clock widget
+opens its panel. Right click on audio, network, Bluetooth, or battery launches
+the full settings application instead, and on the clock switches its format.
+Panels and menus share keyboard controls: arrows or H/J/K/L move within a
+section, Tab and Shift+Tab move between sections, Enter or Space activates,
+Left/Right or H/L change a slider, and Escape or Q closes.
+
+The display panel sets brightness and opens a settings page for each monitor:
+whether it is on, resolution, refresh rate, and scale. Applying starts a
+ten-second trial; keep the change in the confirmation, or the previous layout
+comes back, even if the shell crashes. With two or more monitors, `Arrange
+displays` lets you drag monitors into place and right-click to rotate them.
+These choices are saved under `~/.local/state/hyprkarl/display/`, and rules
+in `~/.config/hypr/hyprland.local.lua` still win over them.
+
 ## System Tray
 
 Expand the tray from its chevron to reveal StatusNotifier items. Left click

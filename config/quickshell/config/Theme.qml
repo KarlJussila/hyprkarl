@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell
 import Quickshell.Io
 
 // The active theme's quickshell.json. The compiler supplies every value, so
@@ -10,7 +9,6 @@ QtObject {
   // A binding, not a load handler: the first read loads the file synchronously,
   // so consumers built at startup (the lock surface) never see an empty theme.
   readonly property var values: JSON.parse(source.text())
-  readonly property bool ready: Object.keys(values).length > 0
 
   readonly property var palette: values.palette
   readonly property var surfaces: values.surfaces
@@ -31,13 +29,10 @@ QtObject {
   // `switch` is reserved in QML, so this group cannot use its own name.
   readonly property var switchAppearance: values["switch"]
 
-  readonly property string stateHome: (Quickshell.env("XDG_STATE_HOME")
-    ?? Quickshell.env("HOME") + "/.local/state") + "/hyprkarl"
-
   // hk-theme set swaps current/theme to a new build and deletes the old one;
   // that deletion is the change this watcher sees.
   property FileView source: FileView {
-    path: root.stateHome + "/current/theme/quickshell.json"
+    path: Paths.stateHome + "/current/theme/quickshell.json"
     blockLoading: true
     watchChanges: true
     onFileChanged: reload()

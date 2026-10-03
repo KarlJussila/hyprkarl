@@ -38,12 +38,12 @@ Scope {
     overlayState: OverlayState
   }
   LazyLoader {
-    active: configObject.modules.panels && themeObject.ready
+    active: configObject.modules.panels
 
     DisplayArrangement { shellContext: userRootObject.context }
   }
   LazyLoader {
-    active: configObject.modules.panels && themeObject.ready
+    active: configObject.modules.panels
 
     DisplayConfirmation { shellContext: userRootObject.context }
   }
@@ -69,9 +69,7 @@ Scope {
   }
 
   Variants {
-    model: themeObject.ready
-      ? Quickshell.screens
-      : []
+    model: Quickshell.screens
 
     Output {
       required property var modelData

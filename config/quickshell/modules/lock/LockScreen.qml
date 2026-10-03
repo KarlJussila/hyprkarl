@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 
 import Quickshell
+import "../../config"
 import "../../ui/animation"
 
 Rectangle {
@@ -10,14 +11,12 @@ Rectangle {
 
   required property var lockState
   required property var theme
-  readonly property string stateHome: (Quickshell.env("XDG_STATE_HOME")
-    ?? Quickshell.env("HOME") + "/.local/state") + "/hyprkarl"
 
   color: theme.surfaces.popup
 
   Image {
     anchors.fill: parent
-    source: "file://" + root.stateHome + "/current/wallpaper"
+    source: "file://" + Paths.stateHome + "/current/wallpaper"
     fillMode: Image.PreserveAspectCrop
     asynchronous: true
   }

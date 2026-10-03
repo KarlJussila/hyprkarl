@@ -12,8 +12,8 @@ Item {
 
   readonly property real preferredWidth: theme.panel.width
   property int monthOffset: 0
-  readonly property int currentYear: ClockState.now.getFullYear()
-  readonly property int currentMonth: ClockState.now.getMonth()
+  readonly property int currentYear: ClockState.date.getFullYear()
+  readonly property int currentMonth: ClockState.date.getMonth()
   readonly property date viewedMonth: new Date(currentYear, currentMonth + monthOffset, 1)
   readonly property int viewedYear: viewedMonth.getFullYear()
   readonly property int viewedMonthNumber: viewedMonth.getMonth()
@@ -23,7 +23,6 @@ Item {
 
   onActiveChanged: {
     if (!active) return
-    ClockState.refresh()
     monthOffset = 0
   }
 
@@ -32,8 +31,8 @@ Item {
 
     width: parent.width
     theme: root.theme
-    title: Qt.formatDate(ClockState.now, "dddd, MMMM d")
-    subtitle: Qt.formatDateTime(ClockState.now, "yyyy · h:mm:ss AP")
+    title: Qt.formatDate(ClockState.date, "dddd, MMMM d")
+    subtitle: Qt.formatDateTime(ClockState.date, "yyyy · h:mm:ss AP")
 
     Row {
       width: parent.width
@@ -110,9 +109,9 @@ Item {
         required property var model
         readonly property bool inViewedMonth: model.month === root.viewedMonthNumber
           && model.year === root.viewedYear
-        readonly property bool isToday: model.day === ClockState.now.getDate()
-          && model.month === ClockState.now.getMonth()
-          && model.year === ClockState.now.getFullYear()
+        readonly property bool isToday: model.day === ClockState.date.getDate()
+          && model.month === ClockState.date.getMonth()
+          && model.year === ClockState.date.getFullYear()
 
         width: calendarGrid.width / 7
         height: calendarGrid.height / 6
@@ -155,7 +154,7 @@ Item {
       theme: root.theme
       navigationSection: "month-reset"
       icon: "󰃭"
-      text: `Return to ${Qt.formatDate(ClockState.now, "MMMM")}`
+      text: `Return to ${Qt.formatDate(ClockState.date, "MMMM")}`
       action: () => root.monthOffset = 0
     }
   }

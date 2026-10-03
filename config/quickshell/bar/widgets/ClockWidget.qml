@@ -16,8 +16,8 @@ ShellButton {
     ? panelHost.activeId === widgetId
     : false
 
-  text: Qt.formatDateTime(ClockState.now, alternate ? config.alternateFormat : config.format)
-  tooltip: Qt.formatDateTime(ClockState.now, "dddd, MMMM d, yyyy h:mm:ss AP")
+  text: Qt.formatDateTime(ClockState.date, alternate ? config.alternateFormat : config.format)
+  tooltip: Qt.formatDateTime(ClockState.date, "dddd, MMMM d, yyyy h:mm:ss AP")
   tooltipSuppressed: panelOpen
   onPrimary: panelHost
     ? () => panelHost.toggle(widgetId, root, panelComponent)

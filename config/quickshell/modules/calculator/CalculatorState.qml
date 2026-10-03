@@ -3,6 +3,7 @@ pragma Singleton
 import QtQml
 import Quickshell
 import Quickshell.Io
+import "../../config"
 import "../../ui/modal"
 
 QtObject {
@@ -10,8 +11,6 @@ QtObject {
 
   readonly property string surface: "calculator"
   readonly property bool active: OverlayState.activeSurface === surface
-  readonly property string stateHome: (Quickshell.env("XDG_STATE_HOME")
-    ?? Quickshell.env("HOME") + "/.local/state") + "/hyprkarl"
   property var history: []
 
   property IpcHandler ipc: IpcHandler {
@@ -31,24 +30,10 @@ QtObject {
   }
 
   property FileView historyFile: FileView {
-    path: root.stateHome + "/calculator-history.json"
+    path: Paths.stateHome + "/calculator-history.json"
     blockLoading: true
     printErrors: false
-
-    onLoaded: {
-      try {
-        root.history = JSON.parse(text())
-      } catch (error) {
-        console.error("Calculator history rejected: " + error)
-      }
-    }
-
-    onLoadFailed: error => {
-      if (error !== FileViewError.FileNotFound) {
-        console.error("Could not read calculator history: "
-          + FileViewError.toString(error))
-      }
-    }
+    onLoaded: root.history = JSON.parse(text())
   }
 
   function close(): void {

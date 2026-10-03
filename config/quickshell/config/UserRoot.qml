@@ -46,28 +46,12 @@ Scope {
     }
   }
 
-  property Loader moduleLoader: Loader {
-    id: moduleLoader
-    active: false
+  property Loader moduleLoader: Loader { id: moduleLoader }
 
-    onStatusChanged: {
-      if (status === Loader.Error) {
-        console.warn("User QML root failed to load '" + root.source + "'")
-      }
-    }
-  }
-
-  // The initial change signal and onCompleted can both arrive at startup;
-  // loading an already-loaded URL again would create a second root.
+  // setSource, not a source binding, so the root's required context is set
+  // as it is created.
   function load(): void {
-    if (moduleLoader.source.toString() === url) return
-    moduleLoader.active = false
-    if (url.length === 0) {
-      moduleLoader.source = ""
-      return
-    }
     moduleLoader.setSource(url, { "context": userContext })
-    moduleLoader.active = true
   }
 
   function notificationPosition(outputName: string): var {
@@ -80,7 +64,7 @@ Scope {
   }
 
   readonly property string source: shellConfig.userRoot.source
-  readonly property string url: theme.ready && source.length > 0
+  readonly property string url: source.length > 0
     ? Paths.userUrl("custom/" + source) : ""
   onUrlChanged: load()
   Component.onCompleted: load()

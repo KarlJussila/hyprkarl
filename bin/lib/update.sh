@@ -8,6 +8,9 @@ UPDATE_CONFIGURATION_REVISION="$UPDATE_STATE_DIR/configuration.revision"
 UPDATE_PENDING_SOURCE="$UPDATE_STATE_DIR/pending-source.revision"
 UPDATE_PACKAGE_STATE="$UPDATE_STATE_DIR/packages.json"
 UPDATE_MIGRATION_DIR="$UPDATE_STATE_DIR/migrations"
+# Coding agents (the shared ~/.agents, Claude Code, Codex) load skills from
+# <home>/skills.
+AGENT_HOMES=("$HOME/.agents" "$HOME/.claude" "$HOME/.codex")
 UPDATE_LIB_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$UPDATE_LIB_DIR/theme.sh"
 
@@ -102,7 +105,8 @@ stow_restow_config() {
 remove_stale_symlinks() {
   local root link target resolved directory
 
-  for root in "$HOME/.config" "$HOME/.local/share/applications" "$HOME/.local/share/themes/hyprkarl"; do
+  for root in "$HOME/.config" "$HOME/.local/share/applications" "$HOME/.local/share/themes/hyprkarl" \
+      "${AGENT_HOMES[@]/%//skills}"; do
     while IFS= read -r link; do
       if [[ ! -e "$link" ]]; then
         target=$(readlink "$link")
@@ -120,5 +124,24 @@ remove_stale_symlinks() {
         fi
       fi
     done < <(find "$root" -type l 2>/dev/null)
+  done
+}
+
+# Link Hyprkarl's skills into installed agents' skill folders, so an agent
+# asked to change the desktop learns where changes belong. A skill of the
+# user's own with the same name stays.
+link_agent_skills() {
+  local agent_home skill link
+
+  for agent_home in "${AGENT_HOMES[@]}"; do
+    [[ -d "$agent_home" ]] || continue
+    for skill in "$HYPRKARL_PATH"/defaults/skills/*/; do
+      skill=${skill%/}
+      link="$agent_home/skills/${skill##*/}"
+      if [[ -e "$link" ]] && [[ ! -L "$link" ]]; then
+        continue
+      fi
+      mkdir -p "$agent_home/skills" && ln -sfn "$skill" "$link" || return 1
+    done
   done
 }

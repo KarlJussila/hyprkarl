@@ -18,6 +18,11 @@ rm -f "$HYPRKARL_DEFAULT_CURSOR" \
 
 # Catch anything a plain unstow missed (renamed files, older install layouts)
 remove_stale_symlinks
+for agent_home in "${AGENT_HOMES[@]}"; do
+  for link in "$agent_home"/skills/*; do
+    [[ "$(readlink "$link")" == "$HYPRKARL_PATH"/defaults/skills/* ]] && rm "$link"
+  done
+done
 
 # Drop machine update records so a future reinstall starts fresh.
 rm -rf "$UPDATE_STATE_DIR"

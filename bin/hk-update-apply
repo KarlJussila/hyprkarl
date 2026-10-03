@@ -72,6 +72,7 @@ theme_activate "${theme_name:-hyprkarl}" || fail "Could not rebuild the selected
 printf 'Restowing shipped configuration...\n'
 stow_restow_config || fail "Could not restow shipped configuration."
 remove_stale_symlinks
+link_agent_skills || fail "Could not link Hyprkarl's agent skill."
 
 theme_ensure_wallpaper_selection || fail "Could not restore the wallpaper selection."
 hk-wallpaper-init --if-ready || fail "Could not restore the live wallpaper."

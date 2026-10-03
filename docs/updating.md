@@ -38,7 +38,7 @@ git -C ~/.local/share/hyprkarl config hyprkarl.updateBranch develop
 4. runs pending migrations;
 5. copies starting configs for applications you have none of
    (`hk-config-seed`);
-6. restows shipped links and removes stale ones;
+6. restows shipped links, removes stale ones, and links the agent skill;
 7. rebuilds the selected theme;
 8. restores the wallpaper and reloads Hyprland, terminals, and Btop;
 9. starts Quickshell again, whether or not the steps succeeded.

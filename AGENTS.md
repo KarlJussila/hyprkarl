@@ -37,6 +37,11 @@ same change, for both audiences:
   commands; `config/quickshell/AGENTS.md` for the shell;
   `theme-generator/AGENTS.md` for the theme compiler; `themes/AGENTS.md` for
   theme authoring. Each adjacent `CLAUDE.md` only imports its `AGENTS.md`.
+- **The user's agents:** `defaults/skills/hyprkarl/SKILL.md` guides coding
+  agents that customize an installed system on the user's behalf.
+  `hk-update apply` links it into installed agents' skill folders. Update it
+  whenever a personal file, command, or the right place for a kind of change
+  moves.
 
 Agent docs orient a reader and record decisions that are not obvious from the
 code. Do not restate the implementation as rules; out-of-date docs are worse

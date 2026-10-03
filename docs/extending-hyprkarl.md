@@ -23,6 +23,18 @@ For changes to Hyprkarl's shipped implementation, start with
 The examples use the usual `~/.config/` location. If you set `XDG_CONFIG_HOME`,
 use that directory instead.
 
+## Ask an AI agent
+
+Coding agents such as Claude Code and Codex tend to configure Linux the usual
+way: editing whatever file they find, setting variables in `~/.bashrc`, or
+installing another bar or notifier. On Hyprkarl that breaks updates or
+quietly stops Hyprkarl's defaults from reaching you. `hk-update apply`
+therefore links a `hyprkarl` skill into the skill folders of the agents you
+have installed (`~/.agents/skills`, `~/.claude/skills`, `~/.codex/skills`).
+Agents load it when you ask for a desktop change, and it sends each change to
+the personal file meant for it. A skill of your own named `hyprkarl` is left
+alone, and `uninstall.sh` removes the links.
+
 ## Add a personal command
 
 Put an executable script in `~/.local/bin/`. Hyprkarl's session already adds

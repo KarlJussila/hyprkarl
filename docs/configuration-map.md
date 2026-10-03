@@ -31,7 +31,8 @@ it. Its main parts:
 - `config/`: configs linked into `~/.config` by GNU Stow, and the starting
   configs for btop, fastfetch, Neovim, and Yazi.
 - `defaults/`: the shell's `shell.json` and `menu.json`, Hyprland's modules
-  under `hypr/`, and XDG defaults under `config/` and `share/`.
+  under `hypr/`, XDG defaults under `config/` and `share/`, and the agent
+  skill under `skills/`.
 - `themes/` and `theme-generator/`: theme sources and their compiler.
 - `packages/` and `migrations/`: what `hk-update apply` installs and the
   one-time changes it runs.
@@ -53,7 +54,10 @@ and are not for editing:
   Hyprland loads, and `layout.json`. Rules in `hyprland.local.lua` still win.
 - `calculator-history.json` keeps the calculator's last five results.
 
-A theme switch also writes outside that folder: the GTK theme to
+`hk-update apply` links Hyprkarl's agent skill into the skill folders of the
+coding agents you have installed (`~/.agents`, `~/.claude`, `~/.codex`); see
+[Extending Hyprkarl](extending-hyprkarl.md#ask-an-ai-agent). A theme switch
+also writes outside that folder: the GTK theme to
 `~/.local/share/themes/hyprkarl/`, `~/.config/qt5ct/qt5ct.conf` and
 `qt6ct.conf`, and the default cursor in `~/.local/share/icons/default/`.
 

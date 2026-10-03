@@ -25,34 +25,17 @@ and debugging cost when they do. When they fail, Hyprkarl should add concise
 context for failures it can identify cheaply, then let the underlying runtime
 report the user's error.
 
-Hyprkarl will not have a plugin marketplace. It provides a curated default and
-suggested locations for personal code; it does not install, approve, constrain,
-or promise compatibility for third-party extensions.
+Hyprkarl will not have a plugin marketplace: personal code is referenced
+explicitly by path, and nothing is discovered, installed, or approved. What
+personal code may rely on is listed under [What updates keep
+stable](updating.md#what-updates-keep-stable).
 
 ## Put Changes in the Right Layer
 
-- `config/`
-  Stowed application config and stable live entry points
-- `defaults/`
-  Upstream-owned behavior and data defaults
-- `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`
-  User-owned overrides. Upstream does not add or replace personal files there.
-- `themes/`
-  Shipped theme authoring sources and assets
-- `theme-generator/`
-  Integrated compiler code, defaults, templates, tests, and vendored Colloid
-- `bin/`
-  Commands meant to be run directly. Subcommands of a dispatcher (`hk-theme set`, `hk-pkg install`, …) live as their own top-level commands using the noun-first form `hk-<noun>-<action>`. The dispatcher is a thin router that `exec`s them.
-- `bin/lib/`
-  Shared Bash or Python helpers used by more than one `bin/` command
-  (`docker.sh`, `update.sh`, `keybindings.py`). Single-use logic stays in the
-  command itself.
-- `templates/`
-  Files copied or rendered by setup and install commands
-- `migrations/`
-  Numbered one-time changes run once per machine by `hk-update apply`
-- `docs/`
-  Documentation for using and editing Hyprkarl
+The [configuration map](configuration-map.md#hyprkarls-files) describes each
+part of the checkout. Appearance belongs in the theme compiler's defaults and
+templates, behavior in `defaults/` or `config/`, and commands in `bin/` (see
+`bin/AGENTS.md`). Never ship or edit a file in a user's own locations.
 
 ## Stateful Paths
 
@@ -131,11 +114,16 @@ so make each one safe there: check before changing, and succeed when nothing
 needs doing. Never rewrite a personal file beyond the change the migration
 exists for.
 
-For a new application integration, use its native configuration mechanism.
-When includes work, a small tracked bootstrap can load generated theme data,
-shipped defaults, and personal settings last. Otherwise, provide a starting
-config: add it under `config/`, ignore it in `config/.stow-local-ignore`, and
-list it in `bin/hk-config-seed`.
+For a new application integration, pick the first of these the application
+supports, so Hyprkarl's defaults keep reaching users:
+
+1. a shipped config that loads a personal file last, which `hk-config-seed`
+   creates once from `templates/setup/`;
+2. a default under `defaults/config/` or `defaults/share/`, found through
+   `XDG_CONFIG_DIRS` or `XDG_DATA_DIRS`, which a user's own file replaces;
+3. output of the theme, for anything that is appearance;
+4. as a last resort, a starting config: add it under `config/`, ignore it in
+   `config/.stow-local-ignore`, and list it in `bin/hk-config-seed`.
 
 ## Contributor guides
 

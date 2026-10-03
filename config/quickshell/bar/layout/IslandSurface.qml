@@ -16,6 +16,13 @@ Item {
   readonly property real rightInset: rightCurve ? theme.bar.island.curveSize : 0
   readonly property real bodyLeft: leftInset
   readonly property real bodyRight: width - rightInset
+  // The border is drawn inside the body, so content starts past it; widgets
+  // at an island's edge then keep their full padding.
+  readonly property real borderWidth: theme.metrics.borderWidth
+  readonly property real contentLeft: leftInset + (borderEnabled(leftRole) ? borderWidth : 0)
+  readonly property real contentRight: rightInset + (borderEnabled(rightRole) ? borderWidth : 0)
+  readonly property real contentTop: borderEnabled(edge === "top" ? "screen" : "content") ? borderWidth : 0
+  readonly property real contentBottom: borderEnabled(edge === "top" ? "content" : "screen") ? borderWidth : 0
   readonly property string paintKey: [
     width,
     height,

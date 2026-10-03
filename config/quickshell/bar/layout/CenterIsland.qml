@@ -15,20 +15,23 @@ Item {
   readonly property real visibleExtent: startGroup.visibleExtent + centerGroup.visibleExtent + endGroup.visibleExtent
   readonly property bool hasContent: visibleExtent > 0
   readonly property real pivotOffset: hasContent
-    ? surface.leftInset + (centerGroup.visibleExtent > 0
+    ? surface.contentLeft + (centerGroup.visibleExtent > 0
       ? startGroup.visibleExtent + centerGroup.visibleExtent / 2
       : visibleExtent / 2)
     : 0
 
   implicitWidth: hasContent
-    ? surface.leftInset + visibleExtent + surface.rightInset
+    ? surface.contentLeft + visibleExtent + surface.contentRight
     : 0
   implicitHeight: Math.max(
     theme.bar.minimumThickness,
-    startGroup.implicitHeight,
-    centerGroup.implicitHeight,
-    endGroup.implicitHeight
+    surface.contentTop + Math.max(
+      startGroup.implicitHeight,
+      centerGroup.implicitHeight,
+      endGroup.implicitHeight
+    ) + surface.contentBottom
   )
+  readonly property real groupHeight: height - surface.contentTop - surface.contentBottom
 
   IslandSurface {
     id: surface
@@ -48,8 +51,9 @@ Item {
     systemState: root.systemState
     panelHost: root.panelHost
 
-    x: surface.leftInset
-    y: 0
+    x: surface.contentLeft
+    y: surface.contentTop
+    height: root.groupHeight
   }
 
   WidgetGroup {
@@ -62,8 +66,9 @@ Item {
     panelHost: root.panelHost
     leadingDivider: startGroup.visibleExtent > 0
 
-    x: surface.leftInset + startGroup.width
-    y: 0
+    x: surface.contentLeft + startGroup.width
+    y: surface.contentTop
+    height: root.groupHeight
   }
 
   WidgetGroup {
@@ -76,7 +81,8 @@ Item {
     panelHost: root.panelHost
     leadingDivider: centerGroup.visibleExtent > 0 || startGroup.visibleExtent > 0
 
-    x: surface.leftInset + startGroup.width + centerGroup.width
-    y: 0
+    x: surface.contentLeft + startGroup.width + centerGroup.width
+    y: surface.contentTop
+    height: root.groupHeight
   }
 }

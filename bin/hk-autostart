@@ -1,0 +1,23 @@
+#!/bin/bash
+# hk-autostart
+# Start Hyprkarl's session services. Hyprland runs this once at login. A
+# personal hk-autostart in ~/.local/bin replaces all of it; to add to it
+# instead, use an hl.on("hyprland.start") block in
+# ~/.config/hypr/hyprland.local.lua.
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib/theme.sh"
+
+# Apps started by systemd and D-Bus get the session's environment.
+systemctl --user import-environment $(env | cut -d'=' -f 1)
+dbus-update-activation-environment --systemd --all
+
+theme_apply_cursor
+systemctl --user start hypridle.service
+
+{ hk-wallpaper-init || hk-wallpaper-cycle; } &
+{
+  hk-shell start
+  hk-hook-run login || notify-send "Hyprkarl login hook failed" "Check the hook output in the Hyprland log."
+} &
+wait

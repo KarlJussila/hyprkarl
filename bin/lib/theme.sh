@@ -97,7 +97,7 @@ theme_activate() {
   printf '[Icon Theme]\nInherits=%s\n' "$(<"$build/cursor.theme")" > "$HYPRKARL_DEFAULT_CURSOR"
 }
 
-# autostart.lua sets Hyprland's cursor at startup; a reload does not rerun
+# hk-autostart sets Hyprland's cursor at startup; a reload does not rerun
 # that, so set it directly after switching.
 theme_apply_cursor() {
   hyprctl setcursor "$(<"$HYPRKARL_CURRENT_THEME/cursor.theme")" "$XCURSOR_SIZE" >/dev/null

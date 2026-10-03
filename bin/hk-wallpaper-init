@@ -1,6 +1,6 @@
 #!/bin/bash
 # hk-wallpaper-init
-# Start hyprpaper and show the current wallpaper. Hyprland's autostart runs
+# Start hyprpaper and show the current wallpaper. hk-autostart runs
 # this, so a personal hk-wallpaper-init in ~/.local/bin can start a different
 # wallpaper program instead.
 #

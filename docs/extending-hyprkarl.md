@@ -355,6 +355,7 @@ so a replacement only has to take over those commands:
 | Lock screen | None | `hk-lock` |
 | Idle and suspend | None; run `systemctl --user mask hypridle.service` | Start your idle daemon at login |
 | Wallpaper program | None | `hk-wallpaper-init` (starts it at login) and `hk-wallpaper-set` |
+| Everything Hyprkarl starts at login | None | `hk-autostart`; your version then owns all of it, including what later updates add |
 
 A QML replacement can skip step 3. The `hk-shell` commands talk to the shell
 through named IPC targets, and once a built-in is switched off, your

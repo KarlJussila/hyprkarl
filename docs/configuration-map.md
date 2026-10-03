@@ -74,6 +74,10 @@ Hyprkarl's bootstrap, which loads, in order:
 3. the display panel's `monitors.lua`;
 4. your `~/.config/hypr/hyprland.local.lua`, so it wins over everything.
 
+At login, the `autostart` module runs `hk-autostart`, which starts the shell,
+the idle daemon, and the wallpaper, sets the cursor, and runs your `login`
+hooks.
+
 Unfocused windows are 80% opaque through a `default-opacity` tag that every
 window gets; a window rule with `tag = "-default-opacity"` keeps one opaque,
 as Hyprkarl does for media players.

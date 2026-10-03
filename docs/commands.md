@@ -39,6 +39,10 @@ stable](updating.md#what-updates-keep-stable).
 
 ## Lifecycle Hooks
 
+- `hk-autostart`
+  Start Hyprkarl's session services at login: the shell, the idle daemon, the
+  wallpaper, the cursor, and `login` hooks. Hyprland runs it once; a personal
+  version in `~/.local/bin` replaces it.
 - `hk-hook-run <event>`
   Run the hooks in `~/.config/hyprkarl/hooks/<event>.d/` in name order. Events
   are `login`, `post-update`, `theme-set`, and `wallpaper-set`; Hyprkarl runs

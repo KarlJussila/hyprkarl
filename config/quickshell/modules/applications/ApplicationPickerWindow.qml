@@ -15,9 +15,6 @@ PickerWindow {
   readonly property real rowHeight: theme.applicationPicker.iconSize
     + theme.menu.entryMargin * 2
     + theme.menu.selectionBorderWidth * 2
-  property bool pointerPositionKnown: false
-  property point pointerPosition: Qt.point(0, 0)
-  property bool selectionVisible: true
 
   shown: active
   title: ApplicationPickerState.openWithActive ? "Open With" : "Applications"
@@ -224,16 +221,9 @@ PickerWindow {
       HoverHandler {
         cursorShape: Qt.PointingHandCursor
         onPointChanged: {
-          const position = point.scenePosition
-          const moved = root.pointerPositionKnown
-            && (position.x !== root.pointerPosition.x
-              || position.y !== root.pointerPosition.y)
-          root.pointerPosition = Qt.point(position.x, position.y)
-          root.pointerPositionKnown = true
-          if (moved) {
-            applicationList.currentIndex = row.index
-            root.selectionVisible = true
-          }
+          if (!root.pointerMoved(point.scenePosition)) return
+          applicationList.currentIndex = row.index
+          root.selectionVisible = true
         }
       }
 

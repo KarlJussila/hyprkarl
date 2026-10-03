@@ -31,10 +31,7 @@ PickerWindow {
       ? Math.min(menuList.contentHeight, rowHeight * theme.menu.searchRows)
       : menuList.contentHeight
     : rowHeight
-  property bool pointerPositionKnown: false
-  property point pointerPosition: Qt.point(0, 0)
   property bool restoringView: false
-  property bool selectionVisible: true
 
   shown: active
   title: MenuState.menus[MenuState.currentMenu]?.title ?? ""
@@ -130,12 +127,8 @@ PickerWindow {
   }
 
   function selectFromPointer(index, sceneX, sceneY): void {
-    const moved = pointerPositionKnown
-      && (sceneX !== pointerPosition.x || sceneY !== pointerPosition.y)
-
-    pointerPosition = Qt.point(sceneX, sceneY)
-    pointerPositionKnown = true
-    if (moved && menuList.model[index].disabled !== true) {
+    if (pointerMoved(Qt.point(sceneX, sceneY))
+        && menuList.model[index].disabled !== true) {
       menuList.currentIndex = index
       selectionVisible = true
     }

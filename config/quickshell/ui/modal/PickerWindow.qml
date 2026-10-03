@@ -14,6 +14,11 @@ ModalWindow {
   property alias body: pickerBody
   default property alias bodyData: pickerBody.data
   readonly property bool searchShown: searchPinned || searchInput.text.length > 0
+  // Hovering selects a row only once the pointer itself moves, so rows
+  // scrolling under a still pointer leave the keyboard selection alone.
+  property bool selectionVisible: true
+  property bool pointerPositionKnown: false
+  property point pointerPosition: Qt.point(0, 0)
 
   requestedWidth: theme.menu.searchWidth
   requestedHeight: root.theme.menu.outerBorderWidth * 2
@@ -29,6 +34,14 @@ ModalWindow {
     if (clearQueryOnShow) searchInput.clear()
     if (searchShown) searchInput.forceActiveFocus()
     else contentItem.forceActiveFocus()
+  }
+
+  function pointerMoved(position: point): bool {
+    const moved = pointerPositionKnown
+      && (position.x !== pointerPosition.x || position.y !== pointerPosition.y)
+    pointerPosition = position
+    pointerPositionKnown = true
+    return moved
   }
 
   function focusSearch(): void {

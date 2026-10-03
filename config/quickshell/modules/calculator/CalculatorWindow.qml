@@ -15,9 +15,6 @@ PickerWindow {
   property string evaluationExpression: ""
   property string evaluationResult: ""
   property string evaluationError: ""
-  property bool pointerPositionKnown: false
-  property point pointerPosition: Qt.point(0, 0)
-  property bool selectionVisible: true
 
   shown: active
   title: "Calculator"
@@ -29,11 +26,7 @@ PickerWindow {
   function buildRows(): var {
     const rows = []
     if (query.trim().length > 0 && evaluationResult.length > 0) {
-      rows.push({
-        "expression": query.trim(),
-        "result": evaluationResult,
-        "live": true
-      })
+      rows.push({ "expression": query.trim(), "result": evaluationResult })
     }
     for (const entry of CalculatorState.history) {
       if (entry.expression !== query.trim()) rows.push(entry)
@@ -93,8 +86,6 @@ PickerWindow {
 
   function evaluate(): void {
     const expression = query.trim()
-    evaluationResult = ""
-    evaluationError = ""
     if (expression.length === 0) {
       calculatorProcess.running = false
       return
@@ -130,9 +121,7 @@ PickerWindow {
       if (root.evaluationExpression !== root.query.trim()) return
       if (exitCode === 0) {
         root.evaluationResult = calculationOutput.text.trim()
-        root.evaluationError = ""
       } else {
-        root.evaluationResult = ""
         root.evaluationError = calculationError.text.trim() || "Invalid expression"
       }
     }
@@ -234,16 +223,9 @@ PickerWindow {
       HoverHandler {
         cursorShape: Qt.PointingHandCursor
         onPointChanged: {
-          const position = point.scenePosition
-          const moved = root.pointerPositionKnown
-            && (position.x !== root.pointerPosition.x
-              || position.y !== root.pointerPosition.y)
-          root.pointerPosition = Qt.point(position.x, position.y)
-          root.pointerPositionKnown = true
-          if (moved) {
-            calculationList.currentIndex = row.index
-            root.selectionVisible = true
-          }
+          if (!root.pointerMoved(point.scenePosition)) return
+          calculationList.currentIndex = row.index
+          root.selectionVisible = true
         }
       }
       TapHandler { onTapped: root.copyEntry(row.modelData) }

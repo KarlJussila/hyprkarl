@@ -35,8 +35,6 @@ seed || fail "seeding returned nonzero"
   || fail "an unrelated btop file blocked the btop seed"
 [[ -L "$CONFIG_HOME/btop/themes/current.theme" ]] \
   || fail "seed symlink was not preserved"
-grep -q "$CONFIG_HOME" "$CONFIG_HOME/fastfetch/config.jsonc" \
-  || fail "@CONFIG_HOME@ was not substituted"
 [[ -f "$CONFIG_HOME/uwsm/env.local" ]] && [[ -f "$CONFIG_HOME/kitty/local.conf" ]] \
   && [[ -f "$CONFIG_HOME/hypr/hypridle.local.conf" ]] \
   || fail "included personal files were not created"

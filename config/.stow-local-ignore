@@ -8,6 +8,5 @@
 
 # Starting configs that bin/hk-config-seed copies once; not Stow targets.
 ^/btop($|/)
-^/fastfetch($|/)
 ^/nvim($|/)
 ^/yazi($|/)

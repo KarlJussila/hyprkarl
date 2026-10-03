@@ -23,8 +23,8 @@ session restart at the end.
 - **Application configs keep receiving Hyprkarl's defaults.** Terminals and
   the Hypr tools load a personal `local` file after Hyprkarl's settings; the
   portal and terminal choices are defaults your own file replaces; GTK and Qt
-  follow the theme. Only btop, fastfetch, Neovim, and Yazi are copied into
-  `~/.config` once and are yours from then on.
+  follow the theme, and fastfetch comes from the theme. Only btop, Neovim, and
+  Yazi are copied into `~/.config` once and are yours from then on.
 - **The updater was rewritten.** `hk-update sync` reviews incoming commits and
   `hk-update apply` applies them. `tui`, `dotfiles`, `--force`, and `--adopt`
   are gone. Update records live under `~/.local/state/hyprkarl/update/`.
@@ -126,7 +126,8 @@ old settings no longer apply.
 | `config/rofi/**`, `bin/hk-menu-*` | `~/.config/quickshell/settings/menu.json`. See [Menu configuration](menu-configuration.md). |
 | `config/mako/**` | The `notifications` section of `shell.json`. See [Shell configuration](shell-configuration.md). |
 | `config/alacritty/alacritty.toml`, `config/foot/foot.ini`, `config/ghostty/config.ghostty`, `config/kitty/kitty.conf` | `~/.config/<terminal>/local.toml`, `local.ini`, or `local.conf`. |
-| `config/btop`, `fastfetch`, `nvim`, `yazi` | The new copies in `~/.config/<app>/`. |
+| `config/btop`, `nvim`, `yazi` | The new copies in `~/.config/<app>/`. |
+| `config/fastfetch` | The `fastfetch` keys in a theme overlay. See [Themes](themes.md). |
 | `config/fish` | Your own `~/.config/fish/config.fish`; Hyprkarl no longer ships one. |
 | `config/gtk-3.0`, `gtk-4.0`, `qt5ct`, `qt6ct` | A personal theme; GTK and Qt follow the theme. See [Themes](themes.md). |
 | `config/xdg-desktop-portal`, `xdg-terminals.list` | Your own file at the same path in `~/.config/`, which replaces Hyprkarl's default. |

@@ -39,6 +39,30 @@ wallpaper:
   accent: "{{accent.primary.base}}"
   accent_dim: "{{accent.primary.soft}}"
 
+fastfetch:
+  logo:
+    mark: "{{accent.primary.bright}}"
+    wordmark: "{{accent.secondary.bright}}"
+  labels: "{{accent.tertiary.base}}"
+  title: "{{accent.primary.bright}}"
+  modules:
+    - title
+    - separator
+    - os
+    - host
+    - kernel
+    - uptime
+    - packages
+    - shell
+    - display
+    - wm
+    - cpu
+    - gpu
+    - memory
+    - disk
+    - break
+    - colors
+
 shell:
   palette:
     foreground: "{{ui.text_secondary}}"

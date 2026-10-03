@@ -83,3 +83,8 @@ ui:
   border_soft: "{{accent.primary.soft}}"
 
   highlight: "{{accent.primary.bright}}"
+
+fastfetch:
+  logo:
+    wordmark: "{{bright.green}}"
+  labels: "{{ansi.cyan}}"

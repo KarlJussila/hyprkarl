@@ -1,0 +1,26 @@
+#!/bin/bash
+# Fastfetch now takes its config from the active theme. Remove the starting
+# config earlier versions copied into ~/.config/fastfetch when it is unedited,
+# so the theme's config takes over; an edited one stays and keeps winning.
+
+config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+directory="$config_home/fastfetch"
+# The last revision that shipped the starting config.
+seed=a0651fc
+
+[[ -d "$directory" ]] || exit 0
+
+unedited() {
+  cmp -s "$directory/$1" <(git -C "$HYPRKARL_PATH" show "$seed:config/fastfetch/$1" \
+    | sed "s|@CONFIG_HOME@|$config_home|g")
+}
+
+files=$(cd "$directory" && find . -mindepth 1 | sort | tr '\n' ' ')
+if [[ "$files" != "./config.jsonc ./hyprkarl.txt " ]]; then
+  exit 0
+fi
+if ! unedited config.jsonc || ! unedited hyprkarl.txt; then
+  exit 0
+fi
+
+rm "$directory/config.jsonc" "$directory/hyprkarl.txt" && rmdir "$directory"

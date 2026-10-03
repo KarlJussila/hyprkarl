@@ -12,11 +12,10 @@ CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 SEED_ROOT="$HYPRKARL_PATH/config"
 
 # Only applications with no way to load Hyprkarl's defaults alongside a
-# personal file: btop rewrites its own config, fastfetch has no includes, and
-# Neovim and Yazi configs are personal code.
+# personal file: btop rewrites its own config, and Neovim and Yazi configs are
+# personal code.
 seeds=(
   btop
-  fastfetch
   nvim
   yazi
 )
@@ -35,15 +34,10 @@ declare -A includes=(
 )
 
 copy_seed_file() {
-  local relative="$1" source="$SEED_ROOT/$1" destination="$CONFIG_HOME/$1"
+  local relative="$1"
 
-  mkdir -p "$(dirname "$destination")" || return 1
-  if [[ -L "$source" ]]; then
-    cp -a "$source" "$destination"
-  else
-    sed "s|@CONFIG_HOME@|$CONFIG_HOME|g" "$source" > "$destination" \
-      && chmod --reference="$source" "$destination"
-  fi
+  mkdir -p "$(dirname "$CONFIG_HOME/$relative")" || return 1
+  cp -a "$SEED_ROOT/$relative" "$CONFIG_HOME/$relative"
 }
 
 for seed in "${seeds[@]}"; do

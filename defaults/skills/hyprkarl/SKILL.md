@@ -52,7 +52,8 @@ never edit files under `~/.local/state/hyprkarl/`, which are generated.
 | Session environment variables | `~/.config/uwsm/env.local` |
 | Something to run on login, update, theme or wallpaper change | An executable in `~/.config/hyprkarl/hooks/<event>.d/` |
 | Personal scripts | `~/.local/bin/`, which is on `PATH` before Hyprkarl's commands |
-| btop, fastfetch, Neovim, Yazi | Their own `~/.config/<app>/`; these are the user's copies |
+| fastfetch's look, logo, or info lines | The theme: `fastfetch` keys in a theme overlay, or an `overrides/config/fastfetch/config.jsonc` template |
+| btop, Neovim, Yazi | Their own `~/.config/<app>/`; these are the user's copies |
 
 `$HYPRKARL_PATH/docs/configuration-map.md` lists every location, and
 `$HYPRKARL_PATH/docs/extending-hyprkarl.md` explains each one.

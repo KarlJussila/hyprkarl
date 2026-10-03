@@ -9,6 +9,11 @@ breaking change bumps the major version and is called out explicitly.
 - Tokyo Night uses its purple as the main accent, with blue and teal after
   it, so the shell, window borders, and wallpaper stand apart from its blue
   base instead of blending into it.
+- Fastfetch belongs to the theme: each theme renders its whole config, with
+  the logo in the theme's own accents. Change it with `fastfetch` keys in a
+  theme overlay, or replace it with your own `~/.config/fastfetch/config.jsonc`.
+  An unedited starting copy in `~/.config/fastfetch/` is removed so the
+  theme's takes over; an edited one is kept. Log in again after updating.
 
 ## v1.0.2 (2026-10-03)
 

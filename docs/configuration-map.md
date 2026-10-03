@@ -18,7 +18,8 @@ explaining what goes there.
 | Lifecycle hooks | `~/.config/hyprkarl/hooks/<event>.d/` |
 | Session variables | `~/.config/uwsm/env.local` |
 | Personal commands | `~/.local/bin/` |
-| btop, fastfetch, Neovim, Yazi | Their own `~/.config/<app>/`, copied from Hyprkarl once |
+| fastfetch | The theme: its `fastfetch` keys in a theme overlay, or your own `~/.config/fastfetch/config.jsonc` |
+| btop, Neovim, Yazi | Their own `~/.config/<app>/`, copied from Hyprkarl once |
 
 See [Extending Hyprkarl](extending-hyprkarl.md) for how to use each.
 
@@ -29,7 +30,7 @@ it. Its main parts:
 
 - `bin/`: the `hk-*` commands, put on `PATH` after `~/.local/bin`.
 - `config/`: configs linked into `~/.config` by GNU Stow, and the starting
-  configs for btop, fastfetch, Neovim, and Yazi.
+  configs for btop, Neovim, and Yazi.
 - `defaults/`: the shell's `shell.json` and `menu.json`, Hyprland's modules
   under `hypr/`, XDG defaults under `config/` and `share/`, and the agent
   skill under `skills/`.
@@ -144,8 +145,9 @@ not in place.
 | Hyprtoolkit | Linked `~/.config/hypr/hyprtoolkit.conf` |
 | Cursor | Each theme switch writes `~/.local/share/icons/default/index.theme` |
 | File chooser | Linked `xdg-desktop-portal-termfilechooser/config`, which opens Yazi in your terminal |
+| fastfetch | The theme's whole config, found through `XDG_CONFIG_DIRS`; your own `~/.config/fastfetch/config.jsonc` replaces it |
 
-**Starting configs.** btop, fastfetch, Neovim, and Yazi cannot load Hyprkarl's
+**Starting configs.** btop, Neovim, and Yazi cannot load Hyprkarl's
 defaults next to a file of yours, so `hk-update apply` copies Hyprkarl's
 complete config when you have none of their files. The copy is yours; updates
 never change it. Delete it to get Hyprkarl's current version on the next

@@ -200,12 +200,19 @@ The compiler renders the resolved graph into consumer files for:
 
 - Quickshell (including the lock screen), Hyprland, and Hyprtoolkit;
 - Alacritty, foot, Ghostty, Kitty, `btop`, `wifitui`, Yazi, and Neovim;
+- fastfetch's whole config, logo included;
 - Qt 5 and Qt 6 palettes and settings;
 - GTK 3 and GTK 4, including a palette-derived Colloid theme;
 - the cursor theme name, theme metadata, icons, wallpapers, and previews.
 
 `quickshell.json` holds the shell's appearance; see [Shell
 appearance](#shell-appearance).
+
+Fastfetch belongs to the theme entirely. Its `fastfetch` keys set the logo's
+`mark` and `wordmark` colors, the `labels` and `title` colors, and the
+`modules` list; an `overrides/config/fastfetch/config.jsonc` template replaces
+the layout or the logo art. A `~/.config/fastfetch/config.jsonc` of your own
+takes precedence over every theme.
 
 The generated `theme.yaml` contains the fully merged and resolved graph for
 inspection. It is output, not the next authoring source.

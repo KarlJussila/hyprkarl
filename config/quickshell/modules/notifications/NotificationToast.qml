@@ -20,6 +20,12 @@ ClippingRectangle {
   readonly property string appName: sourceNotification?.appName ?? entry.appName
   readonly property string summary: sourceNotification?.summary ?? entry.summary
   readonly property string body: sourceNotification?.body ?? entry.body
+  // Bodies carry the spec's markup (<b>, <i>, <u>, <a>), which StyledText
+  // renders. Images are dropped because any app can send a body and an <img>
+  // would load whatever URL it names; plain newlines become breaks.
+  readonly property string bodyMarkup: body
+    .replace(/<img\b[^>]*>/gi, "")
+    .replace(/\n/g, "<br>")
   readonly property string notificationImage: sourceNotification?.image ?? entry.image
   readonly property int urgency: sourceNotification?.urgency ?? entry.urgency
   readonly property real progress: sourceNotification
@@ -123,9 +129,9 @@ ClippingRectangle {
         Text {
           Layout.fillWidth: true
           visible: text.length > 0
-          text: root.body
+          text: root.bodyMarkup
           color: root.theme.palette.muted
-          textFormat: Text.PlainText
+          textFormat: Text.StyledText
           wrapMode: Text.Wrap
           maximumLineCount: 4
           elide: Text.ElideRight

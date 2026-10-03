@@ -235,9 +235,19 @@ theme's palette, fonts, and icon family.
 
 ## Wallpapers
 
-Built-in wallpapers live in `themes/<name>/wallpapers/`. Personal additions
-and inherited removals live under the matching personal theme source. The
-wallpaper commands update both personal source state and the active build:
+Built-in wallpapers live in `themes/<name>/wallpapers/` and yours in
+`~/.config/hyprkarl/themes/<name>/wallpapers/`, which updates never touch.
+Each theme build links both sets into its `wallpapers/` folder by filename;
+your file wins over a built-in one with the same name. Built-in wallpapers
+you remove are listed in that theme's `.wallpapers-disabled` file and stay
+gone through updates, while new built-in ones appear on the next
+`hk-update apply`.
+
+`hk-wallpaper add` copies an image into your folder and rebuilds the theme; a
+file you place there yourself appears after the next `hk-theme set`.
+`hk-wallpaper remove` deletes your file or disables a built-in one, along with
+its thumbnail. The picker keeps thumbnails in `~/.cache/hyprkarl/wallpapers/`
+and regenerates one when its wallpaper changes.
 
 ```bash
 hk-wallpaper set <filename>

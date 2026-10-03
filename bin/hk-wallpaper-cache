@@ -50,7 +50,8 @@ if [[ "$1" == "--single" ]]; then
   exit 0
 fi
 
-# Sync mode: remove stale thumbs, add missing.
+# Sync mode: remove thumbnails without a wallpaper, and create missing or
+# outdated ones (a wallpaper replaced under the same name is newer).
 for cached in "$CACHE_DIR"/*; do
   [[ -f "$cached" ]] || continue
   name=$(basename "$cached")
@@ -62,7 +63,7 @@ done
 for img in "$WALLPAPER_DIR"/*; do
   [[ -f "$img" ]] || continue
   name=$(basename "$img")
-  if [[ ! -f "$CACHE_DIR/$name" ]]; then
+  if [[ "$img" -nt "$CACHE_DIR/$name" ]]; then
     generate_preview "$img"
   fi
 done

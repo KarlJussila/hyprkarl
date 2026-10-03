@@ -194,7 +194,9 @@ def _disabled_wallpapers(source: Path) -> list[Path]:
     return [Path(line.strip()) for line in marker.read_text().splitlines() if line.strip()]
 
 
-def _copy_assets(sources: tuple[Path, ...], output_root: Path) -> None:
+# Assets are linked, not copied, so a large wallpaper collection costs nothing
+# per build. An authored file replaces a generated one of the same name.
+def _link_assets(sources: tuple[Path, ...], output_root: Path) -> None:
     for source_name, output_name in ASSET_DIRECTORIES.items():
         files: dict[Path, Path] = {}
         for source in sources:
@@ -208,7 +210,8 @@ def _copy_assets(sources: tuple[Path, ...], output_root: Path) -> None:
         for relative_path, source in files.items():
             destination = destination_root / relative_path
             destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, destination)
+            destination.unlink(missing_ok=True)
+            destination.symlink_to(source.resolve())
 
 
 def _render_gtk_metadata(files: dict[Path, Path], context: dict, bundle_root: Path) -> None:
@@ -257,7 +260,7 @@ def _render_theme(sources: ThemeSources, output_root: Path, theme_name: str) -> 
             theme["wallpaper"],
             output_root / "wallpapers" / DEFAULT_WALLPAPER_NAME,
         )
-    _copy_assets(sources.layers, output_root)
+    _link_assets(sources.layers, output_root)
     write_atomic_text(
         output_root / "theme.yaml",
         yaml.safe_dump(theme, sort_keys=False),

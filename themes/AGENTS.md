@@ -311,7 +311,7 @@ Do not use an override merely to change a value that belongs in `theme.yaml`.
 
 To ship wallpapers and preview screenshots with the theme, add:
 
-- `themes/<name>/wallpapers/` — wallpaper images copied verbatim into the
+- `themes/<name>/wallpapers/` — wallpaper images linked into the
   generated theme. By convention `01-*` is the primary wallpaper. **Only
   include images you have the right to redistribute.**
 - `themes/<name>/previews/` — `busy.png`, `launcher.png`, `menu.png`, and

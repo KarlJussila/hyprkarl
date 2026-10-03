@@ -52,8 +52,10 @@ the prior output intact when a replacement fails.
 
 `wallpaper.generate_default` explicitly opts a theme into the shared Hyprkarl
 wallpaper. Its default colors are `base.background`, `accent.primary.base`, and
-`accent.primary.soft`. Authored wallpaper assets still copy into the same
-bundle and may replace the generated filename through normal asset precedence.
+`accent.primary.soft`. Authored assets are linked into the same bundle after
+it is written, so an authored file with the generated filename replaces it.
+Assets are links rather than copies so that large wallpaper collections cost
+nothing per build.
 
 ## Implementation rules
 

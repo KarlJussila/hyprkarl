@@ -69,19 +69,18 @@ if [[ "$removal_status" -ne 0 ]]; then
   exit 1
 fi
 
-installed=$(pacman -Qq) || exit 1
-
+# pacman -T lists the packages nothing installed provides, so a substitute
+# such as a -git build counts as present.
+mapfile -t additions_pacman < <(jq -r '.additions.pacman[]' <<<"$plan")
+mapfile -t additions_aur < <(jq -r '.additions.aur[]' <<<"$plan")
 missing_pacman=()
-while IFS= read -r package; do
-  [[ -z "$package" ]] && continue
-  grep -Fxq "$package" <<<"$installed" || missing_pacman+=("$package")
-done < <(jq -r '.additions.pacman[]' <<<"$plan")
-
 missing_aur=()
-while IFS= read -r package; do
-  [[ -z "$package" ]] && continue
-  grep -Fxq "$package" <<<"$installed" || missing_aur+=("$package")
-done < <(jq -r '.additions.aur[]' <<<"$plan")
+if [[ ${#additions_pacman[@]} -gt 0 ]]; then
+  mapfile -t missing_pacman < <(pacman -T "${additions_pacman[@]}")
+fi
+if [[ ${#additions_aur[@]} -gt 0 ]]; then
+  mapfile -t missing_aur < <(pacman -T "${additions_aur[@]}")
+fi
 
 # Installing from a stale package database fails once mirrors drop the old
 # versions, and Arch does not support syncing without upgrading, so new

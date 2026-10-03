@@ -61,6 +61,7 @@ case "$1" in
   -Qqt) grep -Fxv -f "${HK_TEST_REQUIRED:-/dev/null}" "$HK_TEST_INSTALLED" ;;
   -D) printf '%s\n' "$*" >> "$HK_TEST_ASDEPS_LOG" ;;
   -Q) grep -Fxq "$2" "$HK_TEST_INSTALLED" ;;
+  -T) shift; missing=$(printf '%s\n' "$@" | grep -Fxv -f "$HK_TEST_INSTALLED"); [[ -z "$missing" ]] || { printf '%s\n' "$missing"; exit 127; } ;;
   -Syu) shift 3; [[ $# -gt 0 ]] && printf '%s\n' "$*" >> "$HK_TEST_INSTALL_LOG"; exit 0 ;;
   *) exit 0 ;;
 esac

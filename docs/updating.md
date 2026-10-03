@@ -61,8 +61,9 @@ again.
 `apply` runs this, and you can run it alone. It compares
 `packages/pacman.txt`, `aur.txt`, and `remove.txt` with what it recorded last
 time. Missing required packages install automatically, together with a full
-system upgrade, since installing from an out-of-date package database fails. Packages dropped from
-the lists or added to `remove.txt` appear once in a checklist, all selected;
+system upgrade, since installing from an out-of-date package database fails.
+A package that provides a required one, such as its `-git` build, counts as
+installed. Packages dropped from the lists or added to `remove.txt` appear once in a checklist, all selected;
 uncheck any you want to keep. The comment on a `remove.txt` line is the reason
 shown. Escape cancels without recording anything. Once reviewed, a removal is
 not offered again, even if you kept the package. A retired package that another

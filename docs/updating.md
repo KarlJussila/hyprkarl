@@ -8,7 +8,8 @@ hk-update all
 ```
 
 This runs `hk-update sync`, then `hk-update apply`, then your `post-update`
-hooks, and stops at the first failure. When new commits are waiting, an update
+hooks, and stops at the first failure. Its review asks whether to apply the
+update now; answering no stops before anything changes. When new commits are waiting, an update
 icon appears in the bar; clicking it, or the update menu entry, runs the same
 command in a terminal. `hk-version` prints the installed release. System packages are separate: `hk-pkg-upgrade` runs `paru -Syu`.
 

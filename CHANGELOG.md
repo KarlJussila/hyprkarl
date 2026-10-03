@@ -4,6 +4,13 @@ Notable changes to Hyprkarl. Releases are annotated git tags on `main`;
 entries here are written by hand when a release is cut. From v1.0.0, a
 breaking change bumps the major version and is called out explicitly.
 
+## Unreleased
+
+- The update icon now sits left of the clock in the default bar.
+- `hk-update all`, which the update icon runs, now asks "Apply this update
+  now?" after its review, since saying yes starts the apply. `hk-update sync`
+  on its own still asks whether to stage the revision.
+
 ## v1.0.0 (2026-10-03)
 
 The desktop shell, configuration model, theme system, and updater were all

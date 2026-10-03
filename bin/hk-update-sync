@@ -1,9 +1,15 @@
 #!/bin/bash
 # hk-update-sync
 # Fetch, review, and stage one canonical source revision for later application.
+# hk-update all passes --then-apply, because there staging starts the apply.
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/update.sh"
+
+question="Stage this exact revision for hk-update apply?"
+if [[ "${1:-}" == "--then-apply" ]]; then
+  question="Apply this update now?"
+fi
 
 remote=$(update_source_remote)
 source_branch=$(update_source_branch)
@@ -54,7 +60,7 @@ printf '\nIncoming commits:\n'
 git -C "$HYPRKARL_PATH" log --oneline --no-decorate "$head..$target" | sed 's/^/  /'
 git -C "$HYPRKARL_PATH" diff --shortstat "$head" "$target"
 
-if ! gum confirm "Stage this exact revision for hk-update apply?"; then
+if ! gum confirm "$question"; then
   printf 'Source update not staged.\n'
   exit 1
 fi

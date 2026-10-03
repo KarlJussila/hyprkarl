@@ -26,7 +26,7 @@ case "$action" in
       usage >&2
       exit 1
     fi
-    hk-update-sync || exit 1
+    hk-update-sync --then-apply || exit 1
     hk-update-apply || exit 1
     if ! hk-hook-run post-update; then
       printf 'Update completed, but a post-update hook failed.\n' >&2

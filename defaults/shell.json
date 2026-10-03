@@ -108,6 +108,16 @@
       "center": {
         "before": [
           {
+            "id": "update",
+            "kind": "command",
+            "command": "hk-update-available",
+            "interval": 3600000,
+            "output": "json",
+            "icon": "󰚰",
+            "tooltip": "Hyprkarl update available",
+            "primaryCommand": "hk-tui-launch hk-update all"
+          },
+          {
             "id": "recording",
             "kind": "recording",
             "icon": "󰻂",
@@ -133,16 +143,6 @@
             "switch": {
               "variant": "mark"
             }
-          },
-          {
-            "id": "update",
-            "kind": "command",
-            "command": "hk-update-available",
-            "interval": 3600000,
-            "output": "json",
-            "icon": "󰚰",
-            "tooltip": "Hyprkarl update available",
-            "primaryCommand": "hk-tui-launch hk-update all"
           }
         ]
       },

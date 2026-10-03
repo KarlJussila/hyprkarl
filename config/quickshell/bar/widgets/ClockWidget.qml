@@ -12,9 +12,7 @@ ShellButton {
   required property var systemState
 
   property bool alternate: false
-  readonly property bool panelOpen: panelHost
-    ? panelHost.activeId === widgetId
-    : false
+  readonly property bool panelOpen: panelHost?.activeId === widgetId
 
   text: Qt.formatDateTime(ClockState.date, alternate ? config.alternateFormat : config.format)
   tooltip: Qt.formatDateTime(ClockState.date, "dddd, MMMM d, yyyy h:mm:ss AP")

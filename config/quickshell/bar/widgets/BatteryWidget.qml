@@ -17,9 +17,7 @@ ShellButton {
   readonly property int percentage: Math.round((battery?.percentage ?? 0) * 100)
   readonly property string percentageText: percentage >= 100 ? "MAX" : percentage + "%"
   readonly property bool charging: battery?.state === UPowerDeviceState.Charging
-  readonly property bool panelOpen: panelHost
-    ? panelHost.activeId === widgetId
-    : false
+  readonly property bool panelOpen: panelHost?.activeId === widgetId
 
   visible: battery?.isPresent ?? false
   contentComponent: Component {

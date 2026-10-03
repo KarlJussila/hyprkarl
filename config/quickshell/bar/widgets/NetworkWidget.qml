@@ -12,9 +12,7 @@ ShellButton {
   required property var systemState
 
   readonly property var connectedNetwork: NetworkState.connectedNetwork
-  readonly property bool panelOpen: panelHost
-    ? panelHost.activeId === widgetId
-    : false
+  readonly property bool panelOpen: panelHost?.activeId === widgetId
 
   readonly property var wiredDevice: NetworkState.wiredDevice
 

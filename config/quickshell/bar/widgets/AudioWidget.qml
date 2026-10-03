@@ -15,9 +15,7 @@ ShellButton {
 
   readonly property var audio: Pipewire.defaultAudioSink?.audio
   readonly property int percentage: Math.round((audio?.volume ?? 0) * 100)
-  readonly property bool panelOpen: panelHost
-    ? panelHost.activeId === widgetId
-    : false
+  readonly property bool panelOpen: panelHost?.activeId === widgetId
 
   contentComponent: Component {
     Row {

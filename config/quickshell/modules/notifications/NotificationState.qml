@@ -124,11 +124,10 @@ QtObject {
       normalizedIconKey(appName)) !== -1
   }
 
-  function makeEntry(notification): var {
+  // What a toast shows. An entry copies it, so it can be restored after its
+  // notification is gone; a toast reads the live notification while it lasts.
+  function contentOf(notification): var {
     return {
-      "serial": nextSerial++,
-      "source": notification,
-      "screenName": focusedScreenName(),
       "appName": notification.appName,
       "summary": notification.summary,
       "body": notification.body,
@@ -136,37 +135,44 @@ QtObject {
       "image": notification.image,
       "urgency": notification.urgency,
       "progress": progressFor(notification),
-      "timeout": timeoutFor(notification),
-      "synchronousKey": synchronousKey(notification),
+      "timeout": timeoutFor(notification)
+    }
+  }
+
+  function newEntry(screenName, content): var {
+    return Object.assign({
+      "serial": nextSerial++,
+      "source": null,
+      "screenName": screenName,
+      "synchronousKey": "",
       "glyph": "",
       "revealed": false,
       "closing": false,
       "closeMode": "",
       "remember": true
-    }
+    }, content)
+  }
+
+  function makeEntry(notification): var {
+    return newEntry(focusedScreenName(), Object.assign(contentOf(notification), {
+      "source": notification,
+      "synchronousKey": synchronousKey(notification)
+    }))
   }
 
   function snapshot(entry): var {
-    const source = entry.source
-    return {
-      "serial": nextSerial++,
-      "source": null,
-      "screenName": entry.screenName,
-      "appName": source?.appName ?? entry.appName,
-      "summary": source?.summary ?? entry.summary,
-      "body": source?.body ?? entry.body,
-      "appIcon": source?.appIcon ?? entry.appIcon,
-      "image": source?.image ?? entry.image,
-      "urgency": source?.urgency ?? entry.urgency,
-      "progress": source ? progressFor(source) : entry.progress,
-      "timeout": source ? timeoutFor(source) : entry.timeout,
-      "synchronousKey": "",
-      "glyph": entry.glyph,
-      "revealed": false,
-      "closing": false,
-      "closeMode": "",
-      "remember": true
+    const content = entry.source ? contentOf(entry.source) : {
+      "appName": entry.appName,
+      "summary": entry.summary,
+      "body": entry.body,
+      "appIcon": entry.appIcon,
+      "image": entry.image,
+      "urgency": entry.urgency,
+      "progress": entry.progress,
+      "timeout": entry.timeout
     }
+    content.glyph = entry.glyph
+    return newEntry(entry.screenName, content)
   }
 
   function removeEntry(entry): void {
@@ -282,10 +288,7 @@ QtObject {
   }
 
   function showStatus(summary, glyph): void {
-    present({
-      "serial": nextSerial++,
-      "source": null,
-      "screenName": focusedScreenName(),
+    present(newEntry(focusedScreenName(), {
       "appName": "Hyprkarl",
       "summary": summary,
       "body": "",
@@ -294,13 +297,9 @@ QtObject {
       "urgency": NotificationUrgency.Normal,
       "progress": -1,
       "timeout": shellConfig.notifications.statusTimeout,
-      "synchronousKey": "",
       "glyph": glyph,
-      "revealed": false,
-      "closing": false,
-      "closeMode": "",
       "remember": false
-    })
+    }))
   }
 
   function toggleSilenced(): void {

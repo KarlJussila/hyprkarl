@@ -14,8 +14,8 @@ Item {
   required property var theme
 
   readonly property bool hasNotificationImage: notificationImage.length > 0
-  readonly property string kind: descriptor?.kind ?? "none"
-  readonly property string value: descriptor?.value ?? ""
+  readonly property string kind: descriptor.kind
+  readonly property string value: descriptor.value ?? ""
   readonly property bool visibleIcon: hasNotificationImage || kind !== "none"
   readonly property int iconSize: theme.notification.iconSize
   readonly property string imageSource: resolveImage(
@@ -33,12 +33,14 @@ Item {
 
   function resolveComponent(): string {
     if (kind !== "component") return ""
-    if (descriptor.source.startsWith("builtin/")) {
-      return Quickshell.shellPath("modules/notifications/icons/"
-        + descriptor.source.slice("builtin/".length))
+    const source = descriptor.source
+    if (source.startsWith("builtin/")) {
+      return Quickshell.shellPath("modules/notifications/icons/" + source.slice("builtin/".length))
     }
-    return Paths.userUrl("custom/icons/"
-      + descriptor.source.slice("user/".length))
+    if (source.startsWith("user/")) {
+      return Paths.userUrl("custom/icons/" + source.slice("user/".length))
+    }
+    return "file://" + source
   }
 
   function syncDrawing(): void {

@@ -112,17 +112,10 @@ QtObject {
         root.source = ""
         return
       }
-      try {
-        const transaction = JSON.parse(previewOutput.text)
-        root.token = transaction.token
-        root.deadline = transaction.deadline
-        root.showDelay.restart()
-      } catch (parseError) {
-        const message = "Display preview returned invalid data"
-        root.error = message
-        root.trialFailed(root.source, message)
-        console.warn(message + ": " + parseError)
-      }
+      const transaction = JSON.parse(previewOutput.text)
+      root.token = transaction.token
+      root.deadline = transaction.deadline
+      root.showDelay.restart()
     }
     // qmllint enable signal-handler-parameters
   }

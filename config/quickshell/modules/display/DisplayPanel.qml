@@ -75,17 +75,12 @@ Item {
   }
 
   function acceptState(value: string): void {
-    try {
-      const nextState = JSON.parse(value)
-      if (stateBrightnessRevision !== brightnessRevision) {
-        nextState.brightness = displayState.brightness
-      }
-      displayState = nextState
-      error = ""
-    } catch (parseError) {
-      error = "Display state returned invalid data"
-      console.warn(error + ": " + parseError)
+    const nextState = JSON.parse(value)
+    if (stateBrightnessRevision !== brightnessRevision) {
+      nextState.brightness = displayState.brightness
     }
+    displayState = nextState
+    error = ""
   }
 
   function openDetails(name: string): void {
@@ -142,7 +137,7 @@ Item {
         "transform": output.transform
       }
     }
-    return { "version": 1, "outputs": outputs }
+    return { "outputs": outputs }
   }
 
   function applyDraft(): void {

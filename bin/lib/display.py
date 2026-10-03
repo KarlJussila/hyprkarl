@@ -45,7 +45,7 @@ def monitors() -> list[dict[str, Any]]:
 
 def load_layout() -> dict[str, Any]:
     if not STATE_PATH.exists():
-        return {"version": 1, "outputs": {}}
+        return {"outputs": {}}
     with STATE_PATH.open(encoding="utf-8") as source:
         return json.load(source)
 
@@ -112,7 +112,7 @@ def capture_layout(
             outputs[name] = config
         else:
             outputs[name] = active_config(monitor)
-    return {"version": 1, "outputs": outputs}
+    return {"outputs": outputs}
 
 
 def lua_value(value: Any) -> str:
@@ -402,7 +402,7 @@ def normalize_layout(
 
     if not any(config["enabled"] for config in normalized.values()):
         raise RuntimeError("The layout must keep at least one display enabled")
-    return {"version": 1, "outputs": normalized}
+    return {"outputs": normalized}
 
 
 def live_configs(current: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -466,11 +466,10 @@ def preview_layout(
     normalized = normalize_layout(requested, current, previous_layout)
     persisted_outputs = dict(previous_layout.get("outputs", {}))
     persisted_outputs.update(normalized["outputs"])
-    proposed_layout = {"version": 1, "outputs": persisted_outputs}
+    proposed_layout = {"outputs": persisted_outputs}
     token = str(uuid.uuid4())
     deadline = round(((time.time() if now is None else now) + timeout) * 1000)
     transaction = {
-        "version": 1,
         "token": token,
         "deadline": deadline,
         "previousLayout": previous_layout,

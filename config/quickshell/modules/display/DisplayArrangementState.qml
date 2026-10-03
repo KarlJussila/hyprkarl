@@ -44,61 +44,55 @@ QtObject {
   }
 
   function acceptState(value: string): void {
-    try {
-      const state = JSON.parse(value)
-      const activeOutputs = state.outputs.filter(output => output.enabled)
-      if (activeOutputs.length < 2) {
-        throw new Error("At least two active displays are required")
-      }
-
-      outputModel.clear()
-      const originals = {}
-      let minimumX = activeOutputs[0].x
-      let minimumY = activeOutputs[0].y
-      let maximumX = activeOutputs[0].x + activeOutputs[0].logicalWidth
-      let maximumY = activeOutputs[0].y + activeOutputs[0].logicalHeight
-      for (const output of activeOutputs) {
-        const scale = Number(output.scale)
-        const baseLogicalWidth = Math.round(output.width / scale)
-        const baseLogicalHeight = Math.round(output.height / scale)
-        outputModel.append({
-          "name": output.name,
-          "description": output.description,
-          "positionX": output.x,
-          "positionY": output.y,
-          "outputTransform": output.transform,
-          "baseLogicalWidth": baseLogicalWidth,
-          "baseLogicalHeight": baseLogicalHeight,
-          "logicalWidth": output.logicalWidth,
-          "logicalHeight": output.logicalHeight
-        })
-        originals[output.name] = {
-          "x": output.x,
-          "y": output.y,
-          "transform": output.transform
-        }
-        minimumX = Math.min(minimumX, output.x)
-        minimumY = Math.min(minimumY, output.y)
-        maximumX = Math.max(maximumX, output.x + output.logicalWidth)
-        maximumY = Math.max(maximumY, output.y + output.logicalHeight)
-      }
-
-      const desktopWidth = Math.max(1, maximumX - minimumX)
-      const desktopHeight = Math.max(1, maximumY - minimumY)
-      viewportX = minimumX - desktopWidth * 0.3
-      viewportY = minimumY - desktopHeight * 0.3
-      viewportWidth = desktopWidth * 1.6
-      viewportHeight = desktopHeight * 1.6
-      originalArrangement = originals
-      selectedName = state.target
-      dirty = false
-      error = ""
-      validationError = ""
-    } catch (parseError) {
-      error = parseError.message || "Display state returned invalid data"
-      console.warn("Could not prepare display arrangement: " + parseError)
-    }
     loading = false
+    const state = JSON.parse(value)
+    const activeOutputs = state.outputs.filter(output => output.enabled)
+    if (activeOutputs.length < 2) {
+      error = "At least two active displays are required"
+      return
+    }
+
+    outputModel.clear()
+    const originals = {}
+    let minimumX = activeOutputs[0].x
+    let minimumY = activeOutputs[0].y
+    let maximumX = activeOutputs[0].x + activeOutputs[0].logicalWidth
+    let maximumY = activeOutputs[0].y + activeOutputs[0].logicalHeight
+    for (const output of activeOutputs) {
+      const scale = Number(output.scale)
+      outputModel.append({
+        "name": output.name,
+        "description": output.description,
+        "positionX": output.x,
+        "positionY": output.y,
+        "outputTransform": output.transform,
+        "baseLogicalWidth": Math.round(output.width / scale),
+        "baseLogicalHeight": Math.round(output.height / scale),
+        "logicalWidth": output.logicalWidth,
+        "logicalHeight": output.logicalHeight
+      })
+      originals[output.name] = {
+        "x": output.x,
+        "y": output.y,
+        "transform": output.transform
+      }
+      minimumX = Math.min(minimumX, output.x)
+      minimumY = Math.min(minimumY, output.y)
+      maximumX = Math.max(maximumX, output.x + output.logicalWidth)
+      maximumY = Math.max(maximumY, output.y + output.logicalHeight)
+    }
+
+    const desktopWidth = Math.max(1, maximumX - minimumX)
+    const desktopHeight = Math.max(1, maximumY - minimumY)
+    viewportX = minimumX - desktopWidth * 0.3
+    viewportY = minimumY - desktopHeight * 0.3
+    viewportWidth = desktopWidth * 1.6
+    viewportHeight = desktopHeight * 1.6
+    originalArrangement = originals
+    selectedName = state.target
+    dirty = false
+    error = ""
+    validationError = ""
   }
 
   function indexOf(name: string): int {

@@ -177,7 +177,6 @@ class DisplayArrangementTest(unittest.TestCase):
     def test_preview_rejects_disabling_every_display(self) -> None:
         current = [monitor("DP-1", 0, 0), monitor("DP-2", 2560, 0)]
         layout = {
-            "version": 1,
             "outputs": {
                 "DP-1": {"enabled": False},
                 "DP-2": {"enabled": False},
@@ -189,7 +188,7 @@ class DisplayArrangementTest(unittest.TestCase):
 
     def test_preview_applies_without_persisting_and_starts_watchdog(self) -> None:
         current = [monitor("DP-1", 0, 0), monitor("DP-2", 2560, 0)]
-        previous = display.capture_layout(current, {"version": 1, "outputs": {}})
+        previous = display.capture_layout(current, {"outputs": {}})
         display.save_layout(previous)
         proposed = json.loads(json.dumps(previous))
         proposed["outputs"]["DP-1"]["scale"] = 1.5
@@ -212,7 +211,7 @@ class DisplayArrangementTest(unittest.TestCase):
 
     def test_preview_preserves_disabled_display_settings(self) -> None:
         current = [monitor("DP-1", 0, 0), monitor("DP-2", 2560, 0)]
-        previous = display.capture_layout(current, {"version": 1, "outputs": {}})
+        previous = display.capture_layout(current, {"outputs": {}})
         proposed = json.loads(json.dumps(previous))
         proposed["outputs"]["DP-2"] = {"enabled": False}
 
@@ -256,7 +255,7 @@ class DisplayArrangementTest(unittest.TestCase):
 
     def test_confirm_persists_proposed_layout_and_clears_trial(self) -> None:
         current = [monitor("DP-1", 0, 0)]
-        previous = display.capture_layout(current, {"version": 1, "outputs": {}})
+        previous = display.capture_layout(current, {"outputs": {}})
         display.save_layout(previous)
         proposed = json.loads(json.dumps(previous))
         proposed["outputs"]["DP-1"]["transform"] = 1
@@ -276,7 +275,7 @@ class DisplayArrangementTest(unittest.TestCase):
 
     def test_revert_restores_previous_live_and_persistent_layout(self) -> None:
         current = [monitor("DP-1", 0, 0), monitor("DP-2", 2560, 0)]
-        previous = display.capture_layout(current, {"version": 1, "outputs": {}})
+        previous = display.capture_layout(current, {"outputs": {}})
         display.save_layout(previous)
         proposed = json.loads(json.dumps(previous))
         proposed["outputs"]["DP-2"]["enabled"] = False

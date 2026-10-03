@@ -4,7 +4,7 @@ Notable changes to Hyprkarl. Releases are annotated git tags on `main`;
 entries here are written by hand when a release is cut. From v1.0.0, a
 breaking change bumps the major version and is called out explicitly.
 
-## Unreleased
+## v1.1.0 (2026-10-03)
 
 - Tokyo Night uses its purple as the main accent, with blue and teal after
   it, so the shell, window borders, and wallpaper stand apart from its blue

@@ -27,11 +27,12 @@ cd ~/.local/share/hyprkarl
 `~/.local/share/hyprkarl`, removes CachyOS's Noctalia shell if present,
 installs the few tools the updater needs, and then runs the same
 `hk-update apply` that every update uses. That installs the required packages,
-runs the one-time migrations (SDDM autologin, lid handling, sudo and faillock
+runs the one-time migrations (greetd autologin, lid handling, sudo and faillock
 settings, LocalSend firewall rules, Docker), copies starting configs, links the
-shipped entry points, builds the theme, and reloads what is running. If a real
-file sits where Hyprkarl needs a link, it stops and lists it. Rerunning the
-installer is safe.
+shipped entry points, builds the theme, and reloads what is running. Configs
+the system shipped where Hyprkarl needs a link are moved to
+`~/.local/state/hyprkarl/replaced-configs-<date>/`. Rerunning the installer is
+safe.
 
 To leave Hyprkarl, `uninstall.sh` removes every config symlink and prints the
 user-owned configs, packages, and system settings it leaves in place for you

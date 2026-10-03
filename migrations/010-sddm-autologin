@@ -1,5 +1,0 @@
-#!/bin/bash
-# Configure SDDM to start this user's Hyprland session automatically.
-
-sed "s/{{USER}}/$USER/g" "$HYPRKARL_PATH/templates/setup/sddm.conf" \
-  | sudo tee /etc/sddm.conf >/dev/null

@@ -1,0 +1,10 @@
+#!/bin/bash
+# Log in through greetd, which starts this user's Hyprland session at boot.
+# Replaces SDDM on systems that had it; takes effect at the next boot.
+
+sed "s/{{USER}}/$USER/g" "$HYPRKARL_PATH/templates/setup/greetd.toml" \
+  | sudo tee /etc/greetd/config.toml >/dev/null || exit 1
+sudo systemctl enable --force greetd.service || exit 1
+
+# The SDDM autologin Hyprkarl used to write.
+sudo rm -f /etc/sddm.conf

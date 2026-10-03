@@ -1,0 +1,14 @@
+# Written by Hyprkarl's 060-greetd migration.
+
+[terminal]
+vt = 1
+
+# Log in automatically at boot; the disk passphrase is the password.
+[initial_session]
+command = "uwsm start -e -D Hyprland hyprland.desktop"
+user = "{{USER}}"
+
+# The login prompt after logging out.
+[default_session]
+command = "agreety --cmd 'uwsm start -e -D Hyprland hyprland.desktop'"
+user = "greeter"

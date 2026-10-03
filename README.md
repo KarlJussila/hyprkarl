@@ -27,8 +27,9 @@ Hyprkarl's defaults flowing while your own settings stay yours.
 - A single user account; multi-user setups are not supported.
 - Btrfs with LUKS encryption and the Limine boot loader are recommended.
 
-Hyprkarl turns on SDDM autologin, relying on disk encryption for the password
-at boot. Turn it off in `/etc/sddm.conf` if you prefer a login screen.
+Hyprkarl logs in through greetd and starts your session automatically,
+relying on disk encryption for the password at boot. To get a login prompt
+instead, remove the `[initial_session]` section from `/etc/greetd/config.toml`.
 
 ## Installation
 

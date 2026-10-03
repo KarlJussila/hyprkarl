@@ -89,14 +89,16 @@ run `git config --local hyprkarl.updateBranch develop`.
 ```
 
 It upgrades the system, installs the new packages, and reviews the retired
-ones (AGS and its astal libraries, rofi, mako, hyprlock, hyprpolkitagent, and
-others) in one list. Removing them also removes dependencies nothing else
-needs, such as Node.js, which came in with AGS; reinstall any you use
-yourself, for example for an npm-installed tool.
+ones (AGS and its astal libraries, rofi, mako, hyprlock, hyprpolkitagent,
+SDDM, and others) in one list. Removing them also removes dependencies
+nothing else needs, such as Node.js, which came in with AGS; reinstall any you
+use yourself, for example for an npm-installed tool.
 Then it runs the one-time migrations, copies starting configs, links the
 shipped ones, and builds the theme. The migrations write the same files the
-old `setup-system.sh` did; `010-sddm-autologin` replaces `/etc/sddm.conf`, so
-reapply any personal edit to that file afterwards.
+old `setup-system.sh` did, except login: Hyprkarl now logs in through greetd
+instead of SDDM. `060-greetd` writes `/etc/greetd/config.toml`, makes greetd
+the display manager, and deletes `/etc/sddm.conf`; the switch takes effect at
+the next boot.
 
 ## 5. Restore personal files
 
@@ -143,7 +145,11 @@ Check personal scripts and bindings for the old names.
 
 ## 7. Restart and check
 
-Log out and back in, since the session environment changed. Then:
+Reboot, since the session environment and the display manager changed. With
+an encrypted disk, do it where you can type the passphrase. After the
+passphrase, greetd should start your session without a login prompt. If it
+does not, switch to another console with Ctrl+Alt+F2, log in, and check
+`systemctl status greetd`. Then:
 
 ```bash
 Hyprland --verify-config

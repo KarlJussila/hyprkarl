@@ -11,15 +11,15 @@
 #     cannot drop dolphin until this script has run.
 #   - `pacman -Rns` would sweep out dependencies Noctalia shares with
 #     Hyprkarl, such as Quickshell, only for the install to download them
-#     again, and uwsm, which Hyprkarl needs (SDDM autologin launches
-#     hyprland-uwsm.desktop) but does not list. This script marks them
-#     explicit first to keep them.
+#     again, and uwsm, which Hyprkarl needs (greetd starts Hyprland through
+#     it) but does not list. This script marks them explicit first to keep
+#     them.
 #
 # Not removed here: dolphin. The package review handles it via remove.txt once
 # the dependency above is gone.
 
 # --- Constants ---
-PURGE_PKGS=(cachyos-hypr-noctalia noctalia)
+PURGE_PKGS=(cachyos-hypr-noctalia noctalia noctalia-greeter)
 
 # Needed afterwards but not in Hyprkarl's package lists, which are kept too.
 KEEP_PKGS=(uwsm)

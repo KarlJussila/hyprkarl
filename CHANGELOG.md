@@ -99,7 +99,12 @@ before `3df882e`) have no automatic upgrade. Follow
   `~/.local/state/hyprkarl/update/`.
 - Breaking: `install.sh` replaces `setup-all.sh` and the `setup-*.sh` scripts.
   It bootstraps the updater and runs the same `hk-update apply` an update
-  does.
+  does. It moves the system's own configs that block Hyprkarl's links to
+  `~/.local/state/hyprkarl/replaced-configs-<date>/`.
+- Breaking: Hyprkarl logs in through greetd instead of SDDM, starting the
+  session automatically at boot, as CachyOS's current Hyprland edition does.
+  Upgrades switch the display manager at the next boot and offer SDDM for
+  removal.
 
 ### Commands
 

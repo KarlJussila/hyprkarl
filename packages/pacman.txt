@@ -13,6 +13,8 @@ fzf
 ghostty
 git-delta
 gpu-screen-recorder
+greetd
+greetd-agreety
 grim
 gum
 hypridle

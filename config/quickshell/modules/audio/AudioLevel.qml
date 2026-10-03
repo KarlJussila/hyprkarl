@@ -15,9 +15,6 @@ Item {
   property bool showPeak: false
 
   readonly property var audio: node?.audio ?? null
-  readonly property string nodeName: node
-    ? (node.description.length > 0 ? node.description : node.nickname.length > 0 ? node.nickname : node.name)
-    : "Unavailable"
 
   implicitWidth: parent?.width ?? 0
   implicitHeight: content.implicitHeight
@@ -40,7 +37,9 @@ Item {
       navigationSection: root.navigationSection
       icon: root.audio?.muted ? "󰝟" : root.showPeak ? "󰍬" : "󰕾"
       title: root.title
-      detail: root.audio ? root.nodeName : "unavailable"
+      detail: root.audio
+        ? root.node.description || root.node.nickname || root.node.name
+        : "unavailable"
       switchVisible: root.audio !== null
       switchActive: root.audio !== null && !root.audio.muted
       enabled: root.audio !== null

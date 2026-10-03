@@ -27,10 +27,7 @@ Item {
   implicitHeight: content.implicitHeight
 
   function nodeName(node): string {
-    if (!node) return "Unavailable"
-    if (node.description.length > 0) return node.description
-    if (node.nickname.length > 0) return node.nickname
-    return node.name
+    return node.description || node.nickname || node.name
   }
 
   PwObjectTracker {

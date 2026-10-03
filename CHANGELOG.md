@@ -1,15 +1,14 @@
 # Changelog
 
 Notable changes to Hyprkarl. Releases are annotated git tags on `main`;
-entries here are written by hand when a release is cut. Until v1.0.0, minor
-versions may include breaking changes (renamed commands, changed config
-surfaces) — they are called out explicitly.
+entries here are written by hand when a release is cut. From v1.0.0, a
+breaking change bumps the major version and is called out explicitly.
 
-## Unreleased
+## v1.0.0 (2026-10-03)
 
-Planned as v1.0.0. The desktop shell, configuration model, theme system, and
-updater were all rebuilt, so installs from the AGS-era `develop` branch (at or
-before `3df882e`) have no automatic upgrade. Follow
+The desktop shell, configuration model, theme system, and updater were all
+rebuilt, so installs from the AGS-era `develop` branch (at or before
+`3df882e`) have no automatic upgrade. Follow
 [Upgrading to 1.0](docs/upgrading-to-1.0.md).
 
 ### Desktop shell

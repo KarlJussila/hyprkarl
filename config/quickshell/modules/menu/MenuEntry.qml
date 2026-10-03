@@ -17,7 +17,7 @@ Item {
 
   function refreshChecked(): void {
     checked = false
-    if (typeof entry.checkedCommand === "string") checkProcess.running = true
+    if (entry.checkedCommand) checkProcess.running = true
   }
 
   onRefreshTokenChanged: refreshChecked()

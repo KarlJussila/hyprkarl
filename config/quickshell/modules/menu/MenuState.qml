@@ -113,7 +113,7 @@ QtObject {
 
   function enterMenu(screen: string, nextHistory, menuId: string): bool {
     const sourceCommand = menus[menuId]?.sourceCommand
-    if (typeof sourceCommand !== "string") {
+    if (sourceCommand === undefined) {
       showMenu(screen, nextHistory, menuId, [], "")
       return true
     }

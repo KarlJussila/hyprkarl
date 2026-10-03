@@ -55,12 +55,7 @@ Scope {
   }
 
   function notificationPosition(outputName: string): var {
-    const loaded = item
-    if (loaded === null
-        || typeof loaded.notificationPosition !== "function") {
-      return null
-    }
-    return loaded.notificationPosition(outputName)
+    return item?.notificationPosition?.(outputName) ?? null
   }
 
   readonly property string source: shellConfig.userRoot.source

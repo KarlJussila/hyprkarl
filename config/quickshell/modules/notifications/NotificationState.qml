@@ -1,8 +1,8 @@
 import QtQml
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Services.Notifications
+import "../../config"
 
 QtObject {
   id: root
@@ -53,22 +53,9 @@ QtObject {
     }
   }
 
-  function focusedScreenName(): string {
-    return Hyprland.focusedMonitor?.name ?? Quickshell.screens[0]?.name ?? ""
-  }
-
-  function screenExists(name): bool {
-    return Quickshell.screens.some(screen => screen.name === name)
-  }
-
-  function resolvedScreenName(name): string {
-    if (screenExists(name)) return name
-    return Quickshell.screens[0]?.name ?? ""
-  }
-
   function entriesForScreen(name): var {
     return visibleNotifications.filter(entry =>
-      resolvedScreenName(entry.screenName) === name)
+      Screens.resolve(entry.screenName) === name)
   }
 
   function timeoutFor(notification): int {
@@ -154,7 +141,7 @@ QtObject {
   }
 
   function makeEntry(notification): var {
-    return newEntry(focusedScreenName(), Object.assign(contentOf(notification), {
+    return newEntry(Screens.focusedName(), Object.assign(contentOf(notification), {
       "source": notification,
       "synchronousKey": synchronousKey(notification)
     }))
@@ -282,13 +269,13 @@ QtObject {
 
     const entry = lastDismissed
     entry.serial = nextSerial++
-    entry.screenName = focusedScreenName()
+    entry.screenName = Screens.focusedName()
     lastDismissed = null
     present(entry)
   }
 
   function showStatus(summary, glyph): void {
-    present(newEntry(focusedScreenName(), {
+    present(newEntry(Screens.focusedName(), {
       "appName": "Hyprkarl",
       "summary": summary,
       "body": "",

@@ -17,11 +17,11 @@ QtObject {
     target: "calculator"
 
     function open(output: string): bool {
-      return OverlayState.replace(root.surface, output || OverlayState.focusedScreenName(), {})
+      return OverlayState.replace(root.surface, output || Screens.focusedName(), {})
     }
 
     function toggle(output: string): bool {
-      return OverlayState.toggle(root.surface, output || OverlayState.focusedScreenName(), {})
+      return OverlayState.toggle(root.surface, output || Screens.focusedName(), {})
     }
 
     function close(): void {

@@ -1,8 +1,6 @@
 pragma Singleton
 
 import QtQml
-import Quickshell
-import Quickshell.Hyprland
 
 QtObject {
   id: root
@@ -12,10 +10,6 @@ QtObject {
   property var parameters: ({})
   property int openRevision: 0
   property var returnRequests: []
-
-  function focusedScreenName(): string {
-    return Hyprland.focusedMonitor?.name ?? Quickshell.screens[0]?.name ?? ""
-  }
 
   function open(surface: string, screen: string, nextParameters: var): bool {
     if (activeSurface.length > 0) return false

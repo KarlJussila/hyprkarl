@@ -1,7 +1,7 @@
 import QtQml
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
+import "../../config"
 
 QtObject {
   id: root
@@ -66,16 +66,12 @@ QtObject {
     }
   }
 
-  function focusedScreenName(): string {
-    return Hyprland.focusedMonitor?.name ?? Quickshell.screens[0]?.name ?? ""
-  }
-
   function clampLevel(level: int): int {
     return Math.max(0, Math.min(100, level))
   }
 
   function present(): void {
-    screenName = focusedScreenName()
+    screenName = Screens.focusedName()
     requested = screenName.length > 0
     hideTimer.interval = media ? shellConfig.osd.mediaTimeout : shellConfig.osd.timeout
     hideTimer.restart()

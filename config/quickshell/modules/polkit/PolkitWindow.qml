@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Widgets
 import "../../ui/panels"
+import "../../config"
 
 PanelWindow {
   id: root
@@ -15,7 +16,7 @@ PanelWindow {
 
   readonly property var flow: PolkitState.flow
   readonly property bool active: PolkitState.requested
-    && output.name === PolkitState.resolvedScreenName()
+    && output.name === Screens.resolve(PolkitState.screenName)
   readonly property string resolvedIcon: flow?.iconName
     ? Quickshell.iconPath(flow.iconName, true)
     : ""

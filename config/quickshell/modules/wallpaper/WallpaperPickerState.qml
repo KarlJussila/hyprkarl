@@ -4,6 +4,7 @@ import QtQml
 import Quickshell
 import Quickshell.Io
 import "../../ui/modal"
+import "../../config"
 
 QtObject {
   id: root
@@ -28,7 +29,7 @@ QtObject {
     target: "wallpaper"
 
     function open(output: string, action: string): bool {
-      return root.openForScreen(output || OverlayState.focusedScreenName(), action)
+      return root.openForScreen(output || Screens.focusedName(), action)
     }
 
     function close(): void {

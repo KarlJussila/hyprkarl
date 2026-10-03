@@ -4,6 +4,7 @@ import QtQml
 import Quickshell
 import Quickshell.Io
 import "../../ui/modal"
+import "../../config"
 
 QtObject {
   id: root
@@ -58,11 +59,11 @@ QtObject {
 
     // An empty output means the focused one.
     function open(output: string): bool {
-      return root.openLauncher(output || OverlayState.focusedScreenName())
+      return root.openLauncher(output || Screens.focusedName())
     }
 
     function toggle(output: string): bool {
-      return root.toggleLauncher(output || OverlayState.focusedScreenName())
+      return root.toggleLauncher(output || Screens.focusedName())
     }
 
     function close(): void {
@@ -74,7 +75,7 @@ QtObject {
     target: "openWith"
 
     function open(output: string, path: string): bool {
-      return root.openFile(output || OverlayState.focusedScreenName(), path)
+      return root.openFile(output || Screens.focusedName(), path)
     }
 
     function close(): void {

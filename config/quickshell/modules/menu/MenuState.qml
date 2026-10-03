@@ -38,11 +38,11 @@ QtObject {
     target: "menu"
 
     function open(output: string, menu: string): bool {
-      return root.openForScreen(output || OverlayState.focusedScreenName(), menu)
+      return root.openForScreen(output || Screens.focusedName(), menu)
     }
 
     function toggle(output: string, menu: string): bool {
-      return root.toggleForScreen(output || OverlayState.focusedScreenName(), menu)
+      return root.toggleForScreen(output || Screens.focusedName(), menu)
     }
 
     function close(): void {

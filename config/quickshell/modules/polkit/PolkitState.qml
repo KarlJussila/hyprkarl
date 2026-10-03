@@ -1,9 +1,8 @@
 pragma Singleton
 
 import QtQml
-import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Services.Polkit
+import "../../config"
 
 QtObject {
   id: root
@@ -12,23 +11,10 @@ QtObject {
   readonly property var flow: agent.flow
   readonly property bool requested: agent.isActive
 
-  function focusedScreenName(): string {
-    return Hyprland.focusedMonitor?.name ?? Quickshell.screens[0]?.name ?? ""
-  }
-
-  function screenExists(name): bool {
-    return Quickshell.screens.some(screen => screen.name === name)
-  }
-
-  function resolvedScreenName(): string {
-    if (screenExists(screenName)) return screenName
-    return Quickshell.screens[0]?.name ?? ""
-  }
-
   property PolkitAgent agent: PolkitAgent {
 
     onAuthenticationRequestStarted: {
-      root.screenName = root.focusedScreenName()
+      root.screenName = Screens.focusedName()
       console.info(`Polkit authentication requested on ${root.screenName}`)
     }
 

@@ -34,14 +34,6 @@ PanelWindow {
     + shellConfig.notifications.gap
     - (touchesSurface ? theme.metrics.borderWidth : 0)
   readonly property bool connectedStack: theme.notification.stackSpacing === 0
-  // The window takes the toasts' full heights rather than the animated stack's,
-  // so it resizes once when a toast arrives and once after one has collapsed
-  // instead of on every frame; the mask keeps the empty part click-through.
-  readonly property real fullHeight: {
-    const toasts = stack.children.filter(child => child.toastHeight !== undefined)
-    return toasts.reduce((sum, child) => sum + child.toastHeight, 0)
-      + stack.spacing * Math.max(0, toasts.length - 1)
-  }
 
   visible: entries.length > 0
   screen: output
@@ -53,8 +45,7 @@ PanelWindow {
   implicitWidth: Math.min(
     theme.notification.width,
     output.width - shellConfig.notifications.sideMargin)
-  implicitHeight: fullHeight
-  mask: Region { item: stack }
+  implicitHeight: stack.implicitHeight
 
   anchors.top: resolvedEdge === "top"
   anchors.bottom: resolvedEdge === "bottom"
@@ -108,7 +99,6 @@ PanelWindow {
           && (root.notificationState.compactFor(root.entries[index + 1])
             ? root.theme.notification.compactWidth
             : root.theme.notification.width) >= toastWidth
-        readonly property real toastHeight: toast.implicitHeight
         property real reveal: modelData.revealed ? 1 : 0
 
         width: stack.width

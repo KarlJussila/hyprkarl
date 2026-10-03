@@ -28,7 +28,9 @@ Item {
   implicitHeight: Math.max(trigger.implicitHeight, trayRow.implicitHeight)
 
   component TrayItem: Item {
-    required property var trayItem
+    id: trayItem
+
+    required property var modelData
 
     implicitWidth: root.theme.bar.minimumThickness
     implicitHeight: 15
@@ -37,7 +39,7 @@ Item {
     IconImage {
       anchors.centerIn: parent
       implicitSize: 15
-      source: parent.trayItem.icon
+      source: trayItem.modelData.icon
     }
 
     MouseArea {
@@ -45,10 +47,15 @@ Item {
       acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
       cursorShape: Qt.PointingHandCursor
       onClicked: event => {
-        if (event.button === Qt.MiddleButton) parent.trayItem.secondaryActivate()
-        else if (event.button === Qt.RightButton || parent.trayItem.onlyMenu)
-          parent.trayItem.display(root.barWindow, mapToItem(null, 0, height).x, mapToItem(null, 0, height).y)
-        else parent.trayItem.activate()
+        const item = trayItem.modelData
+        if (event.button === Qt.MiddleButton) {
+          item.secondaryActivate()
+        } else if (event.button === Qt.RightButton || item.onlyMenu) {
+          const position = mapToItem(null, 0, height)
+          item.display(root.barWindow, position.x, position.y)
+        } else {
+          item.activate()
+        }
       }
     }
   }
@@ -145,10 +152,7 @@ Item {
 
       Repeater {
         model: SystemTray.items
-        TrayItem {
-          required property var modelData
-          trayItem: modelData
-        }
+        TrayItem {}
       }
     }
   }

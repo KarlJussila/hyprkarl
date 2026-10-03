@@ -16,8 +16,6 @@ Item {
   signal trialStarted()
 
   readonly property real preferredWidth: theme.panel.width
-  readonly property var target: displayState.outputs.find(
-    output => output.name === displayState.target) ?? ({})
   readonly property var selectedOutput: displayState.outputs.find(
     output => output.name === selectedName) ?? ({})
   readonly property var selectedModes: selectedOutput.modes ?? []
@@ -54,8 +52,6 @@ Item {
   property var displayState: ({
     "target": outputName,
     "outputs": [],
-    "scale": 1,
-    "scalePresets": [],
     "brightness": { "available": false, "percent": 0 }
   })
   property int brightnessPreview: -1
@@ -109,15 +105,6 @@ Item {
   function goBack(): void {
     if (page === "detail") showOverview()
     else showDetails()
-  }
-
-  function setEnabled(value: bool): void {
-    if (!value && selectedOutput.enabled && activeOutputCount === 1) {
-      error = "The last active display cannot be disabled"
-      return
-    }
-    draftEnabled = value
-    error = ""
   }
 
   function buildLayout(): var {
@@ -435,7 +422,7 @@ Item {
         title: "Enabled"
         switchVisible: true
         switchActive: root.draftEnabled
-        action: () => root.setEnabled(!root.draftEnabled)
+        action: () => root.draftEnabled = !root.draftEnabled
       }
 
       PanelSectionLabel {

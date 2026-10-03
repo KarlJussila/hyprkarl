@@ -311,7 +311,6 @@ def display_state(requested: str) -> dict[str, Any]:
                 "name": monitor["name"],
                 "description": monitor.get("description", ""),
                 "enabled": enabled,
-                "focused": monitor.get("focused", False),
                 "width": monitor.get("width", 0) or 0,
                 "height": monitor.get("height", 0) or 0,
                 "refreshRate": monitor.get("refreshRate", 0) or 0,
@@ -331,10 +330,6 @@ def display_state(requested: str) -> dict[str, Any]:
     return {
         "target": target["name"],
         "outputs": outputs,
-        "scale": target.get(
-            "scale", saved_outputs.get(target["name"], {}).get("scale", 1)
-        ),
-        "scalePresets": scale_presets(target),
         "brightness": brightness(target["name"]),
     }
 

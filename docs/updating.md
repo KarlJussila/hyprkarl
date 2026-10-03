@@ -107,6 +107,25 @@ shell appearance; renames are still noted in the changelog), commands not in
 the reference, shell QML that the extension docs do not name, and Hyprkarl's
 own files in the checkout.
 
+## Versions
+
+Releases are tags `vX.Y.Z` on `main`, numbered by what they mean for you:
+
+- **Major** (`2.0.0`) breaks one of the promises above. The changelog says how
+  to adapt, and a migration converts your files where it can.
+- **Minor** (`1.1.0`) adds something without breaking anything: a command,
+  setting, widget, theme, or hook event. Changes to things outside the
+  promises, such as the `shell` theme keys or the default bar layout, also
+  come in minor releases.
+- **Patch** (`1.0.1`) fixes or adjusts what is already there, with nothing new
+  to learn or configure.
+
+`hk-version` prints the installed version. On a release it is the tag
+(`v1.0.1`). Between releases, on `develop` or a custom branch, it is the last
+tag, the number of commits since, and the current commit: `v1.0.1-3-g1a2b3c4`
+is three commits after v1.0.1. A trailing `-dirty` means tracked files in the
+checkout have uncommitted changes.
+
 ## Custom branches
 
 You do not need a branch for personal configuration. If you maintain changes

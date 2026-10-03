@@ -8,7 +8,9 @@ stable](updating.md#what-updates-keep-stable).
 ## Update
 
 - `hk-version`
-  Print the installed release tag, or the commit between releases.
+  Print the installed version: the release tag, or `vX.Y.Z-N-g<commit>`
+  between releases, with `-dirty` when tracked files have local changes. See
+  [Versions](updating.md#versions).
 - `hk-update-available`
   Fetch the update source and print bar-widget JSON that is visible when new
   commits are waiting. The shipped bar polls it hourly; offline it reuses the

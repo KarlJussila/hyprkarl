@@ -64,7 +64,10 @@ Releases are annotated tags `vX.Y.Z` on `main` with a hand-written
 `docs/repo-conventions.md`. From v1.0.0, the surfaces listed in
 `docs/updating.md` ("What updates keep stable") are promises: renaming or
 removing one is a breaking change that needs a changelog note and, where the
-user's files can be converted, a migration. Prefer additions.
+user's files can be converted, a migration. Prefer additions. Version
+numbers follow `docs/updating.md#versions` (major breaks a promise, minor adds,
+patch fixes). Cut releases on `develop` and push `develop:main`; checking out
+another branch in a live checkout hot-reloads its files into the session.
 
 ## Architecture
 

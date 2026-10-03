@@ -61,19 +61,21 @@ reliably follow symlinked theme directories.
 - `develop` is the integration branch. Work lands there first and is merged to
   `main` when it's ready to ship.
 - A release is an annotated tag `vX.Y.Z` on `main`, cut together with a
-  hand-written entry in `CHANGELOG.md`:
+  hand-written entry in `CHANGELOG.md`. Nothing lands on `main` except
+  releases, so `main` always fast-forwards to `develop` and the release is cut
+  there, without checking out `main`:
 
   ```bash
-  git checkout main && git merge develop
-  # move the Unreleased notes under a new version heading in CHANGELOG.md, commit
+  # on develop: move the Unreleased notes under "## vX.Y.Z (date)", commit
   git tag -a vX.Y.Z -m "Hyprkarl vX.Y.Z"
-  git push origin main vX.Y.Z
+  git push origin develop develop:main vX.Y.Z
   ```
 
-- From v1.0.0, a change to anything listed under [What updates keep
-  stable](updating.md#what-updates-keep-stable) is breaking: it bumps the
-  major version, is called out in the changelog, and comes with a migration
-  when Hyprkarl can convert the user's files.
+- The version number follows [Versions](updating.md#versions): major for a
+  change to anything under [What updates keep
+  stable](updating.md#what-updates-keep-stable), which is also called out in
+  the changelog and comes with a migration when Hyprkarl can convert the
+  user's files; minor for additions; patch for fixes and adjustments.
 
 The normal checkout stays on `main`. `hk-update sync` fetches and pins an exact
 confirmed `origin/main` commit without moving the checkout; `hk-update apply`

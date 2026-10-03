@@ -1,6 +1,7 @@
 #!/bin/bash
 # hk-version
-# Print the installed Hyprkarl version: the release tag, or the commit when
-# the checkout is between releases.
+# Print the installed Hyprkarl version: the release tag, or the last tag plus
+# commits since and the current commit between releases, with -dirty when
+# tracked files have local changes. See docs/updating.md#versions.
 
-git -C "$HYPRKARL_PATH" describe --tags --always
+git -C "$HYPRKARL_PATH" describe --tags --always --dirty

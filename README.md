@@ -169,8 +169,9 @@ SUPER + T              ->  Toggle tiling/floating
 
 Run `hk-update all`, or click the update icon in the bar when one appears. It
 shows what changed, then installs packages, runs one-time migrations, and
-applies the new configuration. Releases are tagged `vX.Y.Z` on `main`; see
-[CHANGELOG.md](CHANGELOG.md) and [Updating](docs/updating.md).
+applies the new configuration. Releases are tagged `vX.Y.Z` on `main`;
+`hk-version` prints yours. See [CHANGELOG.md](CHANGELOG.md) and
+[Versions](docs/updating.md#versions).
 
 ## Documentation
 

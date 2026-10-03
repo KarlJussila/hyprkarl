@@ -1,7 +1,9 @@
 # Command Reference
 
-This page lists the `hk-*` commands you would normally run directly. It
-does not try to document every internal script.
+This page lists the `hk-*` commands you would normally run directly. These
+names and arguments stay stable across updates; commands not listed here are
+internal and can change. See [What updates keep
+stable](updating.md#what-updates-keep-stable).
 
 ## Update
 

@@ -56,8 +56,10 @@ see `tests/README.md`.
 
 Releases are annotated tags `vX.Y.Z` on `main` with a hand-written
 `CHANGELOG.md` entry; `develop` is the integration branch. See
-`docs/repo-conventions.md`. Until v1.0.0, minor versions may break things; call
-it out in the changelog.
+`docs/repo-conventions.md`. From v1.0.0, the surfaces listed in
+`docs/updating.md` ("What updates keep stable") are promises: renaming or
+removing one is a breaking change that needs a changelog note and, where the
+user's files can be converted, a migration. Prefer additions.
 
 ## Architecture
 

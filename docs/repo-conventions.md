@@ -87,8 +87,10 @@ reliably follow symlinked theme directories.
   git push origin main vX.Y.Z
   ```
 
-- Until v1.0.0, minor versions may include breaking changes; the changelog
-  calls them out explicitly.
+- From v1.0.0, a change to anything listed under [What updates keep
+  stable](updating.md#what-updates-keep-stable) is breaking: it bumps the
+  major version, is called out in the changelog, and comes with a migration
+  when Hyprkarl can convert the user's files.
 
 The normal checkout stays on `main`. `hk-update sync` fetches and pins an exact
 confirmed `origin/main` commit without moving the checkout; `hk-update apply`

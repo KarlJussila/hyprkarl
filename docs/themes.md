@@ -157,6 +157,10 @@ $EDITOR "${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/themes/my-theme/theme.yaml"
 hk-theme set my-theme
 ```
 
+Keys outside `shell` stay stable across updates; the detailed `shell` keys can
+be renamed in a release, with a changelog note. Prefer the stable keys in a
+personal theme. See [What updates keep stable](updating.md#what-updates-keep-stable).
+
 The shared compiler defaults provide fonts, spacing, radii, border widths,
 motion, and the complete Quickshell appearance shape. Most new sources only
 need palette values and intentional changes.

@@ -78,6 +78,32 @@ machine has not run yet, in order, after packages and before configuration.
 Each is recorded only when it succeeds, so a failed one runs again on the next
 `apply`. Scripts that change the system ask for your password through `sudo`.
 
+## What updates keep stable
+
+From 1.0, these are promises. An update that changes one is a breaking change:
+the changelog says so and how to adapt, and where Hyprkarl can convert your
+files itself, a migration does it.
+
+- **Where personal files live:** `~/.config/hypr/hyprland.local.lua` and the
+  Hypr tools' `*.local.conf`, the terminals' `local.*` files,
+  `~/.config/quickshell/settings/` and `custom/`,
+  `~/.config/hyprkarl/themes/` and `hooks/`, and `~/.config/uwsm/env.local`.
+- **The documented settings** in [Shell configuration](shell-configuration.md)
+  and [Menu configuration](menu-configuration.md), and Hypridle's variables.
+- **What personal QML relies on:** the context members, `ui.modal.Modal`, and
+  the IPC targets and methods in
+  [Extending Hyprkarl](extending-hyprkarl.md#replace-a-built-in).
+- **The commands in the [command reference](commands.md)** and the hook event
+  names.
+- **Theme keys outside `shell`:** `mode`, `desktop`, the palette groups
+  (`base`, `ansi`, `bright`, `accent`, `status`, `ui`), `typography`,
+  `metrics`, `motion`, and `wallpaper`.
+
+Everything else can change in any release: the `shell` theme keys (detailed
+shell appearance; renames are still noted in the changelog), commands not in
+the reference, shell QML that the extension docs do not name, and Hyprkarl's
+own files in the checkout.
+
 ## Custom branches
 
 You do not need a branch for personal configuration. If you maintain changes

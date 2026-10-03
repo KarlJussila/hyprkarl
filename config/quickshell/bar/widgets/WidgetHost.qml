@@ -14,9 +14,8 @@ Item {
   readonly property string widgetId: definition.id
   readonly property var loadedItem: loader.item
   readonly property int dividerExtent: showDivider && loadedItem?.visible ? theme.metrics.borderWidth : 0
-  readonly property int mainPaddingOffset: loadedItem && ("hostMainPaddingOffset" in loadedItem)
-    ? loadedItem.hostMainPaddingOffset
-    : 0
+  // The tray narrows its padding through the theme's trayPaddingOffset.
+  readonly property int mainPaddingOffset: loadedItem?.hostMainPaddingOffset ?? 0
   readonly property int mainPadding: Math.max(0, theme.bar.widgetPadding.main + mainPaddingOffset)
   property bool initialized: false
 

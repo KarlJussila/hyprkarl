@@ -35,8 +35,8 @@ theme, outputs, and overlay
 open/replace/push/back/toggle/close context. It also imports `ui.modal.Modal`
 from the public QML module and proves
 that personal modal content is created on demand and recreated after closing.
-A second pass starts the built-in bar without panels, applies the trackless
-`mark` override to its toggle widget, and checks for runtime errors.
+A second pass starts the built-in bar without panels, with polled, streamed,
+JSON, and button command widgets, and checks for runtime errors.
 
 It needs a running Hyprland session with at least one output, plus `qs`,
 `jq`, `hyprctl`, and the installed Quickshell QML modules. It copies the shell

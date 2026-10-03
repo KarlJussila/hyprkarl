@@ -5,7 +5,6 @@ SystemMonitor {
   id: root
 
   required property var shellConfig
-  active: true
 
   readonly property var commandProviders: {
     const layout = shellConfig.bar.layout

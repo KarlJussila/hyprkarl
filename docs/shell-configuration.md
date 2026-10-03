@@ -107,7 +107,7 @@ and switch to `alternateFormat` on right click. Commands run through
 | `clock` | `format`, `alternateFormat` as [Qt date formats](https://doc.qt.io/qt-6/qml-qtqml-qt.html#formatDateTime-method) |
 | `tray` | `direction` (`start` or `end`) |
 | `recording` | `icon`, `primaryCommand` |
-| `toggle` | `onCommand`, `offCommand`, `syncCommand`, `onIcon`, `offIcon`, `switch` |
+| `toggle` | `onCommand`, `offCommand`, `syncCommand`, `onIcon`, `offIcon`, `tooltip`, `switch` |
 | `display` | None |
 | `audio` | `showPercentage`, `secondaryCommand` |
 | `bluetooth`, `network` | `secondaryCommand` |

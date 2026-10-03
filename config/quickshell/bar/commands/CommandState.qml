@@ -9,19 +9,8 @@ QtObject {
 
   property var definitions: []
   property string definitionSignature: "[]"
+  // Each command widget's latest output by widget ID.
   property var results: ({})
-  readonly property var missingResult: ({
-    "ready": false,
-    "visible": false,
-    "text": "",
-    "icon": "",
-    "tooltip": "",
-    "state": "normal"
-  })
-
-  function resultFor(id): var {
-    return results[id] ?? missingResult
-  }
 
   function configure(nextDefinitions): void {
     const signature = JSON.stringify(nextDefinitions)

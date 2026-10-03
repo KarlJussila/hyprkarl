@@ -127,6 +127,7 @@
             "onCommand": "hk-caffeine on",
             "offCommand": "hk-caffeine off",
             "syncCommand": "hk-caffeine status",
+            "tooltip": "Caffeine",
             "onIcon": "",
             "offIcon": "󰽖",
             "switch": {

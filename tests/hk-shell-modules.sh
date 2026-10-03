@@ -210,7 +210,7 @@ sleep 0.5
 panel_log=$(XDG_CONFIG_HOME="$CONFIG_HOME" XDG_STATE_HOME="$STATE_HOME" \
   qs log -p "$SHELL_ROOT" --tail 200 --no-color 2>/dev/null) \
   || fail "could not read bar-without-panels log"
-if grep -Eq 'TypeError|ReferenceError|failed to load' <<< "$panel_log"; then
+if grep -Eq 'TypeError|ReferenceError|failed to load|Command widget' <<< "$panel_log"; then
   printf '%s\n' "$panel_log" >&2
   fail "bar without panels produced a runtime error"
 fi

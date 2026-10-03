@@ -23,7 +23,7 @@ ShellButton {
       theme: root.theme
     }
   }
-  tooltip: active ? "Caffeine on" : "Caffeine off"
+  tooltip: config.tooltip ?? ""
   onPrimary: toggle
 
   function sync(): void {

@@ -22,10 +22,6 @@ Item {
     loadedItem && "tooltipSuppressed" in loadedItem
       ? loadedItem.tooltipSuppressed
       : false
-  property int hostMainPaddingOffset:
-    loadedItem && "hostMainPaddingOffset" in loadedItem
-      ? loadedItem.hostMainPaddingOffset
-      : 0
 
   visible: moduleLoader.status === Loader.Ready
     && (!("widgetVisible" in loadedItem) || loadedItem.widgetVisible)
@@ -65,15 +61,7 @@ Item {
 
   Loader {
     id: moduleLoader
-
     anchors.fill: parent
-
-    onStatusChanged: {
-      if (status === Loader.Error) {
-        console.warn("User QML widget '" + root.widgetId
-          + "' failed to load '" + root.config.source + "'")
-      }
-    }
   }
 
   HoverHandler { id: hover }

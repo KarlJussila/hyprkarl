@@ -11,6 +11,35 @@
     "wallpaper": false
   },
   "bar": {
-    "edge": "bottom"
+    "edge": "bottom",
+    "layout": {
+      "end": [
+        {
+          "id": "json-probe",
+          "kind": "command",
+          "command": "printf '{\"text\": \"ok\", \"state\": \"accent\"}'",
+          "output": "json",
+          "interval": 1000
+        },
+        {
+          "id": "text-probe",
+          "kind": "command",
+          "command": "echo ok",
+          "interval": 1000
+        },
+        {
+          "id": "stream-probe",
+          "kind": "command",
+          "command": "echo ok; sleep 60",
+          "mode": "stream"
+        },
+        {
+          "id": "button-probe",
+          "kind": "command",
+          "icon": "x",
+          "primaryCommand": "true"
+        }
+      ]
+    }
   }
 }

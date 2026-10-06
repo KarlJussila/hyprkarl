@@ -4,12 +4,14 @@ Notable changes to Hyprkarl. Releases are annotated git tags on `main`;
 entries here are written by hand when a release is cut. From v1.0.0, a
 breaking change bumps the major version and is called out explicitly.
 
-## Unreleased
+## v1.1.1 (2026-10-06)
 
 - The app launcher ranks its results instead of listing every match
-  alphabetically. Name matches come first, then generic names, keywords, and
-  commands; app descriptions no longer match at all. Apps you launch often move
-  up among similar matches.
+  alphabetically. Name matches come first, then generic names, keywords,
+  commands, and categories; app descriptions no longer match at all. Apps you
+  launch often move up among similar matches.
+- [Updating](docs/updating.md) shows the full steps for following `develop`,
+  including fetching its branch, which the install clone leaves out.
 
 ## v1.1.0 (2026-10-03)
 

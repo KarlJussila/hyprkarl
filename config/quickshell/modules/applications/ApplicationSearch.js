@@ -31,19 +31,6 @@ function abbreviates(term, nameWords, from) {
   return false
 }
 
-// Whether a word of the name starts with the term's first letter and holds
-// the rest in order, such as "bl" in Bolt.
-function scattered(term, nameWords) {
-  return nameWords.some(function(word) {
-    if (word[0] !== term[0]) return false
-    var found = 1
-    for (var index = 1; index < word.length && found < term.length; index++) {
-      if (word[index] === term[found]) found++
-    }
-    return found === term.length
-  })
-}
-
 function startsAWord(term, wordList) {
   return wordList.some(function(word) { return word.startsWith(term) })
 }
@@ -59,7 +46,6 @@ function termScore(term, entry) {
   if (startsAWord(term, otherWords)) return 40
   if (name.includes(term)) return 20
   if (startsAWord(term, words((entry.categories || []).join(" ")))) return 10
-  if (scattered(term, nameWords)) return 5
   return 0
 }
 

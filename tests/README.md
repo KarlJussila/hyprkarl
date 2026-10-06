@@ -75,8 +75,8 @@ QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner \
 
 Checks the launcher's search ranking: name matches before keyword matches,
 launch counts breaking ties without lifting weaker matches over names, word
-starts and abbreviations, and the low-ranked category and scattered-letter
-matches.
+starts and abbreviations, low-ranked category matches, and no matches from
+letters scattered through a name.
 
 ```bash
 QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner \

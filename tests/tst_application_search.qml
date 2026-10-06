@@ -59,11 +59,13 @@ TestCase {
     compare(names("lowr"), ["LibreOffice Writer"])
   }
 
-  function test_lowTiers() {
+  function test_categories() {
     compare(names("music"), ["Spotify"])
-    compare(names("bl"), ["Bolt"])
     compare(names("gam"), ["Steam"])
-    compare(names("tm"), ["Thunar File Manager"])
+  }
+
+  function test_scatteredLettersDoNotMatch() {
+    compare(names("bl"), [])
   }
 
   function test_everyTermMustMatch() {

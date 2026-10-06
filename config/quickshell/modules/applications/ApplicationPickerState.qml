@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import "../../ui/modal"
 import "../../config"
+import "ApplicationSearch.js" as ApplicationSearch
 
 QtObject {
   id: root
@@ -27,17 +28,13 @@ QtObject {
       "name": application.name,
       "genericName": application.genericName,
       "icon": application.icon,
-      "searchText": [
-        application.name,
-        application.genericName,
-        application.comment,
-        application.id,
-        application.command.join(" "),
-        application.categories.join(" "),
-        application.keywords.join(" ")
-      ].join(" ")
+      "keywords": application.keywords,
+      "categories": application.categories,
+      "executable": application.command[0]?.split("/").pop() ?? ""
     }))
     .sort((left, right) => left.name.localeCompare(right.name))
+  // Desktop entry ID to how many times the launcher started it.
+  property var launches: ({})
 
   signal requested()
 
@@ -81,6 +78,13 @@ QtObject {
     function close(): void {
       OverlayState.close(root.openWithSurface)
     }
+  }
+
+  property FileView launchesFile: FileView {
+    path: Paths.stateHome + "/application-launches.json"
+    blockLoading: true
+    printErrors: false
+    onLoaded: root.launches = JSON.parse(text())
   }
 
   property Process openWithSource: Process {
@@ -142,21 +146,12 @@ QtObject {
     return OverlayState.back()
   }
 
-  function matches(entry, terms): bool {
-    const searchText = entry.searchText.toLowerCase()
-    return terms.every(term => searchText.includes(term))
-  }
-
   // hidden: desktop entry IDs to leave out of the launcher.
   function entriesFor(query: string, hidden: var): var {
-    const entries = openWithActive
-      ? openWithEntries
-      : launcherEntries.filter(entry => !hidden.includes(entry.id))
-    const terms = query.trim().toLowerCase().split(/\s+/)
-      .filter(term => term.length > 0)
-    return terms.length === 0
-      ? entries
-      : entries.filter(entry => matches(entry, terms))
+    return openWithActive
+      ? ApplicationSearch.rank(openWithEntries, query, {})
+      : ApplicationSearch.rank(
+        launcherEntries.filter(entry => !hidden.includes(entry.id)), query, launches)
   }
 
   function activate(entry): void {
@@ -166,6 +161,8 @@ QtObject {
     OverlayState.close(surface)
 
     if (surface === launcherSurface) {
+      launches = Object.assign({}, launches, { [entry.id]: (launches[entry.id] ?? 0) + 1 })
+      launchesFile.setText(JSON.stringify(launches))
       Quickshell.execDetached(["uwsm-app", "--", entry.id + ".desktop"])
       return
     }

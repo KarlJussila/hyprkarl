@@ -54,6 +54,8 @@ and are not for editing:
 - `display/` holds the layout the display panel saved: `monitors.lua`, which
   Hyprland loads, and `layout.json`. Rules in `hyprland.local.lua` still win.
 - `calculator-history.json` keeps the calculator's last five results.
+- `application-launches.json` counts launches from the app launcher, which
+  its search ranking uses.
 
 `hk-update apply` links Hyprkarl's agent skill into the skill folders of
 coding agents (`~/.agents`, `~/.claude`, `~/.codex`), creating them, so an

@@ -71,6 +71,18 @@ QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner \
   -input tests/tst_menu_model.qml
 ```
 
+## `tst_application_search.qml`
+
+Checks the launcher's search ranking: name matches before keyword matches,
+launch counts breaking ties without lifting weaker matches over names, word
+starts and abbreviations, and the low-ranked category and scattered-letter
+matches.
+
+```bash
+QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner \
+  -input tests/tst_application_search.qml
+```
+
 ## `tst_toggle_indicator.qml`
 
 Checks that the shared toggle indicator reproduces the theme defaults, resolves

@@ -52,12 +52,9 @@ def print_entries(path: Path) -> None:
                 "name": name,
                 "genericName": generic_name,
                 "icon": icon_name(app),
-                "searchText": " ".join(
-                    filter(
-                        None,
-                        [name, generic_name, app.get_name(), app.get_executable(), app_id],
-                    )
-                ),
+                "keywords": app.get_keywords(),
+                "categories": list(filter(None, (app.get_categories() or "").split(";"))),
+                "executable": Path(app.get_executable() or "").name,
                 "isDefault": app_id == default_id,
             }
         )

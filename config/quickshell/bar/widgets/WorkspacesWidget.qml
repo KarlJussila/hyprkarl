@@ -70,7 +70,7 @@ Item {
     MouseArea {
       anchors.fill: parent
       cursorShape: Qt.PointingHandCursor
-      onClicked: Hyprland.dispatch(`workspace ${workspaceButton.workspace.id}`)
+      onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${workspaceButton.workspace.id} })`)
     }
   }
 

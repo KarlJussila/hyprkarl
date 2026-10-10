@@ -172,7 +172,7 @@ scripts use `#!/bin/bash` and intentionally omit `set -euo pipefail`.
 - `docs/themes.md`: theme structure and wallpapers
 - `docs/extending-hyprkarl.md`: personal scripts, hooks, menus, keybindings, QML
 - `docs/shell-configuration.md`: shell settings and QML extension points
-- `docs/authentication-surfaces.md`: lock screen and polkit
+- `docs/authentication-surfaces.md`: lock screen, polkit, and application credentials
 - `docs/shell-style.md`: Bash and Python conventions
 - `docs/commands.md`: `hk-*` command reference
 - `docs/repo-conventions.md`: editing conventions, branches, releases

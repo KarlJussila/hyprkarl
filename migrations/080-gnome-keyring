@@ -1,0 +1,17 @@
+#!/bin/bash
+# Seed a passwordless default keyring and start the packaged Secret Service.
+
+keyring_dir="${XDG_DATA_HOME:-$HOME/.local/share}/keyrings"
+
+# Existing keyrings and the user's default selection belong to the user.
+if [[ ! -e "$keyring_dir/default" ]] \
+    && ! compgen -G "$keyring_dir/*.keyring" >/dev/null; then
+  umask 077
+  install -d -m700 "$keyring_dir" \
+    && sed "s/{{TIMESTAMP}}/$(date +%s)/g" \
+      "$HYPRKARL_PATH/templates/setup/login.keyring" > "$keyring_dir/login.keyring" \
+    && printf 'login\n' > "$keyring_dir/default" || exit 1
+fi
+
+systemctl --user daemon-reload || exit 1
+systemctl --user enable --now gnome-keyring-daemon.service

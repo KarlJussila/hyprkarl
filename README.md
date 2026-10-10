@@ -185,7 +185,7 @@ applies the new configuration. Releases are tagged `vX.Y.Z` on `main`;
 - [Themes](docs/themes.md)
 - [Extending Hyprkarl](docs/extending-hyprkarl.md): commands, hooks, QML,
   replacing built-in parts
-- [Lock screen and polkit](docs/authentication-surfaces.md)
+- [Authentication and credentials](docs/authentication-surfaces.md)
 - [Updating](docs/updating.md) and [Upgrading to 1.0](docs/upgrading-to-1.0.md)
 - [Command reference](docs/commands.md)
 - [Troubleshooting](docs/troubleshooting.md)

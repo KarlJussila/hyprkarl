@@ -18,6 +18,7 @@ explaining what goes there.
 | Lifecycle hooks | `~/.config/hyprkarl/hooks/<event>.d/` |
 | Session variables | `~/.config/uwsm/env.local` |
 | Personal commands | `~/.local/bin/` |
+| Application credentials | `~/.local/share/keyrings/` |
 | fastfetch | The theme: its `fastfetch` keys in a theme overlay, or your own `~/.config/fastfetch/config.jsonc` |
 | btop, Neovim, Yazi | Their own `~/.config/<app>/`, copied from Hyprkarl once |
 

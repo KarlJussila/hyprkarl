@@ -12,6 +12,7 @@ foot
 fzf
 ghostty
 git-delta
+gnome-keyring
 gpu-screen-recorder
 greetd
 greetd-agreety

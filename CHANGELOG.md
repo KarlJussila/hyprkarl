@@ -4,6 +4,12 @@ Notable changes to Hyprkarl. Releases are annotated git tags on `main`;
 entries here are written by hand when a release is cut. From v1.0.0, a
 breaking change bumps the major version and is called out explicitly.
 
+## Unreleased
+
+- GNOME Keyring provides persistent application credentials.
+  Installs and updates enable its user service and create a
+  passwordless default keyring when none exists.
+
 ## v1.1.1 (2026-10-06)
 
 - The app launcher ranks its results instead of listing every match

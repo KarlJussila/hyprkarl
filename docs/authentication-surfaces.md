@@ -2,7 +2,18 @@
 
 The shell draws the lock screen and the polkit prompt. `hk-lock` runs the lock
 screen as its own process, so restarting the shell never affects an active
-lock.
+lock. GNOME Keyring stores application credentials.
+
+## Application credentials
+
+On installation, a one-time migration creates a passwordless `Login` keyring and
+makes it the default
+when no keyrings or default selection exist. It lives under
+`${XDG_DATA_HOME:-$HOME/.local/share}/keyrings/`. Existing keyrings and their
+passwords take precedence.
+
+The passwordless keyring needs no unlock prompt, matching Hyprkarl's automatic
+login after disk unlock.
 
 ## Locking and authentication
 

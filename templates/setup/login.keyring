@@ -1,0 +1,6 @@
+[keyring]
+display-name=Login
+ctime={{TIMESTAMP}}
+mtime={{TIMESTAMP}}
+lock-on-idle=false
+lock-after=false

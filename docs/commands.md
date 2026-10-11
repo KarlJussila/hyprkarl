@@ -105,9 +105,11 @@ stable](updating.md#what-updates-keep-stable).
 - `hk-suspend`
   Suspend. Hypridle locks the session first.
 - `hk-reboot`
-  Reboot through `hyprshutdown` with the standard countdown overlay.
+  Reboot through `hyprshutdown` with the standard countdown overlay, or
+  directly if `hyprshutdown` fails.
 - `hk-shutdown`
-  Shut down through `hyprshutdown` with the standard countdown overlay.
+  Shut down through `hyprshutdown` with the standard countdown overlay, or
+  directly if `hyprshutdown` fails.
 
 ### Screenshots
 

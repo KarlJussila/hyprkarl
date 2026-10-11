@@ -9,6 +9,10 @@ breaking change bumps the major version and is called out explicitly.
 - GNOME Keyring provides persistent application credentials.
   Installs and updates enable its user service and create a
   passwordless default keyring when none exists.
+- Restart and Shut Down from the menu still go through after an NVIDIA driver
+  update. The closing screen can't start until you reboot onto the new driver,
+  so they now skip it and restart or shut down directly instead of closing
+  your apps and stopping there.
 
 ## v1.1.1 (2026-10-06)
 

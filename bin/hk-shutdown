@@ -1,5 +1,10 @@
 #!/bin/bash
 # hk-shutdown
-# Shut down with hyprshutdown
+# Shut down with hyprshutdown, or directly if it fails.
 
-hyprshutdown -t 'Shutting down...' --post-cmd 'shutdown -P 0'
+# After a GPU driver upgrade, hyprshutdown closes apps and then crashes before
+# running its post-cmd. Closing apps can hang up the terminal or SIGTERM the
+# app that started this script, so outlive both; --no-fork keeps its exit
+# status so the fallback runs. Cancel exits 0.
+trap : HUP TERM
+hyprshutdown --no-fork -t 'Shutting down...' --post-cmd 'shutdown -P 0' || systemctl poweroff

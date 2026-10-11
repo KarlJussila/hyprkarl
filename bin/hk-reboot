@@ -1,4 +1,10 @@
 #!/bin/bash
-# Reboot with hyprshutdown
+# hk-reboot
+# Reboot with hyprshutdown, or directly if it fails.
 
-hyprshutdown -t 'Restarting...' --post-cmd 'reboot'
+# After a GPU driver upgrade, hyprshutdown closes apps and then crashes before
+# running its post-cmd. Closing apps can hang up the terminal or SIGTERM the
+# app that started this script, so outlive both; --no-fork keeps its exit
+# status so the fallback runs. Cancel exits 0.
+trap : HUP TERM
+hyprshutdown --no-fork -t 'Restarting...' --post-cmd 'reboot' || systemctl reboot

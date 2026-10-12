@@ -156,7 +156,9 @@ PickerWindow {
     } else if (query.length === 0 && event.key === Qt.Key_Left) {
       saveView()
       MenuState.back()
-    } else if (!editing && !searchShown && event.text.length > 0
+    } else if (!editing && !searchShown
+        // Backspace and Delete carry control characters as text.
+        && /^[^\x00-\x1f\x7f]+$/.test(event.text)
         && (event.modifiers & (Qt.ControlModifier | Qt.AltModifier
           | Qt.MetaModifier)) === 0) {
       query = event.text

@@ -24,8 +24,12 @@ ShellRoot {
   WlSessionLock {
     id: session
     locked: true
-    onLockedChanged: if (!locked) Qt.quit()
-    onSecureChanged: if (secure) keyboardLayout.running = true
+    // Quickshell 0.3.2 does not notify lockedChanged on unlock; secure
+    // drops on both unlock and rejection.
+    onSecureChanged: {
+      if (secure) keyboardLayout.running = true
+      else Qt.quit()
+    }
 
     WlSessionLockSurface {
       color: "black"

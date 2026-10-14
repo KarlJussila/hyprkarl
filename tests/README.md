@@ -7,8 +7,8 @@ a running Wayland session say so; the others keep their changes under `/tmp`.
 
 Seeds starting configs into a disposable home. It checks that an existing
 application config is left alone, that an unrelated file does not block a
-seed, that links are preserved, and that a second run never overwrites a
-file.
+starting config, that personal include files are created, and that a second
+run never overwrites a file.
 
 ```bash
 tests/hk-config-seed.sh

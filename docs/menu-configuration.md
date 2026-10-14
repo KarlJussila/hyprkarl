@@ -1,6 +1,6 @@
 # Menu Configuration
 
-The command menus are data: `defaults/menu.json`, with your
+The command menus are data: `~/.config/quickshell/defaults/menu.json`, with your
 `~/.config/quickshell/settings/menu.json` merged over it key by key. Write only
 the menus and entries you add or change. Edits apply live; a file that does not
 parse leaves the shipped menus running and logs the error to `hk-shell logs`.

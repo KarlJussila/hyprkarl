@@ -57,6 +57,7 @@ REQUIRED_BUNDLE_FILES = (
     "wifitui.toml",
     "config/fastfetch/config.jsonc",
     "yazi.toml",
+    "yazi/theme.toml",
     "icons.theme",
     "cursor.theme",
     "gtk-3.0/gtk.css",

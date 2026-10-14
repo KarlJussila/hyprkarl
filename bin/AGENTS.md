@@ -28,8 +28,9 @@ without good reason.
   (`menu`, `launcher`, `calculator`, `wallpaper`, `open-with`, `osd`,
   `notifications`). Hardware and media commands send semantic state to
   `hk-shell osd`; the shell picks icons and timing. Menus are data in
-  `defaults/menu.json`. Dynamic menu rows come from `*-menu-entries`
-  providers that print a JSON array and never open the menu themselves.
+  `config/quickshell/defaults/menu.json`. Dynamic menu rows come from
+  `*-menu-entries` providers that print a JSON array and never open the menu
+  themselves.
 - **Clicked monitor.** Bar clicks set `HYPRKARL_OUTPUT`, and `hk-shell menu`
   forwards it so the menu opens on the clicked bar even when Hyprland does not
   focus monitors on mouse movement.
@@ -45,8 +46,9 @@ without good reason.
   file-aware launching; QML must not duplicate it.
 - **Updates.** `hk-update` treats `config/`, `defaults/`, and `themes/` as
   upstream-owned and never generates or replaces personal files.
-  See `docs/updating.md`. `hk-config-seed` copies an application's starting
-  config only when the user has none of its files.
+  See `docs/updating.md`. `hk-config-seed` creates each file of
+  `templates/config/` when it is missing and copies a starting config from
+  `templates/starter/` only when the user has none of its files.
 - **Themes.** `lib/theme.sh` builds a theme, swaps `current/theme` to it,
   copies the GTK theme, and sets GTK settings. Wallpaper additions and
   removals persist under the personal theme source; never modify checked-in
@@ -71,6 +73,6 @@ manifest.
 `$HYPRKARL_PATH` is guaranteed by the session environment, so no fallbacks
 outside `lib/update.sh` and the setup scripts, which must run from a TTY.
 
-Several scripts and `defaults/menu.json` embed Nerd Font glyphs in labels.
-These private-use-area characters are easy to drop silently when rewriting a
-whole file; prefer targeted edits.
+Several scripts and the shell's `defaults/menu.json` embed Nerd Font glyphs
+in labels. These private-use-area characters are easy to drop silently when
+rewriting a whole file; prefer targeted edits.

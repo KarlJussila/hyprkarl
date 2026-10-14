@@ -5,8 +5,3 @@
 
 # Machine-local Claude Code state — belongs to the repo checkout, not ~/.config
 \.claude
-
-# Starting configs that bin/hk-config-seed copies once; not Stow targets.
-^/btop($|/)
-^/nvim($|/)
-^/yazi($|/)

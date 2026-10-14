@@ -37,7 +37,7 @@ same change, for both audiences:
   commands; `config/quickshell/AGENTS.md` for the shell;
   `theme-generator/AGENTS.md` for the theme compiler; `themes/AGENTS.md` for
   theme authoring. Each adjacent `CLAUDE.md` only imports its `AGENTS.md`.
-- **The user's agents:** `defaults/skills/hyprkarl/SKILL.md` guides coding
+- **The user's agents:** `skills/hyprkarl/SKILL.md` guides coding
   agents that customize an installed system on the user's behalf.
   `hk-update apply` links it into the agents' skill folders. Update it
   whenever a personal file, command, or the right place for a kind of change
@@ -71,23 +71,36 @@ another branch in a live checkout hot-reloads its files into the session.
 
 ## Architecture
 
-### Symlinks and starting configs
+### Where files go
 
-`hk-update apply` uses GNU Stow to link `config/` into `~/.config/`. `bin/` is
-put on `$PATH` by `config/uwsm/env`, after `~/.local/bin` so a personal command
-can replace an `hk-*` one. Editing a stowed file edits the live config.
-Renaming or deleting one leaves a stale symlink, which `hk-update apply` (or
-`hk-update remove-stale`) prunes.
+Each top-level directory says how its files reach the user:
+
+- `config/` is linked into `~/.config/` by GNU Stow, all of it. Editing a
+  linked file edits the live config. Renaming or deleting one leaves a stale
+  symlink, which `hk-update apply` (or `hk-update remove-stale`) prunes.
+- `defaults/config/` and `defaults/share/` are fallbacks: `config/uwsm/env`
+  puts them on `XDG_CONFIG_DIRS` and `XDG_DATA_DIRS`, so a user's own file of
+  the same name replaces Hyprkarl's.
+- `templates/` is copied, never linked. `hk-config-seed` creates each file of
+  `templates/config/`, which mirrors `~/.config/`, when it is missing, and
+  copies a whole starting config from `templates/starter/` when the user has
+  none of its files. `templates/system/` holds files that migrations and
+  commands install outside `~/.config/`.
+- `skills/` is linked into the agents' skill folders.
+- `bin/` is put on `$PATH` by `config/uwsm/env`, after `~/.local/bin` so a
+  personal command can replace an `hk-*` one.
 
 Hyprkarl's defaults must keep updating, so choose how to configure an
-application in this order: a shipped file that loads a personal file (the
-terminals' `local.*`, the Hypr tools' `*.local.conf`); a default under
-`defaults/config/` or `defaults/share/`, which `config/uwsm/env` puts on
-`XDG_CONFIG_DIRS` or `XDG_DATA_DIRS` so a user's own file replaces it; output
-of the theme, for anything that is appearance. Copying a starting config is
-the last resort, for applications with no include mechanism: the paths in
-`config/.stow-local-ignore`, which `hk-config-seed` copies when the user has
-none of their files. See `docs/configuration-map.md` for each application.
+application in this order: a linked file that loads a personal file (the
+terminals' `local.*`, the Hypr tools' `*.local.conf`), with an empty starting
+copy in `templates/config/`; a fallback under `defaults/`; output of the
+theme, for anything that is appearance. Where an application can only read
+the theme from its own folder, link into `current/theme` from `config/`.
+Theme-owned files have one editing surface, the theme; Hyprkarl replaces
+whatever else is at their paths. A starting config in `templates/starter/` is the last resort, for
+applications with no include mechanism. On a fresh system, `install.sh`
+backs up the system's own files that would block Hyprkarl's. See
+`docs/configuration-map.md` for each application.
 
 ### Updates
 
@@ -105,12 +118,12 @@ Hyprland is configured in Lua (required since 0.55): `hl.config{}`,
 `hl.bind()`, `hl.dsp.*`, `hl.window_rule{}`, `hl.monitor{}`, and so on. See
 https://wiki.hypr.land/Configuring/Start/.
 
-`config/hypr/hyprland.lua` loads the shipped modules from `defaults/hypr/`
-(envs, autostart, monitors, permissions, looknfeel, animations, gum, windows,
-input, bindings), then the active theme, then the display layout written by
+`config/hypr/hyprland.lua` loads the shipped modules next to it (envs,
+autostart, monitors, permissions, looknfeel, animations, gum, windows, input,
+bindings), then the active theme, then the display layout written by
 `hk-display`, then the user's `~/.config/hypr/hyprland.local.lua`.
-Bindings are split under `defaults/hypr/bindings/` and window rules under
-`defaults/hypr/windows/`.
+Bindings are split under `config/hypr/bindings/` and window rules under
+`config/hypr/windows/`.
 
 Check changes with `Hyprland --verify-config` before reloading; a broken
 `hyprland.lua` has no fallback.
@@ -135,7 +148,7 @@ through `current/theme`. Read `themes/AGENTS.md` before editing a theme and
 The shell in `config/quickshell/` draws the bar, panels, menus, launcher,
 notifications, OSD, polkit prompt, and lock screen. `shell.qml` starts the
 desktop; `lock.qml` runs the lock screen as a separate process. Behavior comes
-from `defaults/shell.json` and `defaults/menu.json` with the user's files in
+from `shell.json` and `menu.json` in its `defaults/`, with the user's files in
 `~/.config/quickshell/settings/` merged over them; appearance comes from the
 theme. It runs from `~/.config/quickshell/`, where Stow links it, so personal
 QML can import and replace any part. Read `config/quickshell/AGENTS.md` before

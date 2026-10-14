@@ -1,0 +1,31 @@
+#!/bin/bash
+# btop, Neovim, and Yazi take their colors from files the theme owns, which
+# are now linked from config/ like Hyprkarl's other files. Clear the copies
+# earlier versions placed so the links can take their place: copied links are
+# removed and real files are backed up. btop's color theme is pointed at the
+# theme's, which installs that kept CachyOS's btop config never were.
+
+config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+backup="${XDG_STATE_HOME:-$HOME/.local/state}/hyprkarl/replaced-configs-$(date +%Y%m%d-%H%M%S)"
+files=(
+  btop/themes/current.theme
+  nvim/colors/hyprkarl.lua
+  nvim/lua/plugins/colorscheme.lua
+  yazi/flavors/hyprkarl.yazi/flavor.toml
+  yazi/theme.toml
+)
+
+for relative in "${files[@]}"; do
+  path="$config_home/$relative"
+  if [[ -L "$path" ]]; then
+    rm "$path" || exit 1
+  elif [[ -e "$path" ]]; then
+    mkdir -p "$(dirname "$backup/$relative")" && mv "$path" "$backup/$relative" || exit 1
+    printf 'Moved %s, which the theme now owns, to %s\n' "$path" "$backup"
+  fi
+done
+
+conf="$config_home/btop/btop.conf"
+if [[ -f "$conf" ]] && ! grep -q '^color_theme = "current"$' "$conf"; then
+  sed -i 's|^color_theme *=.*|color_theme = "current"|' "$conf" || exit 1
+fi

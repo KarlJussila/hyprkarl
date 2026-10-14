@@ -1,7 +1,7 @@
 -- Personal Hyprland settings, loaded after Hyprkarl's modules, the active
 -- theme, and the display layout, so anything here wins. Hyprkarl creates this
--- file once and never replaces it. Hyprkarl's own modules under
--- $HYPRKARL_PATH/defaults/hypr/ show the syntax.
+-- file once and never replaces it. Hyprkarl's own modules, linked next to
+-- this file, show the syntax.
 --
 -- To split this file up, require your own files from ~/.config/hypr/; give
 -- them names that differ from Hyprkarl's modules (envs, bindings, input, ...).

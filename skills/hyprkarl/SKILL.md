@@ -53,7 +53,8 @@ never edit files under `~/.local/state/hyprkarl/`, which are generated.
 | Something to run on login, update, theme or wallpaper change | An executable in `~/.config/hyprkarl/hooks/<event>.d/` |
 | Personal scripts | `~/.local/bin/`, which is on `PATH` before Hyprkarl's commands |
 | fastfetch's look, logo, or info lines | The theme: `fastfetch` keys in a theme overlay, or an `overrides/config/fastfetch/config.jsonc` template |
-| btop, Neovim, Yazi | Their own `~/.config/<app>/`; these are the user's copies |
+| btop, Neovim, Yazi | Their own `~/.config/<app>/`; these are the user's copies, except the theme files below |
+| btop, Neovim, Yazi colors | The theme. `btop/themes/current.theme`, `nvim/colors/hyprkarl.lua`, `nvim/lua/plugins/colorscheme.lua`, `yazi/theme.toml`, and `yazi/flavors/hyprkarl.yazi/` link into the active theme, and btop's `color_theme` stays `"current"`; change colors through a theme, never these files |
 
 `$HYPRKARL_PATH/docs/configuration-map.md` lists every location, and
 `$HYPRKARL_PATH/docs/extending-hyprkarl.md` explains each one.
@@ -70,7 +71,8 @@ never edit files under `~/.local/state/hyprkarl/`, which are generated.
 - **Do not copy a shipped file to change part of it.** Personal files hold only
   what differs; Hyprkarl's defaults keep flowing to everything you leave out.
   In `shell.json`, objects merge but arrays replace, so copy one bar section
-  from `$HYPRKARL_PATH/defaults/shell.json` only when changing that section.
+  from `~/.config/quickshell/defaults/shell.json` only when changing that
+  section.
 - **Do not set environment variables** in `~/.bashrc`, `~/.profile`,
   `~/.zshrc`, `~/.config/environment.d/`, or `/etc/environment`. Session
   variables go in `~/.config/uwsm/env.local` and take effect at the next login.
@@ -106,9 +108,9 @@ never edit files under `~/.local/state/hyprkarl/`, which are generated.
   readable source: `cat "$(command -v hk-theme-set)"`. Read a command before
   running it; some act immediately with no arguments.
 - Shipped defaults to read before overriding:
-  `$HYPRKARL_PATH/defaults/hypr/` (Hyprland), `defaults/shell.json`,
-  `defaults/menu.json`, `theme-generator/defaults/theme.yaml` (every theme
-  value).
+  the modules linked in `~/.config/hypr/` (Hyprland),
+  `~/.config/quickshell/defaults/shell.json` and `menu.json`,
+  `$HYPRKARL_PATH/theme-generator/defaults/theme.yaml` (every theme value).
 - What each setting does: `docs/shell-configuration.md`,
   `docs/menu-configuration.md`, `docs/themes.md`.
 - Installed version: `hk-version`. Problems: `docs/troubleshooting.md`.

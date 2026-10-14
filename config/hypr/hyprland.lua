@@ -6,15 +6,18 @@ local hyprkarl_path = assert(
     os.getenv("HYPRKARL_PATH"),
     "HYPRKARL_PATH must point at the Hyprkarl checkout"
 )
-local defaults_path = hyprkarl_path .. "/defaults/hypr"
+-- The modules sit next to this file. Load them from the checkout rather than
+-- their links in ~/.config/hypr, so an update that adds one works before the
+-- links are refreshed.
+local shipped_path = hyprkarl_path .. "/config/hypr"
 local home = assert(os.getenv("HOME"))
 local config_home = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
 local user_path = config_home .. "/hypr"
 local state_home = os.getenv("XDG_STATE_HOME") or (home .. "/.local/state")
 
 package.path = table.concat({
-    defaults_path .. "/?.lua",
-    defaults_path .. "/?/init.lua",
+    shipped_path .. "/?.lua",
+    shipped_path .. "/?/init.lua",
     user_path .. "/?.lua",
     user_path .. "/?/init.lua",
     package.path,

@@ -80,8 +80,8 @@ The manual owns the detailed contracts:
 1. Create `bar/widgets/<Kind>Widget.qml`. `WidgetHost` resolves the filename
    from the layout's `kind`, so `kind: "example"` loads `ExampleWidget.qml`.
    Existing widgets show the properties supplied by the host.
-2. Add its default instance and stable ID to `defaults/shell.json` at the
-   repository root. Keep widget-specific settings with the widget.
+2. Add its default instance and stable ID to `defaults/shell.json`. Keep
+   widget-specific settings with the widget.
 3. Put service state and panel content in the corresponding `modules/`
    directory. Use the bar's `PanelHost` for panels and tie runtime creation
    to the widget or module that needs it.

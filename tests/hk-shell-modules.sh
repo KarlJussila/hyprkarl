@@ -74,13 +74,10 @@ stop_shell() {
 
 mkdir -p \
   "$TEST_ROOT/repo/config" \
-  "$TEST_ROOT/repo/defaults" \
   "$CONFIG_HOME/quickshell/custom" \
   "$CONFIG_HOME/quickshell/settings" \
   "$STATE_HOME/hyprkarl/current"
 cp -a "$REPO/config/quickshell" "$TEST_ROOT/repo/config/"
-cp "$REPO/defaults/shell.json" "$REPO/defaults/menu.json" \
-  "$TEST_ROOT/repo/defaults/"
 cp "$FIXTURES/shell.json" "$CONFIG_HOME/quickshell/settings/shell.json"
 cp "$FIXTURES/Extensions.qml" \
   "$CONFIG_HOME/quickshell/custom/Extensions.qml"

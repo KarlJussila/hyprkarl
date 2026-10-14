@@ -146,7 +146,7 @@ link_agent_skills() {
   local agent_home skill link
 
   for agent_home in "${AGENT_HOMES[@]}"; do
-    for skill in "$HYPRKARL_PATH"/defaults/skills/*/; do
+    for skill in "$HYPRKARL_PATH"/skills/*/; do
       skill=${skill%/}
       link="$agent_home/skills/${skill##*/}"
       if [[ -e "$link" ]] && [[ ! -L "$link" ]]; then

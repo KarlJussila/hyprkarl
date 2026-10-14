@@ -20,7 +20,7 @@ rm -f "$HYPRKARL_DEFAULT_CURSOR" \
 remove_stale_symlinks
 for agent_home in "${AGENT_HOMES[@]}"; do
   for link in "$agent_home"/skills/*; do
-    [[ "$(readlink "$link")" == "$HYPRKARL_PATH"/defaults/skills/* ]] && rm "$link"
+    [[ "$(readlink "$link")" == "$HYPRKARL_PATH"/skills/* ]] && rm "$link"
   done
 done
 

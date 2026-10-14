@@ -1,1 +1,1 @@
-../../../../.local/state/hyprkarl/current/theme/nvim/colorscheme.lua
+../../../../../../state/hyprkarl/current/theme/nvim/colorscheme.lua

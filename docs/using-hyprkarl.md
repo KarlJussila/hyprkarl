@@ -42,7 +42,7 @@ launch often up among similar matches. Submenu back-navigation restores the
 same state. Open
 any menu directly with `hk-shell menu open <menu-id>`.
 
-The shipped hierarchy lives in `defaults/menu.json`. Add, reorder, rename, or
+The shipped hierarchy lives in `~/.config/quickshell/defaults/menu.json`. Add, reorder, rename, or
 hide entries without editing that default by creating `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json`; see
 [Menu Configuration](menu-configuration.md).
 
@@ -67,7 +67,7 @@ Some common keybindings are:
 - `SUPER + CTRL + T`
   Open `btop`
 
-Shipped keybindings are defined in `defaults/hypr/bindings/`; personal bindings
+Shipped keybindings are defined in `~/.config/hypr/bindings/`; personal bindings
 belong in `~/.config/hypr/hyprland.local.lua`. The keybindings menu reads the live bindings
 from Hyprland.
 

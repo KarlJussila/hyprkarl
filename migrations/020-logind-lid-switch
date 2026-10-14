@@ -2,5 +2,5 @@
 # Leave laptop lid-switch behavior to Hyprland and Hypridle.
 
 sudo install -Dm644 \
-  "$HYPRKARL_PATH/templates/setup/logind-lid.conf" \
+  "$HYPRKARL_PATH/templates/system/logind-lid.conf" \
   /etc/systemd/logind.conf.d/lid.conf

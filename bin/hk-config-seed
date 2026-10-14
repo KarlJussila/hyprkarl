@@ -1,63 +1,48 @@
 #!/bin/bash
 # hk-config-seed
-# Copy Hyprkarl's starting configuration into ~/.config for applications that
-# have none yet. The copies are yours from then on; updates never change them.
+# Create the files Hyprkarl places in ~/.config once instead of linking.
 #
-# Each seed below is one application's starting config. A seed is copied only
-# when none of its files exist, so an existing setup is never mixed with
-# Hyprkarl's files. Deleting every file of a seed brings it back on the next
-# update. config/.stow-local-ignore keeps Stow from linking these paths.
+# templates/config/ mirrors ~/.config and holds the personal files that
+# linked configs include. Each is created when missing and never replaced.
+#
+# templates/starter/<app>/ is a complete starting config for an application
+# that cannot load Hyprkarl's defaults next to a file of yours: btop rewrites
+# its own config, and Neovim and Yazi configs are personal code. It is copied
+# only when none of its files exist, so an existing setup is never mixed with
+# Hyprkarl's files. Deleting every file of it brings it back on the next update.
 
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-SEED_ROOT="$HYPRKARL_PATH/config"
+TEMPLATES="$HYPRKARL_PATH/templates"
 
-# Only applications with no way to load Hyprkarl's defaults alongside a
-# personal file: btop rewrites its own config, and Neovim and Yazi configs are
-# personal code.
-seeds=(
-  btop
-  nvim
-  yazi
-)
-
-# Personal files that shipped configs include; created once if missing.
-declare -A includes=(
-  [uwsm/env.local]=env.local.example
-  [alacritty/local.toml]=terminals/alacritty.toml
-  [foot/local.ini]=terminals/foot.ini
-  [ghostty/local.conf]=terminals/ghostty.conf
-  [kitty/local.conf]=terminals/kitty.conf
-  [hypr/hyprland.local.lua]=hypr/hyprland.local.lua
-  [hypr/hypridle.local.conf]=hypr/hypridle.local.conf
-  [hypr/hyprpaper.local.conf]=hypr/hyprpaper.local.conf
-  [hypr/hyprsunset.local.conf]=hypr/hyprsunset.local.conf
-)
-
-copy_seed_file() {
-  local relative="$1"
-
-  mkdir -p "$(dirname "$CONFIG_HOME/$relative")" || return 1
-  cp -a "$SEED_ROOT/$relative" "$CONFIG_HOME/$relative"
+exists() {
+  [[ -e "$1" ]] || [[ -L "$1" ]]
 }
 
-for seed in "${seeds[@]}"; do
-  mapfile -t files < <(cd "$SEED_ROOT" && find "$seed" \( -type f -o -type l \))
+# Copy $2, relative to the template root $1, to the same path in ~/.config.
+place() {
+  mkdir -p "$(dirname "$CONFIG_HOME/$2")" || return 1
+  cp -a "$1/$2" "$CONFIG_HOME/$2"
+}
+
+for app in "$TEMPLATES"/starter/*/; do
+  app=$(basename "$app")
+  mapfile -t files < <(cd "$TEMPLATES/starter" && find "$app" \( -type f -o -type l \))
   for relative in "${files[@]}"; do
-    if [[ -e "$CONFIG_HOME/$relative" ]] || [[ -L "$CONFIG_HOME/$relative" ]]; then
+    if exists "$CONFIG_HOME/$relative"; then
       continue 2
     fi
   done
   for relative in "${files[@]}"; do
-    copy_seed_file "$relative" || exit 1
+    place "$TEMPLATES/starter" "$relative" || exit 1
   done
-  printf 'Created starting config for %s\n' "$seed"
+  printf 'Created starting config for %s\n' "$app"
 done
 
-for relative in "${!includes[@]}"; do
-  if [[ -e "$CONFIG_HOME/$relative" ]]; then
+mapfile -t files < <(cd "$TEMPLATES/config" && find . \( -type f -o -type l \) -printf '%P\n')
+for relative in "${files[@]}"; do
+  if exists "$CONFIG_HOME/$relative"; then
     continue
   fi
-  mkdir -p "$(dirname "$CONFIG_HOME/$relative")" || exit 1
-  cp "$HYPRKARL_PATH/templates/setup/${includes[$relative]}" "$CONFIG_HOME/$relative" || exit 1
+  place "$TEMPLATES/config" "$relative" || exit 1
   printf 'Created %s\n' "$CONFIG_HOME/$relative"
 done

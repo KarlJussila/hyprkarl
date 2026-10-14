@@ -47,8 +47,8 @@ Stable shipped entry points under `~/.config/` and files under
 Hyprkarl implementation files remain live. For example,
 `~/.config/hypr/hyprland.lua` points at the stable bootstrap in this checkout.
 Ordinary Hyprland personalization belongs in
-`~/.config/hypr/hyprland.local.lua`, not in that bootstrap or the shipped modules under
-`defaults/hypr/`.
+`~/.config/hypr/hyprland.local.lua`, not in that bootstrap or the shipped
+modules linked next to it.
 
 Most application preferences are real files in the application's normal
 configuration directory. Terminal bootstraps remain linked to Hyprkarl but

@@ -33,8 +33,6 @@ seed || fail "seeding returned nonzero"
   || fail "seed files were mixed into an existing nvim config"
 [[ -f "$CONFIG_HOME/btop/btop.conf" ]] \
   || fail "an unrelated btop file blocked the btop seed"
-[[ -L "$CONFIG_HOME/btop/themes/current.theme" ]] \
-  || fail "seed symlink was not preserved"
 [[ -f "$CONFIG_HOME/uwsm/env.local" ]] && [[ -f "$CONFIG_HOME/kitty/local.conf" ]] \
   && [[ -f "$CONFIG_HOME/hypr/hypridle.local.conf" ]] \
   || fail "included personal files were not created"

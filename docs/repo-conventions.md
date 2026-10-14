@@ -34,7 +34,7 @@ stable](updating.md#what-updates-keep-stable).
 
 The [configuration map](configuration-map.md#hyprkarls-files) describes each
 part of the checkout. Appearance belongs in the theme compiler's defaults and
-templates, behavior in `defaults/` or `config/`, and commands in `bin/` (see
+templates, behavior in `config/` or `defaults/`, and commands in `bin/` (see
 `bin/AGENTS.md`). Never ship or edit a file in a user's own locations.
 
 ## Stateful Paths
@@ -84,22 +84,20 @@ then applied with `hk-update apply`.
 
 ## Stow Behavior
 
-Non-ignored files under `config/` are exposed through GNU Stow. `config/.stow-local-ignore` separates stable tracked entry
-points from application starting configs. `hk-config-seed` copies those to
-their normal `~/.config/<application>/` paths when an application has none of
-them yet, and never overwrites a file that exists.
-
-Files under `defaults/` are read directly from the checkout by stable entry
-points. Personal configuration is read from the application's own directory
+Everything under `config/` is linked into `~/.config/` through GNU Stow.
+Files under `defaults/` are found through the XDG search paths. Files under
+`templates/config/` and `templates/starter/` are copied to their normal
+`~/.config/` paths by `hk-config-seed`, which never overwrites a file that
+exists. Personal configuration is read from the application's own directory
 or `${XDG_CONFIG_HOME:-$HOME/.config}/hyprkarl/`, as documented in
 [Configuration Map](configuration-map.md). It is never stowed or owned by a
 Git branch.
 
-- editing an existing non-ignored tracked entry point needs no extra step
-- editing an ignored seed changes only future migrations and installs
+- editing an existing linked or `defaults/` file needs no extra step
+- editing a template changes only machines that do not have the file yet
 - editing a real application config under `~/.config/` is immediate and
   update-safe
-- adding or removing a tracked entry point requires re-stowing with
+- adding or removing a file under `config/` requires re-stowing with
   `hk-update apply`
 
 ## Migrations
@@ -119,13 +117,18 @@ exists for.
 For a new application integration, pick the first of these the application
 supports, so Hyprkarl's defaults keep reaching users:
 
-1. a shipped config that loads a personal file last, which `hk-config-seed`
-   creates once from `templates/setup/`;
+1. a config under `config/` that loads a personal file last, with an empty
+   starting copy of that file at its `~/.config` path under
+   `templates/config/`;
 2. a default under `defaults/config/` or `defaults/share/`, found through
    `XDG_CONFIG_DIRS` or `XDG_DATA_DIRS`, which a user's own file replaces;
-3. output of the theme, for anything that is appearance;
-4. as a last resort, a starting config: add it under `config/`, ignore it in
-   `config/.stow-local-ignore`, and list it in `bin/hk-config-seed`.
+3. output of the theme, for anything that is appearance; when the
+   application can only read it from its own folder, add a link into
+   `current/theme` under `config/`;
+4. as a last resort, a starting config under `templates/starter/<app>/`.
+
+New files under `templates/config/` reach existing machines on their next
+update. A starting config does not, since those machines already have one.
 
 ## Contributor guides
 

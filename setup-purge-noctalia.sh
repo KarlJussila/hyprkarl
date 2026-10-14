@@ -38,6 +38,7 @@ NOCTALIA_CONFIGS=(
 # CachyOS desktop defaults Hyprkarl replaces or does not use. Comment out any
 # you would rather keep.
 CACHYOS_CONFIGS=(
+  "$HOME/.config/btop"  # set to Noctalia's colors; Hyprkarl's starting config replaces it
   "$HOME/.config/cachyos"
   "$HOME/.config/dolphinrc"
   "$HOME/.config/kdeglobals"

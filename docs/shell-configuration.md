@@ -1,6 +1,6 @@
 # Shell Configuration
 
-The shell's behavior comes from `defaults/shell.json` with your
+The shell's behavior comes from `~/.config/quickshell/defaults/shell.json` with your
 `~/.config/quickshell/settings/shell.json` merged over it. Its appearance comes
 from the theme; see [Themes](themes.md#shell-appearance). For your own widgets,
 interfaces, and replacements, see [Extending

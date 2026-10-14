@@ -23,7 +23,6 @@ with tempfile.TemporaryDirectory(prefix=name + "-") as temp:
     p = Path(temp)
     shell = p / "repo/config/quickshell"
     shutil.copytree(repo / "config/quickshell", shell)
-    shutil.copytree(repo / "defaults", p / "repo/defaults")
     helper = p / "record-and-wait"
     helper.write_text(
         '#!/bin/bash\nprintf "%s:%s" "$BASHPID" "${HYPRKARL_OUTPUT:-}" > '

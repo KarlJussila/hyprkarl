@@ -9,7 +9,7 @@ if [[ ! -e "$keyring_dir/default" ]] \
   umask 077
   install -d -m700 "$keyring_dir" \
     && sed "s/{{TIMESTAMP}}/$(date +%s)/g" \
-      "$HYPRKARL_PATH/templates/setup/login.keyring" > "$keyring_dir/login.keyring" \
+      "$HYPRKARL_PATH/templates/system/login.keyring" > "$keyring_dir/login.keyring" \
     && printf 'login\n' > "$keyring_dir/default" || exit 1
 fi
 

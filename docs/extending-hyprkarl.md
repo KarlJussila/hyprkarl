@@ -132,7 +132,8 @@ hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd("uwsm-app -- my-command"), {
 
 Descriptions appear in the keybindings menu. Binding and window-rule calls
 add to the existing configuration; use `hl.unbind()` before replacing a
-shipped binding. The files under `defaults/hypr/` are useful examples. To split
+shipped binding. Hyprkarl's modules, linked next to your file in
+`~/.config/hypr/`, are useful examples. To split
 your settings across files, `require` them from `~/.config/hypr/` under names
 that differ from Hyprkarl's modules.
 

@@ -7,7 +7,7 @@
 #   hk-tui-launch hk-pkg-upgrade
 
 gum log --level info "Upgrading all packages..."
-paru -Syu --noconfirm
+paru -Syu --noconfirm --nocheck
 paru_exit=$?
 
 if (( paru_exit != 0 )); then

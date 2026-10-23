@@ -1,0 +1,16 @@
+#!/bin/bash
+# Replace widthRole in the personal menu.json with the search and width
+# settings that took its place. A menu's own search or width wins.
+
+file="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/settings/menu.json"
+
+[[ -f "$file" ]] || exit 0
+jq -e '[.menus[]? | has("widthRole")] | any' "$file" >/dev/null || exit 0
+
+converted=$(jq '.menus |= map_values(
+  if has("widthRole") then
+    ({ "search": { "search": true, "width": "medium" },
+       "reference": { "search": true, "width": "large" } }[.widthRole] // {})
+    + del(.widthRole)
+  else . end)' "$file") || exit 1
+printf '%s\n' "$converted" >"$file"

@@ -33,8 +33,9 @@ parse leaves the shipped menus running and logs the error to `hk-shell logs`.
 A menu has a `title`, and optionally:
 
 - `sourceCommand` and `emptyLabel` for [dynamic entries](#dynamic-menus);
-- `widthRole`: `default`, `search` (wider, with the search field always
-  shown), or `reference` (widest);
+- `search`: `true` to always show the search field, for a menu you mostly
+  search, like Icons;
+- `width`: `small` (the default), `medium`, or `large`;
 - `entryAlignment`: `left`, `center` (the default), or `right`.
 
 An entry has a stable dotted ID and:
@@ -116,7 +117,8 @@ declare the menu:
     "projects": {
       "title": "Projects",
       "sourceCommand": "my-project-menu-entries",
-      "widthRole": "search",
+      "search": true,
+      "width": "medium",
       "emptyLabel": "No projects"
     }
   },

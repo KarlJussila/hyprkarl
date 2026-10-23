@@ -222,10 +222,11 @@ shell:
     font: "{{shell.typography.uiFamily}}"
     fontSize: 14
     fontWeight: "{{shell.typography.weight}}"
-    width: 280
-    searchWidth: "{{shell.menu.width * 2}}"
-    referenceWidth: 800
-    searchRows: 10
+    widths:
+      small: 280
+      medium: "{{shell.menu.widths.small * 2}}"
+      large: 800
+    rows: 10
     outerRadius: "{{metrics.radius.popup}}"
     innerRadius: "{{metrics.radius.tooltip}}"
     entryRadius: "{{metrics.radius.entry}}"

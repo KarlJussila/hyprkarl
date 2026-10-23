@@ -20,7 +20,7 @@ ModalWindow {
   property bool pointerPositionKnown: false
   property point pointerPosition: Qt.point(0, 0)
 
-  requestedWidth: theme.menu.searchWidth
+  requestedWidth: theme.menu.widths.medium
   requestedHeight: root.theme.menu.outerBorderWidth * 2
     + root.theme.menu.outerPadding * 2
     + root.theme.menu.innerBorderWidth * 2

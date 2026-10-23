@@ -14,7 +14,7 @@ Modal {
   subtitle: DisplayConfirmationState.remainingSeconds === 1
     ? "Reverting in 1 second"
     : `Reverting in ${DisplayConfirmationState.remainingSeconds} seconds`
-  preferredWidth: shellContext.theme.menu.searchWidth
+  preferredWidth: shellContext.theme.menu.widths.medium
   preferredHeight: 250
   dismissAction: () => DisplayConfirmationState.revert()
 

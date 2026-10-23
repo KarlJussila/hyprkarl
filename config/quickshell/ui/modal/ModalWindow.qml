@@ -11,7 +11,7 @@ PanelWindow {
   required property var theme
   property bool shown: false
   property bool framed: true
-  property real requestedWidth: theme.menu.searchWidth
+  property real requestedWidth: theme.menu.widths.medium
   property real requestedHeight: 0
   property real reveal: shown ? 1 : 0
   readonly property alias modalBody: body

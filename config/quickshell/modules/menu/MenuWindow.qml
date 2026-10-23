@@ -8,16 +8,10 @@ PickerWindow {
 
   readonly property bool active: MenuState.requested
     && output.name === MenuState.screenName
-  readonly property string widthRole:
-    MenuState.menus[MenuState.currentMenu]?.widthRole ?? "default"
-  readonly property real baseWidth: widthRole === "reference"
-    ? theme.menu.referenceWidth
-    : widthRole === "search"
-      ? theme.menu.searchWidth
-      : theme.menu.width
+  readonly property real baseWidth:
+    theme.menu.widths[MenuState.menus[MenuState.currentMenu]?.width ?? "small"]
   readonly property string entryAlignment:
     MenuState.menus[MenuState.currentMenu]?.entryAlignment ?? "center"
-  readonly property bool searching: query.trim().length > 0
   readonly property int entryTextAlignment: entryAlignment === "left"
     ? Text.AlignLeft
     : entryAlignment === "right"
@@ -27,16 +21,14 @@ PickerWindow {
     + theme.menu.entryPadding * 2
     + theme.menu.entryMargin * 2
   readonly property real bodyHeight: menuList.count > 0
-    ? searching
-      ? Math.min(menuList.contentHeight, rowHeight * theme.menu.searchRows)
-      : menuList.contentHeight
+    ? Math.min(menuList.contentHeight, rowHeight * theme.menu.rows)
     : rowHeight
   property bool restoringView: false
 
   shown: active
   title: MenuState.menus[MenuState.currentMenu]?.title ?? ""
   placeholder: "Search…"
-  searchPinned: widthRole !== "default"
+  searchPinned: MenuState.menus[MenuState.currentMenu]?.search === true
   clearQueryOnShow: false
   requestedWidth: baseWidth
   requestedBodyHeight: bodyHeight

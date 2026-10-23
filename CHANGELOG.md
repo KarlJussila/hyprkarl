@@ -38,6 +38,16 @@ breaking change bumps the major version and is called out explicitly.
   until you logged out.
 - Menus and the app launcher scroll smoothly again, with momentum after a
   touchpad swipe, instead of in plain wheel steps.
+- The Icons and Keybindings menus open at their normal height instead of
+  filling the screen until you search.
+- A menu's `widthRole` is replaced by two settings: `search: true` keeps the
+  search field shown, and `width` is `small`, `medium`, or `large`. An
+  update converts `widthRole` in your `menu.json`: `search` becomes a
+  `medium` search menu and `reference` a `large` one. Every menu now
+  scrolls past the theme's `shell.menu.rows` rows. The theme keys
+  `shell.menu.width`, `searchWidth`, and `referenceWidth` are now
+  `shell.menu.widths.small`, `medium`, and `large`, and `searchRows` is
+  `rows`.
 
 ## v1.1.1 (2026-10-06)
 

@@ -11,7 +11,7 @@ Scope {
   required property string name
   property string title: ""
   property string subtitle: ""
-  property real preferredWidth: context.theme.menu.searchWidth
+  property real preferredWidth: context.theme.menu.widths.medium
   property real preferredHeight: 480
   property Component body: null
   property Component footer: null

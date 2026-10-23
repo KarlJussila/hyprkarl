@@ -147,11 +147,12 @@ QtObject {
   }
 
   // hidden: desktop entry IDs to leave out of the launcher.
-  function entriesFor(query: string, hidden: var): var {
+  // order: the launcher's order before a search, "launches" or "name".
+  function entriesFor(query: string, hidden: var, order: string): var {
     return openWithActive
       ? ApplicationSearch.rank(openWithEntries, query, {})
       : ApplicationSearch.rank(
-        launcherEntries.filter(entry => !hidden.includes(entry.id)), query, launches)
+        launcherEntries.filter(entry => !hidden.includes(entry.id)), query, launches, order)
   }
 
   function activate(entry): void {

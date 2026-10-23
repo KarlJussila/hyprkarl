@@ -6,6 +6,9 @@ breaking change bumps the major version and is called out explicitly.
 
 ## Unreleased
 
+- The launcher lists the applications you launch most first before you
+  type. Set `applications.order` to `name` in your `shell.json` to keep it
+  alphabetical.
 - btop follows the theme on fresh installs. The installer kept CachyOS's
   btop config, which used Noctalia's colors; it is now backed up and replaced
   with Hyprkarl's, and an update points btop's color theme at the theme.

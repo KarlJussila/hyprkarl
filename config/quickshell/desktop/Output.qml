@@ -83,6 +83,7 @@ Scope {
       output: root.output
       theme: root.theme
       hidden: root.shellConfig.applications.hidden
+      order: root.shellConfig.applications.order
     }
   }
 

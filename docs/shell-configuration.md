@@ -210,6 +210,12 @@ image the notification itself carries always wins.
 
 ## Launcher
 
+`applications.order` sets the list shown before you type: `launches` (the
+default) puts the applications you launch most first, and `name` keeps it
+alphabetical. Launch counts are kept in
+`~/.local/state/hyprkarl/application-launches.json`. Search results rank
+by how well they match either way.
+
 `applications.hidden` lists desktop entry IDs (file names without `.desktop`)
 that the launcher leaves out. It is an array, so your list replaces the
 shipped one: copy it from `defaults/shell.json` and edit it.

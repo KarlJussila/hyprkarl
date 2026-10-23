@@ -37,6 +37,16 @@ TestCase {
 
   function test_emptyQueryKeepsOrder() {
     compare(ApplicationSearch.rank(entries, "  ", {}), entries)
+    compare(ApplicationSearch.rank(entries, "", { "steam": 4 }, "name"), entries)
+  }
+
+  function test_emptyQueryByLaunches() {
+    const ranked = ApplicationSearch.rank(entries, "",
+      { "steam": 4, "spotify": 9, "eog": 4 }, "launches")
+    compare(ranked.slice(0, 3).map(entry => entry.name),
+      ["Spotify", "Steam", "Éye of GNOME"])
+    compare(ranked.slice(3), entries.filter(entry =>
+      !["steam", "spotify", "eog"].includes(entry.id)))
   }
 
   function test_nameBeforeKeyword() {

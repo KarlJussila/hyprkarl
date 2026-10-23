@@ -44,6 +44,7 @@
     }
   },
   "applications": {
+    "order": "launches",
     "hidden": [
       "avahi-discover",
       "bssh",

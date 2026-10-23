@@ -21,9 +21,10 @@ is_active() {
 
 enable_caffeine() {
   is_active && return 0
-  systemd-run --user --quiet --unit="$UNIT" --description="Hyprkarl caffeine" \
-    systemd-inhibit --what=idle --who=Hyprkarl --why=Caffeine sleep infinity
-  notify-send "$ICON_ON Idle lock and sleep paused"
+  # --collect unloads the unit even if it fails, so its name is free next time.
+  systemd-run --user --quiet --collect --unit="$UNIT" --description="Hyprkarl caffeine" \
+    systemd-inhibit --what=idle --who=Hyprkarl --why=Caffeine sleep infinity &&
+    notify-send "$ICON_ON Idle lock and sleep paused"
 }
 
 disable_caffeine() {

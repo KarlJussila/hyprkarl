@@ -30,6 +30,9 @@ breaking change bumps the major version and is called out explicitly.
   update. The closing screen can't start until you reboot onto the new driver,
   so they now skip it and restart or shut down directly instead of closing
   your apps and stopping there.
+- Caffeine turns on again after its inhibitor was killed from outside.
+  Before, it failed with "Unit hyprkarl-caffeine.service was already loaded"
+  until you logged out.
 
 ## v1.1.1 (2026-10-06)
 

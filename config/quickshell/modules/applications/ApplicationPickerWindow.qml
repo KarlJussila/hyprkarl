@@ -232,11 +232,11 @@ PickerWindow {
         onTapped: ApplicationPickerState.activate(row.modelData)
       }
     }
-  }
 
-  MomentumScroll {
-    id: momentum
-    flickable: applicationList
+    MomentumScroll {
+      id: momentum
+      flickable: applicationList
+    }
   }
 
   Item {

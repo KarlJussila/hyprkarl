@@ -36,6 +36,8 @@ breaking change bumps the major version and is called out explicitly.
 - Caffeine turns on again after its inhibitor was killed from outside.
   Before, it failed with "Unit hyprkarl-caffeine.service was already loaded"
   until you logged out.
+- Menus and the app launcher scroll smoothly again, with momentum after a
+  touchpad swipe, instead of in plain wheel steps.
 
 ## v1.1.1 (2026-10-06)
 

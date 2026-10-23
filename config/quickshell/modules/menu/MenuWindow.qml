@@ -248,11 +248,11 @@ PickerWindow {
           root.selectFromPointer(index, sceneX, sceneY)
         onChosen: if (modelData.disabled !== true) root.activate(modelData)
       }
-    }
-  }
 
-  MomentumScroll {
-    id: momentum
-    flickable: menuList
+      MomentumScroll {
+        id: momentum
+        flickable: menuList
+      }
+    }
   }
 }

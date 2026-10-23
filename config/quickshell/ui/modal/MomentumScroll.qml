@@ -1,6 +1,8 @@
 import QtQuick
 
-QtObject {
+// Declare inside the flickable it scrolls: a handler receives events only
+// through the item it is declared in.
+WheelHandler {
   id: root
 
   required property var flickable
@@ -13,6 +15,10 @@ QtObject {
   property real momentumVelocity: 0
   property var gestureSamples: []
   property real previousDelta: 0
+
+  acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+  activeTimeout: 0.1
+  target: null
 
   function reset(): void {
     momentumVelocity = 0
@@ -84,43 +90,37 @@ QtObject {
       : nextVelocity
   }
 
-  property WheelHandler wheel: WheelHandler {
-    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-    activeTimeout: 0.1
-    target: null
+  onWheel: event => {
+    const delta = event.pixelDelta.y !== 0
+      ? event.pixelDelta.y * root.pixelScale
+      : event.angleDelta.y / 120 * root.wheelStep
+    if (delta === 0) return
 
-    onWheel: event => {
-      const delta = event.pixelDelta.y !== 0
-        ? event.pixelDelta.y * root.pixelScale
-        : event.angleDelta.y / 120 * root.wheelStep
-      if (delta === 0) return
+    const minimum = root.flickable.originY
+    const maximum = Math.max(minimum,
+      minimum + root.flickable.contentHeight - root.flickable.height)
+    root.flickable.contentY = Math.max(minimum,
+      Math.min(maximum, root.flickable.contentY - delta))
+    root.addSample(delta, Date.now())
+  }
 
-      const minimum = root.flickable.originY
-      const maximum = Math.max(minimum,
-        minimum + root.flickable.contentHeight - root.flickable.height)
-      root.flickable.contentY = Math.max(minimum,
-        Math.min(maximum, root.flickable.contentY - delta))
-      root.addSample(delta, Date.now())
-    }
-
-    onActiveChanged: {
-      if (active) {
-        root.gestureSamples = []
-        root.previousDelta = 0
-        return
-      }
-
-      const releaseVelocity = root.sampledVelocity(Date.now())
-      root.momentumVelocity = root.momentumVelocity * releaseVelocity >= 0
-        ? root.softCap(root.momentumVelocity + releaseVelocity)
-        : root.softCap(releaseVelocity)
+  onActiveChanged: {
+    if (active) {
       root.gestureSamples = []
       root.previousDelta = 0
+      return
     }
+
+    const releaseVelocity = root.sampledVelocity(Date.now())
+    root.momentumVelocity = root.momentumVelocity * releaseVelocity >= 0
+      ? root.softCap(root.momentumVelocity + releaseVelocity)
+      : root.softCap(releaseVelocity)
+    root.gestureSamples = []
+    root.previousDelta = 0
   }
 
   property FrameAnimation animation: FrameAnimation {
-    running: !root.wheel.active
+    running: !root.active
       && Math.abs(root.momentumVelocity) >= root.flickThreshold
     onTriggered: root.advanceMomentum(frameTime)
   }

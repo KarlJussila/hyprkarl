@@ -4,8 +4,15 @@ Notable changes to Hyprkarl. Releases are annotated git tags on `main`;
 entries here are written by hand when a release is cut. From v1.0.0, a
 breaking change bumps the major version and is called out explicitly.
 
-## Unreleased
+## v2.0.0 (2026-10-23)
 
+- Breaking: a menu's `widthRole` is replaced by two settings: `search: true`
+  keeps the search field shown, and `width` is `small`, `medium`, or `large`.
+  An update converts `widthRole` in your `menu.json`: `search` becomes a
+  `medium` search menu and `reference` a `large` one. Every menu now scrolls
+  past the theme's `shell.menu.rows` rows. The theme keys `shell.menu.width`,
+  `searchWidth`, and `referenceWidth` are now `shell.menu.widths.small`,
+  `medium`, and `large`, and `searchRows` is `rows`.
 - The launcher lists the applications you launch most first before you
   type. Set `applications.order` to `name` in your `shell.json` to keep it
   alphabetical.
@@ -25,7 +32,6 @@ breaking change bumps the major version and is called out explicitly.
   update reports that a file blocks a Hyprkarl link in `~/.config/hypr/`,
   rename your file.
 - Yazi's starting config drops the unused smart-filter plugin.
-
 - GNOME Keyring provides persistent application credentials.
   Installs and updates enable its user service and create a
   passwordless default keyring when none exists.
@@ -43,14 +49,6 @@ breaking change bumps the major version and is called out explicitly.
 - Menu search ranks its results the way the app launcher does, best matches
   first, and no longer matches letters scattered through a label, so
   "monitor" no longer finds "Move window silently to scratchpad".
-- A menu's `widthRole` is replaced by two settings: `search: true` keeps the
-  search field shown, and `width` is `small`, `medium`, or `large`. An
-  update converts `widthRole` in your `menu.json`: `search` becomes a
-  `medium` search menu and `reference` a `large` one. Every menu now
-  scrolls past the theme's `shell.menu.rows` rows. The theme keys
-  `shell.menu.width`, `searchWidth`, and `referenceWidth` are now
-  `shell.menu.widths.small`, `medium`, and `large`, and `searchRows` is
-  `rows`.
 
 ## v1.1.1 (2026-10-06)
 

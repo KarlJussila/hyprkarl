@@ -8,11 +8,13 @@ The goal is readability over robustness theater. Scripts should read top-to-bott
 
 ## Choosing Bash or Python
 
-Use Bash when the command is primarily a short sequence of other commands,
-redirections, or simple conditionals. Use Python when it owns structured data,
-JSON generation, substantial parsing, or nontrivial string transformation.
-Do not preserve a dense `jq`, `sed`, or `awk` pipeline merely to keep a command
-in Bash when ordinary Python data structures express the work directly.
+Use Bash by default, and Python where Bash gets unwieldy: building or
+reshaping structured data over several steps, substantial parsing, or
+nontrivial string transformation. JSON alone is not a reason. A small `jq`
+call that reads or edits a JSON file belongs in Bash; Python's extra structure
+costs more than it saves there. Do not preserve a dense `jq`, `sed`, or `awk`
+pipeline merely to keep a command in Bash when ordinary Python data structures
+express the work directly.
 
 Dynamic menu providers should normally be Python executables using the standard
 library `json` module. Construct lists and dictionaries, then serialize them;

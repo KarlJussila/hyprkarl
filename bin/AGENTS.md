@@ -61,14 +61,14 @@ without good reason.
 
 ## Style
 
-Follow `docs/shell-style.md`. Use Bash for orchestration and simple pipelines,
-Python for structured data, JSON, and real parsing; do not bury a Python
-program in `python3 -c`. Bash: `#!/bin/bash`, no `set -euo pipefail`
-(intentional), guard clauses as `if` blocks, 2-space indent, `gum log` for
-user-facing output in interactive commands. Python: `#!/usr/bin/env python3`
-and a `main() -> int` entry point. Let errors surface; catch only where the
-command can still do something useful, such as skipping one broken Docker
-manifest.
+Follow `docs/shell-style.md`. Use Bash by default and Python where Bash gets
+unwieldy, such as reshaping structured data or real parsing; a small `jq` call
+is no reason to switch, and do not bury a Python program in `python3 -c`.
+Bash: `#!/bin/bash`, no `set -euo pipefail` (intentional), guard clauses as
+`if` blocks, 2-space indent, `gum log` for user-facing output in interactive
+commands. Python: `#!/usr/bin/env python3` and a `main() -> int` entry point.
+Let errors surface; catch only where the command can still do something
+useful, such as skipping one broken Docker manifest.
 
 `$HYPRKARL_PATH` is guaranteed by the session environment, so no fallbacks
 outside `lib/update.sh` and the setup scripts, which must run from a TTY.

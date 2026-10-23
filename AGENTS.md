@@ -175,8 +175,8 @@ workflow.
 
 ## Command Script Style
 
-Read `docs/shell-style.md` before writing a command. Use Bash for
-orchestration and simple pipelines, Python for structured data and JSON. Bash
+Read `docs/shell-style.md` before writing a command. Use Bash by default and
+Python where Bash gets unwieldy; a small `jq` call is no reason to switch. Bash
 scripts use `#!/bin/bash` and intentionally omit `set -euo pipefail`.
 
 ## Key Docs

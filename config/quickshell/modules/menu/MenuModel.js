@@ -1,12 +1,4 @@
-function fuzzyMatch(text, pattern) {
-  var patternIndex = 0
-  for (var textIndex = 0;
-      textIndex < text.length && patternIndex < pattern.length;
-      textIndex++) {
-    if (text[textIndex] === pattern[patternIndex]) patternIndex++
-  }
-  return patternIndex === pattern.length
-}
+.import "../../ui/search/TextSearch.js" as TextSearch
 
 function orderedEntries(entries, menuId) {
   var result = []
@@ -24,10 +16,29 @@ function orderedEntries(entries, menuId) {
   return result
 }
 
-function matches(entry, terms) {
-  var text = [entry.searchText || "", entry.label]
-    .join(" ").toLowerCase()
-  return terms.every(function(term) { return fuzzyMatch(text, term) })
+// How well one search term matches an entry: the start of the label, the
+// start of a word in it, an abbreviation of its words, the start of a word
+// in its searchText, or anywhere in the label. 0 when it does not match.
+function termScore(term, entry) {
+  var label = TextSearch.normalize(entry.label)
+  var labelWords = TextSearch.words(entry.label)
+  if (label.startsWith(term)) return 100
+  if (TextSearch.startsAWord(term, labelWords)) return 80
+  if (TextSearch.abbreviates(term, labelWords, 0)) return 60
+  if (TextSearch.startsAWord(term, TextSearch.words(entry.searchText))) return 40
+  if (label.includes(term)) return 20
+  return 0
+}
+
+// Every term must match; 0 when one does not.
+function score(entry, terms) {
+  var total = 0
+  for (var term of terms) {
+    var termTotal = termScore(term, entry)
+    if (termTotal === 0) return 0
+    total += termTotal
+  }
+  return total
 }
 
 function decorate(entry, path, depth) {
@@ -44,8 +55,7 @@ function entriesFor(entries, currentMenu, dynamicMenuId, dynamicEntries, query) 
     direct = direct.concat(dynamicEntries || [])
   }
 
-  var terms = String(query || "").trim().toLowerCase()
-    .split(/\s+/).filter(function(term) { return term.length > 0 })
+  var terms = TextSearch.terms(query)
   if (terms.length === 0) {
     return direct.map(function(entry) { return decorate(entry, "", 0) })
   }
@@ -66,8 +76,10 @@ function entriesFor(entries, currentMenu, dynamicMenuId, dynamicEntries, query) 
 
     var path = location.path.join(" › ")
     for (var row of rows) {
-      if (row.disabled !== true && matches(row, terms)) {
-        result.push(decorate(row, path, location.depth))
+      var rowScore = row.disabled === true ? 0 : score(row, terms)
+      if (rowScore > 0) {
+        result.push({ "entry": decorate(row, path, location.depth),
+          "score": rowScore, "index": result.length })
       }
       if (row.action?.type === "menu" && !visited[row.action.menu]) {
         queue.push({
@@ -79,11 +91,19 @@ function entriesFor(entries, currentMenu, dynamicMenuId, dynamicEntries, query) 
     }
   }
 
-  var hasCurrent = result.some(function(entry) { return entry.searchDepth === 0 })
+  // Matches in the current menu come first, then the best matches; ties keep
+  // menu order.
+  var ranked = result.sort(function(left, right) {
+    return (left.entry.searchDepth > 0) - (right.entry.searchDepth > 0)
+      || right.score - left.score
+      || left.index - right.index
+  }).map(function(match) { return match.entry })
+
+  var hasCurrent = ranked.some(function(entry) { return entry.searchDepth === 0 })
   if (hasCurrent) {
-    for (var entry of result) {
+    for (var entry of ranked) {
       if (entry.searchDepth > 0) entry.searchSection = "descendant"
     }
   }
-  return result
+  return ranked
 }

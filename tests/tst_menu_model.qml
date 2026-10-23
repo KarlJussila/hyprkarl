@@ -96,6 +96,28 @@ TestCase {
     compare(rows[0].id, "dynamic.one")
   }
 
+  function test_searchSkipsScatteredLetters() {
+    const dynamic = [{
+      "id": "dynamic.scratchpad",
+      "label": "Move window silently to scratchpad",
+      "action": { "type": "dismiss" }
+    }]
+    compare(MenuModel.entriesFor({}, "keys", "keys", dynamic, "monitor").length, 0)
+  }
+
+  function test_searchRanksBetterMatchesFirst() {
+    const dynamic = ["Workspace monitors", "Move to monitor", "Monitor setup",
+      "Focus"].map((label, index) => ({
+        "id": "dynamic." + index,
+        "label": label,
+        "searchText": label === "Focus" ? "monitor" : "",
+        "action": { "type": "dismiss" }
+      }))
+    const rows = MenuModel.entriesFor({}, "keys", "keys", dynamic, "monitor")
+    compare(rows.map(row => row.label),
+      ["Monitor setup", "Workspace monitors", "Move to monitor", "Focus"])
+  }
+
   function test_cyclesDoNotRepeatMenus() {
     const rows = MenuModel.entriesFor(entries, "main", "", [], "main")
     compare(rows.filter(row => row.id === "install.cycle").length, 1)

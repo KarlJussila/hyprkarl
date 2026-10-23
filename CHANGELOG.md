@@ -40,6 +40,9 @@ breaking change bumps the major version and is called out explicitly.
   touchpad swipe, instead of in plain wheel steps.
 - The Icons and Keybindings menus open at their normal height instead of
   filling the screen until you search.
+- Menu search ranks its results the way the app launcher does, best matches
+  first, and no longer matches letters scattered through a label, so
+  "monitor" no longer finds "Move window silently to scratchpad".
 - A menu's `widthRole` is replaced by two settings: `search: true` keeps the
   search field shown, and `width` is `small`, `medium`, or `large`. An
   update converts `widthRole` in your `menu.json`: `search` becomes a

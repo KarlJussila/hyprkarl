@@ -63,8 +63,9 @@ python3 tests/hk-shell-launch.py
 ## `tst_menu_model.qml`
 
 Runs the pure command-menu model under Qt Test. It checks direct ordering,
-global descendant search, parent-path details, disabled-row filtering, loaded
-provider rows, and cycle-safe traversal.
+global descendant search, search ranking without matches from scattered
+letters, parent-path details, disabled-row filtering, loaded provider rows,
+and cycle-safe traversal.
 
 ```bash
 QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner \

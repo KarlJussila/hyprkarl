@@ -45,6 +45,10 @@ fi
 if [[ -n "$pending" ]] && [[ "$pending" != "$head" ]]; then
   git -C "$HYPRKARL_PATH" merge --ff-only "$pending" \
     || fail "Could not fast-forward to the reviewed source revision."
+  # This process loaded the previous revision's library. Finish with the
+  # commands and library the reviewed revision ships.
+  "$HYPRKARL_PATH/bin/hk-update-apply"
+  exit
 fi
 
 # Packages first: a migration may configure a package this revision adds.

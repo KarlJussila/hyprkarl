@@ -93,7 +93,9 @@ EOF
 
   cat > "$MOCKBIN/qs" <<'EOF'
 #!/bin/bash
-if [[ "${HK_TEST_SHELL_RUNNING:-0}" -eq 1 ]] && [[ "$1" == "list" ]]; then
+# The shell runs until the mock hk-shell records a stop.
+last=$(tail -n 1 "${HK_TEST_SHELL_LOG:-/dev/null}" 2>/dev/null)
+if [[ "${HK_TEST_SHELL_RUNNING:-0}" -eq 1 ]] && [[ "$1" == "list" ]] && [[ "$last" != stop* ]]; then
   printf '[{"id":"test","pid":123,"launch_time":"now"}]\n'
 else
   printf '[]\n'
@@ -169,8 +171,9 @@ test_source_and_theme_apply() {
     "$CLONE/themes/hyprkarl/theme.yaml"
   sed -i 's/foreground: "#d2ccd2"/foreground: "#aabbcc"/' \
     "$CLONE/themes/hyprkarl/theme.yaml"
-  git -C "$CLONE" add themes/hyprkarl/theme.yaml
-  git -C "$CLONE" commit -q -m "test: update active theme"
+  printf '\n: > "$HOME/reviewed-library-loaded"\n' >> "$CLONE/bin/lib/update.sh"
+  git -C "$CLONE" add themes/hyprkarl/theme.yaml bin/lib/update.sh
+  git -C "$CLONE" commit -q -m "test: update active theme and library"
   target=$(git -C "$CLONE" rev-parse HEAD)
   git -C "$CLONE" push -q origin "$branch"
   git -C "$CLONE" reset --hard HEAD~1 -q
@@ -198,6 +201,8 @@ test_source_and_theme_apply() {
     "apply did not stop Quickshell before advancing the checkout"
   assert_equal "$(sed -n '2p' "$shell_log")" "start $target" \
     "apply did not restart Quickshell from the complete reviewed tree"
+  [[ -e "$FAKEHOME/reviewed-library-loaded" ]] \
+    || fail "apply did not finish with the reviewed revision's library"
   assert_file_contains \
     "$FAKEHOME/.local/state/hyprkarl/current/theme/quickshell.json" "#101820" \
     "runtime theme did not contain the updated source"

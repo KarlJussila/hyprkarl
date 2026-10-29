@@ -4,6 +4,16 @@ Notable changes to Hyprkarl. Releases are annotated git tags on `main`;
 entries here are written by hand when a release is cut. From v1.0.0, a
 breaking change bumps the major version and is called out explicitly.
 
+## Unreleased
+
+- Screenshots freeze the screen while you select, so an open panel still
+  appears in the shot. The panel now closes when the capture starts instead
+  of staying open afterwards.
+- An update finishes applying with the commands it just downloaded. Before,
+  the rest of the apply ran the previous version's code, so an update that
+  moved Hyprkarl's files could leave broken links behind, such as agent
+  skill links named `*`. The next apply removes those.
+
 ## v2.0.0 (2026-10-23)
 
 - Breaking: a menu's `widthRole` is replaced by two settings: `search: true`

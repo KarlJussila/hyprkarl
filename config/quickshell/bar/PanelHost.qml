@@ -12,7 +12,6 @@ Scope {
   required property var barWindow
   required property string edge
   required property var theme
-  required property bool screenshotActive
 
   property string activeId: ""
   property Item trigger: null
@@ -86,10 +85,6 @@ Scope {
     })
   }
 
-  onScreenshotActiveChanged: {
-    if (!screenshotActive && open) Qt.callLater(focusPanel)
-  }
-
   KeyboardNavigator {
     id: navigator
     navigationRoot: panel.loadedContent
@@ -125,9 +120,9 @@ Scope {
 
   HyprlandFocusGrab {
     windows: [root.barWindow, panel]
-    active: root.open && panel.visible && !root.screenshotActive
+    active: root.open && panel.visible
     onCleared: {
-      if (root.open && !root.screenshotActive) root.close()
+      if (root.open) root.close()
     }
   }
 

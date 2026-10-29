@@ -34,8 +34,8 @@ without good reason.
 - **Clicked monitor.** Bar clicks set `HYPRKARL_OUTPUT`, and `hk-shell menu`
   forwards it so the menu opens on the clicked bar even when Hyprland does not
   focus monitors on mouse movement.
-- **Screenshots** go through `hk-screenshot`, which releases a feature panel's
-  focus grab for the selection and restores it afterwards.
+- **Screenshots** go through `hk-screenshot`, which freezes the screen so an
+  open panel stays in the shot even though the selection closes it.
 - **Displays.** `hk-display` is the only display-control path; its library
   writes the layout under `~/.local/state/hyprkarl/display/`, which loads
   before the user's `monitors.lua`. Its `stderr` messages are shown in the

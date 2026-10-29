@@ -114,7 +114,8 @@ stable](updating.md#what-updates-keep-stable).
 ### Screenshots
 
 - `hk-screenshot <window|output|region> [hyprshot options]`
-  Capture with Hyprshot while preserving an open Quickshell feature panel.
+  Capture with Hyprshot on a frozen screen, so an open panel appears in the
+  shot. The panel closes once the capture starts.
   Additional options pass through to Hyprshot. The default `Print` bindings
   use this command for window, display, and region capture.
 

@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQml
 import Quickshell
-import Quickshell.Io
 import "../bar"
 import "../config"
 import "../ui/modal"
@@ -12,22 +11,6 @@ import "../modules/osd"
 
 Scope {
   id: root
-
-  property bool screenshotActive: false
-
-  IpcHandler {
-    target: "screenshot"
-
-    function begin(): bool {
-      root.screenshotActive = true
-      return true
-    }
-
-    function finish(): bool {
-      root.screenshotActive = false
-      return true
-    }
-  }
 
   ShellConfig { id: configObject }
   Theme { id: themeObject }
@@ -81,7 +64,6 @@ Scope {
       osdState: osdStateLoader.item
       notificationState: notificationStateLoader.item
       userRoot: userRootObject
-      screenshotActive: root.screenshotActive
     }
   }
 }

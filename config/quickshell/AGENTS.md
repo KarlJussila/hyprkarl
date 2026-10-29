@@ -98,8 +98,7 @@ bars are a later design task, so do not carry untested vertical branches.
   `ToolTip` does not cooperate with the shell's layers and input.
 - **Panels** are hosted by one `PanelHost` per bar, which owns the popup
   window, anchoring, focus grab, dismissal, and keyboard navigation. Panel
-  content must not create its own window. The screenshot IPC target releases
-  the focus grab without closing the panel.
+  content must not create its own window.
 - **Bar geometry.** Height comes from the tallest widget, floored at the
   theme minimum, and is shared by all islands. `WidgetHost` owns widget
   padding, so widget sizes describe content only. Bars are horizontal (top or

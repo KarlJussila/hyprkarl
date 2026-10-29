@@ -21,7 +21,6 @@ Scope {
   required property var osdState
   required property var notificationState
   required property var userRoot
-  required property bool screenshotActive
 
   readonly property var barWindow: barLoader.item
   readonly property var notificationPosition: resolveNotificationPosition()
@@ -63,7 +62,6 @@ Scope {
       shellConfig: root.shellConfig
       theme: root.theme
       systemState: root.systemState
-      screenshotActive: root.screenshotActive
     }
   }
 

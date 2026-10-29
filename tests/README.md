@@ -29,8 +29,7 @@ tests/hk-theme-runtime.sh
 
 Starts an isolated Quickshell instance with every built-in module disabled and
 an explicitly referenced personal QML root. It checks that disabled IPC targets
-are absent, screenshot focus coordination remains available, the bar system
-monitor does not start, and the root receives the resolved configuration,
+are absent, the bar system monitor does not start, and the root receives the resolved configuration,
 theme, outputs, and overlay
 open/replace/push/back/toggle/close context. It also imports `ui.modal.Modal`
 from the public QML module and proves

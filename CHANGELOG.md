@@ -6,6 +6,12 @@ breaking change bumps the major version and is called out explicitly.
 
 ## Unreleased
 
+- Floating windows spawned by Hyprkarl's launcher bindings (file manager,
+  dictionary, editor) open on the active workspace again. Hyprland 0.57
+  stopped treating `workspace = "current"` in a window rule as "the active
+  workspace"; the string now creates a literal workspace named `current`,
+  and sent the windows there. The rule is dropped: newly launched TUI
+  windows open on the active workspace by default.
 - Screenshots freeze the screen while you select, so an open panel still
   appears in the shot. The panel now closes when the capture starts instead
   of staying open afterwards.

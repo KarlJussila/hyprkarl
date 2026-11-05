@@ -118,6 +118,8 @@ resolve_inputs() {
     fi
 
     [[ -f "$input" ]] || error "Invalid file: $input"
+    # Absolute, because encoding runs from the ffmpeg log directory
+    input=$(realpath "$input")
 
     if ! [[ "$audio_bitrate_to_reserve" =~ ^[0-9]+$ ]]; then
         error "Invalid audio bitrate: '$audio_bitrate_to_reserve'. Must be a number."
@@ -210,10 +212,10 @@ encode_video() {
     (
         cd "$log_dir"
         ffmpeg -y -i "$input" $scale_filter -r "$TARGET_FPS" \
-            -c:v libx264 -b:v "${video_bitrate_kbps}k" -pass 1 -an -f null /dev/null >"$ff_out" 2>&1
+            -c:v libx264 -b:v "${video_bitrate_kbps}k" -pass 1 -an -f null /dev/null >"$ff_out" 2>&1 &&
         ffmpeg -y -i "$input" $scale_filter -r "$TARGET_FPS" \
             -c:v libx264 -b:v "${video_bitrate_kbps}k" -pass 2 $audio_opts "$output" >"$ff_out" 2>&1
-    )
+    ) || error "ffmpeg failed. Re-run with DEBUG=1 to see its output."
 
     actual_size=$(stat -c%s "$output")
     info "Result: $(numfmt --to=iec "$actual_size") / $(numfmt --to=iec "$size_bytes_target") target."

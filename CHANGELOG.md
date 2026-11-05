@@ -19,6 +19,9 @@ breaking change bumps the major version and is called out explicitly.
   the rest of the apply ran the previous version's code, so an update that
   moved Hyprkarl's files could leave broken links behind, such as agent
   skill links named `*`. The next apply removes those.
+- `hk-video-compress` works with a relative input path. Before, ffmpeg ran
+  from its log directory, couldn't find the file, and the command still
+  reported success. A failed encode now stops with an error.
 
 ## v2.0.0 (2026-10-23)
 

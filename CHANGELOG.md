@@ -29,6 +29,8 @@ breaking change bumps the major version and is called out explicitly.
   installer rebuilt the `locate` index first, which took minutes on systems
   with many snapper snapshots. The nightly rebuild still keeps it current,
   and a migration stops it from indexing `.snapshots` directories.
+- LocalSend opens floating and centered again. It now reports its window
+  class as `org.localsend.localsend_app`, which the old rule didn't match.
 
 ## v2.0.0 (2026-10-23)
 

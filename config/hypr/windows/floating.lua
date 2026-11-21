@@ -24,5 +24,5 @@ hl.window_rule({ match = { class = "steam", title = "Friends List" }, center = t
 hl.window_rule({ match = { class = "steam", title = "Friends List" }, size = { 460, 800 } })
 
 -- LocalSend
-hl.window_rule({ match = { class = "(Share|localsend)" }, float = true })
-hl.window_rule({ match = { class = "(Share|localsend)" }, center = true })
+hl.window_rule({ match = { class = [[org\.localsend\.localsend_app]] }, float = true })
+hl.window_rule({ match = { class = [[org\.localsend\.localsend_app]] }, center = true })

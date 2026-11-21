@@ -22,6 +22,9 @@ breaking change bumps the major version and is called out explicitly.
 - `hk-video-compress` works with a relative input path. Before, ffmpeg ran
   from its log directory, couldn't find the file, and the command still
   reported success. A failed encode now stops with an error.
+- A bar widget no longer draws a divider against the island's edge when
+  the widgets before it are hidden. The recording indicator showed a doubled
+  left border while the update indicator was hidden.
 - AUR installs show "Done" as soon as the package is installed. Before, the
   installer rebuilt the `locate` index first, which took minutes on systems
   with many snapper snapshots. The nightly rebuild still keeps it current,

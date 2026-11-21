@@ -24,6 +24,13 @@ Item {
   implicitHeight: Math.max(theme.bar.minimumThickness,
     surface.contentTop + content.implicitHeight + surface.contentBottom)
 
+  // Hidden widgets take no space, so only a visible neighbor earns a divider.
+  function visibleBefore(index: int): bool {
+    for (let i = 0; i < index; i++)
+      if (repeater.itemAt(i)?.loadedItem?.visible) return true
+    return false
+  }
+
   IslandSurface {
     id: surface
     anchors.fill: parent
@@ -41,6 +48,7 @@ Item {
     height: parent.height - surface.contentTop - surface.contentBottom
 
     Repeater {
+      id: repeater
       model: root.instances
 
       WidgetHost {
@@ -49,7 +57,7 @@ Item {
 
         definition: modelData
         edge: root.edge
-        showDivider: root.theme.bar.showDividers && index > 0
+        showDivider: root.theme.bar.showDividers && root.visibleBefore(index)
         barWindow: root.barWindow
         theme: root.theme
         systemState: root.systemState

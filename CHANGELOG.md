@@ -6,6 +6,10 @@ breaking change bumps the major version and is called out explicitly.
 
 ## Unreleased
 
+- `hk-pkg-upgrade` asks to reboot only when a package actually changed. Before,
+  it offered a reboot even when pacman refused the whole upgrade, such as
+  when a kernel module needed a driver version the repos did not have yet.
+  A failed or empty upgrade now waits for a key so its output stays readable.
 - Floating windows spawned by Hyprkarl's launcher bindings (file manager,
   dictionary, editor) open on the active workspace again. Hyprland 0.57
   stopped treating `workspace = "current"` in a window rule as "the active

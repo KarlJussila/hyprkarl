@@ -175,7 +175,7 @@ stable](updating.md#what-updates-keep-stable).
 
 - `hk-pkg-upgrade`
   Upgrade all installed packages (pacman + AUR) non-interactively, then prompt
-  to reboot. Intended to be launched via `hk-tui-launch hk-pkg-upgrade` so it
+  to reboot if any package changed. Intended to be launched via `hk-tui-launch hk-pkg-upgrade` so it
   opens in a floating terminal.
 - `hk-pkg-install-tui`
   Open an `fzf` package picker to install pacman packages.

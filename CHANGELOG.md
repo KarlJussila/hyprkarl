@@ -22,6 +22,10 @@ breaking change bumps the major version and is called out explicitly.
 - `hk-video-compress` works with a relative input path. Before, ffmpeg ran
   from its log directory, couldn't find the file, and the command still
   reported success. A failed encode now stops with an error.
+- AUR installs show "Done" as soon as the package is installed. Before, the
+  installer rebuilt the `locate` index first, which took minutes on systems
+  with many snapper snapshots. The nightly rebuild still keeps it current,
+  and a migration stops it from indexing `.snapshots` directories.
 
 ## v2.0.0 (2026-10-23)
 

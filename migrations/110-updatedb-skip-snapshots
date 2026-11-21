@@ -1,0 +1,14 @@
+#!/bin/bash
+# Keep plocate from indexing snapper snapshots, each a full copy of the
+# filesystem it snapshots.
+
+conf=/etc/updatedb.conf
+
+[[ -f $conf ]] || exit 0
+grep -Eq '^PRUNENAMES.*\.snapshots' "$conf" && exit 0
+
+if grep -q '^PRUNENAMES' "$conf"; then
+  sudo sed -i -E 's/^(PRUNENAMES *= *"[^"]*)"/\1 .snapshots"/' "$conf"
+else
+  echo 'PRUNENAMES = ".snapshots"' | sudo tee -a "$conf" >/dev/null
+fi

@@ -71,7 +71,6 @@ run_aur_picker() {
 
   if ((${#pkg_names[@]} > 0)); then
     yay -S --noconfirm "${pkg_names[@]}"
-    sudo updatedb
     hk-show-done
   fi
 }
